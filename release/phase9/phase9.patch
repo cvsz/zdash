@@ -1,0 +1,11 @@
+# phase9.patch
+# Native git patch export could not be generated in this workspace.
+# Command attempted:
+#   git diff > release/phase9/phase9.patch
+# Error:
+#   fatal: not a git repository (or any of the parent directories): .git
+#
+# If you run this in a git-initialized clone, execute:
+#   git status --short
+#   git diff --stat
+#   git diff > release/phase9/phase9.patch

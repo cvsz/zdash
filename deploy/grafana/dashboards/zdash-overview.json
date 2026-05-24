@@ -1,0 +1,34 @@
+{
+  "id": null,
+  "title": "zDash Overview",
+  "tags": ["zdash"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [{"expr": "sum(rate(zdash_http_requests_total[5m]))", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "API Errors",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [{"expr": "sum(rate(zdash_api_error_total[5m]))", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Trading Scans",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "targets": [{"expr": "sum(rate(zdash_trading_scan_total[5m]))", "refId": "A"}]
+    },
+    {
+      "type": "timeseries",
+      "title": "Risk Halts",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [{"expr": "sum(rate(zdash_risk_halt_total[5m]))", "refId": "A"}]
+    }
+  ]
+}
