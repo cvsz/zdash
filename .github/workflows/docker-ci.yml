@@ -1,0 +1,34 @@
+name: docker-ci
+
+on:
+  push:
+    paths:
+      - 'docker-compose.yml'
+      - 'backend/Dockerfile'
+      - 'frontend/Dockerfile'
+      - 'deploy/**'
+      - '.github/workflows/docker-ci.yml'
+  pull_request:
+    paths:
+      - 'docker-compose.yml'
+      - 'backend/Dockerfile'
+      - 'frontend/Dockerfile'
+      - 'deploy/**'
+
+jobs:
+  docker-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -f backend/Dockerfile -t zdash-backend:ci .
+
+      - name: Build frontend image
+        run: docker build -f frontend/Dockerfile -t zdash-frontend:ci .
+
+      - name: Validate compose
+        run: |
+          docker compose config
+          docker compose --profile observability config
+          docker compose --profile production config

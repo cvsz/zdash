@@ -1,0 +1,55 @@
+name: release-check
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Backend tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./backend[dev]
+          cd backend
+          pytest -q
+
+      - name: Migrations
+        run: |
+          cd backend
+          alembic -c alembic.ini upgrade head
+
+      - name: Frontend build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      - name: Docker compose validation
+        run: |
+          docker compose config
+          docker compose --profile observability config
+
+      - name: Release artifact summary
+        run: |
+          mkdir -p release
+          cat > release/release-artifact-summary.txt <<SUMMARY
+          Release check completed.
+          - backend tests: passed
+          - migrations: passed
+          - frontend build: passed
+          - docker compose config: passed
+          SUMMARY

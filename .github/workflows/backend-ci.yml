@@ -1,0 +1,45 @@
+name: backend-ci
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install backend deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./backend[dev]
+          pip install ruff mypy
+
+      - name: Format check
+        run: ruff format --check backend
+
+      - name: Lint check
+        run: ruff check backend
+
+      - name: Type check
+        run: mypy backend/app --ignore-missing-imports
+
+      - name: Pytest
+        run: |
+          cd backend
+          pytest -q
+
+      - name: Alembic migration check
+        run: |
+          cd backend
+          alembic -c alembic.ini upgrade head
