@@ -31,6 +31,8 @@ OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and
 3. Paste `maintenance.sh` into the Maintenance Script.
 4. Start a Codex task with one phase only, for example:
 
+For batch execution, you can also use `.codex/cloud/phase-runner.md` section **Run all remaining phases (sequential)** to process phases 24→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
+
 ```text
 Read docs/prompt/phase24.prompt.
 Implement Phase 24 only.
