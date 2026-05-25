@@ -1,0 +1,78 @@
+# Next Prompt · PHASE 28
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase28.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 28 · ENTERPRISE DATA PLANE + KNOWLEDGE GRAPH + GOVERNED RAG
+Metadata Catalog + Lineage + Policy-Governed Retrieval + Query Audit
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Data ingestion, cataloging, knowledge graph, and RAG retrieval must be tenant-scoped.
+- Governed RAG must run policy filtering, redaction, citation tracking, and query audit before returning output.
+- Never retrieve or expose secrets by default.
+- Never bypass Guardian, content approval, RBAC, tenant isolation, DLP, or data retention controls.
+
+OBJECTIVE:
+Build the enterprise data plane and governed knowledge system:
+1. Tenant-scoped metadata catalog for docs, prompts, events, audit logs, configs, evidence, support bundles, releases, incidents, and runbooks.
+2. Data lineage and retention policy scaffolding.
+3. Knowledge graph for agents, modules, controls, policies, incidents, customers, releases, risks, plugins, and data assets.
+4. Governed RAG retriever with source citations, strict redaction, policy filter, tenant filter, and query audit.
+5. Frontend pages for Data Plane, Knowledge Graph, and Governed RAG.
+
+BACKEND MODULES:
+- backend/app/data_plane/{__init__.py,models.py,catalog.py,lineage.py,retention.py,connectors.py,data_plane_service.py}
+- backend/app/knowledge_graph/{__init__.py,models.py,graph_store.py,entity_extractor.py,relationship_builder.py,kg_service.py}
+- backend/app/rag/{__init__.py,models.py,retriever.py,policy_filter.py,query_audit.py,rag_service.py}
+- backend/app/api/{data_plane.py,knowledge_graph.py,rag.py}
+
+FRONTEND MODULES:
+- frontend/src/pages/{DataPlane.tsx,KnowledgeGraph.tsx,GovernedRAG.tsx}
+- frontend/src/components/dataPlane/{CatalogTable.tsx,LineagePanel.tsx,RetentionPolicyPanel.tsx,DataAssetCard.tsx}
+- frontend/src/components/knowledgeGraph/{EntityTable.tsx,RelationshipTable.tsx,GraphSummary.tsx}
+- frontend/src/components/rag/{RagQueryPanel.tsx,RagAnswerPanel.tsx,CitationList.tsx,QueryAuditTable.tsx}
+- frontend/src/hooks/{useDataPlane.ts,useKnowledgeGraph.ts,useGovernedRAG.ts}
+
+CONFIG TO ADD:
+DATA_PLANE_ENABLED=true
+KNOWLEDGE_GRAPH_ENABLED=true
+GOVERNED_RAG_ENABLED=true
+RAG_REQUIRE_CITATIONS=true
+RAG_REDACTION_STRICT=true
+RAG_ALLOW_SECRET_RETRIEVAL=false
+RAG_QUERY_AUDIT_ENABLED=true
+DATA_RETENTION_ENABLED=true
+DATA_LINEAGE_ENABLED=true
+
+APIS:
+- GET /api/data-plane/status
+- GET /api/data-plane/catalog
+- POST /api/data-plane/catalog/index
+- GET /api/data-plane/lineage
+- GET /api/data-plane/retention/status
+- GET /api/knowledge-graph/status
+- GET /api/knowledge-graph/entities
+- GET /api/knowledge-graph/relationships
+- POST /api/knowledge-graph/rebuild
+- POST /api/rag/query
+- GET /api/rag/audit
+
+TESTS:
+Catalog records are tenant-scoped, lineage links deterministic, knowledge graph rebuild handles missing modules, RAG rejects secret retrieval by default, RAG responses include citations, redaction runs before output, query audit records requests, cross-tenant retrieval denied.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 29 handoff.
+
+Now generate Phase 28 and save this prompt into docs/prompt/phase28.prompt.
+```
