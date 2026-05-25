@@ -24,6 +24,25 @@ OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and
 - External/customer-impacting workflows must default to dry-run, read-only, mock, or approval-gated mode.
 - Guardian risk checks, content approval, RBAC, tenant isolation, and audit logging must not be bypassed.
 
+## Integrated prompt set
+
+The Codex Cloud suite is integrated for these phase prompt files:
+
+```text
+docs/prompt/phase21.prompt
+docs/prompt/phase22.prompt
+docs/prompt/phase23.prompt
+docs/prompt/phase24.prompt
+docs/prompt/phase25.prompt
+docs/prompt/phase26.prompt
+docs/prompt/phase27.prompt
+docs/prompt/phase28.prompt
+docs/prompt/phase29.prompt
+docs/prompt/phase30.prompt
+docs/prompt/phase31.prompt
+docs/prompt/phase32.prompt
+```
+
 ## Suggested Codex workflow
 
 1. Configure the Codex Cloud environment using `general-custom-instructions.md`.
@@ -31,14 +50,14 @@ OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and
 3. Paste `maintenance.sh` into the Maintenance Script.
 4. Start a Codex task with one phase only, for example:
 
-For batch execution, you can also use `.codex/cloud/phase-runner.md` section **Run all remaining phases (sequential)** to process phases 24→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
-
 ```text
-Read docs/prompt/phase24.prompt.
-Implement Phase 24 only.
+Read docs/prompt/phase21.prompt.
+Implement Phase 21 only.
 Run backend and frontend checks.
 Return inspection summary, files changed, tests run, safety checklist, limitations, and next handoff.
 ```
+
+For batch execution, use `.codex/cloud/phase-runner.md` section **Run all integrated phases sequentially** to process phases 21→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
 
 ## Verification commands
 
