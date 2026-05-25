@@ -1,0 +1,111 @@
+# Next Prompt · PHASE 32
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase32.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 32 · SECURITY OPERATIONS CENTER + THREAT DETECTION + ZERO TRUST HARDENING
+SOC Dashboard + Detection Rules + Security Findings + Zero Trust Policy Checks
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Security operations must use safe configuration review, event analysis, audit analysis, and defensive detection only.
+- Do not add offensive scanning, exploitation, intrusive probing, credential harvesting, malware, or bypass logic.
+- Active scanning is disabled by default.
+- Findings must redact secrets and remain tenant-scoped.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe automation by default.
+- Never bypass Guardian, content approval, RBAC, tenant isolation, certification, deployment safety, or audit logging.
+
+OBJECTIVE:
+Build the zDash Security Operations Center layer:
+1. SOC dashboard and security findings workflow.
+2. Detection rule engine over local audit logs, event logs, auth failures, plugin activity, relay activity, support bundles, update attempts, and config safety state.
+3. Zero Trust readiness checks for auth, RBAC, CORS, auditor access, relay access, API exposure, token hygiene, and admin defaults.
+4. Security timeline and alert correlation.
+5. Suspicious login and secret exposure detectors using local data only.
+6. Frontend Security Ops page.
+
+BACKEND MODULES:
+- backend/app/security_ops/{__init__.py,models.py,detection_rules.py,finding_service.py,zero_trust_checks.py,security_timeline.py,soc_service.py}
+- backend/app/api/security_ops.py
+
+FRONTEND MODULES:
+- frontend/src/pages/SecurityOps.tsx
+- frontend/src/components/securityOps/{SecurityFindingTable.tsx,DetectionRuleTable.tsx,ZeroTrustCheckPanel.tsx,SecurityTimeline.tsx,SOCSummaryCard.tsx}
+- frontend/src/hooks/useSecurityOps.ts
+
+DOCS:
+- docs/architecture/PHASE_32_SECURITY_OPS_ZERO_TRUST.md
+- docs/runbooks/SECURITY_OPS_RUNBOOK.md
+- docs/runbooks/ZERO_TRUST_HARDENING_RUNBOOK.md
+
+CONFIG TO ADD:
+SECURITY_OPS_ENABLED=true
+THREAT_DETECTION_ENABLED=true
+ZERO_TRUST_CHECKS_ENABLED=true
+SECURITY_ACTIVE_SCANNING=false
+SECURITY_FINDINGS_FAIL_CLOSED=true
+SECURITY_TIMELINE_ENABLED=true
+SECRET_EXPOSURE_DETECTION_ENABLED=true
+SUSPICIOUS_LOGIN_DETECTION_ENABLED=true
+PLUGIN_RISK_DETECTION_ENABLED=true
+RELAY_RISK_DETECTION_ENABLED=true
+
+APIS:
+- GET /api/security-ops/status
+- GET /api/security-ops/findings
+- POST /api/security-ops/findings
+- PATCH /api/security-ops/findings/{finding_id}
+- GET /api/security-ops/detection-rules
+- POST /api/security-ops/detections/run
+- POST /api/security-ops/zero-trust/check
+- GET /api/security-ops/timeline
+- GET /api/security-ops/summary
+
+MODEL REQUIREMENTS:
+Create models for SecurityFinding, DetectionRule, DetectionRun, ZeroTrustCheckResult, SecurityTimelineEvent, and SOCSummary. Include severity, status, tenant scope, evidence, remediation, created_at, updated_at, owner, and audit metadata.
+
+DETECTION RULES:
+- default admin still active in production
+- JWT secret default or weak in production
+- wildcard CORS with credentials
+- repeated login failures
+- unexpected admin action spike
+- relay mutation command attempted
+- support bundle secret inclusion attempted
+- deployment pack secret inclusion attempted
+- plugin requested secret access
+- plugin requested external network
+- real IoT attempt blocked
+- real social posting attempt blocked
+- live trading attempt blocked
+
+ZERO TRUST CHECKS:
+- auth enabled
+- RBAC enabled
+- admin defaults rejected
+- CORS safe
+- auditor read-only
+- relay shell disabled
+- tenant isolation enabled
+- metrics protected when required
+- secret export disabled by default
+- API routes protected by role/permission where sensitive
+
+TESTS:
+Zero Trust checks detect unsafe CORS, default secrets produce findings, no active scanning by default, findings are tenant-scoped, secret patterns are redacted, suspicious login rule works, relay/plugin risk detection works, RBAC protects SOC actions, standard API response shape preserved.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 33 handoff.
+
+Now generate Phase 32 and save this prompt into docs/prompt/phase32.prompt.
+```
