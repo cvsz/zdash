@@ -88,6 +88,19 @@ class Settings(BaseSettings):
     optimizer_max_combinations: int = Field(default=100, alias='OPTIMIZER_MAX_COMBINATIONS')
     optimizer_sort_metric: str = Field(default='profit_factor', alias='OPTIMIZER_SORT_METRIC')
 
+    
+    multi_tenant_enabled: bool = Field(default=True, alias='MULTI_TENANT_ENABLED')
+    default_org_name: str = Field(default='zDash Local', alias='DEFAULT_ORG_NAME')
+    default_workspace_name: str = Field(default='Main Workspace', alias='DEFAULT_WORKSPACE_NAME')
+    tenant_header_name: str = Field(default='X-ZDash-Tenant', alias='TENANT_HEADER_NAME')
+    workspace_header_name: str = Field(default='X-ZDash-Workspace', alias='WORKSPACE_HEADER_NAME')
+    worker_enabled: bool = Field(default=True, alias='WORKER_ENABLED')
+    worker_max_retries: int = Field(default=3, alias='WORKER_MAX_RETRIES')
+    realtime_enabled: bool = Field(default=True, alias='REALTIME_ENABLED')
+    notifications_enabled: bool = Field(default=True, alias='NOTIFICATIONS_ENABLED')
+    notification_dry_run: bool = Field(default=True, alias='NOTIFICATION_DRY_RUN')
+    cloudflare_dry_run: bool = Field(default=True, alias='CLOUDFLARE_DRY_RUN')
+
     frontend_origin: str = Field(default='http://localhost:5173', alias='FRONTEND_ORIGIN')
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
 
