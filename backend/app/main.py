@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.agents.registry import bootstrap_agents
-from app.api import agents, backtesting, health, iot, logs, risk, scheduler
+from app.api import agents, backtesting, content, health, iot, logs, risk, scheduler
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
@@ -49,3 +49,5 @@ app.include_router(scheduler.router)
 app.include_router(iot.router)
 
 app.include_router(backtesting.router)
+
+app.include_router(content.router)

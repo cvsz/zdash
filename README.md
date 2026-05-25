@@ -142,3 +142,6 @@ curl http://localhost:8000/api/backtesting/strategies
 curl -X POST http://localhost:8000/api/backtesting/run -H "Content-Type: application/json" -d '{"strategy":"ob_aggressive"}'
 curl -X POST http://localhost:8000/api/backtesting/optimize -H "Content-Type: application/json" -d '{"strategy":"ob_aggressive","parameter_grid":{"lookback":[8,12],"risk_reward":[1.5,2.0]}}'
 ```
+
+## Phase 6 Content Pipeline
+Added Editor/Graphic/Social agents, approval-gated content pipeline, mock image/social adapters, and new /api/content endpoints. Default social behavior is dry-run with approval required and auto-post disabled.

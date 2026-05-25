@@ -10,6 +10,9 @@ from app.agents.base import AgentMessage, BaseAgent
 from app.agents.ceo import CEOAgent
 from app.agents.janie import JanieAgent
 from app.agents.joe import JoeAgent
+from app.agents.editor import EditorAgent
+from app.agents.graphic import GraphicAgent
+from app.agents.social import SocialAgent
 from app.ai.claude_adapter import ClaudeAdapter
 from app.ai.mock_adapter import MockAIAdapter
 from app.core.config import get_settings
@@ -101,7 +104,7 @@ registry = AgentRegistry()
 
 
 def bootstrap_agents() -> None:
-    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('joe'):
+    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('joe') and registry.get('editor') and registry.get('graphic') and registry.get('social'):
         return
 
     ceo = registry.get('ceo') or CEOAgent()
@@ -111,10 +114,16 @@ def bootstrap_agents() -> None:
 
     guardian = registry.get('guardian') or get_guardian_agent()
     joe = registry.get('joe') or JoeAgent()
+    editor = registry.get('editor') or EditorAgent()
+    graphic = registry.get('graphic') or GraphicAgent()
+    social = registry.get('social') or SocialAgent()
 
     registry.register(ceo)
     registry.register(janie)
     registry.register(guardian)
     registry.register(joe)
+    registry.register(editor)
+    registry.register(graphic)
+    registry.register(social)
 
-    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'joe']})
+    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'joe', 'editor', 'graphic', 'social']})
