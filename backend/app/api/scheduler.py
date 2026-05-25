@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from app.backtesting.backtest_service import backtest_service
 from app.backtesting.models import BacktestRequest
+from app.content.models import CreateContentRequest
 from app.content.pipeline import content_pipeline
 from app.core.audit import audit
 from app.core.auth import CurrentUser, require_roles
@@ -33,7 +34,7 @@ def _resolve_job(name: str):
     if name == 'backtest':
         return lambda: {'result': backtest_service.run_backtest(BacktestRequest(strategy='ob_aggressive', symbol='XAUUSD', timeframe='M5', dataset='mock', initial_balance=10000, risk_per_trade_percent=1, parameters={})).model_dump()}
     if name == 'content_pipeline':
-        return lambda: {'items': len(content_pipeline.list_items())}
+        return lambda: {'pipeline': content_pipeline.run_full_pipeline(CreateContentRequest(topic='zDash weekly system update', content_type='announcement', brand='zDash', language='en', tone='professional', platforms=['x','linkedin'], context={'source':'scheduler','approval_required':True,'dry_run':True})).model_dump()}
     if name == 'health_check':
         return lambda: {'status': 'ok', 'timestamp': datetime.now(timezone.utc).isoformat()}
     if name == 'iot_power_cycle':
