@@ -103,6 +103,14 @@ class Settings(BaseSettings):
     api_key_prefix: str = Field(default='zdash', alias='API_KEY_PREFIX')
     api_key_default_expires_days: int = Field(default=365, alias='API_KEY_DEFAULT_EXPIRES_DAYS')
 
+
+    digital_twin_enabled: bool = Field(default=True, alias='DIGITAL_TWIN_ENABLED')
+    digital_twin_mode: str = Field(default='advisory', alias='DIGITAL_TWIN_MODE')
+    digital_twin_dry_run: bool = Field(default=True, alias='DIGITAL_TWIN_DRY_RUN')
+    digital_twin_require_evidence: bool = Field(default=True, alias='DIGITAL_TWIN_REQUIRE_EVIDENCE')
+    digital_twin_max_graph_nodes: int = Field(default=5000, alias='DIGITAL_TWIN_MAX_GRAPH_NODES')
+    digital_twin_max_graph_edges: int = Field(default=20000, alias='DIGITAL_TWIN_MAX_GRAPH_EDGES')
+
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
 
     @field_validator(

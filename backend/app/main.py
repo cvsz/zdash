@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.agents.registry import bootstrap_agents
-from app.api import admin, agents, auth, backtesting, billing, content, enterprise, health, iot, logs, marketplace, metrics, risk, scheduler, ops, integrations, managed, developer, partner, mobile, launch, predictive_sre
+from app.api import admin, agents, auth, backtesting, billing, content, enterprise, health, iot, logs, marketplace, metrics, risk, scheduler, ops, integrations, managed, developer, partner, mobile, launch, predictive_sre, digital_twin, macro_simulation, continuous_planning
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
@@ -76,3 +76,7 @@ app.include_router(mobile.router)
 app.include_router(launch.router)
 
 app.include_router(predictive_sre.router)
+
+app.include_router(digital_twin.router)
+app.include_router(macro_simulation.router)
+app.include_router(continuous_planning.router)
