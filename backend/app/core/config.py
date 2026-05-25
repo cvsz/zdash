@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,8 +19,67 @@ class Settings(BaseSettings):
     ai_provider: str = Field(default='mock', alias='AI_PROVIDER')
 
     dry_run: bool = Field(default=True, alias='DRY_RUN')
+    live_trading_ack: bool = Field(default=False, alias='LIVE_TRADING_ACK')
+
+    risk_guardian_enabled: bool = Field(default=True, alias='RISK_GUARDIAN_ENABLED')
+    max_daily_drawdown_percent: float = Field(default=5.0, alias='MAX_DAILY_DRAWDOWN_PERCENT')
+    max_total_drawdown_percent: float = Field(default=20.0, alias='MAX_TOTAL_DRAWDOWN_PERCENT')
+    emergency_kill_switch_drawdown_percent: float = Field(default=50.0, alias='EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT')
+
+    soft_halt_drawdown_level_1: float = Field(default=5.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_1')
+    soft_halt_drawdown_level_2: float = Field(default=10.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_2')
+    soft_halt_drawdown_level_3: float = Field(default=20.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_3')
+
+    allow_manual_resume: bool = Field(default=True, alias='ALLOW_MANUAL_RESUME')
+    require_resume_reason: bool = Field(default=True, alias='REQUIRE_RESUME_REASON')
+    hard_halt_on_daily_drawdown: bool = Field(default=False, alias='HARD_HALT_ON_DAILY_DRAWDOWN')
+
+    @field_validator(
+        'max_daily_drawdown_percent',
+        'max_total_drawdown_percent',
+        'emergency_kill_switch_drawdown_percent',
+        'soft_halt_drawdown_level_1',
+        'soft_halt_drawdown_level_2',
+        'soft_halt_drawdown_level_3',
+        mode='before',
+    )
+    @classmethod
+    def _safe_positive_threshold(cls, value):
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return 0.0
+        if parsed < 0:
+            return 0.0
+        return parsed
 
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    settings = Settings()
+
+    # Fail-safe normalization to prevent unsafe threshold combinations.
+    if settings.max_daily_drawdown_percent <= 0:
+        settings.max_daily_drawdown_percent = 5.0
+    if settings.max_total_drawdown_percent <= 0:
+        settings.max_total_drawdown_percent = 20.0
+    if settings.emergency_kill_switch_drawdown_percent <= 0:
+        settings.emergency_kill_switch_drawdown_percent = 50.0
+
+    if settings.soft_halt_drawdown_level_1 <= 0:
+        settings.soft_halt_drawdown_level_1 = 5.0
+    if settings.soft_halt_drawdown_level_2 <= 0:
+        settings.soft_halt_drawdown_level_2 = 10.0
+    if settings.soft_halt_drawdown_level_3 <= 0:
+        settings.soft_halt_drawdown_level_3 = 20.0
+
+    ordered = sorted(
+        [
+            settings.soft_halt_drawdown_level_1,
+            settings.soft_halt_drawdown_level_2,
+            settings.soft_halt_drawdown_level_3,
+        ]
+    )
+    settings.soft_halt_drawdown_level_1, settings.soft_halt_drawdown_level_2, settings.soft_halt_drawdown_level_3 = ordered
+
+    return settings

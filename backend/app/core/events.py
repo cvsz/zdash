@@ -35,5 +35,9 @@ class EventBus:
             items = list(self._events)
         return items[-safe_limit:]
 
+    def clear(self) -> None:
+        with self._lock:
+            self._events.clear()
+
 
 event_bus = EventBus()

@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+
+from app.risk.models import AccountSnapshot
 
 
 class Candle(BaseModel):
@@ -17,12 +19,12 @@ class Signal(BaseModel):
     symbol: str
     timeframe: str
     direction: Literal['buy', 'sell', 'neutral']
-    entry_zone: tuple[float, float]
-    stop_loss: float
-    take_profit: float
-    confidence: float
-    strategy: str
-    filter_state: dict
+    entry_zone: tuple[float, float] = (0.0, 0.0)
+    stop_loss: float = 0.0
+    take_profit: float = 0.0
+    confidence: float = 0.0
+    strategy: str = 'unknown'
+    filter_state: dict[str, Any] = Field(default_factory=dict)
     ai_summary: str = ''
     validation_status: str = 'pending'
     risk_status: str = 'unchecked'
@@ -32,3 +34,4 @@ class Signal(BaseModel):
 class ExecutionRequest(BaseModel):
     signal: Signal
     lot_size: float = 0.01
+    snapshot: AccountSnapshot | None = None

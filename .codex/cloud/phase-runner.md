@@ -5,9 +5,9 @@ Use these prompts as Codex Cloud tasks.
 ## Run a specific phase
 
 ```text
-Read docs/prompt/phase24.prompt.
+Read docs/prompt/phase04.prompt.
 
-Implement Phase 24 only.
+Implement Phase 04 only.
 
 Requirements:
 - Inspect repo first.
@@ -61,15 +61,36 @@ This prints the selected prompt file so Codex can use it as task context.
 ## Recommended phase order
 
 ```text
-phase24.prompt
-phase25.prompt
-phase26.prompt
-phase27.prompt
-phase28.prompt
-phase29.prompt
-phase30.prompt
-phase31.prompt
-phase32.prompt
+docs/prompt/
+├── phase04.prompt
+├── phase05.prompt
+├── phase06.prompt
+├── phase07.prompt
+├── phase08.prompt
+├── phase09.prompt
+├── phase10.prompt
+├── phase11.prompt
+├── phase12.prompt
+├── phase13.prompt
+├── phase14.prompt
+├── phase15.prompt
+├── phase16.prompt
+├── phase17.prompt
+├── phase18.prompt
+├── phase19.prompt
+├── phase20.prompt
+├── phase21.prompt
+├── phase22.prompt
+├── phase23.prompt
+├── phase24.prompt
+├── phase25.prompt
+├── phase26.prompt
+├── phase27.prompt
+├── phase28.prompt
+├── phase29.prompt
+├── phase30.prompt
+├── phase31.prompt
+└── phase32.prompt
 ```
 
 ## Verification

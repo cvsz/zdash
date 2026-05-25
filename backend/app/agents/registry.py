@@ -40,9 +40,9 @@ class AgentRegistry:
         to_agent = self.get(request.to_agent)
 
         if from_agent is None:
-            raise ValueError(f"Unknown source agent: {request.from_agent}")
+            raise ValueError(f'Unknown source agent: {request.from_agent}')
         if to_agent is None:
-            raise ValueError(f"Unknown target agent: {request.to_agent}")
+            raise ValueError(f'Unknown target agent: {request.to_agent}')
 
         msg_id = str(uuid4())
         envelope = AgentMessage(
@@ -62,14 +62,20 @@ class AgentRegistry:
         response = to_agent.receive_message(envelope)
 
         related_events = _find_related_events(msg_id=msg_id, base_event=sent_event)
-        return {
+        result = {
             'message_id': msg_id,
             'from_agent': request.from_agent,
             'to_agent': request.to_agent,
-            'response_text': response['response_text'],
             'event_ids': [event.id for event in related_events],
             'timestamp': datetime.now(timezone.utc).isoformat(),
         }
+
+        if isinstance(response, dict) and 'response_text' in response:
+            result['response_text'] = response['response_text']
+        else:
+            result['response'] = response
+
+        return result
 
 
 def _find_related_events(msg_id: str, base_event: Event) -> list[Event]:
@@ -94,13 +100,18 @@ registry = AgentRegistry()
 
 
 def bootstrap_agents() -> None:
-    if registry.get('ceo') and registry.get('janie'):
+    if registry.get('ceo') and registry.get('janie') and registry.get('guardian'):
         return
 
-    ceo = CEOAgent()
-    janie = JanieAgent(ai_adapter=build_default_ai_adapter())
+    ceo = registry.get('ceo') or CEOAgent()
+    janie = registry.get('janie') or JanieAgent(ai_adapter=build_default_ai_adapter())
+
+    from app.risk.guardian_service import get_guardian_agent
+
+    guardian = registry.get('guardian') or get_guardian_agent()
 
     registry.register(ceo)
     registry.register(janie)
+    registry.register(guardian)
 
-    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie']})
+    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian']})

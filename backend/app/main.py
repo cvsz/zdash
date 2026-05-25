@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.agents.registry import bootstrap_agents
-from app.api import agents, health, logs
+from app.api import agents, health, logs, risk
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
@@ -24,7 +24,8 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title='Janie Server', version='2.0.0-phase1', lifespan=lifespan)
+app = FastAPI(title='Janie Server', version='2.0.0-phase3', lifespan=lifespan)
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -42,3 +43,4 @@ async def request_log_middleware(request: Request, call_next):
 app.include_router(health.router)
 app.include_router(agents.router)
 app.include_router(logs.router)
+app.include_router(risk.router)
