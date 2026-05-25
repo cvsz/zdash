@@ -79,10 +79,15 @@ Prompt files:
 
 - Phase prompts live under docs/prompt/
 - Short phase prompt files use lowercase names:
-  docs/prompt/phase24.prompt
-  docs/prompt/phase25.prompt
+  docs/prompt/phase21.prompt
+  docs/prompt/phase22.prompt
+  docs/prompt/phase23.prompt
   ...
   docs/prompt/phase32.prompt
+
+Recommended execution order for the integrated prompt set:
+
+phase21.prompt → phase22.prompt → phase23.prompt → phase24.prompt → phase25.prompt → phase26.prompt → phase27.prompt → phase28.prompt → phase29.prompt → phase30.prompt → phase31.prompt → phase32.prompt
 
 Current Codex Cloud helper files live under:
 
