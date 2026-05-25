@@ -1,0 +1,107 @@
+# Next Prompt · PHASE 24
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase24.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 24 · AUTONOMOUS CERTIFICATION + EXTERNAL AUDITOR PORTAL + ENTERPRISE CUSTOMER DEPLOYMENT PACKS
+Certification Engine + Auditor Workspace + Evidence Portal + Customer Deployment Packs + Release Attestation
+
+IMPORTANT:
+Before coding, inspect the existing repository. The repo may include Phase 1–23 modules, or some intermediate modules may be missing. Do not rebuild existing modules from scratch. Do not remove existing behavior. If a dependency is missing, create a safe compatibility shim or minimal adapter interface.
+
+GLOBAL SAFETY INVARIANTS:
+- Certification and deployment tooling must be read-only or dry-run by default.
+- No deployment pack may include secrets unless explicitly requested by an admin with typed confirmation.
+- Auditor users must never access secrets, billing secrets, provider tokens, raw credentials, private keys, or cross-tenant data.
+- Never enable live trading, real IoT actions, real social posting, secret export, or unsafe plugin execution by default.
+- Never bypass Guardian risk checks, content approval checks, tenant isolation, or RBAC.
+
+OBJECTIVE:
+Build the autonomous certification and enterprise deployment pack layer:
+1. Autonomous certification engine and control catalog.
+2. Certification runner, compliance scorecard, and release attestation.
+3. External auditor read-only workspace.
+4. Evidence request, approval, response, and redaction workflow.
+5. Customer deployment pack generator, signed manifest, readiness validator, and security baseline checker.
+6. Frontend pages for Certification, Auditor Portal, and Deployment Packs.
+7. Tests for certification, auditor access, redaction, deployment pack safety, RBAC, and tenant isolation.
+
+BACKEND MODULES:
+- backend/app/certification/{__init__.py,models.py,control_catalog.py,certification_runner.py,scorecard.py,attestation.py,certification_service.py}
+- backend/app/auditor/{__init__.py,models.py,auditor_service.py,evidence_request_service.py,redaction.py,access_policy.py}
+- backend/app/deployment_packs/{__init__.py,models.py,manifest.py,pack_builder.py,readiness_validator.py,security_baseline.py,handoff_bundle.py,deployment_pack_service.py}
+- backend/app/api/{certification.py,auditor.py,deployment_packs.py}
+
+FRONTEND MODULES:
+- frontend/src/pages/{Certification.tsx,AuditorPortal.tsx,DeploymentPacks.tsx}
+- frontend/src/components/certification/{CertificationStatusCard.tsx,ControlCatalogTable.tsx,CertificationRunPanel.tsx,ComplianceScorecard.tsx,ReleaseAttestationPanel.tsx}
+- frontend/src/components/auditor/{AuditorWorkspace.tsx,EvidenceRequestTable.tsx,EvidenceReviewPanel.tsx,RedactionPreview.tsx,AuditorAccessSummary.tsx}
+- frontend/src/components/deploymentPacks/{DeploymentPackBuilder.tsx,DeploymentManifestPanel.tsx,ReadinessCheckTable.tsx,SecurityBaselinePanel.tsx,CustomerHandoffPanel.tsx}
+- frontend/src/hooks/{useCertification.ts,useAuditor.ts,useDeploymentPacks.ts}
+
+CONFIG TO ADD:
+CERTIFICATION_ENABLED=true
+CERTIFICATION_AUTORUN_ENABLED=false
+CERTIFICATION_FAIL_CLOSED=true
+CERTIFICATION_DEFAULT_FRAMEWORK=zdash_enterprise_baseline
+CERTIFICATION_REQUIRE_ATTESTATION_APPROVAL=true
+AUDITOR_PORTAL_ENABLED=true
+AUDITOR_READ_ONLY=true
+AUDITOR_REQUIRE_EVIDENCE_APPROVAL=true
+AUDITOR_ALLOW_DOWNLOADS=false
+EVIDENCE_REDACTION_ENABLED=true
+EVIDENCE_REDACTION_STRICT=true
+EVIDENCE_EXPORT_INCLUDE_SECRETS=false
+DEPLOYMENT_PACKS_ENABLED=true
+DEPLOYMENT_PACK_DRY_RUN=true
+DEPLOYMENT_PACK_INCLUDE_SECRETS=false
+DEPLOYMENT_PACK_REQUIRE_ADMIN_APPROVAL=true
+RELEASE_ATTESTATION_ENABLED=true
+RELEASE_ATTESTATION_REQUIRE_SIGNOFF=true
+RELEASE_ATTESTATION_SIGNING_MODE=mock
+SECURITY_BASELINE_ENABLED=true
+READINESS_VALIDATOR_ENABLED=true
+
+REQUIRED CONTROLS:
+RBAC enabled, default admin password changed in production, JWT secret not default in production, tenant isolation enabled, audit logging enabled, metrics without secrets, DRY_RUN true by default, live trading blocked, Guardian enabled, emergency kill switch configured, real IoT blocked, social approval required, plugin secret access blocked, plugin external network blocked, no raw card data, evidence export excludes secrets, auditor portal read-only, restore drill dry-run, runbook executor dry-run, deployment pack excludes secrets, production safety checker passes.
+
+APIS:
+- GET /api/certification/status
+- GET /api/certification/frameworks
+- GET /api/certification/controls
+- POST /api/certification/run
+- GET /api/certification/runs
+- GET /api/certification/runs/{run_id}
+- GET /api/certification/runs/{run_id}/scorecard
+- POST /api/certification/attestations
+- POST /api/certification/attestations/{attestation_id}/approve
+- POST /api/certification/attestations/{attestation_id}/verify
+- GET/POST/PATCH /api/auditor/workspaces
+- GET/POST/PATCH /api/auditor/evidence-requests
+- POST /api/auditor/evidence-requests/{request_id}/approve
+- POST /api/auditor/evidence-requests/{request_id}/reject
+- GET /api/auditor/evidence-requests/{request_id}/response
+- POST /api/auditor/redact-preview
+- GET /api/deployment-packs/status
+- POST /api/deployment-packs/readiness-check
+- POST /api/deployment-packs/security-baseline
+- POST /api/deployment-packs/build
+- GET /api/deployment-packs
+- GET /api/deployment-packs/{pack_id}/manifest
+
+TESTS:
+Add backend and frontend tests for default framework load, critical safety controls, missing module warnings, scorecard, attestation approval, redaction of tokens/passwords/private keys, auditor read-only access, evidence approval, deployment pack secret exclusion, readiness/security baseline checks, standard API response shape, RBAC, and tenant isolation.
+
+DELIVERABLES:
+Repository inspection summary, folder tree changes, full source for new files, patched updated files, tests, .env.example updates, README updates, API examples, run/test instructions, safety checklist, acceptance checklist, known limitations, and Phase 25 handoff notes.
+
+Now generate the complete Phase 24 implementation and save this prompt into docs/prompt/phase24.prompt.
+```
