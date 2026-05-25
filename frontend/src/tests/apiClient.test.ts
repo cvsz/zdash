@@ -1,0 +1,2 @@
+import { describe,it,expect,vi } from 'vitest'; import { apiClient } from '../api/client';
+describe('apiClient',()=>{it('unwraps',async()=>{globalThis.fetch=vi.fn().mockResolvedValue({json:async()=>({ok:true,data:{a:1},error:null,timestamp:''})}) as any; await expect(apiClient.get('/x')).resolves.toEqual({a:1});});it('throws',async()=>{globalThis.fetch=vi.fn().mockResolvedValue({status:400,json:async()=>({ok:false,error:'bad'})}) as any; await expect(apiClient.get('/x')).rejects.toBeTruthy();});});

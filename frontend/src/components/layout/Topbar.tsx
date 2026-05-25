@@ -1,0 +1,1 @@
+export default function Topbar(){return <div className='p-3 border-b border-slate-800'>Operational Dashboard · Dry-Run Safe</div>}

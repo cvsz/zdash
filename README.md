@@ -145,3 +145,18 @@ curl -X POST http://localhost:8000/api/backtesting/optimize -H "Content-Type: ap
 
 ## Phase 6 Content Pipeline
 Added Editor/Graphic/Social agents, approval-gated content pipeline, mock image/social adapters, and new /api/content endpoints. Default social behavior is dry-run with approval required and auto-post disabled.
+
+## Phase 7 Dashboard
+Frontend in `frontend/` with React+Vite+TS+Tailwind.
+
+### Run
+- `cd frontend && npm install`
+- `npm run dev`
+- `npm test`
+- `npm run build`
+
+Backend:
+- `cd backend && uvicorn app.main:app --reload`
+
+Mock fallback mode is enabled by default via `VITE_ENABLE_MOCK_FALLBACK=true`.
+

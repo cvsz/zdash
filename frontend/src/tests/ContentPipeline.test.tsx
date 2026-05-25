@@ -1,0 +1,2 @@
+import { render, screen } from '@testing-library/react';import ContentPipeline from '../pages/ContentPipeline';import { describe,it,expect } from 'vitest';
+describe('ContentPipeline',()=>{it('renders',()=>{render(<ContentPipeline/>);expect(screen.getByText(/policy notes/i)).toBeTruthy();expect(screen.getByText(/SOCIAL_DRY_RUN/)).toBeTruthy();expect(screen.getByText('Publish')).toHaveProperty("disabled", true);});});

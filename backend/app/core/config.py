@@ -88,6 +88,9 @@ class Settings(BaseSettings):
     optimizer_max_combinations: int = Field(default=100, alias='OPTIMIZER_MAX_COMBINATIONS')
     optimizer_sort_metric: str = Field(default='profit_factor', alias='OPTIMIZER_SORT_METRIC')
 
+    frontend_origin: str = Field(default='http://localhost:5173', alias='FRONTEND_ORIGIN')
+    cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
+
     @field_validator(
         'max_daily_drawdown_percent',
         'max_total_drawdown_percent',

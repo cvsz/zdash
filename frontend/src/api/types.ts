@@ -1,0 +1,22 @@
+export type ApiResponse<T> = { ok: boolean; data: T; error: string | null; timestamp: string };
+export class ApiError extends Error { constructor(message: string, public status?: number) { super(message); } }
+export type HealthStatus = { status: string; services: Record<string,string>; mock?: boolean };
+export type Agent = { id: string; name: string; role: string; status: string; health: string; last_event: string; capabilities: string[] };
+export type EventLog = { id: string; category: string; source: string; message: string; payload?: unknown; ts: string; level?: string };
+export type TradingSignal = { id:string; symbol:string; timeframe:string; side:string; confidence:number; validated:boolean; ai_summary:string; created_at:string };
+export type ExecutionResult = { status:string; detail:string; dry_run:boolean };
+export type AccountSnapshot = { balance:number; equity:number; daily_drawdown_percent:number; total_drawdown_percent:number };
+export type DrawdownResult = { daily:number; total:number; max_daily:number; max_total:number };
+export type HaltState = { halted:boolean; reason?:string; kill_switch:boolean };
+export type RiskDecision = { approved:boolean; reason:string; level:string };
+export type ScheduledJob = { id:string; name:string; job_type:string; cron:string; enabled:boolean; risk_guarded?:boolean };
+export type JobRunResult = { id:string; job_id:string; status:string; started_at:string; duration_ms:number };
+export type BacktestRequest = { strategy:string; symbol:string; timeframe:string };
+export type BacktestMetrics = { total_trades:number; win_rate:number; profit_factor:number; max_drawdown:number; net_profit_percent:number; consecutive_losses:number };
+export type BacktestResult = { id:string; strategy:string; metrics:BacktestMetrics; equity_curve:{x:string;y:number}[]; monthly_returns:{month:string;value:number}[] };
+export type OptimizationResult = { id:string; rank:number; strategy:string; score:number; params:Record<string,unknown> };
+export type StrategyPromotionDecision = { promote:boolean; reason:string };
+export type ContentItem = { id:string; title:string; status:string; approval_required:boolean; approved:boolean; policy_notes?:string; social_dry_run:boolean };
+export type PipelineRunResult = { id:string; status:string; message:string };
+export type SocialPostResult = { id:string; status:string; dry_run:boolean };
+export type IoTActionResult = { status:string; action:string; dry_run:boolean; message:string };

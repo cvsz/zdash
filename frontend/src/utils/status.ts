@@ -1,0 +1,1 @@
+export const getSeverityFromStatus=(s:string)=>s.includes('halt')||s.includes('kill')?'danger':s.includes('warn')?'warning':'success'; export const getBadgeVariant=getSeverityFromStatus; export const isDangerStatus=(s:string)=>getSeverityFromStatus(s)==='danger';
