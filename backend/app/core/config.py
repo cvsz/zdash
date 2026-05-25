@@ -34,6 +34,22 @@ class Settings(BaseSettings):
     require_resume_reason: bool = Field(default=True, alias='REQUIRE_RESUME_REASON')
     hard_halt_on_daily_drawdown: bool = Field(default=False, alias='HARD_HALT_ON_DAILY_DRAWDOWN')
 
+
+    scheduler_enabled: bool = Field(default=True, alias='SCHEDULER_ENABLED')
+    scheduler_timezone: str = Field(default='Asia/Bangkok', alias='SCHEDULER_TIMEZONE')
+    scheduler_default_max_runtime_seconds: int = Field(default=300, alias='SCHEDULER_DEFAULT_MAX_RUNTIME_SECONDS')
+    scheduler_allow_manual_run: bool = Field(default=True, alias='SCHEDULER_ALLOW_MANUAL_RUN')
+    scheduler_store: str = Field(default='in_memory', alias='SCHEDULER_STORE')
+
+    friday_agent_enabled: bool = Field(default=True, alias='FRIDAY_AGENT_ENABLED')
+
+    iot_enabled: bool = Field(default=True, alias='IOT_ENABLED')
+    iot_dry_run: bool = Field(default=True, alias='IOT_DRY_RUN')
+    iot_require_confirmation: bool = Field(default=True, alias='IOT_REQUIRE_CONFIRMATION')
+    tapo_username: str = Field(default='', alias='TAPO_USERNAME')
+    tapo_password: str = Field(default='', alias='TAPO_PASSWORD')
+    tapo_device_ip: str = Field(default='', alias='TAPO_DEVICE_IP')
+    tapo_device_alias: str = Field(default='zdash-power-node', alias='TAPO_DEVICE_ALIAS')
     @field_validator(
         'max_daily_drawdown_percent',
         'max_total_drawdown_percent',
