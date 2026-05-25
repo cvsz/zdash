@@ -1,0 +1,81 @@
+# Next Prompt · PHASE 30
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase30.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 30 · FINAL ENDGAME RELEASE + ENTERPRISE BOARD PACK + ACQUISITION/IPO DOSSIER
+Release Candidate Freeze + Executive Pack + Investor/Acquirer Dossier + Launch Command Center
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Endgame release, board pack, dossier, launch, and export workflows must be read-only, dry-run, or approval-gated by default.
+- Generated packs must exclude secrets, private keys, raw credentials, customer-sensitive data, and raw payment data by default.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe automation by default.
+- Never bypass Guardian, content approval, RBAC, tenant isolation, certification, or deployment safety checks.
+
+OBJECTIVE:
+Build final endgame release layer:
+1. Release candidate freeze and system-wide readiness rollup.
+2. Enterprise board pack generator covering product, market, security, compliance, revenue, traction, risks, roadmap, and support readiness.
+3. Acquisition/IPO dossier templates with sanitized metrics only.
+4. Customer proof pack and launch command center.
+5. Final launch checklist and LTS/maintenance plan.
+6. Frontend Endgame Release page.
+
+BACKEND MODULES:
+- backend/app/endgame/{__init__.py,models.py,release_freeze.py,board_pack.py,dossier_builder.py,launch_checklist.py,endgame_service.py}
+- backend/app/api/endgame.py
+
+FRONTEND MODULES:
+- frontend/src/pages/EndgameRelease.tsx
+- frontend/src/components/endgame/{ReleaseFreezePanel.tsx,BoardPackPanel.tsx,DossierBuilderPanel.tsx,LaunchChecklist.tsx,EndgameReadinessCard.tsx}
+- frontend/src/hooks/useEndgame.ts
+
+DOCS:
+- docs/endgame/BOARD_PACK_TEMPLATE.md
+- docs/endgame/ACQUISITION_DOSSIER_TEMPLATE.md
+- docs/endgame/IPO_READINESS_TEMPLATE.md
+- docs/endgame/LAUNCH_CHECKLIST.md
+- docs/architecture/PHASE_30_FINAL_ENDGAME_RELEASE.md
+
+CONFIG TO ADD:
+ENDGAME_RELEASE_ENABLED=true
+RELEASE_FREEZE_ENABLED=true
+BOARD_PACK_ENABLED=true
+DOSSIER_EXPORT_ENABLED=true
+DOSSIER_INCLUDE_CUSTOMER_DATA=false
+DOSSIER_INCLUDE_SECRETS=false
+CUSTOMER_PROOF_PACK_ENABLED=true
+CUSTOMER_PROOF_PACK_INCLUDE_SECRETS=false
+LAUNCH_COMMAND_CENTER_ENABLED=true
+LTS_PLAN_ENABLED=true
+
+APIS:
+- GET /api/endgame/status
+- POST /api/endgame/release-freeze
+- GET /api/endgame/readiness
+- POST /api/endgame/board-pack
+- POST /api/endgame/dossier
+- POST /api/endgame/customer-proof-pack
+- GET /api/endgame/launch-checklist
+- PATCH /api/endgame/launch-checklist/{item_id}
+- GET /api/endgame/lts-plan
+
+TESTS:
+Release freeze detects blockers, board pack excludes secrets, dossier excludes customer data by default, proof pack excludes secrets, launch checklist deterministic, LTS policy generated, exports require admin, tenant isolation enforced, standard API response shape preserved.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 31 handoff.
+
+Now generate Phase 30 and save this prompt into docs/prompt/phase30.prompt.
+```
