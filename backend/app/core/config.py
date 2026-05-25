@@ -50,6 +50,25 @@ class Settings(BaseSettings):
     tapo_password: str = Field(default='', alias='TAPO_PASSWORD')
     tapo_device_ip: str = Field(default='', alias='TAPO_DEVICE_IP')
     tapo_device_alias: str = Field(default='zdash-power-node', alias='TAPO_DEVICE_ALIAS')
+    backtesting_enabled: bool = Field(default=True, alias='BACKTESTING_ENABLED')
+    backtest_dataset_source: str = Field(default='mock', alias='BACKTEST_DATASET_SOURCE')
+    backtest_default_symbol: str = Field(default='XAUUSD', alias='BACKTEST_DEFAULT_SYMBOL')
+    backtest_default_timeframe: str = Field(default='M5', alias='BACKTEST_DEFAULT_TIMEFRAME')
+    backtest_initial_balance: float = Field(default=10000, alias='BACKTEST_INITIAL_BALANCE')
+    backtest_default_risk_per_trade_percent: float = Field(default=1, alias='BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT')
+    backtest_commission_per_trade: float = Field(default=0, alias='BACKTEST_COMMISSION_PER_TRADE')
+    backtest_spread_points: float = Field(default=25, alias='BACKTEST_SPREAD_POINTS')
+    backtest_slippage_points: float = Field(default=5, alias='BACKTEST_SLIPPAGE_POINTS')
+    primary_strategy: str = Field(default='ob_aggressive', alias='PRIMARY_STRATEGY')
+    allow_strategy_promotion: bool = Field(default=False, alias='ALLOW_STRATEGY_PROMOTION')
+    min_promotion_trades: int = Field(default=50, alias='MIN_PROMOTION_TRADES')
+    min_promotion_win_rate: float = Field(default=45, alias='MIN_PROMOTION_WIN_RATE')
+    min_promotion_profit_factor: float = Field(default=1.2, alias='MIN_PROMOTION_PROFIT_FACTOR')
+    max_promotion_drawdown_percent: float = Field(default=20, alias='MAX_PROMOTION_DRAWDOWN_PERCENT')
+    max_promotion_consecutive_losses: int = Field(default=8, alias='MAX_PROMOTION_CONSECUTIVE_LOSSES')
+    optimizer_max_combinations: int = Field(default=100, alias='OPTIMIZER_MAX_COMBINATIONS')
+    optimizer_sort_metric: str = Field(default='profit_factor', alias='OPTIMIZER_SORT_METRIC')
+
     @field_validator(
         'max_daily_drawdown_percent',
         'max_total_drawdown_percent',

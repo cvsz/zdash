@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from app.backtesting.strategy_lab import StrategyLab
+from app.backtesting.backtest_service import backtest_service
+from app.backtesting.models import BacktestRequest
 from app.content.pipeline import content_pipeline
 from app.core.audit import audit
 from app.core.auth import CurrentUser, require_roles
@@ -16,7 +17,6 @@ from app.trading.scanner_xau import XAUScanner
 router = APIRouter(prefix='/api/scheduler', tags=['scheduler'])
 
 scanner = XAUScanner()
-lab = StrategyLab()
 tapo = TapoAdapter()
 
 
@@ -31,7 +31,7 @@ def _resolve_job(name: str):
     if name == 'risk_check':
         return lambda: {'status': 'risk_check_scheduled'}
     if name == 'backtest':
-        return lambda: {'result': lab.run('ob_conservative')}
+        return lambda: {'result': backtest_service.run_backtest(BacktestRequest(strategy='ob_aggressive', symbol='XAUUSD', timeframe='M5', dataset='mock', initial_balance=10000, risk_per_trade_percent=1, parameters={})).model_dump()}
     if name == 'content_pipeline':
         return lambda: {'items': len(content_pipeline.list_items())}
     if name == 'health_check':
