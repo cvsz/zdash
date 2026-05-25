@@ -27,6 +27,34 @@ Return:
 6. Next phase handoff
 ```
 
+
+## Run all remaining phases (sequential)
+
+```text
+Read .codex/cloud/README.md first, then run the remaining phase prompts in order:
+phase24.prompt → phase25.prompt → phase26.prompt → phase27.prompt → phase28.prompt → phase29.prompt → phase30.prompt → phase31.prompt → phase32.prompt.
+
+Implement one phase at a time and keep behavior backward-compatible between phases.
+After each phase:
+- run backend and frontend checks
+- commit with a small reviewable message
+- continue to the next phase only if checks pass
+
+After the last phase:
+- run full backend/frontend verification again
+- prepare a summary covering all phases
+- if user approval explicitly allows it, push the branch
+
+Safety invariants stay mandatory for every phase:
+- no live trading by default
+- no real IoT by default
+- no real social posting by default
+- no secret export by default
+- no RBAC bypass
+- no tenant isolation bypass
+- dry-run/read-only/approval-gated defaults
+```
+
 ## Generic phase prompt
 
 ```text
