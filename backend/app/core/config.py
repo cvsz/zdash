@@ -95,6 +95,14 @@ class Settings(BaseSettings):
     stripe_secret_key: str = Field(default='', alias='STRIPE_SECRET_KEY')
     stripe_webhook_secret: str = Field(default='', alias='STRIPE_WEBHOOK_SECRET')
     frontend_origin: str = Field(default='http://localhost:5173', alias='FRONTEND_ORIGIN')
+
+    mobile_api_enabled: bool = Field(default=True, alias='MOBILE_API_ENABLED')
+    developer_platform_enabled: bool = Field(default=True, alias='DEVELOPER_PLATFORM_ENABLED')
+    partner_api_enabled: bool = Field(default=True, alias='PARTNER_API_ENABLED')
+    api_key_hash_pepper: str = Field(default='change-me-api-key-pepper', alias='API_KEY_HASH_PEPPER')
+    api_key_prefix: str = Field(default='zdash', alias='API_KEY_PREFIX')
+    api_key_default_expires_days: int = Field(default=365, alias='API_KEY_DEFAULT_EXPIRES_DAYS')
+
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
 
     @field_validator(
