@@ -1,0 +1,83 @@
+# Next Prompt · PHASE 31
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase31.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 31 · SOVEREIGN CLOUD + AIR-GAPPED ENTERPRISE + OFFLINE UPDATE MIRROR
+Private Cloud Patterns + Air-Gap Bundles + Offline Entitlements + Update Mirror
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Sovereign cloud, air-gapped, offline-license, offline-update, and private-cloud workflows must be dry-run/planning-first by default.
+- Air-gap bundles, offline exports, and update mirrors must exclude secrets by default.
+- Offline mode must not weaken safety locks.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe automation by default.
+- Never bypass Guardian, content approval, RBAC, tenant isolation, certification, deployment safety, or audit logging.
+
+OBJECTIVE:
+Build sovereign and air-gapped enterprise layer:
+1. Private cloud and sovereign deployment profiles.
+2. Air-gap bundle generator with manifest, checksums, offline docs, offline seed data, and validation plan.
+3. Offline license verification with hashed license storage only.
+4. Offline update mirror metadata, artifact catalog, checksum/signature verification placeholders.
+5. Disconnected-environment readiness checks and manual compliance evidence workflow.
+6. Frontend Sovereign Cloud page.
+
+BACKEND MODULES:
+- backend/app/sovereign_cloud/{__init__.py,models.py,airgap_bundle.py,offline_license.py,update_mirror.py,private_cloud_profiles.py,sovereign_service.py}
+- backend/app/api/sovereign_cloud.py
+
+FRONTEND MODULES:
+- frontend/src/pages/SovereignCloud.tsx
+- frontend/src/components/sovereign/{PrivateCloudProfileTable.tsx,AirgapBundleBuilder.tsx,OfflineLicensePanel.tsx,UpdateMirrorPanel.tsx,SovereignReadinessPanel.tsx}
+- frontend/src/hooks/useSovereignCloud.ts
+
+DOCS:
+- docs/runbooks/AIRGAP_INSTALL_RUNBOOK.md
+- docs/runbooks/OFFLINE_UPDATE_RUNBOOK.md
+- docs/architecture/PHASE_31_SOVEREIGN_CLOUD_AIRGAP.md
+
+CONFIG TO ADD:
+SOVEREIGN_CLOUD_ENABLED=true
+AIRGAP_MODE_SUPPORTED=true
+AIRGAP_BUNDLE_DRY_RUN=true
+AIRGAP_BUNDLE_INCLUDE_SECRETS=false
+AIRGAP_BUNDLE_REQUIRE_ADMIN_APPROVAL=true
+OFFLINE_LICENSE_ENABLED=true
+OFFLINE_LICENSE_STORE_HASH_ONLY=true
+OFFLINE_UPDATE_MIRROR_ENABLED=true
+OFFLINE_UPDATE_VERIFY_CHECKSUM=true
+OFFLINE_UPDATE_VERIFY_SIGNATURE=true
+PRIVATE_CLOUD_PROFILES_ENABLED=true
+SOVEREIGN_READINESS_FAIL_CLOSED=true
+
+APIS:
+- GET /api/sovereign-cloud/status
+- GET /api/sovereign-cloud/private-cloud-profiles
+- POST /api/sovereign-cloud/readiness-check
+- POST /api/sovereign-cloud/airgap-bundles
+- GET /api/sovereign-cloud/airgap-bundles
+- GET /api/sovereign-cloud/airgap-bundles/{bundle_id}/manifest
+- POST /api/sovereign-cloud/offline-license/verify
+- GET /api/sovereign-cloud/offline-license/status
+- GET /api/sovereign-cloud/update-mirror
+- POST /api/sovereign-cloud/update-mirror/validate
+
+TESTS:
+Air-gap bundle excludes secrets, secret inclusion requires typed confirmation, offline license stores hash only, offline update mirror validates checksums, private cloud profiles load, offline mode does not disable safety locks, readiness detects unsafe defaults, tenant isolation enforced.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 32 handoff.
+
+Now generate Phase 31 and save this prompt into docs/prompt/phase31.prompt.
+```
