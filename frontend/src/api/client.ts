@@ -1,94 +1,19 @@
-export type ApiEnvelope<T> = {
-  ok: boolean
-  data: T
-  error: { code: string; message: string } | null
-  timestamp: string
+import { mockHealth, mockLogs } from './mockData';
+import { ApiError, type ApiResponse } from './types';
+const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+export let mockFallbackActive = false;
+async function request<T>(path:string, init:RequestInit={}, fallback?:T, timeout=6000):Promise<T>{
+  const controller = new AbortController(); const t = setTimeout(()=>controller.abort(), timeout);
+  try { const res = await fetch(`${base}${path}`,{...init,signal:controller.signal,headers:{'Content-Type':'application/json',...(init.headers||{})}});
+    const json = await res.json() as ApiResponse<T>; if(!json.ok) throw new ApiError(json.error||'API error',res.status); return json.data;
+  } catch(e){ if(import.meta.env.VITE_ENABLE_MOCK_FALLBACK==='true' && fallback!==undefined){ mockFallbackActive=true; return fallback; } throw e; }
+  finally { clearTimeout(t); }
 }
+export const apiClient = {
+  get:<T>(p:string,f?:T)=>request<T>(p,{},f), post:<T>(p:string,b?:unknown,f?:T)=>request<T>(p,{method:'POST',body:JSON.stringify(b||{})},f), delete:<T>(p:string,f?:T)=>request<T>(p,{method:'DELETE'},f),
+  getHealth:()=>request('/api/health',{},mockHealth), getLogs:()=>request('/api/logs',{},mockLogs)
+};
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-
-export function getToken(): string {
-  return localStorage.getItem('zdash_token') || ''
-}
-
-export function setSession(token: string, role: string, username: string) {
-  localStorage.setItem('zdash_token', token)
-  localStorage.setItem('zdash_role', role)
-  localStorage.setItem('zdash_username', username)
-}
-
-export function clearSession() {
-  localStorage.removeItem('zdash_token')
-  localStorage.removeItem('zdash_role')
-  localStorage.removeItem('zdash_username')
-}
-
-function authHeaders(): Record<string, string> {
-  const token = getToken()
-  if (!token) return {}
-  return { Authorization: `Bearer ${token}` }
-}
-
-export async function apiGet<T>(path: string, fallback: T): Promise<T> {
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, { headers: { ...authHeaders() } })
-    if (res.status === 401) {
-      window.dispatchEvent(new Event('auth:unauthorized'))
-      return fallback
-    }
-    if (!res.ok) return fallback
-    const payload = (await res.json()) as ApiEnvelope<T>
-    return payload.data ?? fallback
-  } catch {
-    return fallback
-  }
-}
-
-export async function apiGetEnvelope<T>(path: string): Promise<ApiEnvelope<T> | null> {
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, { headers: { ...authHeaders() } })
-    if (res.status === 401) {
-      window.dispatchEvent(new Event('auth:unauthorized'))
-      return null
-    }
-    return (await res.json()) as ApiEnvelope<T>
-  } catch {
-    return null
-  }
-}
-
-export async function apiPost<T, B>(path: string, body: B, fallback: T): Promise<T> {
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify(body),
-    })
-    if (res.status === 401) {
-      window.dispatchEvent(new Event('auth:unauthorized'))
-      return fallback
-    }
-    if (!res.ok) return fallback
-    const payload = (await res.json()) as ApiEnvelope<T>
-    return payload.data ?? fallback
-  } catch {
-    return fallback
-  }
-}
-
-export async function apiPostEnvelope<T, B>(path: string, body: B): Promise<ApiEnvelope<T> | null> {
-  try {
-    const res = await fetch(`${BASE_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...authHeaders() },
-      body: JSON.stringify(body),
-    })
-    if (res.status === 401) {
-      window.dispatchEvent(new Event('auth:unauthorized'))
-      return null
-    }
-    return (await res.json()) as ApiEnvelope<T>
-  } catch {
-    return null
-  }
-}
+export const apiGet = apiClient.get;
+export const apiPostEnvelope = apiClient.post;
+export const setSession = (_token?: string)=>{};

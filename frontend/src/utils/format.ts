@@ -1,0 +1,1 @@
+export const formatDateTime=(s:string)=>new Date(s).toLocaleString(); export const formatPercent=(n:number)=>`${n.toFixed(2)}%`; export const formatCurrency=(n:number)=>`$${n.toFixed(2)}`; export const formatDurationMs=(n:number)=>`${n}ms`; export const truncateText=(s:string,l=80)=>s.length>l?`${s.slice(0,l)}...`:s;

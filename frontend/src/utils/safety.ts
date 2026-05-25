@@ -1,0 +1,1 @@
+export const isLiveTradingBlocked=()=>true; export const requiresApproval=(x:{approval_required?:boolean})=>!!x.approval_required; export const canPublishContent=(x:{approved:boolean})=>x.approved; export const canRunIoTAction=(dry:boolean)=>dry; export const getSafetyBannerText=()=> 'Safety mode: dry-run defaults active';

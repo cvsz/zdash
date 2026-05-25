@@ -16,7 +16,7 @@ export default function AuditLogs() {
   const [actionFilter, setActionFilter] = useState('')
 
   useEffect(() => {
-    apiGet<{ items: AuditItem[] }>('/api/audit?limit=200&offset=0', { items: [] }).then((d) => setItems(d.items))
+    apiGet<{ items: AuditItem[] }>('/api/audit?limit=200&offset=0', { items: [] }).then((d: any) => setItems(d.items))
   }, [])
 
   const filtered = items.filter((x) => {
