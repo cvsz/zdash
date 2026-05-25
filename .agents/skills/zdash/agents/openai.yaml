@@ -1,0 +1,6 @@
+interface:
+  display_name: "Zdash"
+  short_description: "Repo-specific patterns and workflows for zdash"
+  default_prompt: "Use the zdash repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
