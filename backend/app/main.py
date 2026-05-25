@@ -7,11 +7,12 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.agents.registry import bootstrap_agents
-from app.api import agents, backtesting, content, health, iot, logs, risk, scheduler
+from app.api import admin, agents, auth, backtesting, content, health, iot, logs, metrics, risk, scheduler
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
 from app.core.responses import fail
+from app.db.migrations import run_migrations
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    run_migrations()
     bootstrap_agents()
     event_bus.emit('system.startup', 'app.main', 'FastAPI startup complete', {})
     yield
@@ -55,3 +57,7 @@ app.include_router(iot.router)
 app.include_router(backtesting.router)
 
 app.include_router(content.router)
+
+app.include_router(auth.router)
+app.include_router(metrics.router)
+app.include_router(admin.router)
