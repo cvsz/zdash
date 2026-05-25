@@ -1,0 +1,108 @@
+# Next Prompt · PHASE 25
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase25.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 25 · CUSTOMER CLOUD INSTALLER + MANAGED UPDATE CHANNEL + ENTERPRISE SLA AUTOMATION
+Installer Wizard + Managed Releases + Update Orchestrator + SLA Monitor + Support Bundles
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Installer, update, rollback, support, and SLA workflows are dry-run/planning-first by default.
+- Real install, real update, real rollback, restart, infrastructure mutation, or support secret export requires admin permission, typed confirmation, passing preflight, backup readiness, and audit logging.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe automation by default.
+- Never bypass Guardian, content approval, RBAC, or tenant isolation.
+
+OBJECTIVE:
+Build customer install/update/support operations:
+1. Customer cloud installer target profiles: local VM, Docker, Kubernetes, Cloudflare Tunnel.
+2. Preflight validator, install manifest, safe install plan, and installer script generator.
+3. Managed release feed, update policy, update plan, update orchestrator, and rollback planner.
+4. SLA monitor, SLOs, uptime samples, error budget, SLA incidents.
+5. Support diagnostics, support bundle builder, strict redaction, support cases, customer health score.
+6. Frontend pages: Customer Installer, Managed Updates, SLA, Support Center.
+
+BACKEND MODULES:
+- backend/app/customer_installer/{__init__.py,models.py,target_profiles.py,preflight_validator.py,install_manifest.py,install_plan_builder.py,install_script_builder.py,customer_installer_service.py}
+- backend/app/update_channel/{__init__.py,models.py,release_feed.py,update_policy.py,update_orchestrator.py,rollback_manager.py,update_service.py}
+- backend/app/sla/{__init__.py,models.py,uptime_monitor.py,error_budget.py,service_level_objectives.py,sla_service.py}
+- backend/app/support/{__init__.py,models.py,support_bundle.py,diagnostic_collector.py,redaction.py,support_case_service.py,customer_health.py}
+- backend/app/api/{customer_installer.py,update_channel.py,sla.py,support.py}
+
+FRONTEND MODULES:
+- frontend/src/pages/{CustomerInstaller.tsx,ManagedUpdates.tsx,SLA.tsx,SupportCenter.tsx}
+- frontend/src/components/installer/{TargetProfileSelector.tsx,PreflightCheckTable.tsx,InstallPlanPanel.tsx,InstallManifestPanel.tsx,InstallerScriptPanel.tsx}
+- frontend/src/components/updates/{ReleaseChannelCard.tsx,UpdatePolicyPanel.tsx,UpdatePlanPanel.tsx,RollbackPlanPanel.tsx,ReleaseFeedTable.tsx}
+- frontend/src/components/sla/{SLASummaryCard.tsx,UptimeChart.tsx,ErrorBudgetPanel.tsx,SLOTable.tsx,SLAIncidentTable.tsx}
+- frontend/src/components/support/{SupportBundleBuilder.tsx,DiagnosticSummary.tsx,SupportCaseTable.tsx,CustomerHealthScore.tsx,RedactionPreviewPanel.tsx}
+- frontend/src/hooks/{useCustomerInstaller.ts,useManagedUpdates.ts,useSLA.ts,useSupport.ts}
+
+CONFIG TO ADD:
+CUSTOMER_INSTALLER_ENABLED=true
+CUSTOMER_INSTALLER_DRY_RUN=true
+CUSTOMER_INSTALLER_ALLOW_REAL_INSTALL=false
+CUSTOMER_INSTALLER_REQUIRE_APPROVAL=true
+CUSTOMER_INSTALLER_INCLUDE_SECRETS=false
+INSTALL_TARGET_DEFAULT=docker
+INSTALL_REQUIRE_PREFLIGHT_PASS=true
+INSTALL_REQUIRE_BACKUP_BEFORE_MUTATION=true
+MANAGED_UPDATES_ENABLED=true
+UPDATE_DRY_RUN=true
+UPDATE_AUTO_APPLY=false
+UPDATE_REQUIRE_ATTESTATION=true
+UPDATE_REQUIRE_CERTIFICATION_PASS=true
+UPDATE_REQUIRE_BACKUP=true
+UPDATE_ROLLBACK_DRY_RUN=true
+SLA_MONITORING_ENABLED=true
+SLA_UPTIME_TARGET_PERCENT=99.5
+SUPPORT_CENTER_ENABLED=true
+SUPPORT_BUNDLE_DRY_RUN=true
+SUPPORT_BUNDLE_INCLUDE_SECRETS=false
+SUPPORT_REDACTION_STRICT=true
+CUSTOMER_HEALTH_ENABLED=true
+
+APIS:
+- /api/customer-installer/status
+- /api/customer-installer/target-profiles
+- /api/customer-installer/preflight
+- /api/customer-installer/plans
+- /api/customer-installer/plans/{plan_id}/approve
+- /api/customer-installer/plans/{plan_id}/scripts
+- /api/updates/status
+- /api/updates/releases
+- /api/updates/policy
+- /api/updates/check
+- /api/updates/plans
+- /api/updates/plans/{plan_id}/approve
+- /api/updates/plans/{plan_id}/apply
+- /api/updates/rollback-plans
+- /api/sla/status
+- /api/sla/slos
+- /api/sla/uptime-samples
+- /api/sla/error-budgets
+- /api/sla/incidents
+- /api/support/status
+- /api/support/diagnostics
+- /api/support/bundles/preview
+- /api/support/bundles/build
+- /api/support/cases
+- /api/support/customer-health
+
+TESTS:
+Preflight catches unsafe production defaults, install plan is dry-run, real install blocked, installer script has no secrets, local release feed loads, update apply blocked without confirmation/certification/attestation, rollback dry-run, SLOs and error budgets work, support redaction removes secrets, support bundle excludes secrets, customer health deterministic, tenant isolation enforced.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 26 handoff.
+
+Now generate Phase 25 and save this prompt into docs/prompt/phase25.prompt.
+```
