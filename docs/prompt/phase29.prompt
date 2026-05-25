@@ -1,0 +1,80 @@
+# Next Prompt · PHASE 29
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase29.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 29 · PARTNER MARKETPLACE FEDERATION + REVENUE OPS + APP STORE READINESS
+Partner Portal + Plugin Certification + Revenue Share + Marketplace Analytics
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Marketplace, partner, plugin certification, revenue, and app-store workflows must be tenant-scoped and approval-gated.
+- Plugins remain sandboxed by default.
+- No plugin may access secrets, external network, live trading, real IoT, or real social posting by default.
+- Payouts and revenue-share operations are dry-run by default.
+- Never bypass Guardian, content approval, RBAC, or tenant isolation.
+
+OBJECTIVE:
+Build partner marketplace federation:
+1. Partner account model, partner portal, submission workflow, and review queue.
+2. Plugin certification with manifest validation, security checks, permission checks, docs/tests checks, and signed plugin manifest placeholders.
+3. App-store readiness workflow with screenshots, docs, tests, changelog, versioning, and policy checks.
+4. Revenue share ledger and payout adapter shell in dry-run mode.
+5. Marketplace analytics and ecosystem governance.
+6. Frontend pages for Partner Portal, Marketplace Review, and Revenue Ops.
+
+BACKEND MODULES:
+- backend/app/partner/{__init__.py,models.py,partner_service.py,review_queue.py,revenue_share.py,partner_portal.py}
+- backend/app/app_store/{__init__.py,models.py,plugin_certification.py,submission_service.py,app_store_readiness.py}
+- backend/app/api/{partner.py,app_store.py}
+
+FRONTEND MODULES:
+- frontend/src/pages/{PartnerPortal.tsx,MarketplaceReview.tsx,RevenueOps.tsx}
+- frontend/src/components/partner/{PartnerProfileCard.tsx,SubmissionTable.tsx,PartnerSubmissionForm.tsx,PartnerRevenueCard.tsx}
+- frontend/src/components/appStore/{CertificationPanel.tsx,ReviewQueueTable.tsx,ReadinessChecklist.tsx,PluginManifestViewer.tsx}
+- frontend/src/components/revenue/{RevenueLedgerTable.tsx,PayoutDryRunPanel.tsx,MarketplaceAnalytics.tsx}
+- frontend/src/hooks/{usePartner.ts,useAppStore.ts,useRevenueOps.ts}
+
+CONFIG TO ADD:
+PARTNER_PORTAL_ENABLED=true
+MARKETPLACE_REVIEW_REQUIRED=true
+PLUGIN_CERTIFICATION_REQUIRED=true
+PLUGIN_SIGNING_MODE=mock
+APP_STORE_READINESS_ENABLED=true
+REVENUE_SHARE_ENABLED=true
+PAYOUTS_DRY_RUN=true
+PAYOUTS_ENABLED=false
+PARTNER_EXTERNAL_NETWORK_DEFAULT=false
+PARTNER_SECRET_ACCESS_DEFAULT=false
+
+APIS:
+- GET /api/partner/status
+- GET/POST /api/partner/profile
+- GET/POST /api/partner/submissions
+- GET /api/partner/revenue
+- POST /api/partner/payouts/dry-run
+- GET /api/app-store/status
+- GET /api/app-store/reviews
+- POST /api/app-store/submissions/{submission_id}/review
+- POST /api/app-store/certify
+- POST /api/app-store/readiness
+- GET /api/app-store/analytics
+
+TESTS:
+Partner submissions require auth, plugin certification blocks unsafe permissions, unreviewed plugin is blocked, payout dry-run works, real payouts disabled by default, review approvals are audited, marketplace install still requires entitlement, tenant isolation enforced.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 30 handoff.
+
+Now generate Phase 29 and save this prompt into docs/prompt/phase29.prompt.
+```
