@@ -1,0 +1,1757 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 13 · MOBILE APP + PARTNER API + PUBLIC DEVELOPER PLATFORM
+Expo Mobile App + External Developer Portal + API Keys + SDKs + Sandbox + Partner Webhooks
+
+Do not rebuild Phase 1–12 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+PHASE 9:
+- Multi-tenant SaaS
+- Organizations/workspaces
+- Tenant-scoped RBAC
+- Workers
+- WebSocket event stream
+- Alerts/notifications
+- Cloudflare/Terraform/Kubernetes templates
+- Release automation
+
+PHASE 10:
+- Billing
+- Usage metering
+- Entitlements
+- Quotas
+- Marketplace
+- Plugin safety
+- Enterprise license
+- White-label branding
+- Export/import
+- Onboarding
+
+PHASE 11:
+- AI Ops
+- Prompt registry
+- Governance policy engine
+- DLP scanner
+- Compliance evidence
+- Security review workflow
+
+PHASE 12:
+- Ops Autopilot
+- Incident management
+- SLA/SLO tracking
+- Enterprise integrations
+- SSO/SCIM shells
+- SIEM/webhook/ticketing adapters
+- Managed service console
+- Support workflow
+- Fleet management
+
+============================================================
+PHASE 13 OBJECTIVE
+============================================================
+
+Build the mobile and public developer platform layer for zDash.
+
+Main goals:
+
+1. Add Expo React Native mobile app
+2. Add mobile authentication flow
+3. Add mobile secure token storage
+4. Add mobile dashboard overview
+5. Add mobile risk/halt controls
+6. Add mobile alerts and incidents
+7. Add mobile approval center
+8. Add mobile push notification shell
+9. Add Partner API key system
+10. Add scoped API tokens for external integrations
+11. Add OAuth2 client credentials-style app credentials shell
+12. Add public developer portal backend
+13. Add developer portal frontend pages
+14. Add API documentation registry
+15. Add OpenAPI export and SDK generation scripts
+16. Add TypeScript SDK package
+17. Add Python SDK package
+18. Add sandbox tenant/workspace system
+19. Add partner webhook subscriptions
+20. Add partner API rate limits and usage metering
+21. Add partner audit logs
+22. Add tests for mobile API support, partner API security, SDKs, sandbox, rate limits, and tenant isolation
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Mobile app must not expose secrets.
+- Partner API must never expose internal secrets.
+- Partner API must not allow live trading, real IoT, or real social posting unless explicitly allowed by strict entitlement, approval, and production safety checks.
+- Sandbox mode must be default for public developer examples.
+- SDK examples must use sandbox and dry-run calls only.
+- API keys must be hashed at rest.
+- Raw API keys must only be shown once at creation.
+- Partner webhooks must DLP-scan outbound payloads.
+- Rate limits must fail safely.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/developer/
+  __init__.py
+  models.py
+  api_key_service.py
+  app_credentials.py
+  partner_auth.py
+  rate_limit_service.py
+  sandbox_service.py
+  docs_registry.py
+  sdk_registry.py
+  webhook_subscriptions.py
+  developer_audit.py
+  partner_api_service.py
+
+backend/app/api/developer.py
+backend/app/api/partner.py
+backend/app/api/mobile.py
+
+mobile/
+  package.json
+  app.json
+  babel.config.js
+  tsconfig.json
+  .env.example
+  App.tsx
+  src/
+    api/
+      client.ts
+      endpoints.ts
+      types.ts
+      mockData.ts
+    auth/
+      AuthProvider.tsx
+      secureStorage.ts
+      useAuth.ts
+    navigation/
+      RootNavigator.tsx
+      tabs.tsx
+    screens/
+      LoginScreen.tsx
+      HomeScreen.tsx
+      RiskScreen.tsx
+      AlertsScreen.tsx
+      IncidentsScreen.tsx
+      ApprovalsScreen.tsx
+      LogsScreen.tsx
+      SettingsScreen.tsx
+      NotFoundScreen.tsx
+    components/
+      StatusCard.tsx
+      SafetyBanner.tsx
+      RiskHaltCard.tsx
+      AlertCard.tsx
+      IncidentCard.tsx
+      ApprovalCard.tsx
+      LoadingState.tsx
+      ErrorState.tsx
+      EmptyState.tsx
+      ConfirmSheet.tsx
+    hooks/
+      usePolling.ts
+      useMobileStatus.ts
+      usePushNotifications.ts
+    utils/
+      format.ts
+      safety.ts
+    tests/
+      App.test.tsx
+      AuthProvider.test.tsx
+      HomeScreen.test.tsx
+      RiskScreen.test.tsx
+      AlertsScreen.test.tsx
+      ApprovalsScreen.test.tsx
+
+sdk/
+  typescript/
+    package.json
+    tsconfig.json
+    README.md
+    src/
+      index.ts
+      client.ts
+      types.ts
+      errors.ts
+      resources/
+        health.ts
+        agents.ts
+        risk.ts
+        scheduler.ts
+        backtesting.ts
+        content.ts
+        incidents.ts
+        developer.ts
+    tests/
+      client.test.ts
+      risk.test.ts
+      sandbox.test.ts
+  python/
+    pyproject.toml
+    README.md
+    zdash_sdk/
+      __init__.py
+      client.py
+      errors.py
+      types.py
+      resources/
+        __init__.py
+        health.py
+        agents.py
+        risk.py
+        scheduler.py
+        backtesting.py
+        content.py
+        incidents.py
+        developer.py
+    tests/
+      test_client.py
+      test_risk.py
+      test_sandbox.py
+
+frontend/src/pages/DeveloperPortal.tsx
+frontend/src/pages/APIKeys.tsx
+frontend/src/pages/APIDocs.tsx
+frontend/src/pages/Sandbox.tsx
+frontend/src/pages/SDKs.tsx
+frontend/src/pages/PartnerWebhooks.tsx
+
+frontend/src/components/developer/
+  ApiKeyTable.tsx
+  CreateApiKeyForm.tsx
+  ApiKeyCreatedDialog.tsx
+  AppCredentialsPanel.tsx
+  RateLimitCard.tsx
+  SandboxPanel.tsx
+  APIDocsExplorer.tsx
+  SDKDownloadPanel.tsx
+  PartnerWebhookTable.tsx
+  PartnerWebhookForm.tsx
+  DeveloperAuditTable.tsx
+
+frontend/src/hooks/useDeveloper.ts
+frontend/src/hooks/usePartnerWebhooks.ts
+frontend/src/hooks/useSandbox.ts
+
+scripts/
+  export-openapi.sh
+  generate-sdk-typescript.sh
+  generate-sdk-python.sh
+  validate-public-api.sh
+  mobile-smoke-test.sh
+
+docs/
+  developer/
+    GETTING_STARTED.md
+    AUTHENTICATION.md
+    RATE_LIMITS.md
+    SANDBOX.md
+    WEBHOOKS.md
+    SDK_TYPESCRIPT.md
+    SDK_PYTHON.md
+    PARTNER_API_REFERENCE.md
+    SAFETY_RULES.md
+  architecture/
+    PHASE_13_MOBILE_DEVELOPER_PLATFORM.md
+    PARTNER_API_SECURITY_MODEL.md
+    MOBILE_APP_MODEL.md
+    SDK_GENERATION_MODEL.md
+    SANDBOX_MODEL.md
+  runbooks/
+    API_KEY_INCIDENT_RUNBOOK.md
+    PARTNER_WEBHOOK_FAILURE_RUNBOOK.md
+    MOBILE_RELEASE_RUNBOOK.md
+    SDK_RELEASE_RUNBOOK.md
+    DEVELOPER_SUPPORT_RUNBOOK.md
+
+backend/app/tests/
+  test_developer_models.py
+  test_api_key_service.py
+  test_app_credentials.py
+  test_partner_auth.py
+  test_rate_limit_service.py
+  test_sandbox_service.py
+  test_docs_registry.py
+  test_webhook_subscriptions.py
+  test_developer_audit.py
+  test_developer_api.py
+  test_partner_api.py
+  test_mobile_api.py
+  test_phase13_tenant_isolation.py
+  test_phase13_safety_gates.py
+
+frontend/src/tests/
+  DeveloperPortal.test.tsx
+  APIKeys.test.tsx
+  APIDocs.test.tsx
+  Sandbox.test.tsx
+  SDKs.test.tsx
+  PartnerWebhooks.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/billing/entitlement_service.py
+backend/app/billing/usage_meter.py
+backend/app/governance/policy_engine.py
+backend/app/audit/audit_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+MOBILE_API_ENABLED=true
+MOBILE_PUSH_ENABLED=false
+MOBILE_PUSH_PROVIDER=mock
+MOBILE_PUSH_DRY_RUN=true
+MOBILE_SESSION_REFRESH_ENABLED=true
+
+DEVELOPER_PLATFORM_ENABLED=true
+PUBLIC_DEVELOPER_PORTAL_ENABLED=true
+PARTNER_API_ENABLED=true
+PARTNER_API_SANDBOX_DEFAULT=true
+PARTNER_API_FAIL_CLOSED=true
+
+API_KEYS_ENABLED=true
+API_KEY_HASH_PEPPER=change-me-api-key-pepper
+API_KEY_PREFIX=zdash
+API_KEY_DEFAULT_EXPIRES_DAYS=365
+API_KEY_MAX_ACTIVE_PER_ORG=10
+
+APP_CREDENTIALS_ENABLED=true
+OAUTH_CLIENT_CREDENTIALS_SHELL_ENABLED=true
+
+PARTNER_RATE_LIMIT_ENABLED=true
+PARTNER_RATE_LIMIT_PER_MINUTE=60
+PARTNER_RATE_LIMIT_PER_DAY=5000
+PARTNER_RATE_LIMIT_FAIL_CLOSED=true
+
+SANDBOX_ENABLED=true
+SANDBOX_AUTO_PROVISION=true
+SANDBOX_DATA_RESET_ENABLED=true
+SANDBOX_DEFAULT_PLAN=starter
+SANDBOX_FORCE_DRY_RUN=true
+
+SDK_GENERATION_ENABLED=true
+OPENAPI_EXPORT_ENABLED=true
+OPENAPI_PUBLIC_SPEC_PATH=docs/developer/openapi-public.json
+
+PARTNER_WEBHOOKS_ENABLED=true
+PARTNER_WEBHOOKS_DRY_RUN=true
+PARTNER_WEBHOOK_SIGNING_ENABLED=true
+PARTNER_WEBHOOK_DELIVERY_TIMEOUT_SECONDS=10
+PARTNER_WEBHOOK_MAX_RETRIES=3
+
+Rules:
+- Mobile push must be disabled/mock by default.
+- Developer platform must default to sandbox and dry-run.
+- API keys must be hashed with strong one-way hashing.
+- API key pepper must not be logged.
+- Default API key pepper must be rejected in production.
+- Partner API rate limits must be enabled by default.
+- Sandbox must force DRY_RUN=true.
+- Public OpenAPI spec must exclude internal/admin-only routes.
+- Partner webhooks must be dry-run by default.
+- Raw webhook signing secrets must not be returned after creation.
+
+Update mobile `.env.example`:
+
+EXPO_PUBLIC_APP_NAME=zDash Mobile
+EXPO_PUBLIC_API_BASE_URL=http://localhost:8000
+EXPO_PUBLIC_ENABLE_MOCK_FALLBACK=true
+EXPO_PUBLIC_POLL_INTERVAL_MS=5000
+EXPO_PUBLIC_SHOW_SAFETY_BANNERS=true
+EXPO_PUBLIC_ENABLE_PUSH=false
+
+============================================================
+DEVELOPER MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. ApiKeyStatus
+
+Allowed values:
+- active
+- disabled
+- expired
+- revoked
+
+2. ApiKeyScope
+
+Allowed values:
+- read:health
+- read:agents
+- read:logs
+- read:risk
+- write:risk_halt
+- read:scheduler
+- write:scheduler
+- read:backtesting
+- write:backtesting
+- read:content
+- write:content
+- read:incidents
+- write:incidents
+- read:developer
+- write:webhooks
+- sandbox:all
+
+3. DeveloperApiKey
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- prefix
+- key_hash
+- scopes
+- status
+- last_used_at
+- expires_at
+- created_by
+- created_at
+- updated_at
+
+4. ApiKeyCreateRequest
+
+Fields:
+- name: str
+- scopes: list[ApiKeyScope]
+- expires_at: datetime | None
+- sandbox_only: bool = true
+
+5. ApiKeyCreatedResponse
+
+Fields:
+- id
+- name
+- raw_key
+- prefix
+- scopes
+- expires_at
+- warning
+
+6. AppCredential
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- client_id
+- client_secret_hash
+- allowed_scopes
+- redirect_uris
+- status
+- created_by
+- created_at
+- updated_at
+
+7. PartnerRateLimitState
+
+Fields:
+- organization_id
+- workspace_id
+- key_id
+- minute_count
+- daily_count
+- minute_limit
+- daily_limit
+- reset_minute_at
+- reset_day_at
+- blocked
+
+8. SandboxEnvironment
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- sandbox_org_id
+- sandbox_workspace_id
+- status
+- forced_dry_run
+- reset_count
+- last_reset_at
+- created_at
+- updated_at
+
+9. DeveloperAuditEvent
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- actor_type
+- actor_id
+- action
+- resource_type
+- resource_id
+- result
+- metadata
+- ip_address
+- user_agent
+- created_at
+
+10. PartnerWebhookSubscription
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- url
+- event_types
+- status
+- signing_secret_hash
+- dry_run
+- created_at
+- updated_at
+
+11. PartnerWebhookDelivery
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- subscription_id
+- event_type
+- status
+- payload_summary
+- response_status
+- attempts
+- error
+- created_at
+- delivered_at
+
+============================================================
+API KEY SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/api_key_service.py
+
+Methods:
+- create_api_key(request, actor_user_id, tenant_context) -> ApiKeyCreatedResponse
+- list_api_keys(tenant_context) -> list[DeveloperApiKey]
+- get_api_key(key_id, tenant_context) -> DeveloperApiKey
+- revoke_api_key(key_id, tenant_context) -> DeveloperApiKey
+- disable_api_key(key_id, tenant_context) -> DeveloperApiKey
+- rotate_api_key(key_id, tenant_context) -> ApiKeyCreatedResponse
+- authenticate_raw_key(raw_key) -> DeveloperApiKey | None
+- verify_scope(api_key, required_scope) -> bool
+- record_key_usage(api_key)
+
+Rules:
+- Raw key shown only once.
+- Store only hash.
+- Use prefix format:
+  zdash_live_...
+  zdash_sandbox_...
+- Sandbox keys cannot call non-sandbox actions.
+- Production rejects default API_KEY_HASH_PEPPER.
+- Expired, disabled, or revoked keys cannot authenticate.
+- Key usage must be audited.
+- Tenant isolation required.
+
+============================================================
+PARTNER AUTH REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/partner_auth.py
+
+Implement:
+- API key dependency for Partner API routes
+- Scope enforcement dependency
+- Sandbox enforcement dependency
+- Rate-limit enforcement dependency
+- Tenant context resolution from API key
+
+Rules:
+- Partner routes must not use browser session JWT.
+- Partner routes authenticate through API key or app credential shell.
+- Missing or invalid key returns 401.
+- Missing scope returns 403.
+- Rate limit exceeded returns 429.
+- Sandbox-only key cannot call production workspace.
+- All authentication failures audited without logging raw key.
+
+============================================================
+RATE LIMIT SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/rate_limit_service.py
+
+Methods:
+- check_limit(api_key, route_key) -> PartnerRateLimitState
+- consume(api_key, route_key) -> PartnerRateLimitState
+- reset_if_needed(api_key)
+- get_rate_limit_status(api_key)
+
+Rules:
+- In-memory implementation allowed for Phase 13.
+- Redis-ready design.
+- Fail closed if PARTNER_RATE_LIMIT_FAIL_CLOSED=true.
+- Rate limits tenant-scoped.
+- Rate limit events logged.
+- No raw key in logs.
+
+============================================================
+SANDBOX SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/sandbox_service.py
+
+Methods:
+- get_or_create_sandbox(organization_id, workspace_id)
+- provision_sandbox()
+- reset_sandbox()
+- seed_sandbox_data()
+- enforce_sandbox_safety()
+- get_sandbox_status()
+
+Sandbox data:
+- mock agents
+- mock risk state
+- mock scheduler jobs
+- mock backtest result
+- mock content item
+- mock incident
+- mock logs
+
+Rules:
+- Sandbox always forces DRY_RUN=true.
+- Sandbox cannot enable live trading.
+- Sandbox cannot enable real IoT.
+- Sandbox cannot enable real social posting.
+- Sandbox reset must not affect production workspace.
+- Sandbox usage must be metered.
+
+============================================================
+PUBLIC API DOCS REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/docs_registry.py
+
+Methods:
+- list_public_endpoints()
+- get_endpoint_docs(endpoint_id)
+- build_public_openapi_spec()
+- export_public_openapi(path)
+- validate_public_spec()
+
+Public Partner API categories:
+- Health
+- Agents read-only
+- Risk read/check/halt if scoped
+- Scheduler read/create/run if scoped
+- Backtesting run/list if scoped
+- Content create/read if scoped
+- Incidents read/create if scoped
+- Developer key/webhook management if scoped
+
+Rules:
+- Exclude admin-only routes.
+- Exclude internal tenant admin routes.
+- Exclude raw auth internals.
+- Exclude secrets.
+- Clearly mark dry-run/sandbox behavior.
+- Public examples must use sandbox API keys.
+
+============================================================
+PARTNER WEBHOOK REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/developer/webhook_subscriptions.py
+
+Methods:
+- create_subscription(request)
+- list_subscriptions()
+- update_subscription(subscription_id, patch)
+- delete_subscription(subscription_id)
+- deliver_event(event_type, payload, tenant_context)
+- list_deliveries(subscription_id=None)
+- retry_delivery(delivery_id)
+
+Rules:
+- Dry-run by default.
+- DLP-scan payload before delivery.
+- Sign payload if signing enabled.
+- Never include secrets in payload.
+- Delivery failure must not crash app.
+- Delivery attempts capped.
+- Delivery logs tenant-scoped.
+
+Supported partner event types:
+- risk.halt.activated
+- risk.halt.resumed
+- scheduler.job.completed
+- scheduler.job.failed
+- backtest.completed
+- content.pipeline.completed
+- incident.created
+- incident.resolved
+- quota.exceeded
+- compliance.report.completed
+
+============================================================
+PARTNER API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/partner.py
+
+All routes use `/partner/v1`.
+
+Required endpoints:
+
+GET /partner/v1/health
+GET /partner/v1/me
+
+Risk:
+GET /partner/v1/risk/status
+POST /partner/v1/risk/check
+POST /partner/v1/risk/halt
+
+Scheduler:
+GET /partner/v1/scheduler/jobs
+POST /partner/v1/scheduler/jobs
+POST /partner/v1/scheduler/jobs/{job_id}/run
+
+Backtesting:
+GET /partner/v1/backtesting/strategies
+POST /partner/v1/backtesting/run
+GET /partner/v1/backtesting/results
+
+Content:
+GET /partner/v1/content/items
+POST /partner/v1/content/create
+POST /partner/v1/content/pipeline/run
+
+Incidents:
+GET /partner/v1/incidents
+POST /partner/v1/incidents
+
+Developer:
+GET /partner/v1/developer/rate-limit
+GET /partner/v1/developer/webhooks
+POST /partner/v1/developer/webhooks
+DELETE /partner/v1/developer/webhooks/{subscription_id}
+
+Rules:
+- API key auth required.
+- Scope enforcement required.
+- Rate limit required.
+- Tenant scoped.
+- Standard response shape required.
+- Sandbox keys force sandbox workspace.
+- Mutating routes must enforce entitlements and quotas.
+- Risk halt allowed only if key has `write:risk_halt` and governance allows it.
+- No partner route may enable live trading, real IoT, or real social posting.
+
+============================================================
+DEVELOPER API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/developer.py
+
+Dashboard-authenticated routes:
+
+GET /api/developer/status
+GET /api/developer/api-keys
+POST /api/developer/api-keys
+POST /api/developer/api-keys/{key_id}/revoke
+POST /api/developer/api-keys/{key_id}/disable
+POST /api/developer/api-keys/{key_id}/rotate
+
+App credentials:
+GET /api/developer/app-credentials
+POST /api/developer/app-credentials
+POST /api/developer/app-credentials/{credential_id}/disable
+
+Sandbox:
+GET /api/developer/sandbox/status
+POST /api/developer/sandbox/provision
+POST /api/developer/sandbox/reset
+
+Docs:
+GET /api/developer/docs/endpoints
+GET /api/developer/docs/openapi-public
+POST /api/developer/docs/export-openapi
+
+SDK:
+GET /api/developer/sdks
+POST /api/developer/sdks/generate
+
+Webhooks:
+GET /api/developer/webhooks
+POST /api/developer/webhooks
+PATCH /api/developer/webhooks/{subscription_id}
+DELETE /api/developer/webhooks/{subscription_id}
+GET /api/developer/webhooks/deliveries
+POST /api/developer/webhooks/deliveries/{delivery_id}/retry
+
+Audit:
+GET /api/developer/audit
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- API key management requires admin/operator.
+- Raw keys returned only on create/rotate response.
+- Sandbox reset requires confirmation:
+  CONFIRM_SANDBOX_RESET
+- OpenAPI export must exclude internal routes.
+- All changes audited.
+
+============================================================
+MOBILE API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/mobile.py
+
+Routes under `/api/mobile`.
+
+Endpoints:
+
+GET /api/mobile/status
+GET /api/mobile/home
+GET /api/mobile/risk
+POST /api/mobile/risk/halt
+POST /api/mobile/risk/resume
+GET /api/mobile/alerts
+GET /api/mobile/incidents
+POST /api/mobile/incidents/{incident_id}/acknowledge
+GET /api/mobile/approvals
+POST /api/mobile/approvals/{request_id}/approve
+POST /api/mobile/approvals/{request_id}/reject
+GET /api/mobile/logs
+POST /api/mobile/push/register
+POST /api/mobile/push/test
+
+Rules:
+- JWT auth required.
+- Tenant scoped.
+- Mobile responses should be compact.
+- Sensitive actions require role permission.
+- Risk resume requires reason.
+- Approval actions must respect governance rules.
+- Push is mock/dry-run by default.
+- No secrets in mobile payloads.
+
+============================================================
+MOBILE APP REQUIREMENTS
+============================================================
+
+Create Expo React Native app in `mobile/`.
+
+Stack:
+- Expo
+- React Native
+- TypeScript
+- React Navigation
+- Secure token storage abstraction
+- Mock fallback data
+- Jest tests
+
+Screens:
+
+1. LoginScreen
+- Email/password login
+- Token storage
+- Error state
+- Mock fallback note in dev
+
+2. HomeScreen
+- System status
+- Risk status
+- Active incidents
+- Pending approvals
+- Recent alerts
+- Dry-run safety banner
+
+3. RiskScreen
+- Guardian status
+- Halt state
+- Kill switch state
+- Drawdown summary
+- Manual halt button
+- Resume with reason
+- Confirmation sheet
+
+4. AlertsScreen
+- Alert list
+- Severity badges
+- Filter by status/severity
+
+5. IncidentsScreen
+- Incident list
+- Acknowledge action
+- Incident detail summary
+
+6. ApprovalsScreen
+- Pending approvals
+- Approve/reject controls
+- DLP/security review status
+
+7. LogsScreen
+- Recent event logs
+- Category filter
+- Pull-to-refresh
+
+8. SettingsScreen
+- API base URL
+- Active organization/workspace
+- User role
+- Mock fallback state
+- Logout
+
+Safety:
+- Show dry-run banner.
+- Never expose secrets.
+- Halt/resume require confirmation.
+- Approvals show safety review state.
+- Mobile must still render with mock data if backend unavailable.
+
+============================================================
+SDK REQUIREMENTS
+============================================================
+
+Create TypeScript SDK:
+
+Package name:
+@zdash/sdk
+
+Features:
+- API key auth
+- Base URL config
+- Typed client
+- Standard response unwrap
+- Typed errors
+- Retry for 429 with backoff
+- Sandbox helpers
+- Resources:
+  - health
+  - agents
+  - risk
+  - scheduler
+  - backtesting
+  - content
+  - incidents
+  - developer
+
+Create Python SDK:
+
+Package name:
+zdash-sdk
+
+Features:
+- API key auth
+- Base URL config
+- Typed dataclasses or Pydantic models
+- Standard response unwrap
+- Typed exceptions
+- Rate limit error
+- Sandbox helpers
+- Same resource categories as TypeScript SDK
+
+Rules:
+- SDK examples use sandbox API key.
+- SDK must not log API keys.
+- SDK tests must use mock HTTP transport.
+- No live trading helper methods.
+- No real IoT helper methods.
+- No real social posting helper methods.
+
+============================================================
+FRONTEND DEVELOPER PORTAL REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /developer
+- /developer/api-keys
+- /developer/docs
+- /developer/sandbox
+- /developer/sdks
+- /developer/webhooks
+
+Update sidebar:
+- Developer Portal
+- API Keys
+- API Docs
+- Sandbox
+- SDKs
+- Partner Webhooks
+
+1. DeveloperPortal Page
+
+Must show:
+- Developer platform status
+- Sandbox status
+- Active API key count
+- Rate limit summary
+- Webhook delivery summary
+- SDK links
+- Getting started checklist
+
+2. APIKeys Page
+
+Must show:
+- API key table
+- Create key form
+- Scope selector
+- Sandbox-only toggle
+- One-time raw key dialog
+- Revoke/disable/rotate controls
+
+Safety:
+- Raw key shown only once.
+- Copy button warning.
+- Never display key hash.
+
+3. APIDocs Page
+
+Must show:
+- Public endpoint list
+- Method/path
+- Required scope
+- Example request
+- Example response
+- Sandbox badge
+- Download OpenAPI spec button
+
+4. Sandbox Page
+
+Must show:
+- Sandbox environment status
+- Sandbox forced dry-run state
+- Seeded data summary
+- Reset sandbox action with confirmation:
+  CONFIRM_SANDBOX_RESET
+
+5. SDKs Page
+
+Must show:
+- TypeScript SDK card
+- Python SDK card
+- Install commands
+- Sandbox quickstart
+- Rate limit handling example
+- Safety notes
+
+6. PartnerWebhooks Page
+
+Must show:
+- Subscription table
+- Create subscription form
+- Event type selector
+- Delivery history
+- Retry delivery
+- Dry-run banner
+- Signing enabled state
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Developer:
+- developer.read
+- developer.manage_api_keys
+- developer.manage_app_credentials
+- developer.manage_sandbox
+- developer.export_openapi
+- developer.generate_sdks
+- developer.manage_webhooks
+- developer.read_audit
+
+Partner API:
+- partner_api.use
+- partner_api.manage
+
+Mobile:
+- mobile.use
+- mobile.approve_requests
+- mobile.manage_risk
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- developer.read
+- developer.manage_api_keys
+- developer.manage_sandbox
+- developer.manage_webhooks
+- developer.read_audit
+- mobile.use
+- mobile.approve_requests
+- mobile.manage_risk
+
+analyst:
+- developer.read
+- developer.export_openapi
+- mobile.use
+
+viewer:
+- developer.read limited
+- mobile.use limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- developer_api_keys
+- app_credentials
+- partner_rate_limit_states
+- sandbox_environments
+- developer_audit_events
+- partner_webhook_subscriptions
+- partner_webhook_deliveries
+- mobile_push_devices
+- sdk_generation_runs
+
+Requirements:
+- Tenant-scoped where applicable.
+- SQLite compatible.
+- PostgreSQL compatible.
+- Migration/create_all support.
+- API keys hashed only.
+- Client secrets hashed only.
+- Webhook signing secrets hashed only.
+- No raw secrets persisted.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Developer:
+- developer.api_key.created
+- developer.api_key.revoked
+- developer.api_key.disabled
+- developer.api_key.rotated
+- developer.app_credential.created
+- developer.app_credential.disabled
+- developer.openapi.exported
+- developer.sdk.generated
+- developer.audit.recorded
+
+Partner API:
+- partner.auth.success
+- partner.auth.failed
+- partner.rate_limit.consumed
+- partner.rate_limit.exceeded
+- partner.request.completed
+- partner.request.blocked
+
+Sandbox:
+- sandbox.provisioned
+- sandbox.reset
+- sandbox.seeded
+- sandbox.safety.enforced
+
+Partner Webhooks:
+- partner.webhook.created
+- partner.webhook.updated
+- partner.webhook.deleted
+- partner.webhook.delivery.started
+- partner.webhook.delivery.completed
+- partner.webhook.delivery.failed
+- partner.webhook.delivery.blocked
+
+Mobile:
+- mobile.session.started
+- mobile.risk.halt.requested
+- mobile.risk.resume.requested
+- mobile.approval.approved
+- mobile.approval.rejected
+- mobile.push.registered
+- mobile.push.tested
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- DEVELOPER_PLATFORM_DISABLED
+- API_KEY_NOT_FOUND
+- API_KEY_INVALID
+- API_KEY_EXPIRED
+- API_KEY_REVOKED
+- API_KEY_SCOPE_DENIED
+- API_KEY_LIMIT_EXCEEDED
+- APP_CREDENTIAL_NOT_FOUND
+- RATE_LIMIT_EXCEEDED
+- SANDBOX_REQUIRED
+- SANDBOX_NOT_FOUND
+- SANDBOX_RESET_CONFIRMATION_REQUIRED
+- PUBLIC_OPENAPI_EXPORT_FAILED
+- SDK_GENERATION_FAILED
+- PARTNER_WEBHOOK_NOT_FOUND
+- PARTNER_WEBHOOK_DELIVERY_FAILED
+- MOBILE_API_DISABLED
+- MOBILE_PERMISSION_DENIED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_developer_models.py
+- API key status enum
+- scope enum
+- sandbox model validation
+- webhook subscription model validation
+
+2. test_api_key_service.py
+- create API key returns raw key once
+- stored key is hashed
+- authenticate raw key works
+- revoked key rejected
+- expired key rejected
+- scope enforcement works
+- sandbox-only key enforced
+
+3. test_app_credentials.py
+- create app credential
+- secret hashed
+- disabled credential rejected
+- missing scope rejected
+
+4. test_partner_auth.py
+- missing key returns 401
+- invalid key returns 401
+- missing scope returns 403
+- valid key resolves tenant context
+- sandbox key forces sandbox
+
+5. test_rate_limit_service.py
+- consume under limit works
+- minute limit exceeded blocks
+- daily limit exceeded blocks
+- reset works
+- fail closed behavior works
+
+6. test_sandbox_service.py
+- provision sandbox
+- seed sandbox data
+- reset sandbox requires confirmation
+- sandbox forces dry-run
+- production workspace not affected by reset
+
+7. test_docs_registry.py
+- public endpoints listed
+- admin routes excluded
+- internal routes excluded
+- OpenAPI export generated
+
+8. test_webhook_subscriptions.py
+- create subscription
+- DLP blocks secret payload
+- dry-run delivery works
+- retry delivery works
+- signing secret not returned
+
+9. test_developer_audit.py
+- API key actions audited
+- partner auth failure audited
+- no raw key in audit metadata
+
+10. test_developer_api.py
+- status endpoint
+- create API key endpoint
+- revoke key endpoint
+- sandbox status endpoint
+- OpenAPI docs endpoint
+- webhooks endpoint
+
+11. test_partner_api.py
+- partner health works with key
+- risk status requires read:risk
+- risk halt requires write:risk_halt
+- backtest run requires quota and scope
+- rate limit exceeded returns 429
+
+12. test_mobile_api.py
+- mobile status requires JWT
+- mobile home returns compact payload
+- mobile risk halt requires permission
+- mobile resume requires reason
+- mobile approvals enforce governance
+
+13. test_phase13_tenant_isolation.py
+- org A cannot list org B API keys
+- org A key cannot access org B data
+- org A sandbox reset cannot affect org B
+- webhook deliveries are tenant scoped
+
+14. test_phase13_safety_gates.py
+- partner API cannot enable live trading
+- sandbox always dry-run
+- mobile cannot bypass Guardian
+- partner webhook payload excludes secrets
+- public OpenAPI excludes admin routes
+
+Frontend tests:
+
+1. DeveloperPortal.test.tsx
+- developer status renders
+- sandbox badge visible
+- getting started checklist renders
+
+2. APIKeys.test.tsx
+- API key table renders
+- create key form exists
+- raw key dialog warning appears
+- revoke button exists
+
+3. APIDocs.test.tsx
+- endpoint list renders
+- required scope displayed
+- sandbox badge visible
+- OpenAPI download button exists
+
+4. Sandbox.test.tsx
+- sandbox status renders
+- forced dry-run banner visible
+- reset requires confirmation
+
+5. SDKs.test.tsx
+- TypeScript SDK card renders
+- Python SDK card renders
+- sandbox quickstart visible
+
+6. PartnerWebhooks.test.tsx
+- webhook table renders
+- create webhook form exists
+- delivery history renders
+- dry-run banner visible
+
+Mobile tests:
+
+1. App.test.tsx
+- mobile app renders
+- navigation exists
+- safety banner appears
+
+2. AuthProvider.test.tsx
+- login stores token
+- logout clears token
+- mock fallback works
+
+3. HomeScreen.test.tsx
+- status cards render
+- pending approvals visible
+- incidents visible
+
+4. RiskScreen.test.tsx
+- halt state renders
+- halt button requires confirmation
+- resume requires reason
+
+5. AlertsScreen.test.tsx
+- alert cards render
+- severity badge visible
+
+6. ApprovalsScreen.test.tsx
+- approval cards render
+- approve/reject buttons are role-aware
+
+SDK tests:
+
+TypeScript:
+- client unwraps standard response
+- auth header attached
+- rate limit error handled
+- sandbox helper works
+
+Python:
+- client unwraps standard response
+- auth header attached
+- rate limit error handled
+- sandbox helper works
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+TypeScript SDK:
+
+cd sdk/typescript
+npm test
+npm run build
+
+Python SDK:
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 13 overview
+- Mobile app architecture
+- Mobile auth and secure storage
+- Mobile safety controls
+- Developer platform architecture
+- API key security model
+- Partner API authentication
+- Partner API scopes
+- Rate limiting
+- Sandbox model
+- Public OpenAPI export
+- SDK generation
+- TypeScript SDK quickstart
+- Python SDK quickstart
+- Partner webhooks
+- Developer audit logs
+- Frontend developer portal pages
+- Mobile run commands
+- SDK test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run web frontend:
+
+cd frontend
+npm run dev
+
+Run mobile app:
+
+cd mobile
+npm install
+npx expo start
+
+Create API key:
+
+curl -X POST http://localhost:8000/api/developer/api-keys \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sandbox Dev Key",
+    "scopes": ["sandbox:all", "read:risk", "read:backtesting", "write:backtesting"],
+    "sandbox_only": true
+  }'
+
+Partner API health:
+
+curl http://localhost:8000/partner/v1/health \
+  -H "X-ZDash-API-Key: RAW_API_KEY"
+
+Partner risk status:
+
+curl http://localhost:8000/partner/v1/risk/status \
+  -H "X-ZDash-API-Key: RAW_API_KEY"
+
+Export public OpenAPI:
+
+bash scripts/export-openapi.sh
+
+Generate SDKs:
+
+bash scripts/generate-sdk-typescript.sh
+bash scripts/generate-sdk-python.sh
+
+Run SDK tests:
+
+cd sdk/typescript && npm test
+cd sdk/python && pytest
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 13 is complete only when:
+
+- Mobile Expo app exists.
+- Mobile login works.
+- Mobile secure token storage abstraction exists.
+- Mobile Home screen works.
+- Mobile Risk screen works.
+- Mobile Alerts screen works.
+- Mobile Incidents screen works.
+- Mobile Approvals screen works.
+- Mobile Logs screen works.
+- Mobile Settings screen works.
+- Developer API key system exists.
+- API keys are hashed at rest.
+- Raw API keys are shown only once.
+- API key scopes work.
+- Partner API auth works.
+- Partner API rate limits work.
+- Sandbox service exists.
+- Sandbox forces dry-run.
+- Public OpenAPI export excludes internal/admin routes.
+- TypeScript SDK exists.
+- Python SDK exists.
+- SDK tests pass.
+- Partner webhook subscriptions work in dry-run.
+- Webhook payloads are DLP-scanned.
+- Developer audit logs exist.
+- Developer Portal frontend works.
+- API Keys page works.
+- API Docs page works.
+- Sandbox page works.
+- SDKs page works.
+- Partner Webhooks page works.
+- Tenant isolation applies to all Phase 13 data.
+- Existing Phase 1–12 behavior remains intact.
+- Existing tests still pass.
+- New Phase 13 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- README includes Phase 13 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full source code for every mobile file
+5. Full source code for TypeScript SDK files
+6. Full source code for Python SDK files
+7. Full patched code for every updated file
+8. Developer platform models and services
+9. Partner API route files
+10. Mobile API route file
+11. API key security implementation
+12. Sandbox implementation
+13. Partner webhook implementation
+14. Test files
+15. .env.example updates
+16. README updates
+17. Developer docs
+18. SDK docs
+19. Run instructions
+20. Test instructions
+21. Mobile build instructions
+22. SDK build instructions
+23. Partner API safety checklist
+24. Mobile safety checklist
+25. Acceptance checklist
+26. Known limitations
+27. Phase 14 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–12 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend or mobile.
+- Never log API keys.
+- Never store raw API keys.
+- Never store raw client secrets.
+- Never store raw webhook signing secrets.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Keep sandbox forced to dry-run.
+- Keep partner examples sandbox-first.
+- Keep SDK examples sandbox-first.
+- Keep mobile actions confirmation-gated.
+- Keep code modular enough for Phase 14 native desktop app, partner marketplace distribution, and public cloud launch.
+
+Now generate the complete Phase 13 implementation.

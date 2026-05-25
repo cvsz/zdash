@@ -1,0 +1,1954 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 22 · CRYPTOGRAPHIC TRUST FABRIC + CONFIDENTIAL COMPUTING READINESS + VERIFIABLE MULTI-AGENT GOVERNANCE
+Cryptographic Trust Fabric + Confidential Compute Shell + Multi-Agent Proofs + Policy Proofs + Verifiable Agent Council
+
+Do not rebuild Phase 1–21 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–21:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+- Sovereign Enterprise Grid
+- On-Prem Appliance
+- Edge Runners
+- Data Residency Enforcement
+- Global Partner Operations
+- Predictive SRE
+- Optimization Center
+- Growth Intelligence
+- Executive Command Center
+- QBR Reports
+- AI Boardroom
+- Strategy Engine
+- OKR Engine
+- Scenario Simulation
+- Competitive Intelligence
+- Decision Memos
+- Enterprise Digital Twin
+- Macro Simulation
+- Continuous Planning
+- Strategy War Room
+- Decision Lineage
+- Enterprise OS
+- Self-Evolution Proposal System
+- Governance Refinement
+- Long-Horizon Strategy Intelligence
+- Lessons Memory
+- Federation
+- Trust Network
+- Verifiable OS
+- AI Provenance
+- Compliance Passport
+- Attestation Ledger
+
+============================================================
+PHASE 22 OBJECTIVE
+============================================================
+
+Build the cryptographic trust and verifiable multi-agent governance layer for zDash.
+
+Main goals:
+
+1. Add cryptographic trust fabric model
+2. Add key custody metadata shell
+3. Add signing policy registry
+4. Add verification policy registry
+5. Add signed action envelope model
+6. Add signed governance decision model
+7. Add multi-agent quorum approval workflow
+8. Add verifiable agent council
+9. Add agent decision proof records
+10. Add policy proof records
+11. Add control proof records
+12. Add confidential computing readiness model
+13. Add TEE / enclave attestation shell
+14. Add workload confidentiality profile system
+15. Add encrypted evidence vault shell
+16. Add zero-knowledge proof readiness shell
+17. Add cryptographic audit integrity checker
+18. Add verifiable release promotion gates
+19. Add cryptographic trust dashboard frontend
+20. Add tests, docs, runbooks, and acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Do not bypass data residency enforcement.
+- Do not allow self-modifying production code.
+- Do not auto-commit, auto-merge, auto-deploy, auto-migrate, auto-scale, auto-delete, or auto-change infrastructure.
+- Cryptographic features must be shell/mock/dry-run by default unless explicit provider config exists.
+- Never generate, persist, display, export, or log raw private keys.
+- Never store raw signing keys, API keys, KMS refs, runner tokens, broker credentials, cloud credentials, raw prompts, raw customer payloads, or confidential documents.
+- Signed envelopes must contain redacted payload summaries only.
+- Multi-agent governance must not override human approval for sensitive actions.
+- Agent quorum approval cannot bypass admin/operator permissions.
+- Confidential computing features are readiness shells unless real platform support is explicitly configured.
+- ZK proof features are readiness shells, not real proof systems, unless explicitly implemented later.
+- Every cryptographic proof, signature, attestation, and quorum decision must include scope, issuer, algorithm/provider metadata, evidence summary, limitations, timestamp, and verification result.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/crypto_fabric/
+  __init__.py
+  models.py
+  key_registry.py
+  signing_policy.py
+  verification_policy.py
+  signed_envelope.py
+  signature_verifier.py
+  crypto_audit.py
+  integrity_checker.py
+  trust_fabric_service.py
+
+backend/app/confidential_compute/
+  __init__.py
+  models.py
+  enclave_registry.py
+  tee_attestation.py
+  workload_profiles.py
+  confidential_job_service.py
+  encrypted_evidence_vault.py
+  zk_readiness.py
+  confidential_report_service.py
+
+backend/app/verifiable_agents/
+  __init__.py
+  models.py
+  agent_identity_registry.py
+  agent_council.py
+  quorum_service.py
+  agent_decision_proofs.py
+  policy_proofs.py
+  control_proofs.py
+  governance_proof_service.py
+  release_gate_service.py
+
+backend/app/api/crypto_fabric.py
+backend/app/api/confidential_compute.py
+backend/app/api/verifiable_agents.py
+
+frontend/src/pages/CryptoTrustFabric.tsx
+frontend/src/pages/KeyRegistry.tsx
+frontend/src/pages/SignedEnvelopes.tsx
+frontend/src/pages/ConfidentialCompute.tsx
+frontend/src/pages/EncryptedEvidenceVault.tsx
+frontend/src/pages/VerifiableAgentCouncil.tsx
+frontend/src/pages/GovernanceProofs.tsx
+frontend/src/pages/CryptoAudit.tsx
+
+frontend/src/components/crypto-fabric/
+  TrustFabricStatusCard.tsx
+  KeyRegistryTable.tsx
+  SigningPolicyPanel.tsx
+  VerificationPolicyPanel.tsx
+  SignedEnvelopeTable.tsx
+  SignatureVerificationPanel.tsx
+  IntegrityCheckPanel.tsx
+  CryptoAuditTimeline.tsx
+
+frontend/src/components/confidential-compute/
+  EnclaveRegistryTable.tsx
+  TEEAttestationPanel.tsx
+  WorkloadProfileCard.tsx
+  ConfidentialJobTable.tsx
+  EncryptedEvidenceVaultPanel.tsx
+  ZKReadinessPanel.tsx
+  ConfidentialReportPanel.tsx
+
+frontend/src/components/verifiable-agents/
+  AgentIdentityTable.tsx
+  AgentCouncilPanel.tsx
+  QuorumPolicyPanel.tsx
+  QuorumDecisionPanel.tsx
+  AgentDecisionProofPanel.tsx
+  PolicyProofPanel.tsx
+  ControlProofPanel.tsx
+  ReleaseGateProofPanel.tsx
+
+frontend/src/hooks/useCryptoFabric.ts
+frontend/src/hooks/useConfidentialCompute.ts
+frontend/src/hooks/useVerifiableAgents.ts
+
+scripts/
+  run-crypto-fabric-check.sh
+  verify-audit-integrity.sh
+  create-signed-envelope.sh
+  verify-signed-envelope.sh
+  run-confidential-readiness-check.sh
+  simulate-tee-attestation.sh
+  generate-governance-proof.sh
+  run-agent-quorum-simulation.sh
+  verify-release-gate.sh
+  phase22-smoke-test.sh
+
+docs/
+  crypto-fabric/
+    CRYPTOGRAPHIC_TRUST_FABRIC.md
+    KEY_CUSTODY_MODEL.md
+    SIGNING_POLICY_MODEL.md
+    SIGNED_ACTION_ENVELOPE.md
+    CRYPTO_AUDIT_INTEGRITY.md
+  confidential-compute/
+    CONFIDENTIAL_COMPUTING_READINESS.md
+    TEE_ATTESTATION_SHELL.md
+    WORKLOAD_CONFIDENTIALITY_PROFILES.md
+    ENCRYPTED_EVIDENCE_VAULT.md
+    ZERO_KNOWLEDGE_READINESS.md
+  verifiable-agents/
+    VERIFIABLE_AGENT_GOVERNANCE.md
+    AGENT_IDENTITY_MODEL.md
+    MULTI_AGENT_QUORUM.md
+    AGENT_DECISION_PROOFS.md
+    POLICY_AND_CONTROL_PROOFS.md
+    RELEASE_GATE_PROOFS.md
+  runbooks/
+    CRYPTO_FABRIC_RUNBOOK.md
+    SIGNATURE_FAILURE_RUNBOOK.md
+    AUDIT_INTEGRITY_RUNBOOK.md
+    CONFIDENTIAL_COMPUTE_RUNBOOK.md
+    AGENT_QUORUM_REVIEW_RUNBOOK.md
+    GOVERNANCE_PROOF_REVIEW_RUNBOOK.md
+
+backend/app/tests/
+  test_crypto_fabric_models.py
+  test_key_registry.py
+  test_signing_policy.py
+  test_verification_policy.py
+  test_signed_envelope.py
+  test_signature_verifier.py
+  test_crypto_audit.py
+  test_integrity_checker.py
+  test_trust_fabric_service.py
+  test_confidential_compute_models.py
+  test_enclave_registry.py
+  test_tee_attestation.py
+  test_workload_profiles.py
+  test_confidential_job_service.py
+  test_encrypted_evidence_vault.py
+  test_zk_readiness.py
+  test_confidential_report_service.py
+  test_verifiable_agents_models.py
+  test_agent_identity_registry.py
+  test_agent_council.py
+  test_quorum_service.py
+  test_agent_decision_proofs.py
+  test_policy_proofs.py
+  test_control_proofs.py
+  test_governance_proof_service.py
+  test_release_gate_service.py
+  test_crypto_fabric_api.py
+  test_confidential_compute_api.py
+  test_verifiable_agents_api.py
+  test_phase22_tenant_isolation.py
+  test_phase22_safety_gates.py
+
+frontend/src/tests/
+  CryptoTrustFabric.test.tsx
+  KeyRegistry.test.tsx
+  SignedEnvelopes.test.tsx
+  ConfidentialCompute.test.tsx
+  EncryptedEvidenceVault.test.tsx
+  VerifiableAgentCouncil.test.tsx
+  GovernanceProofs.test.tsx
+  CryptoAudit.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/governance/policy_engine.py
+backend/app/verifiable_os/attestation_service.py
+backend/app/verifiable_os/provenance_ledger.py
+backend/app/ai_provenance/ai_lineage_service.py
+backend/app/federation/federation_policy_service.py
+backend/app/trust_network/trust_score_service.py
+backend/app/ga/final_safety_gate.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+CRYPTO_FABRIC_ENABLED=true
+CRYPTO_FABRIC_MODE=mock
+CRYPTO_FABRIC_DRY_RUN=true
+CRYPTO_FABRIC_FAIL_CLOSED=true
+
+KEY_REGISTRY_ENABLED=true
+KEY_CUSTODY_PROVIDER=mock
+KEY_CUSTODY_DRY_RUN=true
+KEY_ROTATION_METADATA_ENABLED=true
+
+SIGNING_POLICY_ENABLED=true
+SIGNING_PROVIDER=mock
+SIGNING_DRY_RUN=true
+SIGNING_REQUIRE_APPROVAL=true
+SIGNING_DEFAULT_ALGORITHM=mock-ed25519
+
+VERIFICATION_POLICY_ENABLED=true
+VERIFICATION_FAIL_CLOSED=true
+SIGNED_ENVELOPES_ENABLED=true
+SIGNED_ENVELOPE_SUMMARY_ONLY=true
+
+CRYPTO_AUDIT_ENABLED=true
+AUDIT_INTEGRITY_CHECK_ENABLED=true
+AUDIT_HASH_CHAIN_ENABLED=true
+
+CONFIDENTIAL_COMPUTE_ENABLED=true
+CONFIDENTIAL_COMPUTE_MODE=readiness
+CONFIDENTIAL_COMPUTE_DRY_RUN=true
+TEE_ATTESTATION_ENABLED=true
+TEE_ATTESTATION_PROVIDER=mock
+TEE_ATTESTATION_DRY_RUN=true
+
+WORKLOAD_CONFIDENTIALITY_PROFILES_ENABLED=true
+CONFIDENTIAL_JOBS_ENABLED=true
+CONFIDENTIAL_JOBS_DRY_RUN=true
+
+ENCRYPTED_EVIDENCE_VAULT_ENABLED=true
+EVIDENCE_VAULT_PROVIDER=mock
+EVIDENCE_VAULT_DRY_RUN=true
+EVIDENCE_VAULT_EXCLUDE_SECRETS=true
+
+ZK_READINESS_ENABLED=true
+ZK_PROOF_PROVIDER=mock
+ZK_PROOF_DRY_RUN=true
+
+VERIFIABLE_AGENTS_ENABLED=true
+AGENT_IDENTITY_REGISTRY_ENABLED=true
+AGENT_COUNCIL_ENABLED=true
+AGENT_QUORUM_ENABLED=true
+AGENT_QUORUM_REQUIRE_HUMAN_APPROVAL=true
+AGENT_QUORUM_MIN_APPROVALS=2
+
+AGENT_DECISION_PROOFS_ENABLED=true
+POLICY_PROOFS_ENABLED=true
+CONTROL_PROOFS_ENABLED=true
+GOVERNANCE_PROOFS_ENABLED=true
+RELEASE_GATE_PROOFS_ENABLED=true
+
+Rules:
+- Mock providers must work without secrets.
+- Real signing, KMS, TEE, vault, or proof providers require explicit config.
+- No raw keys may be logged or returned.
+- Signed envelopes contain summaries only.
+- Verification fails closed when configured.
+- Confidential compute is readiness-only by default.
+- Agent quorum never replaces human approval for sensitive actions.
+- Release gates cannot pass if safety, provenance, or attestation state is unknown.
+
+============================================================
+CRYPTO FABRIC MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. CryptoProvider
+
+Allowed values:
+- mock
+- local
+- kms
+- hsm
+- external
+
+2. KeyPurpose
+
+Allowed values:
+- signing
+- verification
+- attestation
+- envelope
+- audit_integrity
+- release_gate
+
+3. KeyStatus
+
+Allowed values:
+- active
+- rotation_due
+- disabled
+- revoked
+- expired
+
+4. SignatureStatus
+
+Allowed values:
+- unsigned
+- signed
+- verified
+- failed
+- revoked
+- expired
+
+5. VerificationOutcome
+
+Allowed values:
+- passed
+- failed
+- warning
+- blocked
+- unknown
+
+6. KeyRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- key_name
+- provider
+- purpose
+- status
+- public_ref
+- key_ref_hash
+- rotation_due_at
+- last_used_at
+- metadata
+- created_at
+- updated_at
+
+7. SigningPolicy
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- subject_type
+- required_key_purpose
+- required_approvals
+- algorithm
+- enabled
+- rules
+- created_at
+- updated_at
+
+8. VerificationPolicy
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- subject_type
+- required_signature
+- required_attestation
+- fail_closed
+- rules
+- created_at
+- updated_at
+
+9. SignedEnvelope
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- subject_type
+- subject_id
+- action
+- payload_summary
+- payload_hash
+- signature_status
+- signature_ref
+- signer
+- policy_id
+- limitations
+- created_at
+- signed_at
+- verified_at
+
+10. CryptoAuditRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- event_type
+- subject_type
+- subject_id
+- hash_before
+- hash_after
+- verification_outcome
+- summary
+- created_at
+
+============================================================
+CRYPTO FABRIC SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/crypto_fabric/key_registry.py
+backend/app/crypto_fabric/signing_policy.py
+backend/app/crypto_fabric/verification_policy.py
+backend/app/crypto_fabric/signed_envelope.py
+backend/app/crypto_fabric/signature_verifier.py
+backend/app/crypto_fabric/crypto_audit.py
+backend/app/crypto_fabric/integrity_checker.py
+backend/app/crypto_fabric/trust_fabric_service.py
+
+KeyRegistryService methods:
+- register_key_ref()
+- list_keys()
+- get_key()
+- disable_key()
+- revoke_key()
+- rotate_key_metadata()
+
+Rules:
+- Store only key_ref_hash and public_ref.
+- Never store private keys.
+- Never return raw key refs.
+
+SigningPolicyService methods:
+- create_policy()
+- list_policies()
+- update_policy()
+- evaluate_policy(subject_type, action, context)
+
+VerificationPolicyService methods:
+- create_policy()
+- list_policies()
+- update_policy()
+- evaluate_policy(subject_type, subject_id, context)
+
+SignedEnvelopeService methods:
+- create_envelope()
+- sign_envelope()
+- verify_envelope()
+- list_envelopes()
+- get_envelope()
+
+SignatureVerifierService methods:
+- verify_signature()
+- verify_subject()
+- explain_verification()
+
+CryptoAuditService methods:
+- record_crypto_event()
+- list_records()
+- export_summary()
+
+IntegrityCheckerService methods:
+- verify_audit_hash_chain()
+- verify_provenance_hash_chain()
+- verify_release_integrity()
+- generate_integrity_report()
+
+TrustFabricService methods:
+- get_status()
+- run_fabric_check()
+- summarize_trust_health()
+- generate_trust_fabric_report()
+
+Rules:
+- Mock signing deterministic for tests.
+- Real signing requires provider config.
+- Payload summary must be redacted and DLP-scanned.
+- Verification policies fail closed when configured.
+
+============================================================
+CONFIDENTIAL COMPUTE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. ConfidentialComputeProvider
+
+Allowed values:
+- mock
+- aws_nitro
+- azure_confidential
+- gcp_confidential
+- sev_snp
+- sgx
+- custom
+
+2. EnclaveStatus
+
+Allowed values:
+- registered
+- attested
+- failed
+- disabled
+- unknown
+
+3. ConfidentialityLevel
+
+Allowed values:
+- public
+- internal
+- confidential
+- restricted
+
+4. ConfidentialJobStatus
+
+Allowed values:
+- queued
+- running
+- completed
+- failed
+- blocked
+- canceled
+
+5. EnclaveRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- provider
+- status
+- region
+- attestation_summary
+- measurement_hash
+- last_attested_at
+- metadata
+- created_at
+- updated_at
+
+6. TEEAttestationRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- enclave_id
+- provider
+- status
+- measurement_hash
+- evidence_summary
+- verification_outcome
+- limitations
+- created_at
+
+7. WorkloadConfidentialityProfile
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- workload_name
+- confidentiality_level
+- requires_tee
+- requires_encryption
+- allowed_regions
+- data_classes
+- policy_summary
+- created_at
+- updated_at
+
+8. ConfidentialJob
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- workload_profile_id
+- enclave_id
+- status
+- dry_run
+- payload_summary
+- result_summary
+- attestation_required
+- attestation_passed
+- created_at
+- completed_at
+
+9. EvidenceVaultRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- evidence_type
+- name
+- encrypted_ref
+- checksum
+- secrets_excluded
+- provider
+- created_by
+- created_at
+
+10. ZKReadinessRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- proof_use_case
+- provider
+- readiness_status
+- inputs_summary
+- limitations
+- created_at
+
+============================================================
+CONFIDENTIAL COMPUTE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/confidential_compute/enclave_registry.py
+backend/app/confidential_compute/tee_attestation.py
+backend/app/confidential_compute/workload_profiles.py
+backend/app/confidential_compute/confidential_job_service.py
+backend/app/confidential_compute/encrypted_evidence_vault.py
+backend/app/confidential_compute/zk_readiness.py
+backend/app/confidential_compute/confidential_report_service.py
+
+EnclaveRegistryService methods:
+- register_enclave()
+- list_enclaves()
+- get_enclave()
+- disable_enclave()
+- update_attestation_status()
+
+TEEAttestationService methods:
+- create_attestation()
+- verify_attestation()
+- list_attestations()
+- explain_attestation()
+
+WorkloadProfileService methods:
+- create_profile()
+- list_profiles()
+- validate_profile()
+- evaluate_workload_confidentiality()
+
+ConfidentialJobService methods:
+- submit_job()
+- list_jobs()
+- get_job()
+- run_job_dry_run()
+- block_unsafe_job()
+
+EncryptedEvidenceVaultService methods:
+- create_vault_record()
+- list_records()
+- verify_record()
+- export_vault_manifest()
+
+Rules:
+- Store encrypted refs only, not raw evidence.
+- Secrets excluded by default.
+- DLP required before vault manifest.
+
+ZKReadinessService methods:
+- create_readiness_record()
+- evaluate_use_case()
+- list_records()
+- generate_readiness_report()
+
+ConfidentialReportService methods:
+- generate_report()
+- build_markdown_report()
+- list_reports()
+
+Rules:
+- Confidential compute is readiness shell by default.
+- No real enclave claims unless provider verification exists.
+- TEE outputs include limitations.
+
+============================================================
+VERIFIABLE AGENTS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. AgentIdentityStatus
+
+Allowed values:
+- active
+- disabled
+- revoked
+- review_required
+
+2. AgentCouncilRole
+
+Allowed values:
+- proposer
+- reviewer
+- risk_guardian
+- security_reviewer
+- compliance_reviewer
+- operator
+- observer
+
+3. QuorumDecisionStatus
+
+Allowed values:
+- pending
+- approved
+- rejected
+- blocked
+- expired
+
+4. ProofStatus
+
+Allowed values:
+- draft
+- generated
+- verified
+- failed
+- revoked
+
+5. AgentIdentity
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- agent_name
+- agent_type
+- status
+- public_identity_ref
+- allowed_roles
+- trust_score
+- provenance_ref
+- created_at
+- updated_at
+
+6. AgentCouncil
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- purpose
+- members
+- quorum_policy
+- enabled
+- created_at
+- updated_at
+
+7. QuorumDecision
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- council_id
+- subject_type
+- subject_id
+- action
+- status
+- required_votes
+- votes
+- human_approval_required
+- human_approved_by
+- evidence_summary
+- limitations
+- created_at
+- resolved_at
+
+8. AgentDecisionProof
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- decision_id
+- agent_id
+- proof_status
+- rationale_summary
+- evidence_refs
+- signature_ref
+- confidence
+- created_at
+
+9. PolicyProof
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- policy_id
+- subject_type
+- subject_id
+- proof_status
+- policy_decision_summary
+- evidence_refs
+- limitations
+- created_at
+
+10. ControlProof
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- control_id
+- subject_type
+- subject_id
+- proof_status
+- control_status_summary
+- evidence_refs
+- limitations
+- created_at
+
+11. ReleaseGateProof
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- release_id
+- gate_name
+- proof_status
+- safety_gate_summary
+- provenance_summary
+- attestation_summary
+- blocked_reasons
+- created_at
+
+============================================================
+VERIFIABLE AGENTS SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/verifiable_agents/agent_identity_registry.py
+backend/app/verifiable_agents/agent_council.py
+backend/app/verifiable_agents/quorum_service.py
+backend/app/verifiable_agents/agent_decision_proofs.py
+backend/app/verifiable_agents/policy_proofs.py
+backend/app/verifiable_agents/control_proofs.py
+backend/app/verifiable_agents/governance_proof_service.py
+backend/app/verifiable_agents/release_gate_service.py
+
+AgentIdentityRegistryService methods:
+- register_agent_identity()
+- list_agent_identities()
+- get_agent_identity()
+- disable_agent_identity()
+- revoke_agent_identity()
+
+AgentCouncilService methods:
+- create_council()
+- list_councils()
+- get_council()
+- update_council()
+- disable_council()
+
+QuorumService methods:
+- create_quorum_decision()
+- cast_vote()
+- tally_votes()
+- require_human_approval()
+- resolve_decision()
+
+Rules:
+- Human approval required for sensitive actions.
+- Quorum cannot bypass RBAC.
+- Quorum cannot bypass policy engine.
+- Revoked agents cannot vote.
+
+AgentDecisionProofService methods:
+- create_proof()
+- verify_proof()
+- list_proofs()
+
+PolicyProofService methods:
+- create_policy_proof()
+- verify_policy_proof()
+- list_policy_proofs()
+
+ControlProofService methods:
+- create_control_proof()
+- verify_control_proof()
+- list_control_proofs()
+
+GovernanceProofService methods:
+- generate_governance_proof()
+- verify_governance_proof()
+- summarize_governance_proofs()
+
+ReleaseGateService methods:
+- create_release_gate_proof()
+- verify_release_gate()
+- block_release_if_unverified()
+- list_release_gate_proofs()
+
+Rules:
+- Proofs are summaries, not raw evidence dumps.
+- Release cannot pass if safety gate, provenance, attestation, or policy proof is missing.
+- All proof generation is auditable.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/crypto_fabric.py
+
+Endpoints:
+
+GET /api/crypto-fabric/status
+
+Keys:
+POST /api/crypto-fabric/keys
+GET /api/crypto-fabric/keys
+GET /api/crypto-fabric/keys/{key_id}
+POST /api/crypto-fabric/keys/{key_id}/disable
+POST /api/crypto-fabric/keys/{key_id}/revoke
+POST /api/crypto-fabric/keys/{key_id}/rotate-metadata
+
+Signing policies:
+POST /api/crypto-fabric/signing-policies
+GET /api/crypto-fabric/signing-policies
+PATCH /api/crypto-fabric/signing-policies/{policy_id}
+POST /api/crypto-fabric/signing-policies/evaluate
+
+Verification policies:
+POST /api/crypto-fabric/verification-policies
+GET /api/crypto-fabric/verification-policies
+PATCH /api/crypto-fabric/verification-policies/{policy_id}
+POST /api/crypto-fabric/verification-policies/evaluate
+
+Signed envelopes:
+POST /api/crypto-fabric/envelopes
+GET /api/crypto-fabric/envelopes
+GET /api/crypto-fabric/envelopes/{envelope_id}
+POST /api/crypto-fabric/envelopes/{envelope_id}/sign
+POST /api/crypto-fabric/envelopes/{envelope_id}/verify
+
+Audit and integrity:
+GET /api/crypto-fabric/audit
+POST /api/crypto-fabric/integrity/check
+GET /api/crypto-fabric/integrity/report
+
+Create:
+
+backend/app/api/confidential_compute.py
+
+Endpoints:
+
+GET /api/confidential-compute/status
+
+Enclaves:
+POST /api/confidential-compute/enclaves
+GET /api/confidential-compute/enclaves
+GET /api/confidential-compute/enclaves/{enclave_id}
+POST /api/confidential-compute/enclaves/{enclave_id}/disable
+
+TEE attestation:
+POST /api/confidential-compute/attestations
+GET /api/confidential-compute/attestations
+POST /api/confidential-compute/attestations/{attestation_id}/verify
+
+Workload profiles:
+POST /api/confidential-compute/workload-profiles
+GET /api/confidential-compute/workload-profiles
+POST /api/confidential-compute/workload-profiles/evaluate
+
+Confidential jobs:
+POST /api/confidential-compute/jobs
+GET /api/confidential-compute/jobs
+GET /api/confidential-compute/jobs/{job_id}
+POST /api/confidential-compute/jobs/{job_id}/dry-run
+
+Evidence vault:
+POST /api/confidential-compute/evidence-vault
+GET /api/confidential-compute/evidence-vault
+POST /api/confidential-compute/evidence-vault/{record_id}/verify
+GET /api/confidential-compute/evidence-vault/manifest
+
+ZK readiness:
+POST /api/confidential-compute/zk-readiness
+GET /api/confidential-compute/zk-readiness
+POST /api/confidential-compute/reports
+GET /api/confidential-compute/reports
+GET /api/confidential-compute/reports/{report_id}/markdown
+
+Create:
+
+backend/app/api/verifiable_agents.py
+
+Endpoints:
+
+GET /api/verifiable-agents/status
+
+Agent identities:
+POST /api/verifiable-agents/identities
+GET /api/verifiable-agents/identities
+GET /api/verifiable-agents/identities/{agent_id}
+POST /api/verifiable-agents/identities/{agent_id}/disable
+POST /api/verifiable-agents/identities/{agent_id}/revoke
+
+Councils:
+POST /api/verifiable-agents/councils
+GET /api/verifiable-agents/councils
+GET /api/verifiable-agents/councils/{council_id}
+PATCH /api/verifiable-agents/councils/{council_id}
+
+Quorum:
+POST /api/verifiable-agents/quorum/decisions
+GET /api/verifiable-agents/quorum/decisions
+GET /api/verifiable-agents/quorum/decisions/{decision_id}
+POST /api/verifiable-agents/quorum/decisions/{decision_id}/vote
+POST /api/verifiable-agents/quorum/decisions/{decision_id}/human-approve
+POST /api/verifiable-agents/quorum/decisions/{decision_id}/resolve
+
+Proofs:
+POST /api/verifiable-agents/proofs/agent-decision
+GET /api/verifiable-agents/proofs/agent-decision
+POST /api/verifiable-agents/proofs/policy
+GET /api/verifiable-agents/proofs/policy
+POST /api/verifiable-agents/proofs/control
+GET /api/verifiable-agents/proofs/control
+POST /api/verifiable-agents/proofs/governance
+GET /api/verifiable-agents/proofs/governance
+
+Release gates:
+POST /api/verifiable-agents/release-gates
+GET /api/verifiable-agents/release-gates
+POST /api/verifiable-agents/release-gates/{proof_id}/verify
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Standard response shape required.
+- No endpoint may expose raw keys, raw signatures, raw confidential evidence, or raw prompts.
+- Sensitive actions require admin/operator.
+- Quorum approval cannot bypass human approval for sensitive actions.
+- Verification fails closed when configured.
+
+============================================================
+FRONTEND PHASE 22 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /crypto-trust-fabric
+- /key-registry
+- /signed-envelopes
+- /confidential-compute
+- /encrypted-evidence-vault
+- /verifiable-agent-council
+- /governance-proofs
+- /crypto-audit
+
+Update sidebar:
+- Crypto Trust Fabric
+- Key Registry
+- Signed Envelopes
+- Confidential Compute
+- Encrypted Evidence Vault
+- Verifiable Agent Council
+- Governance Proofs
+- Crypto Audit
+
+1. Crypto Trust Fabric Page
+
+Must show:
+- Trust fabric status
+- Signing provider state
+- Verification fail-closed state
+- Integrity check summary
+- Crypto audit timeline
+- Mock/dry-run banner
+
+2. Key Registry Page
+
+Must show:
+- Key registry table
+- Key purpose
+- Key status
+- Rotation metadata
+- Redacted key refs
+- Revoke/disable actions role-gated
+
+3. Signed Envelopes Page
+
+Must show:
+- Signed envelope table
+- Signature status
+- Payload summary hash
+- Sign/verify actions
+- Limitations and verification outcome
+
+4. Confidential Compute Page
+
+Must show:
+- Enclave registry
+- TEE attestation status
+- Workload confidentiality profiles
+- Confidential job table
+- Readiness-only banner
+
+5. Encrypted Evidence Vault Page
+
+Must show:
+- Evidence vault records
+- Secrets-excluded state
+- Checksum
+- Vault manifest
+- DLP status
+
+6. Verifiable Agent Council Page
+
+Must show:
+- Agent identity table
+- Agent council panel
+- Quorum policy
+- Quorum decisions
+- Human approval required banner
+
+7. Governance Proofs Page
+
+Must show:
+- Agent decision proofs
+- Policy proofs
+- Control proofs
+- Release gate proofs
+- Proof verification status
+
+8. Crypto Audit Page
+
+Must show:
+- Crypto audit records
+- Hash-chain integrity status
+- Verification failures
+- Export summary action
+
+Frontend safety:
+- Never display secrets.
+- Never display raw private keys, raw key refs, raw signatures, raw prompts, or raw evidence payloads.
+- Show mock/dry-run signing banner.
+- Show readiness-only banner for confidential compute.
+- Show human approval requirement for quorum.
+- Show fail-closed state prominently.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Crypto Fabric:
+- crypto_fabric.read
+- crypto_fabric.manage_keys
+- crypto_fabric.manage_policies
+- crypto_fabric.sign
+- crypto_fabric.verify
+- crypto_fabric.audit
+
+Confidential Compute:
+- confidential_compute.read
+- confidential_compute.manage_enclaves
+- confidential_compute.manage_profiles
+- confidential_compute.run_jobs
+- confidential_compute.manage_vault
+- confidential_compute.generate_reports
+
+Verifiable Agents:
+- verifiable_agents.read
+- verifiable_agents.manage_identities
+- verifiable_agents.manage_councils
+- verifiable_agents.vote
+- verifiable_agents.human_approve
+- verifiable_agents.generate_proofs
+- verifiable_agents.verify_release_gate
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- crypto_fabric.read
+- crypto_fabric.manage_policies
+- crypto_fabric.verify
+- crypto_fabric.audit
+- confidential_compute.read
+- confidential_compute.manage_profiles
+- confidential_compute.run_jobs
+- confidential_compute.generate_reports
+- verifiable_agents.read
+- verifiable_agents.manage_councils
+- verifiable_agents.vote
+- verifiable_agents.human_approve
+- verifiable_agents.generate_proofs
+- verifiable_agents.verify_release_gate
+
+analyst:
+- crypto_fabric.read
+- crypto_fabric.verify
+- confidential_compute.read
+- verifiable_agents.read
+- verifiable_agents.generate_proofs
+
+viewer:
+- crypto_fabric.read limited
+- confidential_compute.read limited
+- verifiable_agents.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- key_records
+- signing_policies
+- verification_policies
+- signed_envelopes
+- crypto_audit_records
+- enclave_records
+- tee_attestation_records
+- workload_confidentiality_profiles
+- confidential_jobs
+- evidence_vault_records
+- zk_readiness_records
+- agent_identities
+- agent_councils
+- quorum_decisions
+- agent_decision_proofs
+- policy_proofs
+- control_proofs
+- release_gate_proofs
+- confidential_compute_reports
+- crypto_fabric_reports
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- No raw private keys.
+- No raw key refs.
+- No raw signatures unless safe metadata only.
+- No raw evidence payloads.
+- No raw prompts.
+- Checksums, hashes, and public references are allowed.
+- All proof records must include limitations.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Crypto Fabric:
+- crypto.key_ref.registered
+- crypto.key_ref.disabled
+- crypto.key_ref.revoked
+- crypto.key_ref.rotation_metadata_updated
+- crypto.signing_policy.created
+- crypto.verification_policy.created
+- crypto.envelope.created
+- crypto.envelope.signed
+- crypto.envelope.verified
+- crypto.integrity.checked
+- crypto.audit.recorded
+
+Confidential Compute:
+- confidential.enclave.registered
+- confidential.enclave.disabled
+- confidential.tee.attestation.created
+- confidential.tee.attestation.verified
+- confidential.workload_profile.created
+- confidential.job.submitted
+- confidential.job.dry_run_completed
+- confidential.job.blocked
+- confidential.vault.record_created
+- confidential.zk_readiness.created
+- confidential.report.generated
+
+Verifiable Agents:
+- verifiable_agent.identity.registered
+- verifiable_agent.identity.revoked
+- verifiable_agent.council.created
+- verifiable_agent.quorum.created
+- verifiable_agent.quorum.vote_cast
+- verifiable_agent.quorum.human_approved
+- verifiable_agent.quorum.resolved
+- verifiable_agent.proof.created
+- verifiable_agent.proof.verified
+- verifiable_agent.release_gate.created
+- verifiable_agent.release_gate.verified
+- verifiable_agent.release_gate.blocked
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- CRYPTO_FABRIC_DISABLED
+- KEY_RECORD_NOT_FOUND
+- KEY_REF_INVALID
+- KEY_REVOKED
+- SIGNING_POLICY_NOT_FOUND
+- VERIFICATION_POLICY_NOT_FOUND
+- SIGNING_NOT_CONFIGURED
+- SIGNATURE_VERIFICATION_FAILED
+- SIGNED_ENVELOPE_NOT_FOUND
+- CRYPTO_INTEGRITY_FAILED
+- CONFIDENTIAL_COMPUTE_DISABLED
+- ENCLAVE_NOT_FOUND
+- TEE_ATTESTATION_FAILED
+- WORKLOAD_PROFILE_NOT_FOUND
+- CONFIDENTIAL_JOB_NOT_FOUND
+- CONFIDENTIAL_JOB_BLOCKED
+- EVIDENCE_VAULT_RECORD_NOT_FOUND
+- ZK_READINESS_ONLY
+- VERIFIABLE_AGENTS_DISABLED
+- AGENT_IDENTITY_NOT_FOUND
+- AGENT_IDENTITY_REVOKED
+- AGENT_COUNCIL_NOT_FOUND
+- QUORUM_DECISION_NOT_FOUND
+- QUORUM_HUMAN_APPROVAL_REQUIRED
+- PROOF_NOT_FOUND
+- RELEASE_GATE_BLOCKED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_crypto_fabric_models.py
+- crypto provider enum
+- key purpose enum
+- signature status enum
+- key record validation
+
+2. test_key_registry.py
+- register key ref stores hash only
+- raw key ref not returned
+- disable key
+- revoke key
+
+3. test_signing_policy.py
+- create signing policy
+- evaluate signing policy
+- approval requirement enforced
+
+4. test_verification_policy.py
+- create verification policy
+- fail-closed behavior works
+- missing attestation blocks when required
+
+5. test_signed_envelope.py
+- envelope created with payload summary only
+- mock signing works
+- verification works
+- raw payload not stored
+
+6. test_signature_verifier.py
+- valid mock signature passes
+- invalid signature fails
+- revoked key fails
+
+7. test_crypto_audit.py
+- crypto audit record created
+- no secrets stored
+- tenant scoped
+
+8. test_integrity_checker.py
+- audit hash chain verified
+- tampered record detected
+- report generated
+
+9. test_trust_fabric_service.py
+- trust fabric status works
+- fabric check summarizes blockers
+- fail-closed state visible
+
+10. test_confidential_compute_models.py
+- provider enum
+- enclave status enum
+- confidentiality level enum
+- job validation
+
+11. test_enclave_registry.py
+- register enclave
+- list enclaves
+- disable enclave
+
+12. test_tee_attestation.py
+- mock attestation created
+- verification works
+- limitations included
+
+13. test_workload_profiles.py
+- profile created
+- confidentiality evaluated
+- disallowed region blocked
+
+14. test_confidential_job_service.py
+- job submitted
+- dry-run completes
+- unsafe job blocked
+- attestation required honored
+
+15. test_encrypted_evidence_vault.py
+- vault record created
+- secrets excluded
+- checksum generated
+- raw evidence not stored
+
+16. test_zk_readiness.py
+- readiness record created
+- provider shell works
+- readiness-only limitation included
+
+17. test_confidential_report_service.py
+- report generated
+- markdown generated
+- no secrets included
+
+18. test_verifiable_agents_models.py
+- identity status enum
+- council role enum
+- quorum status enum
+- proof status enum
+
+19. test_agent_identity_registry.py
+- agent identity registered
+- revoked agent cannot vote
+- tenant scoped
+
+20. test_agent_council.py
+- council created
+- quorum policy stored
+- disabled council cannot create decisions
+
+21. test_quorum_service.py
+- quorum decision created
+- votes tallied
+- human approval required for sensitive action
+- quorum cannot bypass RBAC
+
+22. test_agent_decision_proofs.py
+- proof created
+- proof verified
+- evidence summary only
+
+23. test_policy_proofs.py
+- policy proof created
+- policy proof verification works
+- unsafe policy proof blocked
+
+24. test_control_proofs.py
+- control proof created
+- verification works
+- limitations included
+
+25. test_governance_proof_service.py
+- governance proof generated
+- proof summary includes policy/control evidence
+- no raw evidence included
+
+26. test_release_gate_service.py
+- release gate proof created
+- missing safety gate blocks
+- missing provenance blocks
+- missing attestation blocks
+
+27. test_crypto_fabric_api.py
+- status endpoint
+- key endpoints
+- signed envelope endpoints
+- integrity endpoint
+
+28. test_confidential_compute_api.py
+- status endpoint
+- enclave endpoints
+- attestation endpoints
+- job endpoints
+- vault endpoints
+
+29. test_verifiable_agents_api.py
+- status endpoint
+- identity endpoints
+- council endpoints
+- quorum endpoints
+- proof endpoints
+
+30. test_phase22_tenant_isolation.py
+- org A cannot read org B key records
+- org A cannot read org B signed envelopes
+- org A cannot read org B confidential jobs
+- org A cannot read org B quorum decisions
+- org A cannot read org B proofs
+
+31. test_phase22_safety_gates.py
+- no raw private key stored
+- signed envelope stores summary only
+- quorum cannot bypass human approval
+- confidential job cannot enable live trading
+- release gate blocks unknown safety state
+
+Frontend tests:
+
+1. CryptoTrustFabric.test.tsx
+- trust fabric status renders
+- mock signing banner visible
+- fail-closed state visible
+- integrity summary visible
+
+2. KeyRegistry.test.tsx
+- key table renders
+- key refs redacted
+- rotation metadata visible
+
+3. SignedEnvelopes.test.tsx
+- envelope table renders
+- signature status visible
+- verify action visible
+- raw payload absent
+
+4. ConfidentialCompute.test.tsx
+- enclave table renders
+- TEE attestation panel visible
+- readiness-only banner visible
+
+5. EncryptedEvidenceVault.test.tsx
+- vault records render
+- secrets-excluded banner visible
+- checksum visible
+
+6. VerifiableAgentCouncil.test.tsx
+- agent identity table renders
+- council panel renders
+- human approval banner visible
+
+7. GovernanceProofs.test.tsx
+- policy proof panel renders
+- control proof panel renders
+- release gate proof panel renders
+
+8. CryptoAudit.test.tsx
+- crypto audit timeline renders
+- hash-chain integrity status visible
+- verification failure area visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 22 overview
+- Cryptographic trust fabric architecture
+- Key custody metadata shell
+- Signing and verification policy model
+- Signed action envelope model
+- Crypto audit integrity
+- Confidential computing readiness model
+- TEE attestation shell
+- Workload confidentiality profiles
+- Encrypted evidence vault
+- ZK readiness shell
+- Verifiable agent identity
+- Multi-agent quorum workflow
+- Agent decision proofs
+- Policy proofs
+- Control proofs
+- Release gate proofs
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run crypto fabric check:
+
+bash scripts/run-crypto-fabric-check.sh
+
+Verify audit integrity:
+
+bash scripts/verify-audit-integrity.sh
+
+Create signed envelope:
+
+bash scripts/create-signed-envelope.sh
+
+Verify signed envelope:
+
+bash scripts/verify-signed-envelope.sh
+
+Run confidential readiness check:
+
+bash scripts/run-confidential-readiness-check.sh
+
+Simulate TEE attestation:
+
+bash scripts/simulate-tee-attestation.sh
+
+Generate governance proof:
+
+bash scripts/generate-governance-proof.sh
+
+Run agent quorum simulation:
+
+bash scripts/run-agent-quorum-simulation.sh
+
+Verify release gate:
+
+bash scripts/verify-release-gate.sh
+
+Phase 22 smoke test:
+
+bash scripts/phase22-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 22 is complete only when:
+
+- Crypto Fabric models exist.
+- Key registry works and stores hashes only.
+- Signing policy works.
+- Verification policy works.
+- Signed envelopes work with summary-only payloads.
+- Mock signing works.
+- Signature verification works.
+- Crypto audit records work.
+- Integrity checker works.
+- Trust fabric status works.
+- Confidential compute models exist.
+- Enclave registry works.
+- TEE attestation shell works.
+- Workload confidentiality profiles work.
+- Confidential jobs run only in dry-run/readiness mode by default.
+- Encrypted evidence vault stores references only and excludes secrets.
+- ZK readiness shell works.
+- Confidential reports work.
+- Verifiable agent models exist.
+- Agent identity registry works.
+- Agent council works.
+- Quorum service works.
+- Sensitive quorum decisions require human approval.
+- Agent decision proofs work.
+- Policy proofs work.
+- Control proofs work.
+- Governance proof service works.
+- Release gate proof service blocks unknown safety/provenance/attestation state.
+- Crypto Fabric API works.
+- Confidential Compute API works.
+- Verifiable Agents API works.
+- Frontend Crypto Trust Fabric page works.
+- Frontend Key Registry page works.
+- Frontend Signed Envelopes page works.
+- Frontend Confidential Compute page works.
+- Frontend Encrypted Evidence Vault page works.
+- Frontend Verifiable Agent Council page works.
+- Frontend Governance Proofs page works.
+- Frontend Crypto Audit page works.
+- Tenant isolation applies to all Phase 22 data.
+- Existing Phase 1–21 behavior remains intact.
+- Existing tests still pass.
+- New Phase 22 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Cryptographic providers remain mock/dry-run by default.
+- Confidential compute remains readiness-only by default.
+- README includes Phase 22 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Crypto Fabric models and services
+6. Confidential Compute models and services
+7. Verifiable Agents models and services
+8. API route files
+9. Build/validation scripts
+10. Test files
+11. .env.example updates
+12. README updates
+13. Crypto Fabric docs
+14. Confidential Compute docs
+15. Verifiable Agents docs
+16. Run instructions
+17. Test instructions
+18. Crypto Fabric safety checklist
+19. Confidential Compute safety checklist
+20. Verifiable Agent Governance safety checklist
+21. Release Gate safety checklist
+22. Acceptance checklist
+23. Known limitations
+24. Phase 23 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–21 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, reports, proofs, envelopes, vault records, ledger entries, logs, docs, or exports.
+- Never log API keys, KMS key refs, signing keys, private keys, runner tokens, broker credentials, cloud credentials, private payloads, raw prompts, or confidential evidence.
+- Never store raw private keys.
+- Never store raw confidential evidence.
+- Never store raw prompts by default.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never bypass data residency enforcement.
+- Never allow agent quorum to replace human approval for sensitive actions.
+- Never let revoked agents vote.
+- Never allow release gate verification to pass if required safety, provenance, attestation, or policy proof is missing.
+- Keep signing, confidential compute, vault, TEE, and ZK systems mock/dry-run/readiness-only by default.
+- Keep all proofs evidence-linked, confidence-scored, limitation-aware, and auditable.
+- Keep code modular and ready for Phase 23: autonomous trust-minimized execution, enterprise-grade policy proof marketplace, and cryptographically governed AI agent mesh.
+
+Now generate the complete Phase 22 implementation.

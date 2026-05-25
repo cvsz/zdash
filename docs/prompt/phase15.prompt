@@ -1,0 +1,2487 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 15 · AI MARKETPLACE EXPANSION + ENTERPRISE PARTNER LAUNCH + PRODUCTION GA
+Certified Agent Marketplace + Partner Program + GA Readiness + Reliability Validation + Commercial Launch System
+
+Do not rebuild Phase 1–14 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Risk API
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor / Graphic / Social Agents
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+
+PHASE 9:
+- Multi-tenant SaaS
+- Workers
+- WebSocket events
+- Alerts
+- Cloud/Terraform/Kubernetes templates
+
+PHASE 10:
+- Billing
+- Usage metering
+- Entitlements
+- Quotas
+- Marketplace
+- Enterprise license
+- White-label branding
+
+PHASE 11:
+- AI Ops
+- Prompt registry
+- Governance
+- DLP
+- Compliance
+- Security review
+
+PHASE 12:
+- Ops Autopilot
+- Incidents
+- SLA/SLO
+- Enterprise integrations
+- Managed service console
+
+PHASE 13:
+- Mobile app
+- Developer platform
+- Partner API
+- SDKs
+- Sandbox
+- Partner webhooks
+
+PHASE 14:
+- Tauri desktop app
+- Desktop releases
+- Waitlist/invites
+- Public status page
+- Distribution pipeline
+- Marketplace publishing
+- Launch readiness
+
+============================================================
+PHASE 15 OBJECTIVE
+============================================================
+
+Build the final production GA and commercial launch layer for zDash.
+
+Main goals:
+
+1. Expand marketplace into a certified AI Agent / Plugin marketplace
+2. Add partner submission and certification workflow
+3. Add marketplace revenue-share ledger shell
+4. Add plugin/agent SBOM and package scanning shell
+5. Add agent quality score and trust badge system
+6. Add public marketplace storefront
+7. Add partner portal and certification dashboard
+8. Add public cloud GA launch gates
+9. Add final production readiness score
+10. Add reliability validation suite
+11. Add load-test and chaos-test dry-run framework
+12. Add API versioning and deprecation policy system
+13. Add customer lifecycle analytics
+14. Add conversion funnel and onboarding analytics
+15. Add enterprise procurement pack generator
+16. Add commercial docs and customer-facing legal document templates
+17. Add GA release train and staged rollout manager
+18. Add data residency / region policy shell
+19. Add final safety validation gates
+20. Add final Phase 15 tests, docs, runbooks, and acceptance checklist
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass plugin security review.
+- Do not publish marketplace packages without certification.
+- Do not expose secrets in marketplace metadata, logs, reports, telemetry, legal docs, GA packs, exports, or storefront pages.
+- Marketplace submissions must be sandboxed and review-gated.
+- Load testing and chaos testing must be dry-run/safe by default.
+- GA launch must be blocked if safety gates fail.
+- Revenue-share system must be ledger-only/mock by default; no real payout movement.
+- Legal/commercial templates are operational placeholders, not legal advice.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/ga/
+  __init__.py
+  models.py
+  readiness_service.py
+  release_train.py
+  rollout_service.py
+  reliability_validator.py
+  load_test_service.py
+  chaos_test_service.py
+  api_versioning.py
+  deprecation_service.py
+  final_safety_gate.py
+
+backend/app/partner_program/
+  __init__.py
+  models.py
+  partner_profile_service.py
+  certification_service.py
+  submission_service.py
+  trust_badge_service.py
+  revenue_share_ledger.py
+  partner_score_service.py
+  procurement_pack_service.py
+
+backend/app/marketplace_v2/
+  __init__.py
+  models.py
+  storefront_service.py
+  agent_catalog.py
+  package_scanner.py
+  sbom_service.py
+  review_queue.py
+  install_policy.py
+  quality_score.py
+
+backend/app/product_analytics/
+  __init__.py
+  models.py
+  event_service.py
+  funnel_service.py
+  onboarding_analytics.py
+  lifecycle_service.py
+  cohort_service.py
+  privacy.py
+
+backend/app/legalops/
+  __init__.py
+  models.py
+  document_templates.py
+  commercial_pack_service.py
+  terms_generator.py
+  data_residency_service.py
+
+backend/app/api/ga.py
+backend/app/api/partner_program.py
+backend/app/api/marketplace_v2.py
+backend/app/api/product_analytics.py
+backend/app/api/legalops.py
+
+frontend/src/pages/GALaunch.tsx
+frontend/src/pages/MarketplaceStorefront.tsx
+frontend/src/pages/PartnerPortal.tsx
+frontend/src/pages/CertificationCenter.tsx
+frontend/src/pages/ReliabilityLab.tsx
+frontend/src/pages/ProductAnalytics.tsx
+frontend/src/pages/CommercialPacks.tsx
+frontend/src/pages/APIVersions.tsx
+
+frontend/src/components/ga/
+  GAReadinessPanel.tsx
+  FinalSafetyGatePanel.tsx
+  ReleaseTrainTable.tsx
+  RolloutStagePanel.tsx
+  ReliabilityValidationPanel.tsx
+  LoadTestPanel.tsx
+  ChaosTestPanel.tsx
+  APIVersionPolicyPanel.tsx
+  DeprecationNoticeTable.tsx
+
+frontend/src/components/marketplace-v2/
+  MarketplaceHero.tsx
+  AgentListingCard.tsx
+  TrustBadge.tsx
+  AgentCatalogGrid.tsx
+  AgentDetailPanel.tsx
+  MarketplaceInstallPanel.tsx
+  PackageScanResultPanel.tsx
+  SBOMViewer.tsx
+  ReviewQueueTable.tsx
+  QualityScoreCard.tsx
+
+frontend/src/components/partner-program/
+  PartnerProfilePanel.tsx
+  PartnerSubmissionForm.tsx
+  CertificationStatusCard.tsx
+  CertificationChecklist.tsx
+  RevenueShareLedgerTable.tsx
+  PartnerScoreCard.tsx
+  ProcurementPackPanel.tsx
+
+frontend/src/components/analytics/
+  FunnelChart.tsx
+  LifecycleMetrics.tsx
+  CohortTable.tsx
+  OnboardingFunnel.tsx
+  ProductEventTable.tsx
+  PrivacyAnalyticsBanner.tsx
+
+frontend/src/components/legalops/
+  CommercialPackPanel.tsx
+  DocumentTemplateTable.tsx
+  DataResidencyPolicyPanel.tsx
+  TermsPreviewPanel.tsx
+
+frontend/src/hooks/useGA.ts
+frontend/src/hooks/useMarketplaceV2.ts
+frontend/src/hooks/usePartnerProgram.ts
+frontend/src/hooks/useProductAnalytics.ts
+frontend/src/hooks/useLegalOps.ts
+
+scripts/
+  ga-readiness-check.sh
+  final-safety-gate.sh
+  run-reliability-validation.sh
+  run-load-test-dry-run.sh
+  run-chaos-test-dry-run.sh
+  generate-ga-pack.sh
+  generate-procurement-pack.sh
+  generate-marketplace-sbom.sh
+  validate-marketplace-package.sh
+  publish-marketplace-dry-run.sh
+  generate-commercial-docs.sh
+  api-deprecation-check.sh
+
+docs/
+  ga/
+    PRODUCTION_GA_PLAN.md
+    FINAL_SAFETY_GATE.md
+    RELIABILITY_VALIDATION.md
+    LOAD_TESTING_DRY_RUN.md
+    CHAOS_TESTING_DRY_RUN.md
+    RELEASE_TRAIN.md
+    STAGED_ROLLOUT.md
+    API_VERSIONING_POLICY.md
+    DEPRECATION_POLICY.md
+  marketplace/
+    AI_AGENT_MARKETPLACE_V2.md
+    MARKETPLACE_CERTIFICATION.md
+    MARKETPLACE_TRUST_BADGES.md
+    PACKAGE_SCANNING_MODEL.md
+    SBOM_MODEL.md
+    REVENUE_SHARE_LEDGER.md
+  partner/
+    PARTNER_PROGRAM.md
+    PARTNER_CERTIFICATION_GUIDE.md
+    PARTNER_SUBMISSION_GUIDE.md
+    ENTERPRISE_PROCUREMENT_PACK.md
+  analytics/
+    PRODUCT_ANALYTICS_MODEL.md
+    PRIVACY_SAFE_ANALYTICS.md
+    ONBOARDING_FUNNEL.md
+    CUSTOMER_LIFECYCLE_MODEL.md
+  legalops/
+    COMMERCIAL_DOCUMENT_PACK.md
+    DATA_RESIDENCY_MODEL.md
+    CUSTOMER_TERMS_TEMPLATE.md
+    SECURITY_ADDENDUM_TEMPLATE.md
+  runbooks/
+    GA_LAUNCH_RUNBOOK.md
+    MARKETPLACE_CERTIFICATION_RUNBOOK.md
+    PARTNER_ESCALATION_RUNBOOK.md
+    ROLLOUT_ROLLBACK_RUNBOOK.md
+    RELIABILITY_INCIDENT_RUNBOOK.md
+    API_DEPRECATION_RUNBOOK.md
+
+backend/app/tests/
+  test_ga_models.py
+  test_ga_readiness_service.py
+  test_release_train.py
+  test_rollout_service.py
+  test_reliability_validator.py
+  test_load_test_service.py
+  test_chaos_test_service.py
+  test_api_versioning.py
+  test_deprecation_service.py
+  test_final_safety_gate.py
+  test_partner_program_models.py
+  test_partner_profile_service.py
+  test_certification_service.py
+  test_submission_service.py
+  test_trust_badge_service.py
+  test_revenue_share_ledger.py
+  test_partner_score_service.py
+  test_procurement_pack_service.py
+  test_marketplace_v2_models.py
+  test_storefront_service.py
+  test_agent_catalog.py
+  test_package_scanner.py
+  test_sbom_service.py
+  test_marketplace_review_queue.py
+  test_install_policy.py
+  test_quality_score.py
+  test_product_analytics_models.py
+  test_product_event_service.py
+  test_funnel_service.py
+  test_onboarding_analytics.py
+  test_lifecycle_service.py
+  test_cohort_service.py
+  test_analytics_privacy.py
+  test_legalops_models.py
+  test_commercial_pack_service.py
+  test_data_residency_service.py
+  test_ga_api.py
+  test_partner_program_api.py
+  test_marketplace_v2_api.py
+  test_product_analytics_api.py
+  test_legalops_api.py
+  test_phase15_tenant_isolation.py
+  test_phase15_safety_gates.py
+
+frontend/src/tests/
+  GALaunch.test.tsx
+  MarketplaceStorefront.test.tsx
+  PartnerPortal.test.tsx
+  CertificationCenter.test.tsx
+  ReliabilityLab.test.tsx
+  ProductAnalytics.test.tsx
+  CommercialPacks.test.tsx
+  APIVersions.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/billing/entitlement_service.py
+backend/app/governance/policy_engine.py
+backend/app/marketplace/plugin_service.py
+backend/app/distribution/marketplace_publish_service.py
+backend/app/launch/launch_readiness.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+sdk/typescript/README.md
+sdk/python/README.md
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+GA_ENABLED=true
+GA_MODE=pre_ga
+GA_PUBLIC_LAUNCH_BLOCKED_UNTIL_READY=true
+GA_REQUIRE_FINAL_SAFETY_GATE=true
+GA_REQUIRE_RELIABILITY_VALIDATION=true
+GA_REQUIRE_SECURITY_REVIEW=true
+GA_REQUIRE_BACKUP_VALIDATION=true
+GA_REQUIRE_DLP_PASS=true
+GA_REQUIRE_TENANT_ISOLATION_PASS=true
+
+RELEASE_TRAIN_ENABLED=true
+RELEASE_CHANNEL_DEFAULT=stable
+RELEASE_STAGE_DEFAULT=internal
+ROLLOUT_ENABLED=true
+ROLLOUT_DRY_RUN=true
+ROLLOUT_REQUIRE_APPROVAL=true
+
+RELIABILITY_VALIDATION_ENABLED=true
+LOAD_TEST_ENABLED=true
+LOAD_TEST_DRY_RUN=true
+LOAD_TEST_MAX_VIRTUAL_USERS=50
+LOAD_TEST_MAX_DURATION_SECONDS=300
+
+CHAOS_TEST_ENABLED=true
+CHAOS_TEST_DRY_RUN=true
+CHAOS_TEST_REQUIRE_APPROVAL=true
+CHAOS_TEST_ALLOW_DESTRUCTIVE=false
+
+API_VERSIONING_ENABLED=true
+PUBLIC_API_CURRENT_VERSION=v1
+API_DEPRECATION_NOTICE_DAYS=90
+
+MARKETPLACE_V2_ENABLED=true
+MARKETPLACE_STOREFRONT_PUBLIC=true
+MARKETPLACE_CERTIFICATION_REQUIRED=true
+MARKETPLACE_PACKAGE_SCAN_REQUIRED=true
+MARKETPLACE_SBOM_REQUIRED=true
+MARKETPLACE_REVENUE_SHARE_ENABLED=true
+MARKETPLACE_REVENUE_SHARE_DRY_RUN=true
+MARKETPLACE_INSTALL_POLICY_FAIL_CLOSED=true
+
+PARTNER_PROGRAM_ENABLED=true
+PARTNER_CERTIFICATION_REQUIRED=true
+PARTNER_SUBMISSIONS_ENABLED=true
+PARTNER_TRUST_BADGES_ENABLED=true
+PARTNER_REVENUE_LEDGER_DRY_RUN=true
+
+PRODUCT_ANALYTICS_ENABLED=true
+PRODUCT_ANALYTICS_PRIVACY_SAFE=true
+PRODUCT_ANALYTICS_COLLECT_PERSONAL_DATA=false
+PRODUCT_ANALYTICS_COLLECT_SECRETS=false
+PRODUCT_ANALYTICS_RETENTION_DAYS=180
+
+LEGALOPS_ENABLED=true
+COMMERCIAL_PACKS_ENABLED=true
+LEGAL_TEMPLATE_MODE=template_only
+DATA_RESIDENCY_ENABLED=true
+DEFAULT_DATA_REGION=local
+SUPPORTED_DATA_REGIONS=local,us,eu,apac
+
+Rules:
+- GA public launch must be blocked until final safety gate passes.
+- Rollout must be dry-run by default.
+- Load test and chaos test must be safe/dry-run by default.
+- Chaos testing cannot be destructive unless explicitly approved and configured.
+- Marketplace certification is required by default.
+- Marketplace package scanning and SBOM are required by default.
+- Revenue-share ledger is dry-run/accounting-only by default.
+- Product analytics must be privacy-safe.
+- Commercial/legal documents are templates only.
+- Data residency is policy metadata only unless infrastructure supports enforcement.
+- No secrets may be stored, logged, exported, or displayed.
+
+============================================================
+GA MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. GAMode
+
+Allowed values:
+- dev
+- alpha
+- beta
+- pre_ga
+- ga
+- maintenance
+
+2. GAReadinessStatus
+
+Allowed values:
+- not_started
+- running
+- passed
+- warning
+- blocked
+- failed
+
+3. ReleaseStage
+
+Allowed values:
+- internal
+- alpha
+- beta
+- canary
+- stable
+- enterprise_lts
+
+4. RolloutStatus
+
+Allowed values:
+- planned
+- running
+- paused
+- completed
+- rolled_back
+- blocked
+
+5. TestRunStatus
+
+Allowed values:
+- queued
+- running
+- passed
+- warning
+- failed
+- blocked
+- canceled
+
+6. GAReadinessCheck
+
+Fields:
+- id
+- category
+- name
+- status
+- severity
+- message
+- blockers
+- warnings
+- evidence
+- checked_at
+
+7. GAReadinessReport
+
+Fields:
+- id
+- mode
+- status
+- score
+- checks
+- blockers
+- warnings
+- generated_at
+
+8. ReleaseTrain
+
+Fields:
+- id
+- version
+- channel
+- stage
+- status
+- notes
+- started_at
+- completed_at
+- created_by
+- created_at
+- updated_at
+
+9. RolloutPlan
+
+Fields:
+- id
+- release_train_id
+- name
+- status
+- stages
+- current_stage
+- dry_run
+- requires_approval
+- approved_by
+- started_at
+- completed_at
+- created_at
+- updated_at
+
+10. ReliabilityValidationRun
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- status
+- checks
+- score
+- started_at
+- finished_at
+- duration_ms
+- warnings
+- blockers
+
+11. LoadTestRun
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- status
+- dry_run
+- virtual_users
+- duration_seconds
+- target
+- results
+- started_at
+- finished_at
+
+12. ChaosTestRun
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- status
+- dry_run
+- scenario
+- destructive
+- approved_by
+- results
+- started_at
+- finished_at
+
+13. APIVersionPolicy
+
+Fields:
+- id
+- version
+- status
+- released_at
+- deprecated_at
+- sunset_at
+- migration_notes
+- created_at
+- updated_at
+
+14. DeprecationNotice
+
+Fields:
+- id
+- version
+- route
+- notice
+- replacement
+- effective_at
+- sunset_at
+- acknowledged_by
+- created_at
+
+============================================================
+GA SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ga/readiness_service.py
+backend/app/ga/release_train.py
+backend/app/ga/rollout_service.py
+backend/app/ga/reliability_validator.py
+backend/app/ga/load_test_service.py
+backend/app/ga/chaos_test_service.py
+backend/app/ga/api_versioning.py
+backend/app/ga/deprecation_service.py
+backend/app/ga/final_safety_gate.py
+
+GAReadinessService methods:
+- run_all_checks()
+- get_latest_report()
+- get_blockers()
+- calculate_score(checks)
+- assert_ga_ready()
+
+Required checks:
+- production safety lock safe
+- default secrets rejected
+- DRY_RUN default safe
+- Guardian enabled
+- content approval enabled
+- social dry-run enabled
+- IoT dry-run enabled
+- billing fail-closed enabled
+- governance fail-closed enabled
+- DLP enabled
+- tenant isolation tests pass
+- backup validation pass
+- audit logging enabled
+- metrics enabled
+- status page enabled
+- public docs generated
+- marketplace certification required
+- package scan required
+- SBOM required
+- public API excludes internal/admin routes
+- telemetry privacy-safe
+
+FinalSafetyGate methods:
+- evaluate()
+- block_if_unsafe()
+- generate_evidence()
+- get_gate_status()
+
+Rules:
+- Any critical blocker prevents GA mode.
+- Final gate cannot be bypassed except by admin override in non-production.
+- Production GA requires all critical checks passed.
+
+ReleaseTrainService methods:
+- create_release_train()
+- list_release_trains()
+- update_stage()
+- mark_completed()
+- rollback_release()
+- generate_changelog()
+
+RolloutService methods:
+- create_rollout_plan()
+- start_rollout()
+- pause_rollout()
+- advance_stage()
+- rollback_rollout()
+- get_rollout_status()
+
+Rules:
+- Dry-run by default.
+- Rollout approval required.
+- Rollout cannot proceed if final safety gate blocked.
+- Rollback must be available.
+
+ReliabilityValidator methods:
+- run_validation()
+- validate_health()
+- validate_worker_queue()
+- validate_event_stream()
+- validate_auth()
+- validate_tenant_isolation()
+- validate_backup()
+- validate_observability()
+- validate_safety_defaults()
+
+LoadTestService methods:
+- run_load_test_dry_run()
+- estimate_capacity()
+- list_runs()
+- get_run()
+
+Rules:
+- Dry-run only unless explicitly configured.
+- Do not overload local environment.
+- Cap virtual users and duration.
+
+ChaosTestService methods:
+- list_scenarios()
+- run_scenario()
+- validate_scenario_safety()
+- list_runs()
+
+Default scenarios:
+- worker unavailable simulation
+- Redis unavailable simulation
+- API latency simulation
+- scheduler job failure simulation
+- webhook delivery failure simulation
+- read-only database simulation
+
+Rules:
+- Dry-run by default.
+- No destructive scenario allowed by default.
+- No scenario may disable Guardian, DLP, tenant isolation, or approval systems.
+
+APIVersioningService methods:
+- list_versions()
+- create_version_policy()
+- mark_deprecated()
+- get_current_version()
+- validate_route_version()
+
+DeprecationService methods:
+- create_notice()
+- list_notices()
+- acknowledge_notice()
+- generate_deprecation_report()
+
+============================================================
+MARKETPLACE V2 MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. MarketplaceListingStatus
+
+Allowed values:
+- draft
+- submitted
+- scanning
+- review
+- certified
+- published
+- rejected
+- suspended
+- deprecated
+
+2. TrustBadgeType
+
+Allowed values:
+- certified
+- security_reviewed
+- sbom_verified
+- sandbox_safe
+- enterprise_ready
+- privacy_safe
+- verified_partner
+
+3. PackageScanStatus
+
+Allowed values:
+- pending
+- running
+- passed
+- warning
+- failed
+- blocked
+
+4. AgentMarketplaceListing
+
+Fields:
+- id
+- partner_id
+- package_id
+- name
+- slug
+- version
+- description
+- category
+- status
+- trust_badges
+- quality_score
+- install_count
+- rating_average
+- required_permissions
+- required_entitlements
+- screenshots
+- documentation_url
+- support_url
+- created_at
+- updated_at
+
+5. PackageScanResult
+
+Fields:
+- id
+- package_id
+- status
+- findings
+- warnings
+- blocked_reasons
+- dlp_passed
+- policy_passed
+- sbom_id
+- scanned_at
+
+6. SBOMRecord
+
+Fields:
+- id
+- package_id
+- format
+- components
+- vulnerabilities
+- generated_at
+
+7. MarketplaceReviewItem
+
+Fields:
+- id
+- listing_id
+- package_id
+- status
+- reviewer_id
+- checklist
+- decision_notes
+- created_at
+- reviewed_at
+
+8. MarketplaceQualityScore
+
+Fields:
+- listing_id
+- total_score
+- security_score
+- documentation_score
+- reliability_score
+- privacy_score
+- support_score
+- calculated_at
+
+============================================================
+MARKETPLACE V2 SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/marketplace_v2/storefront_service.py
+backend/app/marketplace_v2/agent_catalog.py
+backend/app/marketplace_v2/package_scanner.py
+backend/app/marketplace_v2/sbom_service.py
+backend/app/marketplace_v2/review_queue.py
+backend/app/marketplace_v2/install_policy.py
+backend/app/marketplace_v2/quality_score.py
+
+StorefrontService:
+- list_public_listings()
+- get_listing()
+- search_listings()
+- get_featured_listings()
+- get_category_summary()
+
+AgentCatalogService:
+- create_listing()
+- submit_listing()
+- update_listing()
+- suspend_listing()
+- publish_listing()
+
+PackageScanner:
+- scan_package(package_id)
+- run_dlp_check()
+- run_policy_check()
+- run_permission_check()
+- run_static_metadata_check()
+
+Rules:
+- Deterministic safe scanner shell.
+- No external malware API required.
+- Block packages requesting live trading, real IoT, real social posting, secret access, or external network unless explicitly reviewed.
+
+SBOMService:
+- generate_sbom(package_id)
+- get_sbom(sbom_id)
+- validate_sbom(package_id)
+
+ReviewQueue:
+- create_review_item()
+- list_review_items()
+- approve_listing()
+- reject_listing()
+- request_changes()
+
+InstallPolicy:
+- evaluate_install(listing_id, tenant_context)
+- enforce_install_policy()
+- block_if_uncertified()
+
+QualityScore:
+- calculate_score(listing_id)
+- update_score()
+- get_score()
+
+Rules:
+- Certification required before public publish.
+- SBOM required before certification.
+- Package scan must pass before certification.
+- Security review must pass before certification.
+- Plugin/agent install must enforce tenant, entitlement, quota, and governance rules.
+
+============================================================
+PARTNER PROGRAM MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. PartnerStatus
+
+Allowed values:
+- applicant
+- active
+- suspended
+- certified
+- rejected
+
+2. CertificationStatus
+
+Allowed values:
+- not_started
+- pending
+- in_review
+- passed
+- failed
+- expired
+
+3. PartnerTier
+
+Allowed values:
+- community
+- builder
+- certified
+- enterprise
+- strategic
+
+4. PartnerProfile
+
+Fields:
+- id
+- organization_id
+- name
+- website
+- contact_email
+- status
+- tier
+- specialties
+- metadata
+- created_at
+- updated_at
+
+5. PartnerSubmission
+
+Fields:
+- id
+- partner_id
+- package_id
+- listing_id
+- status
+- notes
+- submitted_at
+- reviewed_at
+
+6. CertificationRecord
+
+Fields:
+- id
+- partner_id
+- listing_id
+- status
+- checklist
+- score
+- expires_at
+- issued_by
+- issued_at
+
+7. TrustBadgeRecord
+
+Fields:
+- id
+- listing_id
+- badge_type
+- issued_by
+- issued_at
+- expires_at
+- metadata
+
+8. RevenueShareLedgerEntry
+
+Fields:
+- id
+- partner_id
+- listing_id
+- amount
+- currency
+- type
+- status
+- dry_run
+- metadata
+- created_at
+
+9. ProcurementPack
+
+Fields:
+- id
+- organization_id
+- partner_id
+- status
+- file_path
+- includes_security_summary
+- includes_compliance_summary
+- includes_sla_summary
+- includes_pricing_summary
+- includes_dpa_template
+- created_at
+
+============================================================
+PARTNER PROGRAM SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/partner_program/partner_profile_service.py
+backend/app/partner_program/certification_service.py
+backend/app/partner_program/submission_service.py
+backend/app/partner_program/trust_badge_service.py
+backend/app/partner_program/revenue_share_ledger.py
+backend/app/partner_program/partner_score_service.py
+backend/app/partner_program/procurement_pack_service.py
+
+PartnerProfileService:
+- create_partner_profile()
+- get_profile()
+- update_profile()
+- suspend_partner()
+- activate_partner()
+
+SubmissionService:
+- submit_package()
+- list_submissions()
+- get_submission()
+- withdraw_submission()
+
+CertificationService:
+- start_certification()
+- run_certification_checks()
+- approve_certification()
+- fail_certification()
+- renew_certification()
+
+Certification checks:
+- package scan passed
+- SBOM valid
+- DLP passed
+- policy passed
+- documentation present
+- support URL present
+- sandbox install test passed
+- no unsafe permissions
+- no secret access
+- no live trading enablement
+- no real IoT enablement
+- no real social posting enablement
+
+TrustBadgeService:
+- issue_badge()
+- revoke_badge()
+- list_badges()
+
+RevenueShareLedger:
+- record_mock_sale()
+- calculate_partner_balance()
+- list_entries()
+- export_ledger()
+
+Rules:
+- Dry-run accounting only.
+- No real payouts.
+- No payment secrets stored.
+
+PartnerScoreService:
+- calculate_partner_score()
+- score_reliability()
+- score_security()
+- score_support()
+- score_documentation()
+
+ProcurementPackService:
+- generate_pack()
+- list_packs()
+- get_pack()
+
+Pack includes:
+- security summary
+- compliance summary
+- marketplace certification summary
+- SLA/SLO summary
+- data residency summary
+- pricing summary
+- DPA template placeholder
+- support runbook summary
+
+Rules:
+- Templates only, not legal advice.
+- No secrets in procurement packs.
+
+============================================================
+PRODUCT ANALYTICS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. ProductEventType
+
+Allowed values:
+- page_view
+- signup_started
+- signup_completed
+- onboarding_step_completed
+- api_key_created
+- sandbox_provisioned
+- backtest_run
+- content_created
+- plugin_installed
+- checkout_started
+- subscription_started
+- support_case_created
+- ga_readiness_run
+
+2. ProductEvent
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- anonymous_id
+- user_id
+- event_type
+- properties_summary
+- source
+- privacy_safe
+- created_at
+
+3. FunnelDefinition
+
+Fields:
+- id
+- name
+- steps
+- created_at
+- updated_at
+
+4. FunnelResult
+
+Fields:
+- funnel_id
+- name
+- steps
+- conversion_rate
+- dropoff
+- calculated_at
+
+5. CohortResult
+
+Fields:
+- cohort_key
+- users
+- retained
+- retention_rate
+- period
+- calculated_at
+
+6. LifecycleStage
+
+Allowed values:
+- visitor
+- waitlist
+- trial
+- activated
+- retained
+- expansion
+- at_risk
+- churned
+
+7. CustomerLifecycleState
+
+Fields:
+- organization_id
+- stage
+- score
+- signals
+- updated_at
+
+============================================================
+PRODUCT ANALYTICS SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/product_analytics/event_service.py
+backend/app/product_analytics/funnel_service.py
+backend/app/product_analytics/onboarding_analytics.py
+backend/app/product_analytics/lifecycle_service.py
+backend/app/product_analytics/cohort_service.py
+backend/app/product_analytics/privacy.py
+
+Privacy rules:
+- Do not collect secrets.
+- Do not collect raw content bodies.
+- Do not collect raw prompts.
+- Do not collect raw API keys.
+- Redact emails unless explicitly allowed.
+- Respect opt-out.
+
+EventService:
+- record_event()
+- list_events()
+- summarize_events()
+
+FunnelService:
+- create_default_funnels()
+- calculate_funnel()
+- list_funnel_results()
+
+Default funnels:
+- waitlist → invited → activated
+- signup → onboarding complete → first dry-run scan
+- signup → first backtest → first dashboard return
+- developer portal → API key created → sandbox request
+- marketplace view → plugin install → plugin run
+- pricing view → checkout started → subscription started
+
+OnboardingAnalytics:
+- calculate_completion_rate()
+- identify_blocked_steps()
+- recommend_next_action()
+
+LifecycleService:
+- calculate_lifecycle_state()
+- list_at_risk_customers()
+- summarize_lifecycle()
+
+CohortService:
+- calculate_retention()
+- list_cohorts()
+
+============================================================
+LEGALOPS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. CommercialDocumentType
+
+Allowed values:
+- security_summary
+- dpa_template
+- msa_template
+- sla_template
+- support_policy
+- data_residency_summary
+- privacy_summary
+- subprocessors_template
+- procurement_summary
+
+2. CommercialPack
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- status
+- documents
+- generated_at
+- generated_by
+
+3. DataResidencyPolicy
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- region
+- allowed_regions
+- restricted_regions
+- notes
+- created_at
+- updated_at
+
+4. LegalTemplate
+
+Fields:
+- id
+- document_type
+- title
+- template_text
+- version
+- disclaimer
+- created_at
+- updated_at
+
+============================================================
+LEGALOPS SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/legalops/document_templates.py
+backend/app/legalops/commercial_pack_service.py
+backend/app/legalops/terms_generator.py
+backend/app/legalops/data_residency_service.py
+
+DocumentTemplates:
+- list_templates()
+- get_template()
+- render_template()
+
+CommercialPackService:
+- generate_pack()
+- list_packs()
+- get_pack()
+- export_pack()
+
+TermsGenerator:
+- generate_terms_preview()
+- generate_sla_template()
+- generate_support_policy()
+
+DataResidencyService:
+- get_policy()
+- update_policy()
+- validate_region()
+- summarize_policy()
+
+Rules:
+- Templates only, not legal advice.
+- No secrets.
+- Data residency policy is metadata-only unless infrastructure enforcement exists.
+- Export requires admin/operator.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/ga.py
+
+Endpoints:
+
+GET /api/ga/status
+POST /api/ga/readiness/run
+GET /api/ga/readiness/latest
+GET /api/ga/readiness/blockers
+POST /api/ga/final-safety-gate/evaluate
+GET /api/ga/release-trains
+POST /api/ga/release-trains
+PATCH /api/ga/release-trains/{train_id}
+POST /api/ga/release-trains/{train_id}/rollback
+GET /api/ga/rollouts
+POST /api/ga/rollouts
+POST /api/ga/rollouts/{rollout_id}/start
+POST /api/ga/rollouts/{rollout_id}/pause
+POST /api/ga/rollouts/{rollout_id}/advance
+POST /api/ga/rollouts/{rollout_id}/rollback
+POST /api/ga/reliability/run
+GET /api/ga/reliability/runs
+POST /api/ga/load-test/run
+GET /api/ga/load-test/runs
+POST /api/ga/chaos-test/run
+GET /api/ga/chaos-test/runs
+GET /api/ga/api-versions
+POST /api/ga/api-versions
+POST /api/ga/api-versions/{version}/deprecate
+GET /api/ga/deprecations
+POST /api/ga/deprecations
+
+Create:
+
+backend/app/api/marketplace_v2.py
+
+Endpoints:
+
+GET /api/marketplace-v2/status
+GET /api/marketplace-v2/storefront
+GET /api/marketplace-v2/storefront/{listing_id}
+GET /api/marketplace-v2/categories
+POST /api/marketplace-v2/listings
+POST /api/marketplace-v2/listings/{listing_id}/submit
+POST /api/marketplace-v2/listings/{listing_id}/scan
+GET /api/marketplace-v2/listings/{listing_id}/sbom
+POST /api/marketplace-v2/listings/{listing_id}/review/approve
+POST /api/marketplace-v2/listings/{listing_id}/review/reject
+POST /api/marketplace-v2/listings/{listing_id}/publish
+POST /api/marketplace-v2/listings/{listing_id}/install-policy/check
+
+Create:
+
+backend/app/api/partner_program.py
+
+Endpoints:
+
+GET /api/partner-program/status
+GET /api/partner-program/profile
+POST /api/partner-program/profile
+PATCH /api/partner-program/profile
+POST /api/partner-program/submissions
+GET /api/partner-program/submissions
+GET /api/partner-program/certifications
+POST /api/partner-program/certifications/{submission_id}/start
+POST /api/partner-program/certifications/{certification_id}/approve
+POST /api/partner-program/certifications/{certification_id}/fail
+GET /api/partner-program/trust-badges
+GET /api/partner-program/revenue-ledger
+POST /api/partner-program/revenue-ledger/mock-sale
+GET /api/partner-program/procurement-packs
+POST /api/partner-program/procurement-packs
+
+Create:
+
+backend/app/api/product_analytics.py
+
+Endpoints:
+
+GET /api/product-analytics/status
+POST /api/product-analytics/events
+GET /api/product-analytics/events
+GET /api/product-analytics/funnels
+POST /api/product-analytics/funnels/calculate
+GET /api/product-analytics/onboarding
+GET /api/product-analytics/lifecycle
+GET /api/product-analytics/cohorts
+POST /api/product-analytics/opt-out
+
+Create:
+
+backend/app/api/legalops.py
+
+Endpoints:
+
+GET /api/legalops/status
+GET /api/legalops/templates
+GET /api/legalops/templates/{template_id}
+POST /api/legalops/commercial-packs
+GET /api/legalops/commercial-packs
+GET /api/legalops/commercial-packs/{pack_id}
+GET /api/legalops/data-residency
+PATCH /api/legalops/data-residency
+POST /api/legalops/terms-preview
+
+Rules:
+- Auth required except public marketplace storefront if enabled.
+- Tenant scoped.
+- Standard response shape required.
+- Sensitive actions require admin/operator.
+- GA actions require final safety gate permissions.
+- Marketplace publish requires certification and review.
+- Product analytics must respect privacy opt-out.
+- Legal/commercial pack generation must not include secrets.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+GA:
+- ga.read
+- ga.run_readiness
+- ga.manage_release_train
+- ga.manage_rollout
+- ga.run_reliability
+- ga.run_load_test
+- ga.run_chaos_test
+- ga.manage_api_versions
+- ga.override_final_gate
+
+Marketplace V2:
+- marketplace_v2.read
+- marketplace_v2.submit_listing
+- marketplace_v2.scan_package
+- marketplace_v2.review_listing
+- marketplace_v2.publish_listing
+- marketplace_v2.install
+
+Partner Program:
+- partner_program.read
+- partner_program.manage_profile
+- partner_program.submit_package
+- partner_program.manage_certification
+- partner_program.read_revenue
+- partner_program.generate_procurement_pack
+
+Product Analytics:
+- product_analytics.read
+- product_analytics.record
+- product_analytics.manage
+
+LegalOps:
+- legalops.read
+- legalops.generate_commercial_pack
+- legalops.manage_data_residency
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- ga.read
+- ga.run_readiness
+- ga.run_reliability
+- ga.run_load_test
+- marketplace_v2.read
+- marketplace_v2.submit_listing
+- marketplace_v2.scan_package
+- partner_program.read
+- partner_program.manage_profile
+- partner_program.submit_package
+- partner_program.generate_procurement_pack
+- product_analytics.read
+- legalops.read
+- legalops.generate_commercial_pack
+
+analyst:
+- ga.read
+- marketplace_v2.read
+- partner_program.read
+- product_analytics.read
+- legalops.read
+
+viewer:
+- ga.read limited
+- marketplace_v2.read limited
+- product_analytics.read limited
+- legalops.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- ga_readiness_checks
+- ga_readiness_reports
+- release_trains
+- rollout_plans
+- reliability_validation_runs
+- load_test_runs
+- chaos_test_runs
+- api_version_policies
+- deprecation_notices
+- marketplace_v2_listings
+- package_scan_results
+- sbom_records
+- marketplace_review_items
+- marketplace_quality_scores
+- partner_profiles
+- partner_submissions
+- certification_records
+- trust_badge_records
+- revenue_share_ledger_entries
+- procurement_packs
+- product_events
+- funnel_definitions
+- funnel_results
+- cohort_results
+- customer_lifecycle_states
+- commercial_packs
+- legal_templates
+- data_residency_policies
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- No secrets.
+- No raw personal payloads in analytics.
+- No raw legal customer secrets in commercial packs.
+- Marketplace scan results must not include secret values.
+
+============================================================
+FRONTEND PHASE 15 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /ga
+- /marketplace-storefront
+- /partner-portal
+- /certification
+- /reliability-lab
+- /product-analytics
+- /commercial-packs
+- /api-versions
+
+Update sidebar:
+- GA Launch
+- Marketplace Storefront
+- Partner Portal
+- Certification Center
+- Reliability Lab
+- Product Analytics
+- Commercial Packs
+- API Versions
+
+1. GA Launch Page
+
+Must show:
+- GA mode
+- Final safety gate status
+- Readiness score
+- Blockers
+- Warnings
+- Release trains
+- Rollout plans
+- Run readiness button
+- Final gate evaluate button
+
+Safety:
+- Public GA launch blocked if critical blockers exist.
+- Override button hidden unless admin.
+
+2. Marketplace Storefront Page
+
+Must show:
+- Public marketplace hero
+- Agent catalog grid
+- Trust badges
+- Quality score
+- Listing detail panel
+- Install policy status
+- Sandbox-safe label
+
+3. Partner Portal Page
+
+Must show:
+- Partner profile
+- Submission form
+- Submissions list
+- Revenue-share ledger dry-run banner
+- Procurement pack generator
+
+4. Certification Center Page
+
+Must show:
+- Certification checklist
+- Package scan results
+- SBOM viewer
+- Review queue
+- Trust badge issuance
+- Approve/reject actions role-gated
+
+5. Reliability Lab Page
+
+Must show:
+- Reliability validation runs
+- Load-test dry-run panel
+- Chaos-test dry-run panel
+- Capacity estimate
+- Safety warnings
+
+6. Product Analytics Page
+
+Must show:
+- Privacy-safe analytics banner
+- Funnel charts
+- Onboarding funnel
+- Lifecycle metrics
+- Cohort table
+- Product event table
+
+7. Commercial Packs Page
+
+Must show:
+- Commercial pack generator
+- Document template table
+- Terms preview
+- Data residency policy
+- Export safety note
+
+8. API Versions Page
+
+Must show:
+- Current public API version
+- Version policies
+- Deprecation notices
+- Migration notes
+- Acknowledge notice action
+
+Frontend safety:
+- Never display secrets.
+- Analytics must show privacy-safe status.
+- Marketplace publish/install actions must show certification status.
+- Chaos/load test actions must show dry-run state.
+- Commercial/legal templates must show “template only / not legal advice” note.
+- GA override hidden unless admin.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+GA:
+- ga.readiness.started
+- ga.readiness.completed
+- ga.readiness.blocked
+- ga.final_gate.evaluated
+- ga.final_gate.blocked
+- ga.release_train.created
+- ga.release_train.updated
+- ga.release_train.rolled_back
+- ga.rollout.created
+- ga.rollout.started
+- ga.rollout.paused
+- ga.rollout.advanced
+- ga.rollout.rolled_back
+- ga.reliability.started
+- ga.reliability.completed
+- ga.load_test.started
+- ga.load_test.completed
+- ga.chaos_test.started
+- ga.chaos_test.completed
+- ga.api_version.created
+- ga.api_version.deprecated
+
+Marketplace V2:
+- marketplace_v2.listing.created
+- marketplace_v2.listing.submitted
+- marketplace_v2.package.scan.started
+- marketplace_v2.package.scan.completed
+- marketplace_v2.sbom.generated
+- marketplace_v2.review.approved
+- marketplace_v2.review.rejected
+- marketplace_v2.listing.published
+- marketplace_v2.install_policy.evaluated
+- marketplace_v2.quality_score.calculated
+
+Partner Program:
+- partner.profile.created
+- partner.profile.updated
+- partner.submission.created
+- partner.certification.started
+- partner.certification.passed
+- partner.certification.failed
+- partner.trust_badge.issued
+- partner.trust_badge.revoked
+- partner.revenue.mock_sale.recorded
+- partner.procurement_pack.generated
+
+Product Analytics:
+- product.event.recorded
+- product.funnel.calculated
+- product.onboarding.analyzed
+- product.lifecycle.calculated
+- product.cohort.calculated
+- product.analytics.opt_out
+
+LegalOps:
+- legalops.commercial_pack.generated
+- legalops.terms.preview.generated
+- legalops.data_residency.updated
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- GA_DISABLED
+- GA_READINESS_BLOCKED
+- FINAL_SAFETY_GATE_BLOCKED
+- RELEASE_TRAIN_NOT_FOUND
+- ROLLOUT_NOT_FOUND
+- RELIABILITY_VALIDATION_FAILED
+- LOAD_TEST_BLOCKED
+- CHAOS_TEST_BLOCKED
+- API_VERSION_NOT_FOUND
+- DEPRECATION_NOTICE_NOT_FOUND
+- MARKETPLACE_V2_DISABLED
+- LISTING_NOT_FOUND
+- LISTING_NOT_CERTIFIED
+- PACKAGE_SCAN_FAILED
+- PACKAGE_SBOM_REQUIRED
+- MARKETPLACE_REVIEW_REQUIRED
+- INSTALL_POLICY_BLOCKED
+- PARTNER_PROGRAM_DISABLED
+- PARTNER_PROFILE_NOT_FOUND
+- CERTIFICATION_FAILED
+- TRUST_BADGE_NOT_FOUND
+- PRODUCT_ANALYTICS_DISABLED
+- ANALYTICS_OPTED_OUT
+- LEGALOPS_DISABLED
+- COMMERCIAL_PACK_NOT_FOUND
+- DATA_REGION_NOT_SUPPORTED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_ga_models.py
+- GA mode enum
+- readiness status enum
+- rollout status enum
+- test run status enum
+
+2. test_ga_readiness_service.py
+- readiness checks run
+- critical blockers block GA
+- readiness score calculated
+- safe config passes
+
+3. test_release_train.py
+- create release train
+- update stage
+- rollback release
+- changelog generated
+
+4. test_rollout_service.py
+- create rollout
+- start dry-run rollout
+- advance stage
+- rollback rollout
+- blocked when final gate fails
+
+5. test_reliability_validator.py
+- validation run created
+- health validation works
+- tenant isolation validation included
+- warnings captured
+
+6. test_load_test_service.py
+- dry-run load test works
+- cap virtual users
+- cap duration
+- unsafe target blocked
+
+7. test_chaos_test_service.py
+- scenarios listed
+- dry-run chaos works
+- destructive scenario blocked
+- Guardian/DLP/tenant isolation cannot be disabled
+
+8. test_api_versioning.py
+- current version exists
+- create version policy
+- deprecated version warning
+- route version validation
+
+9. test_deprecation_service.py
+- create notice
+- list notices
+- acknowledge notice
+- report generated
+
+10. test_final_safety_gate.py
+- blocks unsafe live trading config
+- blocks disabled Guardian
+- blocks public API admin exposure
+- passes safe dry-run config
+
+11. test_partner_program_models.py
+- partner status enum
+- certification status enum
+- partner tier enum
+- revenue ledger model
+
+12. test_partner_profile_service.py
+- create partner profile
+- update profile
+- suspend/activate partner
+- tenant scoped
+
+13. test_certification_service.py
+- certification checks run
+- missing SBOM blocks
+- unsafe permissions block
+- certification passed when all checks pass
+
+14. test_submission_service.py
+- submit package
+- list submissions
+- withdraw submission
+- non-partner blocked
+
+15. test_trust_badge_service.py
+- issue badge
+- revoke badge
+- expired badge not active
+
+16. test_revenue_share_ledger.py
+- mock sale recorded
+- partner balance calculated
+- export excludes payment secrets
+
+17. test_partner_score_service.py
+- reliability score
+- security score
+- support score
+- total score calculated
+
+18. test_procurement_pack_service.py
+- pack generated
+- includes required sections
+- no secrets included
+- template disclaimer present
+
+19. test_marketplace_v2_models.py
+- listing status enum
+- trust badge enum
+- scan status enum
+- listing validation
+
+20. test_storefront_service.py
+- public listings returned
+- unpublished listings hidden
+- search works
+- category summary works
+
+21. test_agent_catalog.py
+- create listing
+- submit listing
+- publish listing requires certification
+
+22. test_package_scanner.py
+- DLP check blocks secrets
+- unsafe permissions blocked
+- safe package scan passes
+
+23. test_sbom_service.py
+- SBOM generated
+- SBOM validates
+- missing SBOM blocks certification
+
+24. test_marketplace_review_queue.py
+- review item created
+- approve listing
+- reject listing
+- reviewer decision audited
+
+25. test_install_policy.py
+- uncertified install blocked
+- entitlement required
+- quota enforced
+- tenant scoped
+
+26. test_quality_score.py
+- quality score calculated
+- security score affects total
+- missing docs lowers score
+
+27. test_product_event_service.py
+- event recorded
+- secrets redacted
+- opt-out respected
+
+28. test_funnel_service.py
+- default funnels created
+- funnel calculated
+- dropoff calculated
+
+29. test_onboarding_analytics.py
+- completion rate calculated
+- blocked steps identified
+- next action recommended
+
+30. test_lifecycle_service.py
+- lifecycle state calculated
+- at-risk customers listed
+
+31. test_cohort_service.py
+- cohort retention calculated
+- tenant scoped
+
+32. test_analytics_privacy.py
+- email redacted
+- raw prompts not stored
+- API keys not stored
+
+33. test_legalops_models.py
+- document type enum
+- commercial pack model
+- data residency model
+
+34. test_commercial_pack_service.py
+- pack generated
+- template-only disclaimer present
+- no secrets included
+
+35. test_data_residency_service.py
+- default policy exists
+- supported region accepted
+- unsupported region rejected
+
+36. test_ga_api.py
+- status endpoint
+- readiness endpoint
+- rollout endpoint
+- reliability endpoint
+- API version endpoint
+
+37. test_partner_program_api.py
+- profile endpoint
+- submission endpoint
+- certification endpoint
+- procurement pack endpoint
+
+38. test_marketplace_v2_api.py
+- storefront endpoint
+- listing endpoint
+- scan endpoint
+- SBOM endpoint
+- review endpoint
+
+39. test_product_analytics_api.py
+- event endpoint
+- funnel endpoint
+- onboarding endpoint
+- lifecycle endpoint
+- opt-out endpoint
+
+40. test_legalops_api.py
+- templates endpoint
+- commercial pack endpoint
+- data residency endpoint
+- terms preview endpoint
+
+41. test_phase15_tenant_isolation.py
+- org A cannot read org B readiness reports
+- org A cannot read org B partner profile
+- org A cannot read org B analytics
+- org A cannot read org B commercial packs
+
+42. test_phase15_safety_gates.py
+- GA blocked if final safety gate fails
+- marketplace publish blocked without certification
+- chaos destructive action blocked
+- analytics cannot store secrets
+- legalops cannot export secrets
+
+Frontend tests:
+
+1. GALaunch.test.tsx
+- GA readiness panel renders
+- final safety gate visible
+- blockers visible
+- rollout table visible
+
+2. MarketplaceStorefront.test.tsx
+- marketplace hero renders
+- listings render
+- trust badge visible
+- uncertified warning visible
+
+3. PartnerPortal.test.tsx
+- partner profile renders
+- submission form exists
+- revenue dry-run banner visible
+
+4. CertificationCenter.test.tsx
+- certification checklist renders
+- package scan results render
+- SBOM viewer visible
+- approve/reject role-gated
+
+5. ReliabilityLab.test.tsx
+- reliability validation panel renders
+- load-test dry-run banner visible
+- chaos-test dry-run banner visible
+
+6. ProductAnalytics.test.tsx
+- privacy-safe banner visible
+- funnel chart renders
+- lifecycle metrics render
+- cohort table renders
+
+7. CommercialPacks.test.tsx
+- commercial pack generator renders
+- template-only disclaimer visible
+- data residency panel renders
+
+8. APIVersions.test.tsx
+- API version policy renders
+- deprecation notice table renders
+- migration notes visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 15 overview
+- GA readiness system
+- Final safety gate
+- Release train system
+- Staged rollout manager
+- Reliability validation
+- Load testing dry-run
+- Chaos testing dry-run
+- API versioning and deprecation
+- Marketplace V2 storefront
+- Marketplace certification workflow
+- Package scanning and SBOM
+- Trust badges
+- Partner program
+- Revenue-share ledger dry-run
+- Procurement pack generator
+- Product analytics privacy model
+- Funnel and lifecycle analytics
+- Commercial/legal template packs
+- Data residency policy model
+- Frontend pages
+- API examples
+- Test commands
+- Production GA checklist
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run GA readiness check:
+
+bash scripts/ga-readiness-check.sh
+
+Run final safety gate:
+
+bash scripts/final-safety-gate.sh
+
+Run reliability validation:
+
+bash scripts/run-reliability-validation.sh
+
+Run load test dry-run:
+
+bash scripts/run-load-test-dry-run.sh
+
+Run chaos test dry-run:
+
+bash scripts/run-chaos-test-dry-run.sh
+
+Generate GA pack:
+
+bash scripts/generate-ga-pack.sh
+
+Generate procurement pack:
+
+bash scripts/generate-procurement-pack.sh
+
+Generate marketplace SBOM:
+
+bash scripts/generate-marketplace-sbom.sh
+
+Validate marketplace package:
+
+bash scripts/validate-marketplace-package.sh
+
+Marketplace publish dry-run:
+
+bash scripts/publish-marketplace-dry-run.sh
+
+Generate commercial docs:
+
+bash scripts/generate-commercial-docs.sh
+
+Check API deprecations:
+
+bash scripts/api-deprecation-check.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 15 is complete only when:
+
+- GA readiness system exists.
+- Final safety gate works.
+- GA launch is blocked when critical safety checks fail.
+- Release train service works.
+- Rollout service works in dry-run mode.
+- Reliability validation works.
+- Load-test dry-run works.
+- Chaos-test dry-run works and blocks destructive scenarios.
+- API versioning system exists.
+- Deprecation notice system exists.
+- Marketplace V2 models exist.
+- Storefront service works.
+- Agent catalog works.
+- Package scanner works.
+- SBOM service works.
+- Review queue works.
+- Install policy blocks uncertified packages.
+- Quality score works.
+- Partner profile service works.
+- Partner submission workflow works.
+- Certification service works.
+- Trust badges work.
+- Revenue-share ledger works in dry-run mode.
+- Procurement pack generator works.
+- Product analytics records privacy-safe events only.
+- Funnel analytics work.
+- Onboarding analytics work.
+- Lifecycle analytics work.
+- Cohort analytics work.
+- Commercial/legal pack generator works.
+- Data residency policy service works.
+- GA API works.
+- Marketplace V2 API works.
+- Partner Program API works.
+- Product Analytics API works.
+- LegalOps API works.
+- Frontend GA Launch page works.
+- Frontend Marketplace Storefront page works.
+- Frontend Partner Portal page works.
+- Frontend Certification Center page works.
+- Frontend Reliability Lab page works.
+- Frontend Product Analytics page works.
+- Frontend Commercial Packs page works.
+- Frontend API Versions page works.
+- Tenant isolation applies to all Phase 15 data.
+- Existing Phase 1–14 behavior remains intact.
+- Existing tests still pass.
+- New Phase 15 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Marketplace publishing remains certification-gated.
+- README includes Phase 15 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. GA models and services
+6. Marketplace V2 models and services
+7. Partner Program models and services
+8. Product Analytics models and services
+9. LegalOps models and services
+10. API route files
+11. Build/validation scripts
+12. Test files
+13. .env.example updates
+14. README updates
+15. GA docs
+16. Marketplace docs
+17. Partner docs
+18. Analytics docs
+19. LegalOps docs
+20. Run instructions
+21. Test instructions
+22. GA production checklist
+23. Marketplace certification checklist
+24. Partner launch checklist
+25. Final safety checklist
+26. Acceptance checklist
+27. Known limitations
+28. Final zDash v2.0 GA handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–14 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, marketplace, telemetry, analytics, reports, commercial docs, or logs.
+- Never collect raw API keys, raw prompts, raw secrets, raw trading credentials, raw broker credentials, or private keys in analytics.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never publish uncertified marketplace listings.
+- Never run destructive chaos tests by default.
+- Keep revenue-share ledger dry-run/accounting-only.
+- Keep legal/commercial documents template-only.
+- Keep public GA blocked until final safety gate passes.
+- Keep code modular, production-ready, and ready for zDash v2.0 GA release.
+
+Now generate the complete Phase 15 implementation.

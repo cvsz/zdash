@@ -1,0 +1,368 @@
+Continue from the previous Meta Master Prompt for:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 1 · FOUNDATION
+ตั้ง Janie Server + Agent Runtime
+
+Your task is to generate the complete working source code for Phase 1 only.
+
+Do not implement trading, MT5, backtesting, scheduler, IoT, or dashboard yet.
+Only create the backend foundation that later phases can extend cleanly.
+
+============================================================
+PHASE 1 OBJECTIVE
+============================================================
+
+Build the core backend foundation:
+
+1. Python FastAPI Janie Server
+2. Clean project structure
+3. Agent Runtime
+4. Base Agent class
+5. CEO Agent
+6. Janie Agent
+7. CEO → Janie communication flow
+8. Claude API adapter
+9. Mock AI fallback adapter
+10. Event bus
+11. Structured JSON logging
+12. Health endpoint
+13. Agent endpoints
+14. Log endpoint
+15. Pytest test suite
+16. `.env.example`
+17. README setup guide
+
+============================================================
+REQUIRED STACK
+============================================================
+
+Use:
+
+- Python 3.11+
+- FastAPI
+- Pydantic v2
+- Uvicorn
+- Pytest
+- HTTPX for tests
+- python-dotenv or pydantic-settings
+- Structured JSON logging
+- Environment-based config
+
+No hardcoded secrets.
+
+============================================================
+REQUIRED FOLDER STRUCTURE
+============================================================
+
+Create:
+
+zdash/
+  README.md
+  .env.example
+  scripts/
+    setup-dev.sh
+    setup-dev.ps1
+    run-backend.sh
+    smoke-test.sh
+  backend/
+    pyproject.toml
+    app/
+      __init__.py
+      main.py
+      core/
+        __init__.py
+        config.py
+        logging.py
+        events.py
+        responses.py
+      agents/
+        __init__.py
+        base.py
+        ceo.py
+        janie.py
+        registry.py
+      ai/
+        __init__.py
+        base.py
+        claude_adapter.py
+        mock_adapter.py
+      api/
+        __init__.py
+        health.py
+        agents.py
+        logs.py
+      tests/
+        test_health.py
+        test_agent_runtime.py
+        test_ceo_janie_flow.py
+        test_ai_mock_fallback.py
+
+============================================================
+ENV CONFIG
+============================================================
+
+Create `.env.example`:
+
+APP_NAME=zDash
+APP_ENV=development
+LOG_LEVEL=INFO
+
+BACKEND_HOST=0.0.0.0
+BACKEND_PORT=8000
+
+CLAUDE_API_KEY=
+CLAUDE_MODEL=claude-sonnet-4-5
+AI_PROVIDER=mock
+
+DRY_RUN=true
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+Every API must return:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+For errors:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Create helper functions in:
+
+backend/app/core/responses.py
+
+============================================================
+AGENT RUNTIME REQUIREMENTS
+============================================================
+
+Create BaseAgent class with:
+
+- id
+- name
+- role
+- status
+- metadata
+- receive_message()
+- run_task()
+- emit_event()
+- health_check()
+
+Agent statuses:
+
+- idle
+- running
+- error
+- disabled
+
+Create these agents:
+
+1. CEO Agent
+   - role: commander
+   - can send message to Janie
+
+2. Janie Agent
+   - role: operator
+   - receives CEO messages
+   - calls AI adapter
+   - returns response
+   - emits event logs
+
+============================================================
+AI ADAPTER REQUIREMENTS
+============================================================
+
+Create interface:
+
+AIAdapter:
+  - generate_response(prompt: str, context: dict | None = None) -> AIResponse
+
+Create:
+
+1. MockAIAdapter
+   - Always works
+   - Used by default
+   - Returns deterministic mock response
+
+2. ClaudeAdapter
+   - Reads CLAUDE_API_KEY and CLAUDE_MODEL from environment
+   - If key missing, fallback to MockAIAdapter
+   - Do not crash when key is missing
+   - Keep implementation replaceable
+   - If real Claude SDK is not installed, write safe placeholder structure and document where to connect it
+
+============================================================
+EVENT BUS REQUIREMENTS
+============================================================
+
+Create simple in-memory event bus for Phase 1:
+
+Event fields:
+- id
+- type
+- source
+- message
+- payload
+- created_at
+
+Event types:
+- system.startup
+- agent.message.received
+- agent.message.sent
+- ai.response.generated
+- error
+
+Add API endpoint to retrieve recent logs/events.
+
+============================================================
+REQUIRED API ENDPOINTS
+============================================================
+
+GET /health
+
+Returns:
+- app name
+- environment
+- status
+- timestamp
+
+GET /api/agents
+
+Returns all registered agents and their health status.
+
+POST /api/agents/message
+
+Request body:
+
+{
+  "from_agent": "ceo",
+  "to_agent": "janie",
+  "message": "Hello Janie, report status.",
+  "context": {}
+}
+
+Response:
+- message id
+- from_agent
+- to_agent
+- response text
+- event ids
+- timestamp
+
+GET /api/logs
+
+Returns recent event logs.
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Write tests for:
+
+1. Health endpoint works
+2. Agents are registered
+3. CEO can send message to Janie
+4. Janie returns AI-generated mock response
+5. Missing Claude key falls back to mock adapter
+6. Event logs are created
+7. API response format is consistent
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+RUN COMMANDS
+============================================================
+
+Backend run command:
+
+cd backend
+uvicorn app.main:app --reload
+
+Smoke test:
+
+curl http://localhost:8000/health
+curl http://localhost:8000/api/agents
+curl http://localhost:8000/api/logs
+
+Message test:
+
+curl -X POST http://localhost:8000/api/agents/message \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from_agent": "ceo",
+    "to_agent": "janie",
+    "message": "Hello Janie, report system status.",
+    "context": {}
+  }'
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree
+2. Full source code for every file
+3. Setup instructions
+4. Run instructions
+5. Test instructions
+6. Acceptance checklist
+7. Known limitations
+8. Next phase handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not hardcode secrets.
+- Keep code modular.
+- Use typed Python where reasonable.
+- Use clean imports.
+- Make tests runnable immediately.
+- Keep Phase 1 isolated but ready for Phase 2.
+- Do not implement trading logic yet.
+- Do not implement dashboard yet.
+- Do not implement live execution.
+- Default AI provider must be mock.
+- Claude integration must be optional and safe.
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 1 is complete only when:
+
+- FastAPI server starts successfully.
+- `/health` returns ok.
+- `/api/agents` shows CEO and Janie.
+- CEO can send message to Janie.
+- Janie responds using mock AI fallback.
+- Missing Claude API key does not break app.
+- Logs/events are recorded.
+- Tests pass.
+- README explains setup clearly.
+- Codebase is ready for Phase 2 Trading Core.
+
+Now generate the complete Phase 1 implementation.

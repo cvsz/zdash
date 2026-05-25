@@ -1,0 +1,703 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 3 · RISK SYSTEM
+Drawdown Guard + Guardian Agent + Emergency Stop System
+
+Do not rebuild Phase 1 or Phase 2 from scratch.
+Extend the existing codebase cleanly.
+
+Assume Phase 1 and Phase 2 already exist:
+
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+============================================================
+PHASE 3 OBJECTIVE
+============================================================
+
+Build a complete risk protection system for zDash.
+
+Main goals:
+
+1. Create Guardian Agent
+2. Add drawdown calculation
+3. Add account equity/balance tracking model
+4. Add emergency stop threshold
+5. Add halt flag system
+6. Add manual halt and resume controls
+7. Integrate Guardian risk approval into trading execution engine
+8. Add risk audit logs
+9. Add FastAPI risk endpoints
+10. Add tests for all risk-critical behavior
+
+IMPORTANT:
+- This system must default to safe mode.
+- Live trading must remain disabled by default.
+- DRY_RUN must remain true by default.
+- No execution is allowed when risk halt is active.
+- No execution is allowed if Guardian approval fails.
+- Do not provide financial advice.
+- This is a technical risk-control implementation for simulation, paper trading, and guarded automation.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create or update these files:
+
+backend/app/agents/guardian.py
+
+backend/app/risk/
+  __init__.py
+  models.py
+  drawdown_guard.py
+  halt_flag.py
+  kill_switch.py
+  guardian_service.py
+
+backend/app/trading/execution_engine.py
+
+backend/app/api/risk.py
+
+backend/app/main.py
+
+backend/app/core/events.py
+
+backend/app/core/config.py
+
+backend/app/tests/
+  test_drawdown_guard.py
+  test_halt_flag.py
+  test_kill_switch.py
+  test_guardian_service.py
+  test_risk_api.py
+  test_execution_blocked_by_risk.py
+
+Update if needed:
+
+backend/app/agents/registry.py
+backend/app/api/trading.py
+backend/app/trading/risk_models.py
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example` with:
+
+RISK_GUARDIAN_ENABLED=true
+
+MAX_DAILY_DRAWDOWN_PERCENT=5
+MAX_TOTAL_DRAWDOWN_PERCENT=20
+EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT=50
+
+SOFT_HALT_DRAWDOWN_LEVEL_1=5
+SOFT_HALT_DRAWDOWN_LEVEL_2=10
+SOFT_HALT_DRAWDOWN_LEVEL_3=20
+
+ALLOW_MANUAL_RESUME=true
+REQUIRE_RESUME_REASON=true
+
+DRY_RUN=true
+LIVE_TRADING_ACK=false
+
+Rules:
+
+- Values must be parsed from environment variables.
+- Invalid config values must fail safely.
+- If config is missing, use safe defaults.
+- Emergency stop threshold must be configurable but default to 50%.
+- Soft halt thresholds must default to 5%, 10%, and 20%.
+
+============================================================
+RISK MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models in:
+
+backend/app/risk/models.py
+
+Models:
+
+1. AccountSnapshot
+
+Fields:
+- balance: float
+- equity: float
+- peak_equity: float
+- daily_start_equity: float
+- open_positions: int
+- floating_pnl: float
+- realized_pnl_today: float
+- timestamp: datetime
+
+2. DrawdownResult
+
+Fields:
+- current_equity: float
+- peak_equity: float
+- daily_start_equity: float
+- total_drawdown_percent: float
+- daily_drawdown_percent: float
+- floating_pnl: float
+- risk_level: str
+- breached: bool
+- breach_reason: str | None
+
+3. HaltState
+
+Fields:
+- halted: bool
+- reason: str | None
+- source: str | None
+- created_at: datetime | None
+- resumed_at: datetime | None
+- resume_reason: str | None
+
+4. RiskDecision
+
+Fields:
+- approved: bool
+- reason: str
+- risk_level: str
+- halt_active: bool
+- drawdown: DrawdownResult | None
+- timestamp: datetime
+
+Risk levels:
+
+- normal
+- warning
+- danger
+- emergency
+
+============================================================
+DRAWDOWN GUARD REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/risk/drawdown_guard.py
+
+Implement:
+
+DrawdownGuard
+
+Methods:
+
+- calculate_total_drawdown(snapshot: AccountSnapshot) -> float
+- calculate_daily_drawdown(snapshot: AccountSnapshot) -> float
+- evaluate(snapshot: AccountSnapshot) -> DrawdownResult
+
+Calculation rules:
+
+total_drawdown_percent =
+  ((peak_equity - current_equity) / peak_equity) * 100
+
+daily_drawdown_percent =
+  ((daily_start_equity - current_equity) / daily_start_equity) * 100
+
+Safety rules:
+
+- If peak_equity <= 0, return 0 drawdown and warning state.
+- If daily_start_equity <= 0, return 0 daily drawdown and warning state.
+- Drawdown cannot be negative.
+- Round percentages to 4 decimals.
+- Compare drawdown against configured thresholds.
+- If total drawdown >= emergency threshold, risk_level = emergency.
+- If total or daily drawdown >= max configured threshold, risk_level = danger.
+- If drawdown crosses soft halt levels, risk_level = warning or danger.
+
+============================================================
+HALT FLAG REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/risk/halt_flag.py
+
+Implement:
+
+HaltFlagStore
+
+For Phase 3, use in-memory storage.
+Design it so it can be replaced with database persistence in later phases.
+
+Methods:
+
+- get_state() -> HaltState
+- halt(reason: str, source: str) -> HaltState
+- resume(reason: str) -> HaltState
+- is_halted() -> bool
+
+Rules:
+
+- Halt reason is required.
+- Source is required.
+- Resume reason is required if REQUIRE_RESUME_REASON=true.
+- Resume must clear halted state but preserve last metadata.
+- Emit events for halt and resume actions.
+
+============================================================
+EMERGENCY STOP REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/risk/kill_switch.py
+
+Implement:
+
+KillSwitch
+
+Methods:
+
+- should_trigger(drawdown: DrawdownResult) -> bool
+- trigger(drawdown: DrawdownResult, halt_store: HaltFlagStore) -> HaltState
+
+Rules:
+
+- Trigger when total_drawdown_percent >= EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT.
+- Trigger when daily_drawdown_percent >= MAX_DAILY_DRAWDOWN_PERCENT if configured as hard halt.
+- Trigger must activate HaltFlagStore.
+- Trigger reason must include risk level and drawdown percentage.
+- Once triggered, execution engine must block all non-dry-run live execution.
+
+============================================================
+GUARDIAN AGENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/agents/guardian.py
+
+Guardian Agent:
+
+- id: guardian
+- name: Guardian
+- role: risk_guardian
+- status: idle/running/error
+- receives risk check requests
+- evaluates account snapshot
+- produces RiskDecision
+- emits events
+
+Required methods:
+
+- evaluate_risk(snapshot: AccountSnapshot) -> RiskDecision
+- approve_execution(signal: dict, snapshot: AccountSnapshot) -> RiskDecision
+- manual_halt(reason: str) -> HaltState
+- manual_resume(reason: str) -> HaltState
+- health_check()
+
+Guardian behavior:
+
+- If RISK_GUARDIAN_ENABLED=false:
+  - In DRY_RUN mode, allow but warn.
+  - In live mode, block execution.
+- If halt flag is active:
+  - Block execution.
+- If emergency threshold breached:
+  - Activate emergency stop.
+  - Block execution.
+- If max daily or total drawdown breached:
+  - Halt.
+  - Block execution.
+- If risk level is warning:
+  - Allow dry-run execution.
+  - Mark decision as approved with warning.
+- If risk level is normal:
+  - Approve.
+
+============================================================
+GUARDIAN SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/risk/guardian_service.py
+
+Implement service layer that coordinates:
+
+- DrawdownGuard
+- HaltFlagStore
+- KillSwitch
+- Guardian Agent
+- Event bus
+
+Methods:
+
+- get_status() -> dict
+- check(snapshot: AccountSnapshot) -> RiskDecision
+- halt(reason: str, source: str = "manual") -> HaltState
+- resume(reason: str) -> HaltState
+- approve_execution(signal: dict, snapshot: AccountSnapshot) -> RiskDecision
+
+The service must be imported by API routes and trading execution engine.
+
+============================================================
+TRADING EXECUTION INTEGRATION
+============================================================
+
+Update:
+
+backend/app/trading/execution_engine.py
+
+Before any execution attempt:
+
+1. Load or receive AccountSnapshot.
+2. Call guardian_service.approve_execution().
+3. If approved=false:
+   - Block execution.
+   - Return execution result with status = blocked_by_risk.
+   - Include risk decision.
+   - Emit event.
+4. If halt flag active:
+   - Block execution.
+5. If DRY_RUN=true:
+   - Simulate execution only.
+6. If DRY_RUN=false:
+   - Require LIVE_TRADING_ACK=true.
+   - Require RISK_GUARDIAN_ENABLED=true.
+   - Require risk decision approved=true.
+
+Execution result must include:
+
+- ok
+- status
+- dry_run
+- signal
+- risk_decision
+- message
+- timestamp
+
+Statuses:
+
+- simulated
+- executed
+- blocked_by_risk
+- blocked_by_config
+- failed
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/risk.py
+
+Required endpoints:
+
+1. GET /api/risk/status
+
+Returns:
+- guardian enabled
+- halt state
+- configured thresholds
+- current risk status
+
+2. POST /api/risk/check
+
+Request body:
+
+{
+  "balance": 10000,
+  "equity": 9500,
+  "peak_equity": 10000,
+  "daily_start_equity": 10000,
+  "open_positions": 0,
+  "floating_pnl": -500,
+  "realized_pnl_today": -500
+}
+
+Returns:
+- RiskDecision
+
+3. GET /api/risk/drawdown
+
+Can return latest evaluated drawdown result or mock safe state if none exists.
+
+4. POST /api/risk/halt
+
+Request:
+
+{
+  "reason": "Manual operator halt"
+}
+
+Returns:
+- HaltState
+
+5. POST /api/risk/resume
+
+Request:
+
+{
+  "reason": "Risk reviewed and safe to resume dry-run"
+}
+
+Returns:
+- HaltState
+
+6. POST /api/risk/approve-execution
+
+Request:
+
+{
+  "signal": {
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "direction": "buy",
+    "strategy": "ob_aggressive",
+    "confidence": 0.72
+  },
+  "snapshot": {
+    "balance": 10000,
+    "equity": 9900,
+    "peak_equity": 10000,
+    "daily_start_equity": 10000,
+    "open_positions": 0,
+    "floating_pnl": -100,
+    "realized_pnl_today": -100
+  }
+}
+
+Returns:
+- RiskDecision
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use the existing standard response format:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add these event types:
+
+- risk.check.requested
+- risk.check.completed
+- risk.warning
+- risk.halt.activated
+- risk.halt.resumed
+- risk.emergency_stop.triggered
+- risk.execution.approved
+- risk.execution.blocked
+- trading.execution.blocked_by_risk
+
+Every event must include:
+
+- id
+- type
+- source
+- message
+- payload
+- created_at
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create tests:
+
+1. test_drawdown_guard.py
+
+Test:
+- total drawdown calculation
+- daily drawdown calculation
+- zero peak equity safety
+- no negative drawdown
+- warning threshold
+- danger threshold
+- emergency threshold
+
+2. test_halt_flag.py
+
+Test:
+- initial state not halted
+- halt activates
+- resume clears halt
+- reason required
+- source required
+
+3. test_kill_switch.py
+
+Test:
+- does not trigger below threshold
+- triggers at emergency threshold
+- activates halt state
+- reason includes drawdown
+
+4. test_guardian_service.py
+
+Test:
+- normal risk approves
+- active halt blocks
+- emergency drawdown blocks
+- manual halt blocks
+- resume allows again if risk is normal
+
+5. test_risk_api.py
+
+Test:
+- GET /api/risk/status
+- POST /api/risk/check
+- POST /api/risk/halt
+- POST /api/risk/resume
+- POST /api/risk/approve-execution
+
+6. test_execution_blocked_by_risk.py
+
+Test:
+- execution is blocked when halt active
+- execution is blocked when drawdown breached
+- dry-run execution allowed when risk normal
+- live execution blocked unless LIVE_TRADING_ACK=true
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 3 overview
+- Risk system architecture
+- Drawdown formulas
+- Halt/resume usage
+- Emergency stop behavior
+- API examples
+- Test commands
+- Safety notes
+
+Add curl examples:
+
+Check risk:
+
+curl -X POST http://localhost:8000/api/risk/check \
+  -H "Content-Type: application/json" \
+  -d '{
+    "balance": 10000,
+    "equity": 9500,
+    "peak_equity": 10000,
+    "daily_start_equity": 10000,
+    "open_positions": 0,
+    "floating_pnl": -500,
+    "realized_pnl_today": -500
+  }'
+
+Manual halt:
+
+curl -X POST http://localhost:8000/api/risk/halt \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Manual operator halt"}'
+
+Resume:
+
+curl -X POST http://localhost:8000/api/risk/resume \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Reviewed and safe for dry-run resume"}'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 3 is complete only when:
+
+- Guardian agent is registered.
+- Drawdown calculation works.
+- Halt flag works.
+- Emergency stop trigger works.
+- Risk API endpoints work.
+- Manual halt blocks execution.
+- Resume clears halt when reason is provided.
+- Execution engine checks Guardian before execution.
+- Execution is blocked when risk is unsafe.
+- DRY_RUN remains true by default.
+- LIVE_TRADING_ACK is required for non-dry-run mode.
+- Event logs are created for all risk actions.
+- Tests pass with pytest.
+- README includes Phase 3 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Run instructions
+8. Test instructions
+9. Acceptance checklist
+10. Known limitations
+11. Phase 4 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1 or Phase 2 behavior.
+- Keep all existing tests passing.
+- Use typed Python where reasonable.
+- Use Pydantic models.
+- Use safe defaults.
+- Do not hardcode credentials.
+- Do not enable live trading by default.
+- Make all external execution paths guarded.
+- Keep in-memory halt store replaceable for future database persistence.
+- Keep Guardian service modular.
+- Make code clean enough for Phase 4 Scheduler integration.
+
+Now generate the complete Phase 3 implementation.

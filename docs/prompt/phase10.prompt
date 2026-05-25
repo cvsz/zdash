@@ -1,0 +1,1624 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 10 · SaaS Monetization + Marketplace + Enterprise Packaging
+Billing + Plans + Usage Metering + Plugin Marketplace + White Label + Enterprise Ops
+
+Do not rebuild Phase 1–9 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT Adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+PHASE 9:
+- Multi-tenant SaaS
+- Organizations/workspaces
+- Tenant-scoped RBAC
+- Queue workers
+- WebSocket event stream
+- Alerts/notifications
+- Cloudflare templates
+- Terraform templates
+- Kubernetes manifests
+- Release automation
+- Runbooks
+
+============================================================
+PHASE 10 OBJECTIVE
+============================================================
+
+Build the commercial SaaS and enterprise packaging layer for zDash.
+
+Main goals:
+
+1. Add billing plan system
+2. Add subscription lifecycle model
+3. Add usage metering
+4. Add feature entitlement system
+5. Add quota enforcement
+6. Add invoice/payment provider adapter interface
+7. Add Stripe-compatible billing adapter shell
+8. Add mock billing adapter for local development
+9. Add plugin marketplace system
+10. Add plugin installation/enable/disable workflow
+11. Add enterprise license model
+12. Add white-label branding system
+13. Add customer onboarding flow
+14. Add enterprise admin console
+15. Add SaaS pricing/plan frontend pages
+16. Add usage dashboard
+17. Add tenant billing dashboard
+18. Add marketplace UI
+19. Add enterprise export/import packaging
+20. Add tests for billing, marketplace, entitlements, quotas, and branding
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not hardcode payment provider secrets.
+- Do not store raw credit card data.
+- Do not implement custom card processing.
+- Payment provider integration must use tokenized provider references only.
+- Mock billing must be the default in development.
+- Real billing must require explicit provider config.
+- Usage quotas must fail safely.
+- Enterprise license must not weaken production safety locks.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/billing/
+  __init__.py
+  models.py
+  plan_catalog.py
+  entitlement_service.py
+  usage_meter.py
+  quota_service.py
+  billing_adapters.py
+  mock_billing_adapter.py
+  stripe_adapter.py
+  subscription_service.py
+  invoice_service.py
+  billing_webhooks.py
+
+backend/app/marketplace/
+  __init__.py
+  models.py
+  plugin_registry.py
+  plugin_store.py
+  plugin_service.py
+  plugin_runtime.py
+  builtins.py
+  safety.py
+
+backend/app/enterprise/
+  __init__.py
+  models.py
+  license_service.py
+  branding_service.py
+  export_service.py
+  onboarding_service.py
+  customer_success.py
+
+backend/app/api/billing.py
+backend/app/api/marketplace.py
+backend/app/api/enterprise.py
+
+frontend/src/pages/Billing.tsx
+frontend/src/pages/Usage.tsx
+frontend/src/pages/Marketplace.tsx
+frontend/src/pages/Enterprise.tsx
+frontend/src/pages/Onboarding.tsx
+
+frontend/src/components/billing/
+  PlanCard.tsx
+  PricingTable.tsx
+  SubscriptionStatusCard.tsx
+  UsageMeterCard.tsx
+  InvoiceTable.tsx
+  QuotaBanner.tsx
+
+frontend/src/components/marketplace/
+  PluginCard.tsx
+  PluginGrid.tsx
+  PluginDetailPanel.tsx
+  InstalledPluginTable.tsx
+
+frontend/src/components/enterprise/
+  BrandingEditor.tsx
+  LicenseStatusCard.tsx
+  ExportImportPanel.tsx
+  OnboardingChecklist.tsx
+  CustomerHealthCard.tsx
+
+frontend/src/hooks/useBilling.ts
+frontend/src/hooks/useUsage.ts
+frontend/src/hooks/useMarketplace.ts
+frontend/src/hooks/useEnterprise.ts
+
+backend/app/tests/
+  test_billing_models.py
+  test_plan_catalog.py
+  test_entitlements.py
+  test_usage_meter.py
+  test_quota_service.py
+  test_subscription_service.py
+  test_mock_billing_adapter.py
+  test_billing_api.py
+  test_marketplace_models.py
+  test_plugin_registry.py
+  test_plugin_service.py
+  test_plugin_safety.py
+  test_marketplace_api.py
+  test_enterprise_license.py
+  test_branding_service.py
+  test_export_service.py
+  test_enterprise_api.py
+  test_phase10_tenant_isolation.py
+
+frontend/src/tests/
+  Billing.test.tsx
+  Usage.test.tsx
+  Marketplace.test.tsx
+  Enterprise.test.tsx
+  Onboarding.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/audit/audit_service.py
+backend/app/tenancy/models.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.env.example
+README.md
+
+docs/
+  architecture/
+    PHASE_10_SAAS_MONETIZATION.md
+    BILLING_MODEL.md
+    MARKETPLACE_MODEL.md
+    ENTERPRISE_PACKAGING.md
+  runbooks/
+    BILLING_INCIDENT_RUNBOOK.md
+    SUBSCRIPTION_SUPPORT_RUNBOOK.md
+    MARKETPLACE_REVIEW_RUNBOOK.md
+    ENTERPRISE_CUSTOMER_RUNBOOK.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+BILLING_ENABLED=true
+BILLING_PROVIDER=mock
+BILLING_CURRENCY=USD
+BILLING_TRIAL_DAYS=14
+BILLING_GRACE_PERIOD_DAYS=7
+BILLING_WEBHOOK_SECRET=
+BILLING_FAIL_CLOSED=true
+
+STRIPE_ENABLED=false
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=
+STRIPE_PRICE_PRO=
+STRIPE_PRICE_ENTERPRISE=
+
+USAGE_METERING_ENABLED=true
+USAGE_ENFORCEMENT_ENABLED=true
+USAGE_RESET_MODE=monthly
+
+MARKETPLACE_ENABLED=true
+MARKETPLACE_INSTALL_ENABLED=true
+MARKETPLACE_REVIEW_REQUIRED=true
+PLUGIN_RUNTIME_MODE=sandbox
+PLUGIN_ALLOW_EXTERNAL_NETWORK=false
+PLUGIN_ALLOW_SECRET_ACCESS=false
+
+ENTERPRISE_LICENSE_ENABLED=true
+ENTERPRISE_OFFLINE_LICENSE_ENABLED=true
+ENTERPRISE_EXPORT_ENABLED=true
+ENTERPRISE_IMPORT_ENABLED=true
+
+WHITE_LABEL_ENABLED=true
+DEFAULT_BRAND_NAME=zDash
+DEFAULT_BRAND_LOGO_URL=
+DEFAULT_BRAND_PRIMARY_COLOR=#7c3aed
+DEFAULT_BRAND_ACCENT_COLOR=#22c55e
+
+ONBOARDING_ENABLED=true
+CUSTOMER_SUCCESS_ENABLED=true
+
+Rules:
+
+- Mock billing must work without provider secrets.
+- Real Stripe mode requires all required Stripe config.
+- Billing must fail closed when BILLING_FAIL_CLOSED=true.
+- Marketplace plugin runtime must default to sandbox.
+- Plugins must not access secrets unless explicitly allowed and reviewed.
+- White-label settings must be tenant-scoped.
+- Usage metering must be tenant-scoped.
+- Enterprise export/import must never include secrets by default.
+
+============================================================
+BILLING MODEL REQUIREMENTS
+============================================================
+
+Create billing models:
+
+1. PlanTier
+
+Allowed values:
+- free
+- starter
+- pro
+- enterprise
+
+2. SubscriptionStatus
+
+Allowed values:
+- trialing
+- active
+- past_due
+- canceled
+- expired
+- suspended
+
+3. BillingPlan
+
+Fields:
+- id
+- tier
+- name
+- description
+- price_monthly
+- price_yearly
+- currency
+- features
+- limits
+- is_public
+- created_at
+- updated_at
+
+4. Subscription
+
+Fields:
+- id
+- organization_id
+- plan_id
+- status
+- provider
+- provider_customer_id
+- provider_subscription_id
+- trial_ends_at
+- current_period_start
+- current_period_end
+- cancel_at_period_end
+- metadata
+- created_at
+- updated_at
+
+5. UsageRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- metric
+- quantity
+- source
+- resource_id
+- metadata
+- measured_at
+- created_at
+
+6. UsageSummary
+
+Fields:
+- organization_id
+- workspace_id
+- metric
+- used
+- limit
+- remaining
+- reset_at
+- percent_used
+
+7. Invoice
+
+Fields:
+- id
+- organization_id
+- provider
+- provider_invoice_id
+- status
+- amount_due
+- amount_paid
+- currency
+- hosted_invoice_url
+- invoice_pdf_url
+- created_at
+- due_at
+- paid_at
+
+8. EntitlementDecision
+
+Fields:
+- allowed
+- feature
+- reason
+- plan_tier
+- required_tier
+- quota
+- usage
+- timestamp
+
+============================================================
+DEFAULT PLAN CATALOG
+============================================================
+
+Create:
+
+backend/app/billing/plan_catalog.py
+
+Plans:
+
+FREE:
+- price: 0
+- workspaces: 1
+- users: 1
+- agents: basic
+- backtests_per_month: 25
+- optimizations_per_month: 5
+- content_items_per_month: 25
+- scheduler_jobs: 3
+- marketplace_plugins: 0
+- realtime_events: limited
+- support: community
+
+STARTER:
+- price: 29/month
+- workspaces: 2
+- users: 3
+- backtests_per_month: 250
+- optimizations_per_month: 25
+- content_items_per_month: 250
+- scheduler_jobs: 10
+- marketplace_plugins: 3
+- support: email
+
+PRO:
+- price: 99/month
+- workspaces: 10
+- users: 15
+- backtests_per_month: 2500
+- optimizations_per_month: 250
+- content_items_per_month: 2500
+- scheduler_jobs: 100
+- marketplace_plugins: 25
+- support: priority
+
+ENTERPRISE:
+- price: custom
+- workspaces: unlimited
+- users: unlimited
+- custom quotas
+- SSO-ready placeholder
+- audit export
+- white label
+- offline license
+- dedicated support
+
+Feature flags:
+
+- feature.trading_scanner
+- feature.risk_guardian
+- feature.scheduler
+- feature.backtesting
+- feature.optimization
+- feature.content_pipeline
+- feature.iot
+- feature.marketplace
+- feature.white_label
+- feature.audit_export
+- feature.enterprise_export
+- feature.realtime_stream
+
+============================================================
+ENTITLEMENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/billing/entitlement_service.py
+
+Methods:
+
+- get_plan_for_org(organization_id) -> BillingPlan
+- check_feature(organization_id, feature) -> EntitlementDecision
+- check_quota(organization_id, workspace_id, metric, increment=1) -> EntitlementDecision
+- require_feature(feature)
+- require_quota(metric, increment=1)
+
+Rules:
+
+- Enterprise plan allows custom limits.
+- Free plan must be safe and limited.
+- If billing is disabled in dev, allow but mark mock/dev mode.
+- If billing provider fails and BILLING_FAIL_CLOSED=true, block paid-only features.
+- Never bypass tenant isolation.
+- Entitlement checks must be used by:
+  - backtest run
+  - optimization run
+  - scheduler job creation
+  - content creation
+  - marketplace plugin install
+  - realtime stream access
+  - enterprise export
+
+============================================================
+USAGE METERING REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/billing/usage_meter.py
+
+Track metrics:
+
+- api_requests
+- backtests_run
+- optimizations_run
+- content_items_created
+- content_posts_attempted
+- scheduler_jobs_created
+- scheduler_jobs_run
+- iot_actions_requested
+- marketplace_plugins_installed
+- worker_tasks_enqueued
+- realtime_connections
+- storage_mb_estimated
+
+Methods:
+
+- record_usage(organization_id, workspace_id, metric, quantity=1, source=None, resource_id=None, metadata=None)
+- get_usage_summary(organization_id, workspace_id=None)
+- get_metric_summary(organization_id, workspace_id, metric)
+- reset_period_if_needed()
+
+Rules:
+
+- Usage records are tenant-scoped.
+- Do not record secret payloads.
+- Usage metering failure must not crash core system, but quota checks must fail safely if enforcement is enabled.
+
+============================================================
+QUOTA SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/billing/quota_service.py
+
+Methods:
+
+- can_consume(organization_id, workspace_id, metric, quantity=1) -> EntitlementDecision
+- consume(organization_id, workspace_id, metric, quantity=1, source=None, resource_id=None) -> EntitlementDecision
+- get_quota_status(organization_id, workspace_id=None) -> dict
+
+Rules:
+
+- Quota checks must happen before expensive operations.
+- If quota exceeded, return standard API error:
+  code: QUOTA_EXCEEDED
+- Quota events must be logged.
+- Quota banners must appear in frontend when usage > 80%.
+
+============================================================
+BILLING PROVIDER ADAPTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/billing/billing_adapters.py
+
+Define interface:
+
+BillingProviderAdapter
+
+Methods:
+
+- create_customer(organization)
+- create_checkout_session(organization_id, plan_id)
+- get_subscription(provider_subscription_id)
+- cancel_subscription(provider_subscription_id)
+- create_billing_portal_session(organization_id)
+- handle_webhook(payload, signature)
+
+Create:
+
+backend/app/billing/mock_billing_adapter.py
+
+Behavior:
+
+- Deterministic fake customer IDs
+- Deterministic fake subscription IDs
+- Fake checkout URL
+- Fake billing portal URL
+- No external API calls
+- Works in tests
+
+Create:
+
+backend/app/billing/stripe_adapter.py
+
+Behavior:
+
+- Stripe-compatible structure
+- No crash if stripe SDK missing
+- Real mode requires STRIPE_ENABLED=true and keys
+- Never logs Stripe secret key
+- Webhook signature verification placeholder must fail safely if secret missing
+- Do not store raw card data
+
+============================================================
+SUBSCRIPTION SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/billing/subscription_service.py
+
+Methods:
+
+- get_status(organization_id) -> dict
+- list_plans() -> list[BillingPlan]
+- start_checkout(organization_id, plan_id) -> dict
+- open_billing_portal(organization_id) -> dict
+- cancel_subscription(organization_id) -> Subscription
+- sync_subscription_from_provider(organization_id) -> Subscription
+- apply_mock_plan(organization_id, plan_tier) -> Subscription
+
+Rules:
+
+- apply_mock_plan allowed only in development or admin mode.
+- Plan change must be audited.
+- Subscription status affects entitlements.
+- Suspended subscription blocks paid features.
+- Free tier remains available unless organization is suspended.
+
+============================================================
+BILLING API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/billing.py
+
+Endpoints:
+
+GET /api/billing/status
+GET /api/billing/plans
+GET /api/billing/subscription
+POST /api/billing/checkout
+POST /api/billing/portal
+POST /api/billing/cancel
+POST /api/billing/mock/apply-plan
+GET /api/billing/usage
+GET /api/billing/usage/{metric}
+GET /api/billing/invoices
+POST /api/billing/webhooks/provider
+
+Rules:
+
+- Auth required except provider webhook.
+- Tenant scoped.
+- Admin/owner can manage subscription.
+- Viewer can read billing status only if allowed.
+- Webhook must not require user auth but must verify provider signature when real provider is enabled.
+- All billing actions audited.
+
+============================================================
+MARKETPLACE MODEL REQUIREMENTS
+============================================================
+
+Create marketplace models:
+
+1. PluginStatus
+
+Allowed values:
+- draft
+- review
+- approved
+- rejected
+- deprecated
+- disabled
+
+2. PluginInstallStatus
+
+Allowed values:
+- installed
+- enabled
+- disabled
+- failed
+- removed
+
+3. PluginManifest
+
+Fields:
+- id
+- name
+- slug
+- version
+- description
+- author
+- category
+- status
+- required_features
+- required_permissions
+- config_schema
+- default_config
+- entrypoint
+- safety_level
+- metadata
+- created_at
+- updated_at
+
+4. PluginInstallation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- plugin_id
+- version
+- status
+- config
+- enabled
+- installed_by
+- installed_at
+- updated_at
+
+5. PluginActionResult
+
+Fields:
+- plugin_id
+- action
+- ok
+- message
+- output
+- dry_run
+- timestamp
+
+============================================================
+MARKETPLACE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/marketplace/plugin_registry.py
+backend/app/marketplace/plugin_store.py
+backend/app/marketplace/plugin_service.py
+backend/app/marketplace/plugin_runtime.py
+backend/app/marketplace/safety.py
+backend/app/marketplace/builtins.py
+
+Built-in plugin examples:
+
+1. zdash-risk-summary
+- category: risk
+- action: summarize latest risk state
+
+2. zdash-backtest-reporter
+- category: backtesting
+- action: generate markdown report
+
+3. zdash-content-calendar
+- category: content
+- action: summarize scheduled content
+
+4. zdash-scheduler-health
+- category: automation
+- action: summarize scheduler job health
+
+Plugin safety:
+
+- No external network by default.
+- No secret access by default.
+- No live trading actions.
+- No real IoT actions.
+- No real social posting.
+- Plugins can only call allowed internal services.
+- Plugins must be tenant-scoped.
+- Plugin install requires marketplace entitlement.
+
+Methods:
+
+- list_plugins()
+- get_plugin(plugin_id)
+- install_plugin(plugin_id, workspace_id, config)
+- enable_plugin(installation_id)
+- disable_plugin(installation_id)
+- uninstall_plugin(installation_id)
+- run_plugin_action(installation_id, action, payload)
+
+============================================================
+MARKETPLACE API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/marketplace.py
+
+Endpoints:
+
+GET /api/marketplace/plugins
+GET /api/marketplace/plugins/{plugin_id}
+GET /api/marketplace/installations
+POST /api/marketplace/install
+POST /api/marketplace/installations/{installation_id}/enable
+POST /api/marketplace/installations/{installation_id}/disable
+DELETE /api/marketplace/installations/{installation_id}
+POST /api/marketplace/installations/{installation_id}/run
+
+Rules:
+
+- Auth required.
+- Tenant scoped.
+- Plugin install requires entitlement and quota.
+- Plugin run audited.
+- Plugin safety checker must run before action execution.
+
+============================================================
+ENTERPRISE MODEL REQUIREMENTS
+============================================================
+
+Create enterprise models:
+
+1. EnterpriseLicense
+
+Fields:
+- id
+- organization_id
+- license_key_hash
+- status
+- tier
+- seats
+- features
+- expires_at
+- offline_mode
+- issued_to
+- metadata
+- created_at
+- updated_at
+
+2. BrandingSettings
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- brand_name
+- logo_url
+- primary_color
+- accent_color
+- support_email
+- custom_domain
+- metadata
+- created_at
+- updated_at
+
+3. ExportBundle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- export_type
+- status
+- file_path
+- include_audit_logs
+- include_content
+- include_backtests
+- include_scheduler
+- include_secrets
+- created_by
+- created_at
+- completed_at
+
+4. OnboardingChecklist
+
+Fields:
+- organization_id
+- workspace_id
+- completed_steps
+- pending_steps
+- progress_percent
+- updated_at
+
+============================================================
+ENTERPRISE SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/enterprise/license_service.py
+
+Methods:
+
+- get_license_status(organization_id)
+- apply_license(organization_id, license_key)
+- validate_license(organization_id)
+- revoke_license(organization_id)
+
+Rules:
+- Store only license hash.
+- Offline license mode supported.
+- Invalid license must not disable free/core safe mode.
+- License cannot disable production safety lock.
+
+Create:
+
+backend/app/enterprise/branding_service.py
+
+Methods:
+
+- get_branding(organization_id, workspace_id)
+- update_branding(organization_id, workspace_id, patch)
+- reset_branding(organization_id, workspace_id)
+
+Rules:
+- Tenant scoped.
+- Validate color values.
+- Never allow script injection in branding fields.
+
+Create:
+
+backend/app/enterprise/export_service.py
+
+Methods:
+
+- create_export_bundle(request)
+- get_export_bundle(bundle_id)
+- list_export_bundles()
+- import_bundle(file)
+
+Rules:
+- Secrets excluded by default.
+- include_secrets requires admin and explicit confirmation.
+- Export must be tenant-scoped.
+- Export audit event required.
+
+Create:
+
+backend/app/enterprise/onboarding_service.py
+
+Methods:
+
+- get_checklist(organization_id, workspace_id)
+- mark_step_complete(step)
+- reset_checklist()
+- get_customer_health()
+
+Default onboarding steps:
+- create organization
+- create workspace
+- invite team
+- verify risk guardian
+- run first dry-run scan
+- run first backtest
+- create first content item
+- review scheduler jobs
+- configure billing
+- review production safety check
+
+============================================================
+ENTERPRISE API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/enterprise.py
+
+Endpoints:
+
+GET /api/enterprise/status
+GET /api/enterprise/license
+POST /api/enterprise/license/apply
+POST /api/enterprise/license/revoke
+
+GET /api/enterprise/branding
+PATCH /api/enterprise/branding
+POST /api/enterprise/branding/reset
+
+GET /api/enterprise/exports
+POST /api/enterprise/exports
+GET /api/enterprise/exports/{bundle_id}
+
+GET /api/enterprise/onboarding
+POST /api/enterprise/onboarding/complete-step
+POST /api/enterprise/onboarding/reset
+
+GET /api/enterprise/customer-health
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Branding requires owner/admin/operator.
+- License apply/revoke requires admin/owner.
+- Export requires enterprise entitlement.
+- Export with secrets requires admin and confirmation.
+- All actions audited.
+
+============================================================
+FRONTEND PHASE 10 REQUIREMENTS
+============================================================
+
+Add pages:
+
+1. Billing Page
+
+Route:
+/billing
+
+Must show:
+- Current plan
+- Subscription status
+- Pricing table
+- Plan comparison
+- Checkout button
+- Billing portal button
+- Cancel subscription button
+- Mock billing mode banner
+- Invoice table
+- Grace period / past due state
+
+2. Usage Page
+
+Route:
+/usage
+
+Must show:
+- Usage metrics
+- Quota progress bars
+- Warnings when usage > 80%
+- Blocked feature/quota explanation
+- Monthly reset timestamp
+
+3. Marketplace Page
+
+Route:
+/marketplace
+
+Must show:
+- Plugin grid
+- Plugin categories
+- Plugin details
+- Install/enable/disable/uninstall buttons
+- Installed plugins table
+- Plugin safety level
+- Dry-run plugin action panel
+- Entitlement/quota warnings
+
+4. Enterprise Page
+
+Route:
+/enterprise
+
+Must show:
+- License status
+- Branding editor
+- Export/import panel
+- Onboarding checklist
+- Customer health score
+- White-label preview
+
+5. Onboarding Page
+
+Route:
+/onboarding
+
+Must show:
+- Step-by-step onboarding checklist
+- Safety checklist
+- Quick actions:
+  - Run dry-run scan
+  - Run backtest
+  - Create content item
+  - Review risk panel
+  - Review billing
+
+Update:
+- Sidebar with Billing, Usage, Marketplace, Enterprise, Onboarding
+- Topbar branding must use tenant branding settings
+- Settings page must show billing/marketplace/enterprise config
+- Dashboard must show quota warnings
+- API client must support billing and marketplace endpoints
+
+============================================================
+FRONTEND SAFETY REQUIREMENTS
+============================================================
+
+- Billing page must show mock billing banner when provider=mock.
+- Do not show payment provider secret values.
+- Marketplace must show plugin safety notes.
+- Plugin actions must be dry-run unless explicitly allowed.
+- Enterprise export with secrets must require typed confirmation:
+  CONFIRM_SECRET_EXPORT
+- White-label custom fields must be escaped/sanitized.
+- Onboarding must encourage dry-run validation before production.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Billing:
+- billing.plan.listed
+- billing.checkout.started
+- billing.subscription.updated
+- billing.subscription.canceled
+- billing.invoice.synced
+- billing.webhook.received
+- billing.webhook.failed
+
+Usage:
+- usage.recorded
+- usage.quota.warning
+- usage.quota.exceeded
+
+Marketplace:
+- marketplace.plugin.listed
+- marketplace.plugin.installed
+- marketplace.plugin.enabled
+- marketplace.plugin.disabled
+- marketplace.plugin.uninstalled
+- marketplace.plugin.action.started
+- marketplace.plugin.action.completed
+- marketplace.plugin.action.blocked
+- marketplace.plugin.action.failed
+
+Enterprise:
+- enterprise.license.applied
+- enterprise.license.revoked
+- enterprise.branding.updated
+- enterprise.export.started
+- enterprise.export.completed
+- enterprise.export.failed
+- enterprise.onboarding.step.completed
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Billing:
+- billing.read
+- billing.manage
+- billing.apply_mock_plan
+
+Usage:
+- usage.read
+
+Marketplace:
+- marketplace.read
+- marketplace.install
+- marketplace.manage
+- marketplace.run_plugin
+
+Enterprise:
+- enterprise.read
+- enterprise.license.manage
+- enterprise.branding.manage
+- enterprise.export
+- enterprise.export_secrets
+- enterprise.onboarding.manage
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- billing.read
+- usage.read
+- marketplace.read
+- marketplace.install
+- marketplace.run_plugin
+- enterprise.read
+- enterprise.branding.manage
+- enterprise.onboarding.manage
+
+analyst:
+- billing.read
+- usage.read
+- marketplace.read
+- enterprise.read
+
+viewer:
+- usage.read
+- marketplace.read limited
+- enterprise.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- billing_plans
+- subscriptions
+- usage_records
+- invoices
+- plugin_manifests
+- plugin_installations
+- enterprise_licenses
+- branding_settings
+- export_bundles
+- onboarding_checklists
+
+All tenant-scoped where applicable.
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Migration/create_all support.
+- No raw card data.
+- No plaintext license keys.
+- No secrets in export bundles by default.
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- BILLING_PROVIDER_NOT_CONFIGURED
+- SUBSCRIPTION_INACTIVE
+- PLAN_NOT_FOUND
+- FEATURE_NOT_ENTITLED
+- QUOTA_EXCEEDED
+- PLUGIN_NOT_FOUND
+- PLUGIN_NOT_APPROVED
+- PLUGIN_SAFETY_BLOCKED
+- LICENSE_INVALID
+- EXPORT_NOT_ALLOWED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_billing_models.py
+- plan validation
+- subscription status enum
+- usage summary calculation
+- invoice model safety
+
+2. test_plan_catalog.py
+- default plans exist
+- feature flags exist
+- limits exist
+- enterprise custom plan supported
+
+3. test_entitlements.py
+- free plan blocks paid feature
+- pro plan allows optimization
+- enterprise allows white label
+- inactive subscription blocks paid feature
+- billing fail-closed blocks paid feature
+
+4. test_usage_meter.py
+- record usage
+- summarize usage
+- monthly reset logic
+- tenant-scoped usage
+
+5. test_quota_service.py
+- quota allowed under limit
+- warning over 80%
+- exceeded blocks action
+- quota event emitted
+
+6. test_subscription_service.py
+- list plans
+- mock checkout session
+- mock plan apply in dev
+- cancel subscription
+- suspended subscription affects entitlements
+
+7. test_mock_billing_adapter.py
+- deterministic customer ID
+- deterministic checkout URL
+- no external calls
+
+8. test_billing_api.py
+- status endpoint
+- plans endpoint
+- usage endpoint
+- checkout endpoint
+- mock apply plan endpoint protected
+
+9. test_marketplace_models.py
+- plugin manifest validation
+- installation model validation
+
+10. test_plugin_registry.py
+- built-in plugins registered
+- plugin lookup works
+
+11. test_plugin_service.py
+- install plugin
+- enable/disable plugin
+- run safe plugin action
+- uninstall plugin
+
+12. test_plugin_safety.py
+- external network blocked by default
+- secret access blocked by default
+- live trading action blocked
+- real IoT action blocked
+
+13. test_marketplace_api.py
+- list plugins
+- install plugin
+- enable plugin
+- run plugin action
+- tenant isolation
+
+14. test_enterprise_license.py
+- apply license stores hash only
+- invalid license rejected
+- license cannot disable safety lock
+
+15. test_branding_service.py
+- update branding
+- invalid color rejected
+- script injection rejected
+
+16. test_export_service.py
+- export excludes secrets by default
+- secret export requires confirmation
+- tenant scoped export
+
+17. test_enterprise_api.py
+- status endpoint
+- branding endpoint
+- onboarding endpoint
+- export endpoint protected
+
+18. test_phase10_tenant_isolation.py
+- org A cannot read org B billing
+- org A cannot install plugin into org B workspace
+- org A cannot read org B enterprise export
+
+Frontend tests:
+
+1. Billing.test.tsx
+- pricing table renders
+- mock billing banner appears
+- subscription status appears
+- invoice table appears
+
+2. Usage.test.tsx
+- usage cards render
+- quota warning appears at >80%
+- exceeded quota banner appears
+
+3. Marketplace.test.tsx
+- plugin grid renders
+- install button appears
+- plugin safety notes shown
+- installed plugin table renders
+
+4. Enterprise.test.tsx
+- license status renders
+- branding editor renders
+- export panel requires confirmation for secrets
+- onboarding checklist appears
+
+5. Onboarding.test.tsx
+- onboarding steps render
+- safety checklist appears
+- quick actions are dry-run labeled
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 10 overview
+- SaaS billing model
+- Plan catalog
+- Entitlement system
+- Usage metering
+- Quota enforcement
+- Mock billing adapter
+- Stripe adapter placeholder
+- Marketplace architecture
+- Plugin safety model
+- Enterprise license model
+- White-label branding
+- Export/import safety
+- Onboarding workflow
+- Frontend pages
+- API examples
+- Test commands
+- Production safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+List plans:
+
+curl http://localhost:8000/api/billing/plans \
+  -H "Authorization: Bearer TOKEN"
+
+Billing status:
+
+curl http://localhost:8000/api/billing/status \
+  -H "Authorization: Bearer TOKEN"
+
+Usage:
+
+curl http://localhost:8000/api/billing/usage \
+  -H "Authorization: Bearer TOKEN"
+
+Apply mock plan:
+
+curl -X POST http://localhost:8000/api/billing/mock/apply-plan \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"plan_tier": "pro"}'
+
+List plugins:
+
+curl http://localhost:8000/api/marketplace/plugins \
+  -H "Authorization: Bearer TOKEN"
+
+Enterprise status:
+
+curl http://localhost:8000/api/enterprise/status \
+  -H "Authorization: Bearer TOKEN"
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 10 is complete only when:
+
+- Billing models exist.
+- Default plan catalog exists.
+- Subscription service works.
+- Mock billing adapter works.
+- Stripe adapter shell exists safely.
+- Usage metering works.
+- Quota enforcement works.
+- Entitlement checks work.
+- Billing API works.
+- Marketplace models exist.
+- Built-in plugins exist.
+- Plugin install/enable/disable/run workflow works.
+- Plugin safety checker blocks unsafe actions.
+- Marketplace API works.
+- Enterprise license service exists.
+- Branding service exists.
+- Export service exists.
+- Onboarding service exists.
+- Enterprise API works.
+- Tenant isolation applies to billing, marketplace, and enterprise data.
+- Frontend Billing page works.
+- Frontend Usage page works.
+- Frontend Marketplace page works.
+- Frontend Enterprise page works.
+- Frontend Onboarding page works.
+- Sidebar and topbar are updated.
+- Existing Phase 1–9 behavior remains intact.
+- Existing tests still pass.
+- New Phase 10 tests pass.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- No payment secrets are exposed.
+- No raw card data is stored.
+- README includes Phase 10 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Billing models and services
+6. Marketplace models and services
+7. Enterprise models and services
+8. Test files
+9. .env.example updates
+10. README updates
+11. API examples
+12. Run instructions
+13. Test instructions
+14. Production safety checklist
+15. Acceptance checklist
+16. Known limitations
+17. Phase 11 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–9 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode payment secrets.
+- Never store raw card data.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Keep billing adapter replaceable.
+- Keep plugin runtime sandboxed.
+- Keep enterprise export safe by default.
+- Keep all commercial features tenant-scoped.
+- Keep code modular enough for Phase 11 AI Ops, governance, and marketplace expansion.
+
+Now generate the complete Phase 10 implementation.

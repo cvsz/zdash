@@ -1,0 +1,1984 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 12 · AUTONOMOUS OPERATIONS + ENTERPRISE INTEGRATIONS + MANAGED SERVICE EXPANSION
+Ops Autopilot + Incident Automation + SSO/SCIM + SIEM/Webhooks + SLA + Managed Service Console
+
+Do not rebuild Phase 1–11 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+PHASE 9:
+- Multi-tenant SaaS
+- Organizations/workspaces
+- Tenant-scoped RBAC
+- Workers
+- WebSocket event stream
+- Alerts/notifications
+- Cloudflare/Terraform/Kubernetes templates
+- Release automation
+
+PHASE 10:
+- Billing
+- Usage metering
+- Entitlements
+- Quotas
+- Marketplace
+- Plugin safety
+- Enterprise license
+- White-label branding
+- Export/import
+- Onboarding
+
+PHASE 11:
+- AI Ops
+- Prompt registry
+- Prompt approval workflow
+- AI tracing
+- Cost tracking
+- Evaluation runner
+- Red-team dry-run framework
+- Governance policy engine
+- DLP scanner
+- Approval workflow
+- Retention policies
+- Compliance evidence
+- Compliance reports
+- Security review workflow
+
+============================================================
+PHASE 12 OBJECTIVE
+============================================================
+
+Build the autonomous operations and enterprise integration layer for zDash.
+
+Main goals:
+
+1. Add Ops Autopilot system
+2. Add incident detection and incident lifecycle management
+3. Add automated remediation playbooks in dry-run mode
+4. Add SLA/SLO tracking
+5. Add maintenance windows
+6. Add change management workflow
+7. Add enterprise SSO adapter shell
+8. Add OIDC/SAML-ready authentication abstraction
+9. Add SCIM-style user provisioning shell
+10. Add SIEM export adapters
+11. Add webhook integration framework
+12. Add external ticketing integration shell
+13. Add managed service provider console
+14. Add customer health scoring
+15. Add support case workflow
+16. Add environment fleet management
+17. Add release channel management
+18. Add disaster recovery drill system
+19. Add frontend Ops, Incidents, Integrations, SLA, Support, and Fleet pages
+20. Add tests for ops automation, integrations, tenant isolation, safety gates, and managed service workflows
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policy checks.
+- Do not auto-remediate destructive actions without approval.
+- Ops Autopilot must default to advisory/dry-run mode.
+- External integrations must default to mock/dry-run mode.
+- Never hardcode SSO secrets, webhook secrets, SIEM tokens, cloud credentials, SSH keys, API keys, or broker credentials.
+- Never expose secrets in frontend, logs, traces, reports, support cases, or exports.
+- All managed-service actions must be audited.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/ops/
+  __init__.py
+  models.py
+  health_analyzer.py
+  incident_service.py
+  remediation_playbooks.py
+  ops_autopilot.py
+  sla_service.py
+  maintenance_service.py
+  change_management.py
+  disaster_recovery.py
+  fleet_service.py
+
+backend/app/integrations/
+  __init__.py
+  models.py
+  integration_registry.py
+  webhook_service.py
+  siem_adapters.py
+  ticketing_adapters.py
+  sso_adapters.py
+  scim_service.py
+  integration_service.py
+
+backend/app/managed/
+  __init__.py
+  models.py
+  support_service.py
+  customer_health.py
+  managed_console_service.py
+  release_channel_service.py
+  service_review.py
+
+backend/app/api/ops.py
+backend/app/api/integrations.py
+backend/app/api/managed.py
+
+frontend/src/pages/OpsCenter.tsx
+frontend/src/pages/Incidents.tsx
+frontend/src/pages/SLA.tsx
+frontend/src/pages/Integrations.tsx
+frontend/src/pages/ManagedService.tsx
+frontend/src/pages/Support.tsx
+frontend/src/pages/Fleet.tsx
+frontend/src/pages/ChangeManagement.tsx
+
+frontend/src/components/ops/
+  OpsAutopilotPanel.tsx
+  HealthAnalyzerPanel.tsx
+  IncidentTable.tsx
+  IncidentDetailPanel.tsx
+  RemediationPlaybookPanel.tsx
+  SLACard.tsx
+  SLOTable.tsx
+  MaintenanceWindowTable.tsx
+  ChangeRequestTable.tsx
+  DisasterRecoveryPanel.tsx
+  FleetEnvironmentTable.tsx
+
+frontend/src/components/integrations/
+  IntegrationCard.tsx
+  IntegrationGrid.tsx
+  WebhookEndpointTable.tsx
+  SIEMExportPanel.tsx
+  SSOConfigPanel.tsx
+  SCIMProvisioningPanel.tsx
+  TicketingIntegrationPanel.tsx
+
+frontend/src/components/managed/
+  SupportCaseTable.tsx
+  SupportCaseDetail.tsx
+  CustomerHealthPanel.tsx
+  ManagedTenantTable.tsx
+  ReleaseChannelPanel.tsx
+  ServiceReviewPanel.tsx
+
+frontend/src/hooks/useOps.ts
+frontend/src/hooks/useIncidents.ts
+frontend/src/hooks/useSLA.ts
+frontend/src/hooks/useIntegrations.ts
+frontend/src/hooks/useManaged.ts
+frontend/src/hooks/useFleet.ts
+
+backend/app/tests/
+  test_ops_models.py
+  test_health_analyzer.py
+  test_incident_service.py
+  test_remediation_playbooks.py
+  test_ops_autopilot.py
+  test_sla_service.py
+  test_maintenance_service.py
+  test_change_management.py
+  test_disaster_recovery.py
+  test_fleet_service.py
+  test_integration_models.py
+  test_webhook_service.py
+  test_siem_adapters.py
+  test_ticketing_adapters.py
+  test_sso_adapters.py
+  test_scim_service.py
+  test_integration_service.py
+  test_support_service.py
+  test_customer_health.py
+  test_managed_console_service.py
+  test_release_channel_service.py
+  test_ops_api.py
+  test_integrations_api.py
+  test_managed_api.py
+  test_phase12_tenant_isolation.py
+  test_phase12_safety_gates.py
+
+frontend/src/tests/
+  OpsCenter.test.tsx
+  Incidents.test.tsx
+  SLA.test.tsx
+  Integrations.test.tsx
+  ManagedService.test.tsx
+  Support.test.tsx
+  Fleet.test.tsx
+  ChangeManagement.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/audit/audit_service.py
+backend/app/governance/policy_engine.py
+backend/app/notifications/alert_rules.py
+backend/app/workers/tasks.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+.env.example
+README.md
+
+docs/
+  architecture/
+    PHASE_12_AUTONOMOUS_OPS.md
+    INCIDENT_AUTOMATION_MODEL.md
+    ENTERPRISE_INTEGRATION_MODEL.md
+    MANAGED_SERVICE_MODEL.md
+    SLA_SLO_MODEL.md
+  runbooks/
+    AUTOPILOT_OPERATIONS_RUNBOOK.md
+    INCIDENT_MANAGEMENT_RUNBOOK.md
+    SSO_INTEGRATION_RUNBOOK.md
+    SIEM_EXPORT_RUNBOOK.md
+    SLA_BREACH_RUNBOOK.md
+    DISASTER_RECOVERY_DRILL_RUNBOOK.md
+    MANAGED_SERVICE_RUNBOOK.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+OPS_ENABLED=true
+OPS_AUTOPILOT_ENABLED=true
+OPS_AUTOPILOT_MODE=advisory
+OPS_AUTOPILOT_DRY_RUN=true
+OPS_AUTOPILOT_REQUIRE_APPROVAL=true
+OPS_HEALTH_ANALYZER_ENABLED=true
+
+INCIDENTS_ENABLED=true
+INCIDENT_AUTO_CREATE=true
+INCIDENT_AUTO_REMEDIATE=false
+INCIDENT_REQUIRE_APPROVAL_FOR_REMEDIATION=true
+INCIDENT_DEFAULT_SEVERITY=warning
+
+SLA_ENABLED=true
+SLA_DEFAULT_UPTIME_TARGET_PERCENT=99.5
+SLA_DEFAULT_RESPONSE_TARGET_MINUTES=60
+SLA_DEFAULT_RESOLUTION_TARGET_HOURS=24
+
+MAINTENANCE_WINDOWS_ENABLED=true
+CHANGE_MANAGEMENT_ENABLED=true
+CHANGE_APPROVAL_REQUIRED=true
+
+DISASTER_RECOVERY_ENABLED=true
+DR_DRILL_DRY_RUN=true
+DR_BACKUP_VALIDATION_ENABLED=true
+
+FLEET_MANAGEMENT_ENABLED=true
+FLEET_DEFAULT_ENVIRONMENT=local
+
+INTEGRATIONS_ENABLED=true
+INTEGRATIONS_DRY_RUN=true
+
+WEBHOOKS_ENABLED=true
+WEBHOOKS_DRY_RUN=true
+WEBHOOK_SIGNING_SECRET=
+WEBHOOK_DELIVERY_TIMEOUT_SECONDS=10
+WEBHOOK_MAX_RETRIES=3
+
+SIEM_EXPORT_ENABLED=true
+SIEM_PROVIDER=mock
+SIEM_DRY_RUN=true
+SIEM_ENDPOINT=
+SIEM_TOKEN=
+
+TICKETING_ENABLED=true
+TICKETING_PROVIDER=mock
+TICKETING_DRY_RUN=true
+TICKETING_ENDPOINT=
+TICKETING_TOKEN=
+
+SSO_ENABLED=false
+SSO_PROVIDER=mock
+SSO_DRY_RUN=true
+OIDC_ISSUER_URL=
+OIDC_CLIENT_ID=
+OIDC_CLIENT_SECRET=
+SAML_METADATA_URL=
+SAML_ENTITY_ID=
+
+SCIM_ENABLED=false
+SCIM_DRY_RUN=true
+SCIM_BEARER_TOKEN=
+
+MANAGED_SERVICE_ENABLED=true
+MSP_MODE=false
+SUPPORT_CASES_ENABLED=true
+CUSTOMER_HEALTH_ENABLED=true
+
+RELEASE_CHANNELS_ENABLED=true
+DEFAULT_RELEASE_CHANNEL=stable
+
+Rules:
+- Ops Autopilot must default to advisory and dry-run.
+- Incident auto-remediation must be disabled by default.
+- SSO/SCIM must be disabled by default.
+- SIEM, webhook, and ticketing integrations must use mock/dry-run by default.
+- Real integration mode requires explicit config and secrets.
+- Missing integration config must fail safely.
+- No token or secret may be logged or exposed in frontend.
+- Any destructive remediation requires approval.
+
+============================================================
+OPS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. OpsMode
+
+Allowed values:
+- advisory
+- semi_auto
+- manual
+
+2. IncidentSeverity
+
+Allowed values:
+- info
+- warning
+- critical
+- emergency
+
+3. IncidentStatus
+
+Allowed values:
+- open
+- acknowledged
+- investigating
+- mitigated
+- resolved
+- closed
+- canceled
+
+4. RemediationStatus
+
+Allowed values:
+- proposed
+- approved
+- running
+- completed
+- failed
+- blocked
+- skipped
+
+5. ChangeStatus
+
+Allowed values:
+- draft
+- pending_approval
+- approved
+- rejected
+- scheduled
+- implemented
+- rolled_back
+- canceled
+
+6. EnvironmentStatus
+
+Allowed values:
+- healthy
+- degraded
+- down
+- maintenance
+- unknown
+
+7. SystemHealthSnapshot
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- environment
+- status
+- health_score
+- backend_ok
+- frontend_ok
+- database_ok
+- redis_ok
+- worker_ok
+- scheduler_ok
+- risk_guardian_ok
+- event_stream_ok
+- alerts_ok
+- metrics
+- warnings
+- blockers
+- created_at
+
+8. Incident
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- severity
+- status
+- source
+- affected_services
+- detected_at
+- acknowledged_at
+- resolved_at
+- assigned_to
+- metadata
+- created_at
+- updated_at
+
+9. RemediationAction
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- incident_id
+- playbook_id
+- title
+- description
+- status
+- dry_run
+- requires_approval
+- approved_by
+- started_at
+- finished_at
+- result
+- error
+- created_at
+- updated_at
+
+10. SLO
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- target_percent
+- measurement_window_days
+- query
+- enabled
+- created_at
+- updated_at
+
+11. SLAStatus
+
+Fields:
+- organization_id
+- workspace_id
+- uptime_percent
+- response_time_minutes
+- resolution_time_hours
+- target_uptime_percent
+- target_response_minutes
+- target_resolution_hours
+- breached
+- breach_reasons
+- calculated_at
+
+12. MaintenanceWindow
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- starts_at
+- ends_at
+- status
+- affected_services
+- created_by
+- approved_by
+- created_at
+- updated_at
+
+13. ChangeRequest
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- change_type
+- status
+- risk_level
+- rollback_plan
+- scheduled_at
+- implemented_at
+- requested_by
+- approved_by
+- metadata
+- created_at
+- updated_at
+
+14. FleetEnvironment
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- environment_type
+- release_channel
+- version
+- status
+- base_url
+- region
+- metadata
+- last_heartbeat_at
+- created_at
+- updated_at
+
+============================================================
+OPS AUTOPILOT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ops/health_analyzer.py
+backend/app/ops/incident_service.py
+backend/app/ops/remediation_playbooks.py
+backend/app/ops/ops_autopilot.py
+
+HealthAnalyzer methods:
+- collect_snapshot(organization_id, workspace_id) -> SystemHealthSnapshot
+- calculate_health_score(snapshot) -> float
+- detect_anomalies(snapshot) -> list[dict]
+- classify_status(snapshot) -> EnvironmentStatus
+
+IncidentService methods:
+- create_incident(request) -> Incident
+- list_incidents(filters) -> list[Incident]
+- get_incident(incident_id) -> Incident
+- acknowledge_incident(incident_id, user_id) -> Incident
+- update_incident_status(incident_id, status, notes) -> Incident
+- resolve_incident(incident_id, notes) -> Incident
+- link_remediation(incident_id, remediation_id)
+
+RemediationPlaybookService methods:
+- list_playbooks()
+- get_playbook(playbook_id)
+- propose_actions(incident) -> list[RemediationAction]
+- approve_action(action_id, approved_by)
+- run_action(action_id, dry_run=True) -> RemediationAction
+- block_unsafe_action(action_id, reason)
+
+Default playbooks:
+1. restart_worker_dry_run
+2. pause_scheduler_job
+3. trigger_risk_halt
+4. refresh_health_snapshot
+5. run_backup_validation
+6. rotate_mock_webhook_secret
+7. clear_stale_worker_tasks
+8. notify_operator
+
+Safety rules:
+- All playbooks dry-run by default.
+- `trigger_risk_halt` may be allowed because it increases safety.
+- No playbook may enable live trading.
+- No playbook may enable real IoT actions.
+- No playbook may disable content approval.
+- No destructive playbook can run without approval.
+- All actions must be audited.
+
+OpsAutopilot methods:
+- evaluate_system()
+- create_incidents_from_health(snapshot)
+- propose_remediations(incident_id)
+- run_approved_remediations(incident_id)
+- get_autopilot_status()
+
+Rules:
+- Advisory mode only proposes actions.
+- Semi-auto mode runs approved non-destructive actions.
+- Manual mode only records health and incidents.
+- Production must require approval for remediation.
+- Tenant isolation required.
+
+============================================================
+SLA / SLO REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ops/sla_service.py
+
+Methods:
+- create_slo(request)
+- list_slos()
+- calculate_sla_status(organization_id, workspace_id)
+- record_sla_sample(metric, value)
+- detect_sla_breach()
+- generate_sla_report()
+
+Default SLOs:
+- backend availability
+- worker queue health
+- API error rate
+- incident response time
+- incident resolution time
+- risk guardian availability
+- scheduler availability
+
+Rules:
+- SLA calculations must be tenant-scoped.
+- Missing data should produce warning, not fake success.
+- SLA breach should create alert event.
+- SLA reports must not include secrets.
+
+============================================================
+MAINTENANCE AND CHANGE MANAGEMENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ops/maintenance_service.py
+backend/app/ops/change_management.py
+
+MaintenanceService methods:
+- create_window()
+- list_windows()
+- approve_window()
+- start_window()
+- end_window()
+- is_in_maintenance()
+
+ChangeManagementService methods:
+- create_change_request()
+- list_change_requests()
+- approve_change()
+- reject_change()
+- schedule_change()
+- mark_implemented()
+- rollback_change()
+
+Rules:
+- Production changes require approval.
+- Risky config changes require governance approval.
+- Any change affecting live trading, real IoT, real social posting, SSO, billing, or tenant isolation must require admin approval.
+- All changes audited.
+- Rollback plan required for high-risk changes.
+
+============================================================
+DISASTER RECOVERY REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ops/disaster_recovery.py
+
+Methods:
+- run_backup_validation(dry_run=True)
+- run_restore_drill(dry_run=True)
+- list_drill_results()
+- get_rpo_rto_status()
+- generate_dr_report()
+
+Rules:
+- Dry-run by default.
+- Never restore over production database without explicit confirmation.
+- Restore confirmation text:
+  CONFIRM_RESTORE_DRILL
+- No secrets in DR reports.
+- DR drill results tenant-scoped where applicable.
+- DR events must be audited.
+
+============================================================
+FLEET MANAGEMENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ops/fleet_service.py
+
+Methods:
+- register_environment()
+- list_environments()
+- get_environment()
+- update_environment_status()
+- record_heartbeat()
+- assign_release_channel()
+- summarize_fleet_health()
+
+Rules:
+- Tenant scoped.
+- Environment heartbeat must not contain secrets.
+- Release channel changes require permission.
+- Fleet view must support MSP mode.
+
+============================================================
+INTEGRATION MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. IntegrationType
+
+Allowed values:
+- webhook
+- siem
+- ticketing
+- sso
+- scim
+- email
+- custom
+
+2. IntegrationStatus
+
+Allowed values:
+- configured
+- active
+- disabled
+- failed
+- pending
+
+3. WebhookDeliveryStatus
+
+Allowed values:
+- pending
+- delivered
+- failed
+- skipped
+- blocked
+
+4. IntegrationConfig
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- integration_type
+- provider
+- name
+- status
+- config
+- secrets_ref
+- dry_run
+- created_by
+- created_at
+- updated_at
+
+5. WebhookEndpoint
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- url
+- event_types
+- enabled
+- signing_enabled
+- dry_run
+- created_at
+- updated_at
+
+6. WebhookDelivery
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- endpoint_id
+- event_type
+- status
+- payload_summary
+- response_status
+- error
+- attempts
+- created_at
+- delivered_at
+
+7. SIEMExportResult
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- provider
+- event_count
+- dry_run
+- status
+- message
+- created_at
+
+8. Ticket
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- provider
+- external_id
+- title
+- description
+- status
+- severity
+- dry_run
+- created_at
+- updated_at
+
+============================================================
+INTEGRATION SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/integrations/integration_registry.py
+backend/app/integrations/webhook_service.py
+backend/app/integrations/siem_adapters.py
+backend/app/integrations/ticketing_adapters.py
+backend/app/integrations/sso_adapters.py
+backend/app/integrations/scim_service.py
+backend/app/integrations/integration_service.py
+
+IntegrationRegistry methods:
+- list_supported_integrations()
+- get_integration_schema(type, provider)
+- validate_config(type, provider, config)
+
+WebhookService methods:
+- create_endpoint()
+- list_endpoints()
+- update_endpoint()
+- delete_endpoint()
+- deliver_event()
+- list_deliveries()
+- retry_delivery()
+
+Rules:
+- Dry-run by default.
+- Webhook signing secret must never be returned.
+- Payload must be DLP-scanned before delivery.
+- Webhook delivery failure must not crash system.
+- Event payloads must be redacted.
+
+SIEM adapters:
+- MockSIEMAdapter
+- GenericHTTP SIEM shell
+
+Methods:
+- export_events(events, dry_run=True) -> SIEMExportResult
+
+Rules:
+- Dry-run by default.
+- No secrets in export payload.
+- Real export requires SIEM endpoint and token.
+
+Ticketing adapters:
+- MockTicketingAdapter
+- GenericTicketingAdapter shell
+
+Methods:
+- create_ticket(title, description, severity, metadata) -> Ticket
+- update_ticket(ticket_id, patch) -> Ticket
+
+SSO adapters:
+- MockSSOAdapter
+- OIDCAdapter shell
+- SAMLAdapter shell
+
+Rules:
+- SSO disabled by default.
+- OIDC/SAML real config must be explicit.
+- SSO callback must not accept unsigned/unverified payloads.
+- This phase may implement shell endpoints and config validation, not full provider-specific SSO.
+
+SCIM service:
+- create_user_from_scim()
+- update_user_from_scim()
+- deactivate_user_from_scim()
+- list_scim_users()
+
+Rules:
+- Disabled by default.
+- SCIM token must not be logged.
+- Tenant-scoped provisioning.
+- SCIM actions audited.
+
+============================================================
+MANAGED SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/managed/support_service.py
+backend/app/managed/customer_health.py
+backend/app/managed/managed_console_service.py
+backend/app/managed/release_channel_service.py
+backend/app/managed/service_review.py
+
+SupportCase model:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- severity
+- status
+- created_by
+- assigned_to
+- metadata
+- created_at
+- updated_at
+- closed_at
+
+SupportService methods:
+- create_case()
+- list_cases()
+- get_case()
+- update_case()
+- close_case()
+- add_case_note()
+
+CustomerHealthService methods:
+- calculate_health_score()
+- get_health_breakdown()
+- list_at_risk_customers()
+- generate_customer_health_report()
+
+Health score inputs:
+- incidents
+- SLA breaches
+- failed jobs
+- quota pressure
+- billing status
+- onboarding progress
+- risk guardian status
+- support cases
+- usage trend
+
+ManagedConsoleService methods:
+- list_managed_tenants()
+- get_tenant_summary()
+- get_operational_overview()
+- create_service_note()
+- export_service_review()
+
+ReleaseChannelService methods:
+- list_channels()
+- assign_channel()
+- list_versions()
+- promote_version_to_channel()
+- rollback_channel()
+
+Default release channels:
+- local
+- dev
+- beta
+- stable
+- enterprise-lts
+
+Rules:
+- MSP mode must be explicit.
+- Managed console must enforce tenant access.
+- Global admin/MSP admin may view managed tenants.
+- Tenant users may only view their own support cases and service reviews.
+- No secrets in support case exports.
+
+============================================================
+OPS API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/ops.py
+
+Endpoints:
+
+GET /api/ops/status
+POST /api/ops/evaluate
+GET /api/ops/health
+GET /api/ops/autopilot/status
+
+Incidents:
+GET /api/ops/incidents
+POST /api/ops/incidents
+GET /api/ops/incidents/{incident_id}
+POST /api/ops/incidents/{incident_id}/acknowledge
+POST /api/ops/incidents/{incident_id}/resolve
+POST /api/ops/incidents/{incident_id}/propose-remediation
+
+Remediation:
+GET /api/ops/remediations
+POST /api/ops/remediations/{action_id}/approve
+POST /api/ops/remediations/{action_id}/run
+
+SLA:
+GET /api/ops/sla/status
+GET /api/ops/sla/slos
+POST /api/ops/sla/slos
+GET /api/ops/sla/report
+
+Maintenance:
+GET /api/ops/maintenance
+POST /api/ops/maintenance
+POST /api/ops/maintenance/{window_id}/approve
+POST /api/ops/maintenance/{window_id}/start
+POST /api/ops/maintenance/{window_id}/end
+
+Change:
+GET /api/ops/changes
+POST /api/ops/changes
+POST /api/ops/changes/{change_id}/approve
+POST /api/ops/changes/{change_id}/reject
+POST /api/ops/changes/{change_id}/implement
+POST /api/ops/changes/{change_id}/rollback
+
+DR:
+POST /api/ops/dr/backup-validation
+POST /api/ops/dr/restore-drill
+GET /api/ops/dr/report
+
+Fleet:
+GET /api/ops/fleet
+POST /api/ops/fleet
+POST /api/ops/fleet/{environment_id}/heartbeat
+PATCH /api/ops/fleet/{environment_id}
+POST /api/ops/fleet/{environment_id}/release-channel
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Sensitive actions require operator/admin.
+- Destructive or production actions require approval.
+- Standard response shape required.
+
+============================================================
+INTEGRATIONS API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/integrations.py
+
+Endpoints:
+
+GET /api/integrations/status
+GET /api/integrations/catalog
+
+Webhook:
+GET /api/integrations/webhooks
+POST /api/integrations/webhooks
+PATCH /api/integrations/webhooks/{endpoint_id}
+DELETE /api/integrations/webhooks/{endpoint_id}
+GET /api/integrations/webhooks/deliveries
+POST /api/integrations/webhooks/deliveries/{delivery_id}/retry
+
+SIEM:
+POST /api/integrations/siem/export
+GET /api/integrations/siem/results
+
+Ticketing:
+POST /api/integrations/tickets
+GET /api/integrations/tickets
+PATCH /api/integrations/tickets/{ticket_id}
+
+SSO:
+GET /api/integrations/sso/config
+POST /api/integrations/sso/config
+POST /api/integrations/sso/test
+
+SCIM:
+GET /api/integrations/scim/status
+POST /api/integrations/scim/test
+POST /api/integrations/scim/users
+PATCH /api/integrations/scim/users/{user_id}
+DELETE /api/integrations/scim/users/{user_id}
+
+Rules:
+- Auth required except future provider callback endpoints.
+- Tenant scoped.
+- Real integration changes require admin/operator.
+- DLP scan required before outbound event export.
+- Standard response shape required.
+
+============================================================
+MANAGED API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/managed.py
+
+Endpoints:
+
+GET /api/managed/status
+GET /api/managed/overview
+
+Support:
+GET /api/managed/support/cases
+POST /api/managed/support/cases
+GET /api/managed/support/cases/{case_id}
+PATCH /api/managed/support/cases/{case_id}
+POST /api/managed/support/cases/{case_id}/close
+POST /api/managed/support/cases/{case_id}/notes
+
+Customer health:
+GET /api/managed/customer-health
+GET /api/managed/customer-health/report
+
+Managed console:
+GET /api/managed/tenants
+GET /api/managed/tenants/{organization_id}/summary
+POST /api/managed/tenants/{organization_id}/service-note
+GET /api/managed/tenants/{organization_id}/service-review
+
+Release channels:
+GET /api/managed/release/channels
+GET /api/managed/release/versions
+POST /api/managed/release/assign-channel
+POST /api/managed/release/promote
+POST /api/managed/release/rollback
+
+Rules:
+- Auth required.
+- Tenant users can view their own service data.
+- MSP/global admin required for cross-tenant console.
+- All managed service actions audited.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Ops:
+- ops.read
+- ops.evaluate
+- ops.manage_incidents
+- ops.run_remediation
+- ops.approve_remediation
+- ops.manage_sla
+- ops.manage_maintenance
+- ops.manage_changes
+- ops.run_drills
+- ops.manage_fleet
+
+Integrations:
+- integrations.read
+- integrations.manage_webhooks
+- integrations.export_siem
+- integrations.manage_ticketing
+- integrations.manage_sso
+- integrations.manage_scim
+
+Managed service:
+- managed.read
+- managed.manage_support
+- managed.view_customer_health
+- managed.cross_tenant_console
+- managed.manage_release_channels
+- managed.create_service_review
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- ops.read
+- ops.evaluate
+- ops.manage_incidents
+- ops.run_remediation
+- ops.manage_sla
+- ops.manage_maintenance
+- ops.manage_changes
+- ops.run_drills
+- integrations.read
+- integrations.manage_webhooks
+- integrations.export_siem
+- integrations.manage_ticketing
+- managed.read
+- managed.manage_support
+- managed.view_customer_health
+
+analyst:
+- ops.read
+- ops.evaluate
+- integrations.read
+- managed.read
+- managed.view_customer_health
+
+viewer:
+- ops.read limited
+- integrations.read limited
+- managed.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- system_health_snapshots
+- incidents
+- remediation_actions
+- slos
+- sla_samples
+- maintenance_windows
+- change_requests
+- disaster_recovery_drills
+- fleet_environments
+- integration_configs
+- webhook_endpoints
+- webhook_deliveries
+- siem_export_results
+- tickets
+- scim_provisioning_events
+- support_cases
+- support_case_notes
+- customer_health_snapshots
+- service_reviews
+- release_channels
+- release_versions
+
+Requirements:
+- Tenant-scoped where applicable.
+- SQLite compatible.
+- PostgreSQL compatible.
+- Migration/create_all support.
+- No plaintext integration secrets.
+- No secret payloads in tickets or support cases.
+- All sensitive action records must include audit linkage where possible.
+
+============================================================
+FRONTEND PHASE 12 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /ops
+- /incidents
+- /sla
+- /integrations
+- /managed
+- /support
+- /fleet
+- /changes
+
+Update sidebar:
+- Ops Center
+- Incidents
+- SLA
+- Integrations
+- Managed Service
+- Support
+- Fleet
+- Change Management
+
+1. Ops Center Page
+
+Must show:
+- Ops Autopilot mode
+- Dry-run/advisory banner
+- System health score
+- Health analyzer warnings
+- Autopilot recommendations
+- Recent incidents
+- Proposed remediations
+- Run evaluation button
+
+2. Incidents Page
+
+Must show:
+- Incident table
+- Severity filter
+- Status filter
+- Incident detail panel
+- Acknowledge action
+- Resolve action
+- Proposed remediation actions
+- Approval-required indicators
+
+3. SLA Page
+
+Must show:
+- SLA status cards
+- SLO table
+- Breach reasons
+- SLA report panel
+- Maintenance window table
+- Create maintenance window form
+
+4. Integrations Page
+
+Must show:
+- Integration catalog
+- Webhook endpoints
+- Webhook delivery history
+- SIEM export dry-run panel
+- Ticketing integration panel
+- SSO config shell
+- SCIM dry-run provisioning panel
+
+Safety:
+- Show dry-run banner for all external integrations.
+- Never display secret values.
+- SSO real mode disabled unless configured.
+
+5. Managed Service Page
+
+Must show:
+- Managed tenant overview
+- Customer health list
+- At-risk customers
+- Service review panel
+- Release channel controls
+- MSP mode state
+
+6. Support Page
+
+Must show:
+- Support case table
+- Create support case form
+- Case detail panel
+- Add note
+- Close case
+
+7. Fleet Page
+
+Must show:
+- Fleet environment table
+- Environment health
+- Version
+- Release channel
+- Last heartbeat
+- Assign release channel action
+
+8. Change Management Page
+
+Must show:
+- Change request table
+- Create change request form
+- Approval controls
+- Rollback plan display
+- Implementation status
+
+Frontend safety:
+- Destructive remediation requires confirmation.
+- Restore drill requires typed confirmation:
+  CONFIRM_RESTORE_DRILL
+- Release channel rollback requires confirmation.
+- No secrets displayed.
+- Cross-tenant managed console hidden unless permission exists.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Ops:
+- ops.health.snapshot.created
+- ops.health.anomaly.detected
+- ops.autopilot.evaluated
+- ops.autopilot.recommendation.created
+
+Incidents:
+- incident.created
+- incident.acknowledged
+- incident.updated
+- incident.resolved
+- incident.closed
+
+Remediation:
+- remediation.proposed
+- remediation.approved
+- remediation.started
+- remediation.completed
+- remediation.failed
+- remediation.blocked
+
+SLA:
+- sla.sample.recorded
+- sla.breach.detected
+- sla.report.generated
+
+Maintenance:
+- maintenance.window.created
+- maintenance.window.approved
+- maintenance.window.started
+- maintenance.window.ended
+
+Change:
+- change.request.created
+- change.request.approved
+- change.request.rejected
+- change.implemented
+- change.rolled_back
+
+DR:
+- dr.backup_validation.started
+- dr.backup_validation.completed
+- dr.restore_drill.started
+- dr.restore_drill.completed
+- dr.restore_drill.blocked
+
+Integrations:
+- integration.config.created
+- integration.config.updated
+- webhook.delivery.started
+- webhook.delivery.completed
+- webhook.delivery.failed
+- siem.export.started
+- siem.export.completed
+- ticket.created
+- ticket.updated
+- sso.config.tested
+- scim.user.provisioned
+- scim.user.deactivated
+
+Managed:
+- support.case.created
+- support.case.updated
+- support.case.closed
+- customer.health.calculated
+- managed.service_review.created
+- release.channel.assigned
+- release.promoted
+- release.rolled_back
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- OPS_DISABLED
+- AUTOPILOT_BLOCKED
+- INCIDENT_NOT_FOUND
+- REMEDIATION_NOT_FOUND
+- REMEDIATION_APPROVAL_REQUIRED
+- REMEDIATION_BLOCKED
+- SLA_DISABLED
+- MAINTENANCE_WINDOW_NOT_FOUND
+- CHANGE_NOT_FOUND
+- CHANGE_APPROVAL_REQUIRED
+- DRILL_CONFIRMATION_REQUIRED
+- INTEGRATION_NOT_CONFIGURED
+- INTEGRATION_DRY_RUN_ONLY
+- WEBHOOK_NOT_FOUND
+- WEBHOOK_SECRET_REQUIRED
+- SIEM_NOT_CONFIGURED
+- TICKETING_NOT_CONFIGURED
+- SSO_NOT_CONFIGURED
+- SCIM_DISABLED
+- SUPPORT_CASE_NOT_FOUND
+- MSP_PERMISSION_REQUIRED
+- RELEASE_CHANNEL_NOT_FOUND
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_ops_models.py
+- enum validation
+- health snapshot validation
+- incident validation
+- change request validation
+
+2. test_health_analyzer.py
+- snapshot collection works
+- health score calculated
+- anomalies detected
+- degraded status classified
+
+3. test_incident_service.py
+- create incident
+- acknowledge incident
+- resolve incident
+- list tenant incidents
+
+4. test_remediation_playbooks.py
+- default playbooks exist
+- unsafe action blocked
+- dry-run remediation works
+- approval required for destructive action
+
+5. test_ops_autopilot.py
+- advisory mode proposes only
+- semi-auto requires approval
+- production requires approval
+- incident created from critical health
+
+6. test_sla_service.py
+- default SLOs exist
+- SLA status calculated
+- missing data produces warning
+- breach detected
+
+7. test_maintenance_service.py
+- create window
+- approve window
+- start/end window
+- maintenance state detected
+
+8. test_change_management.py
+- create change
+- high-risk change requires rollback plan
+- approve/reject change
+- rollback change
+
+9. test_disaster_recovery.py
+- backup validation dry-run
+- restore drill requires confirmation
+- report excludes secrets
+
+10. test_fleet_service.py
+- register environment
+- heartbeat updates status
+- release channel assignment requires permission
+
+11. test_webhook_service.py
+- create webhook
+- dry-run delivery
+- payload redacted
+- retry delivery
+
+12. test_siem_adapters.py
+- mock SIEM export works
+- real SIEM missing config blocks
+- no secrets exported
+
+13. test_ticketing_adapters.py
+- mock ticket created
+- missing real config blocks
+- tenant scoped tickets
+
+14. test_sso_adapters.py
+- mock SSO config test works
+- OIDC missing issuer blocks
+- SAML missing metadata blocks
+
+15. test_scim_service.py
+- SCIM disabled blocks
+- dry-run user provisioning works
+- SCIM token not logged
+
+16. test_support_service.py
+- create case
+- add note
+- close case
+- tenant scoped cases
+
+17. test_customer_health.py
+- health score calculated
+- at-risk customers listed
+- quota and incident pressure reflected
+
+18. test_managed_console_service.py
+- tenant user sees own tenant only
+- MSP admin sees managed tenants
+- service review excludes secrets
+
+19. test_release_channel_service.py
+- default channels exist
+- assign channel
+- promote version
+- rollback version
+
+20. test_ops_api.py
+- status endpoint
+- evaluate endpoint
+- incident endpoints
+- remediation endpoints
+- SLA endpoints
+- DR endpoints
+
+21. test_integrations_api.py
+- catalog endpoint
+- webhook endpoints
+- SIEM dry-run endpoint
+- ticketing endpoint
+- SSO config endpoint
+- SCIM test endpoint
+
+22. test_managed_api.py
+- support case endpoints
+- customer health endpoint
+- managed tenant endpoint protected
+- release channel endpoint
+
+23. test_phase12_tenant_isolation.py
+- org A cannot read org B incidents
+- org A cannot read org B webhooks
+- org A cannot read org B support cases
+- non-MSP cannot access cross-tenant console
+
+24. test_phase12_safety_gates.py
+- autopilot cannot enable live trading
+- remediation cannot enable real IoT
+- integration cannot export secrets
+- restore drill requires confirmation
+
+Frontend tests:
+
+1. OpsCenter.test.tsx
+- ops center renders
+- advisory/dry-run banner visible
+- health score visible
+- recommendations visible
+
+2. Incidents.test.tsx
+- incident table renders
+- acknowledge button exists
+- remediation approval indicator visible
+
+3. SLA.test.tsx
+- SLA cards render
+- SLO table renders
+- breach warning displayed
+
+4. Integrations.test.tsx
+- integration catalog renders
+- dry-run banner visible
+- webhook table renders
+- SSO config shell visible
+
+5. ManagedService.test.tsx
+- customer health renders
+- MSP mode label visible
+- release channel panel renders
+
+6. Support.test.tsx
+- support case table renders
+- create support case form exists
+- close case button appears
+
+7. Fleet.test.tsx
+- environment table renders
+- release channel displayed
+- heartbeat status displayed
+
+8. ChangeManagement.test.tsx
+- change request table renders
+- rollback plan field exists
+- approval controls are role-aware
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 12 overview
+- Ops Autopilot architecture
+- Incident management workflow
+- Remediation playbook safety model
+- SLA/SLO model
+- Maintenance window system
+- Change management workflow
+- Disaster recovery drills
+- Fleet management
+- Enterprise integrations
+- Webhooks
+- SIEM export
+- Ticketing integration
+- SSO/OIDC/SAML shell
+- SCIM provisioning shell
+- Managed service console
+- Customer health scoring
+- Support case workflow
+- Release channels
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run worker:
+
+cd backend
+python -m app.workers.runner
+
+Evaluate ops health:
+
+curl -X POST http://localhost:8000/api/ops/evaluate \
+  -H "Authorization: Bearer TOKEN"
+
+List incidents:
+
+curl http://localhost:8000/api/ops/incidents \
+  -H "Authorization: Bearer TOKEN"
+
+Create support case:
+
+curl -X POST http://localhost:8000/api/managed/support/cases \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Need help reviewing zDash risk setup",
+    "description": "Please review current dry-run risk settings.",
+    "severity": "warning"
+  }'
+
+Webhook dry-run delivery:
+
+curl -X POST http://localhost:8000/api/integrations/siem/export \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"event_types": ["risk.halt.activated"], "dry_run": true}'
+
+Run DR backup validation:
+
+curl -X POST http://localhost:8000/api/ops/dr/backup-validation \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dry_run": true}'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 12 is complete only when:
+
+- Ops models exist.
+- Health analyzer works.
+- Ops Autopilot works in advisory/dry-run mode.
+- Incident service works.
+- Remediation playbooks exist and are safe by default.
+- SLA/SLO service works.
+- Maintenance windows work.
+- Change management workflow works.
+- Disaster recovery drill system works.
+- Fleet environment management works.
+- Integration registry exists.
+- Webhook service works in dry-run.
+- SIEM adapter works in dry-run.
+- Ticketing adapter works in dry-run.
+- SSO adapter shell exists safely.
+- SCIM service shell exists safely.
+- Managed service console service exists.
+- Support case workflow works.
+- Customer health scoring works.
+- Release channel management works.
+- Ops API works.
+- Integrations API works.
+- Managed API works.
+- Frontend Ops Center page works.
+- Frontend Incidents page works.
+- Frontend SLA page works.
+- Frontend Integrations page works.
+- Frontend Managed Service page works.
+- Frontend Support page works.
+- Frontend Fleet page works.
+- Frontend Change Management page works.
+- Tenant isolation applies to all Phase 12 data.
+- Existing Phase 1–11 behavior remains intact.
+- Existing tests still pass.
+- New Phase 12 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Autopilot cannot run destructive remediation without approval.
+- README includes Phase 12 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Ops models and services
+6. Integration models and services
+7. Managed service models and services
+8. API route files
+9. Test files
+10. .env.example updates
+11. README updates
+12. Run instructions
+13. Test instructions
+14. Integration safety checklist
+15. Autopilot safety checklist
+16. Acceptance checklist
+17. Known limitations
+18. Phase 13 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–11 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never store raw integration secrets.
+- Never send raw secrets to webhooks, SIEM, tickets, support cases, or reports.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never allow Ops Autopilot to run destructive actions without approval.
+- Keep SSO, SCIM, SIEM, ticketing, and webhook integrations dry-run/mock by default.
+- Keep code modular enough for Phase 13 mobile app, partner API, and public developer platform expansion.
+
+Now generate the complete Phase 12 implementation.

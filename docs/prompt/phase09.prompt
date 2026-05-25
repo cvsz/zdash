@@ -1,0 +1,1172 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 9 · ENTERPRISE CLOUD SCALE
+Multi-Tenant SaaS + Cloud Deploy + Queue Workers + Alerts + Release Automation
+
+Do not rebuild Phase 1–8 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- Default jobs
+- IoT adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows service scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Dataset Provider
+- Optimizer
+- Strategy Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Policy Checker
+- Approval-Gated Publishing Workflow
+
+PHASE 7:
+- React/Vite Dashboard
+- All operational pages
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+============================================================
+PHASE 9 OBJECTIVE
+============================================================
+
+Build the enterprise cloud scale layer for zDash.
+
+Main goals:
+
+1. Add multi-tenant SaaS architecture
+2. Add organizations and workspaces
+3. Add tenant-scoped RBAC
+4. Add queue worker system
+5. Add Redis-backed background jobs
+6. Add WebSocket live event stream
+7. Add alerting and notification system
+8. Add Cloudflare deployment support
+9. Add Terraform infrastructure templates
+10. Add Kubernetes deployment manifests
+11. Add release automation scripts
+12. Add system runbooks
+13. Add frontend organization/workspace UI
+14. Add tenant-aware dashboard data isolation
+15. Add enterprise-grade tests
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Tenant isolation is mandatory.
+- A user from one tenant must never access another tenant’s data.
+- All external cloud integrations must be dry-run or template-first by default.
+- Never hardcode Cloudflare tokens, cloud credentials, SSH keys, broker credentials, API keys, or secrets.
+- All deploy scripts must fail safely.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/tenancy/
+  __init__.py
+  models.py
+  tenant_context.py
+  tenant_service.py
+  dependencies.py
+  repositories.py
+
+backend/app/workers/
+  __init__.py
+  models.py
+  queue.py
+  worker_service.py
+  tasks.py
+  runner.py
+
+backend/app/notifications/
+  __init__.py
+  models.py
+  channels.py
+  notification_service.py
+  alert_rules.py
+
+backend/app/realtime/
+  __init__.py
+  websocket_manager.py
+  event_stream.py
+
+backend/app/api/tenancy.py
+backend/app/api/workers.py
+backend/app/api/notifications.py
+backend/app/api/realtime.py
+
+infra/
+  terraform/
+    README.md
+    variables.tf
+    outputs.tf
+    main.tf
+    modules/
+      network/
+        main.tf
+        variables.tf
+        outputs.tf
+      postgres/
+        main.tf
+        variables.tf
+        outputs.tf
+      redis/
+        main.tf
+        variables.tf
+        outputs.tf
+      app/
+        main.tf
+        variables.tf
+        outputs.tf
+      cloudflare/
+        main.tf
+        variables.tf
+        outputs.tf
+  k8s/
+    namespace.yaml
+    configmap.yaml
+    secret.example.yaml
+    backend-deployment.yaml
+    frontend-deployment.yaml
+    worker-deployment.yaml
+    postgres-statefulset.yaml
+    redis-deployment.yaml
+    nginx-ingress.yaml
+    prometheus-servicemonitor.yaml
+  cloudflare/
+    README.md
+    tunnel-config.example.yml
+    dns-records.example.json
+    zero-trust-policy.example.json
+  scripts/
+    deploy-dev.sh
+    deploy-prod.sh
+    rollback.sh
+    release.sh
+    cloudflare-dry-run.sh
+    k8s-smoke-test.sh
+
+docs/
+  runbooks/
+    INCIDENT_RESPONSE.md
+    RISK_HALT_RUNBOOK.md
+    BACKUP_RESTORE_RUNBOOK.md
+    DEPLOYMENT_RUNBOOK.md
+    TENANT_ISOLATION_RUNBOOK.md
+  architecture/
+    PHASE_9_ENTERPRISE_SCALE.md
+    MULTI_TENANT_MODEL.md
+    WORKER_QUEUE_MODEL.md
+    REALTIME_EVENT_MODEL.md
+
+frontend/src/pages/Organizations.tsx
+frontend/src/pages/Workspace.tsx
+frontend/src/pages/Workers.tsx
+frontend/src/pages/Alerts.tsx
+
+frontend/src/components/tenancy/
+  OrganizationSwitcher.tsx
+  WorkspaceSwitcher.tsx
+  OrganizationTable.tsx
+  WorkspaceTable.tsx
+  InviteUserForm.tsx
+
+frontend/src/components/workers/
+  QueueStatusCard.tsx
+  WorkerRunTable.tsx
+  TaskDispatchPanel.tsx
+
+frontend/src/components/alerts/
+  AlertRuleTable.tsx
+  AlertEventTable.tsx
+  NotificationChannelForm.tsx
+
+frontend/src/hooks/useTenancy.ts
+frontend/src/hooks/useWorkers.ts
+frontend/src/hooks/useNotifications.ts
+frontend/src/hooks/useRealtimeEvents.ts
+
+Create tests:
+
+backend/app/tests/test_tenant_models.py
+backend/app/tests/test_tenant_context.py
+backend/app/tests/test_tenant_isolation.py
+backend/app/tests/test_tenant_rbac.py
+backend/app/tests/test_worker_queue.py
+backend/app/tests/test_worker_tasks.py
+backend/app/tests/test_notifications.py
+backend/app/tests/test_alert_rules.py
+backend/app/tests/test_realtime_websocket.py
+backend/app/tests/test_phase9_api.py
+
+frontend/src/tests/Organizations.test.tsx
+frontend/src/tests/Workspace.test.tsx
+frontend/src/tests/Workers.test.tsx
+frontend/src/tests/Alerts.test.tsx
+frontend/src/tests/RealtimeEvents.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/audit/audit_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+MULTI_TENANT_ENABLED=true
+DEFAULT_ORG_NAME=zDash Local
+DEFAULT_WORKSPACE_NAME=Main Workspace
+TENANT_HEADER_NAME=X-ZDash-Tenant
+WORKSPACE_HEADER_NAME=X-ZDash-Workspace
+
+WORKER_ENABLED=true
+WORKER_QUEUE_BACKEND=redis
+WORKER_CONCURRENCY=2
+WORKER_POLL_INTERVAL_SECONDS=2
+WORKER_TASK_TIMEOUT_SECONDS=300
+WORKER_MAX_RETRIES=3
+
+REALTIME_ENABLED=true
+REALTIME_EVENT_BUFFER_SIZE=500
+
+NOTIFICATIONS_ENABLED=true
+NOTIFICATION_DRY_RUN=true
+ALERT_RULES_ENABLED=true
+
+EMAIL_NOTIFICATIONS_ENABLED=false
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM=
+
+WEBHOOK_NOTIFICATIONS_ENABLED=false
+WEBHOOK_URL=
+
+CLOUDFLARE_ENABLED=false
+CLOUDFLARE_DRY_RUN=true
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ZONE_ID=
+CLOUDFLARE_API_TOKEN=
+CLOUDFLARE_TUNNEL_NAME=zdash
+CLOUDFLARE_HOSTNAME=zdash.example.com
+
+K8S_NAMESPACE=zdash
+K8S_IMAGE_TAG=latest
+
+RELEASE_CHANNEL=local
+RELEASE_VERSION=0.9.0-phase9
+
+Rules:
+
+- Missing config must fail safely.
+- Cloudflare dry-run must be true by default.
+- Notifications dry-run must be true by default.
+- Worker system can run locally with Redis.
+- Tenant isolation must work in SQLite and PostgreSQL.
+- No secret may be logged or exposed in frontend.
+
+============================================================
+MULTI-TENANT REQUIREMENTS
+============================================================
+
+Create tenant system:
+
+Entities:
+
+1. Organization
+- id
+- name
+- slug
+- owner_user_id
+- status
+- created_at
+- updated_at
+
+2. Workspace
+- id
+- organization_id
+- name
+- slug
+- environment
+- status
+- created_at
+- updated_at
+
+3. OrganizationMember
+- id
+- organization_id
+- user_id
+- role
+- status
+- created_at
+- updated_at
+
+4. WorkspaceMember
+- id
+- workspace_id
+- user_id
+- role
+- status
+- created_at
+- updated_at
+
+Statuses:
+- active
+- suspended
+- archived
+
+Workspace environments:
+- development
+- staging
+- production
+- simulation
+
+Requirements:
+- Every persisted business record must include organization_id and workspace_id where applicable.
+- Risk state, scheduler jobs, backtest results, content items, IoT logs, and audit logs must be tenant-scoped.
+- Default local org/workspace must be bootstrapped automatically in development.
+- Existing single-tenant data must map to default org/workspace.
+- APIs must resolve tenant context from:
+  1. explicit route/path param when provided
+  2. request headers
+  3. user’s default org/workspace
+  4. development fallback default org/workspace
+
+Tenant isolation:
+- Non-admin users can only access organizations/workspaces where they are members.
+- Admin can access all tenants.
+- Operator/analyst/viewer permissions are scoped to membership.
+- Cross-tenant access must return 403.
+
+============================================================
+TENANT API REQUIREMENTS
+============================================================
+
+Create:
+
+GET /api/tenancy/context
+
+Returns current organization/workspace context.
+
+GET /api/tenancy/organizations
+
+Lists organizations current user can access.
+
+POST /api/tenancy/organizations
+
+Creates organization.
+
+GET /api/tenancy/organizations/{org_id}
+
+Returns organization details.
+
+PATCH /api/tenancy/organizations/{org_id}
+
+Updates organization.
+
+GET /api/tenancy/organizations/{org_id}/workspaces
+
+Lists workspaces.
+
+POST /api/tenancy/organizations/{org_id}/workspaces
+
+Creates workspace.
+
+GET /api/tenancy/workspaces/{workspace_id}
+
+Returns workspace.
+
+PATCH /api/tenancy/workspaces/{workspace_id}
+
+Updates workspace.
+
+POST /api/tenancy/organizations/{org_id}/members
+
+Adds user to organization.
+
+POST /api/tenancy/workspaces/{workspace_id}/members
+
+Adds user to workspace.
+
+Rules:
+- Use standard API response shape.
+- Tenant admin actions require admin or organization owner.
+- Audit all tenant admin changes.
+
+============================================================
+WORKER QUEUE REQUIREMENTS
+============================================================
+
+Create queue system:
+
+Task types:
+
+- trading_scan
+- risk_check
+- backtest_run
+- optimization_run
+- content_pipeline_run
+- content_publish_dry_run
+- iot_status_check
+- notification_dispatch
+- audit_compaction
+- backup_run
+- custom
+
+Models:
+
+1. WorkerTask
+- id
+- organization_id
+- workspace_id
+- task_type
+- status
+- payload
+- result
+- error
+- priority
+- attempts
+- max_retries
+- scheduled_at
+- started_at
+- finished_at
+- created_at
+- updated_at
+
+Statuses:
+- queued
+- running
+- completed
+- failed
+- retrying
+- cancelled
+
+2. WorkerStatus
+- worker_id
+- hostname
+- status
+- current_task_id
+- processed_count
+- failed_count
+- last_heartbeat_at
+
+Implement:
+
+backend/app/workers/queue.py
+
+Methods:
+- enqueue(task_type, payload, tenant_context, priority=5) -> WorkerTask
+- dequeue(worker_id) -> WorkerTask | None
+- complete(task_id, result) -> WorkerTask
+- fail(task_id, error) -> WorkerTask
+- retry(task_id) -> WorkerTask
+- cancel(task_id) -> WorkerTask
+- list_tasks(filters) -> list[WorkerTask]
+
+Implement Redis-backed queue if Redis is available.
+Fallback to in-memory queue if Redis unavailable in development.
+
+Worker behavior:
+- Never crash entire worker on task failure.
+- Capture task result/error.
+- Respect tenant context.
+- Respect Guardian risk checks.
+- Respect content approval checks.
+- Respect IoT dry-run rules.
+- Respect social dry-run rules.
+
+============================================================
+WORKER API REQUIREMENTS
+============================================================
+
+Create:
+
+GET /api/workers/status
+
+Returns worker queue status.
+
+GET /api/workers/tasks
+
+Lists tasks for current tenant.
+
+POST /api/workers/tasks
+
+Enqueues task.
+
+POST /api/workers/tasks/{task_id}/cancel
+
+Cancels queued task.
+
+POST /api/workers/tasks/{task_id}/retry
+
+Retries failed task.
+
+GET /api/workers/tasks/{task_id}
+
+Returns task detail.
+
+Rules:
+- All routes require auth.
+- Tenant scoped.
+- Enqueue requires permission based on task type.
+- Audit task enqueue/cancel/retry.
+
+============================================================
+REALTIME EVENT STREAM REQUIREMENTS
+============================================================
+
+Add WebSocket support:
+
+Endpoint:
+
+WS /api/realtime/events
+
+Features:
+- Auth via token query param or Authorization-compatible handshake.
+- Tenant-scoped event stream.
+- Sends recent buffered events on connect.
+- Streams new events live.
+- Supports event category filter.
+- Sends heartbeat ping.
+- Cleans up disconnected clients.
+
+Event categories:
+- system
+- agent
+- trading
+- risk
+- scheduler
+- worker
+- iot
+- backtest
+- content
+- auth
+- audit
+- notification
+
+Frontend:
+- Add live event indicator.
+- Session Logs page should support WebSocket mode.
+- Fallback to polling if WebSocket fails.
+
+============================================================
+NOTIFICATION AND ALERT REQUIREMENTS
+============================================================
+
+Create alert system.
+
+AlertRule:
+- id
+- organization_id
+- workspace_id
+- name
+- event_type
+- severity
+- enabled
+- condition
+- channels
+- created_at
+- updated_at
+
+AlertEvent:
+- id
+- organization_id
+- workspace_id
+- rule_id
+- severity
+- title
+- message
+- payload
+- status
+- created_at
+
+NotificationChannel:
+- id
+- organization_id
+- workspace_id
+- name
+- channel_type
+- enabled
+- config
+- created_at
+- updated_at
+
+Channel types:
+- dry_run
+- email
+- webhook
+
+Default alert rules:
+- risk emergency stop triggered
+- risk halt activated
+- worker task failed
+- scheduler job failed
+- content publish blocked
+- IoT action blocked
+- auth login failure spike
+- production safety blocker
+
+Notification service:
+- In dry-run mode, record notification but do not send.
+- Email channel must be stubbed unless SMTP configured.
+- Webhook channel must be stubbed unless WEBHOOK_NOTIFICATIONS_ENABLED=true.
+- Never send secrets in notification payloads.
+
+============================================================
+NOTIFICATION API REQUIREMENTS
+============================================================
+
+Create:
+
+GET /api/notifications/status
+
+GET /api/notifications/rules
+
+POST /api/notifications/rules
+
+PATCH /api/notifications/rules/{rule_id}
+
+DELETE /api/notifications/rules/{rule_id}
+
+GET /api/notifications/events
+
+GET /api/notifications/channels
+
+POST /api/notifications/channels
+
+PATCH /api/notifications/channels/{channel_id}
+
+DELETE /api/notifications/channels/{channel_id}
+
+POST /api/notifications/test
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Admin/operator can manage rules and channels.
+- Viewer/analyst can read alert events.
+- Audit all changes.
+
+============================================================
+CLOUDFLARE DEPLOYMENT REQUIREMENTS
+============================================================
+
+Create Cloudflare templates:
+
+infra/cloudflare/
+- README.md
+- tunnel-config.example.yml
+- dns-records.example.json
+- zero-trust-policy.example.json
+
+Create script:
+
+infra/scripts/cloudflare-dry-run.sh
+
+Requirements:
+- Validate required env vars.
+- Print planned Cloudflare actions.
+- Do not call Cloudflare API unless CLOUDFLARE_DRY_RUN=false.
+- Never print token values.
+- Support:
+  - tunnel name
+  - hostname
+  - zone ID
+  - account ID
+  - DNS CNAME target
+  - Zero Trust access policy template
+
+Cloudflare actions:
+- create/update tunnel template
+- create DNS record template
+- create Access app/policy template
+- show deployment summary
+
+============================================================
+TERRAFORM REQUIREMENTS
+============================================================
+
+Create Terraform templates under:
+
+infra/terraform/
+
+Requirements:
+- Cloud/provider-neutral skeleton where possible.
+- Variables for:
+  - app name
+  - environment
+  - region
+  - domain
+  - image tags
+  - database sizing
+  - redis sizing
+  - Cloudflare config
+- Outputs for:
+  - app URL
+  - backend URL
+  - database endpoint
+  - redis endpoint
+  - Cloudflare hostname
+
+Modules:
+- network
+- postgres
+- redis
+- app
+- cloudflare
+
+Rules:
+- Keep templates safe and documented.
+- Do not include real provider credentials.
+- Include README explaining how to adapt for AWS/GCP/local VM.
+- Do not assume a single cloud provider unless configured.
+
+============================================================
+KUBERNETES REQUIREMENTS
+============================================================
+
+Create manifests under:
+
+infra/k8s/
+
+Required:
+- namespace
+- backend deployment/service
+- frontend deployment/service
+- worker deployment
+- postgres statefulset/service
+- redis deployment/service
+- nginx ingress
+- configmap
+- secret.example.yaml
+- prometheus servicemonitor
+
+Rules:
+- Use placeholders for secrets.
+- Use non-root containers where possible.
+- Add readiness/liveness probes.
+- Add resource requests/limits.
+- Keep DRY_RUN=true by default.
+- Production safety lock must remain enabled by default.
+
+============================================================
+RELEASE AUTOMATION REQUIREMENTS
+============================================================
+
+Create scripts:
+
+infra/scripts/release.sh
+
+Behavior:
+- Validate clean git tree
+- Run backend tests
+- Run frontend tests
+- Build Docker images
+- Tag release
+- Generate changelog summary
+- Print deployment checklist
+
+infra/scripts/deploy-dev.sh
+
+Behavior:
+- docker compose up --build
+- run migrations
+- run smoke test
+
+infra/scripts/deploy-prod.sh
+
+Behavior:
+- Require DEPLOY_CONFIRM=yes
+- Require APP_ENV=production
+- Require production safety check pass
+- Build/pull images
+- Run migrations
+- Start services
+- Run smoke test
+
+infra/scripts/rollback.sh
+
+Behavior:
+- Require ROLLBACK_CONFIRM=yes
+- Roll back to previous image tag or compose backup
+- Run smoke test
+
+============================================================
+FRONTEND PHASE 9 REQUIREMENTS
+============================================================
+
+Add pages:
+
+1. Organizations
+- List organizations
+- Create organization
+- List workspaces
+- Switch active org/workspace
+- Invite/add member form
+- Role display
+
+2. Workspace
+- Current workspace summary
+- Environment label
+- Tenant-scoped status cards
+- Safety state
+
+3. Workers
+- Queue status
+- Task list
+- Task detail
+- Enqueue dry-run task
+- Retry/cancel task
+- Worker heartbeat status
+
+4. Alerts
+- Alert rules
+- Alert events
+- Notification channels
+- Dry-run notification test
+
+Update:
+- Sidebar with Organizations, Workers, Alerts
+- Topbar with OrganizationSwitcher and WorkspaceSwitcher
+- API client to send tenant/workspace headers
+- Session Logs to use WebSocket event stream with polling fallback
+- Settings page to show multi-tenant and worker config summary
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_tenant_models.py
+- organization validation
+- workspace validation
+- member roles
+
+2. test_tenant_context.py
+- context resolves from headers
+- context falls back to default in dev
+- missing tenant fails safely in protected mode
+
+3. test_tenant_isolation.py
+- user cannot access other tenant data
+- admin can access all tenants
+- audit logs tenant scoped
+
+4. test_tenant_rbac.py
+- organization owner can manage workspace
+- viewer cannot create scheduler job
+- operator can run dry-run tasks
+
+5. test_worker_queue.py
+- enqueue task
+- dequeue task
+- complete task
+- fail task
+- retry task
+- cancel task
+
+6. test_worker_tasks.py
+- risk_check task calls Guardian
+- backtest task calls BacktestService
+- content task does not auto-publish
+- iot task respects dry-run
+
+7. test_notifications.py
+- dry-run notification recorded
+- missing SMTP does not crash
+- webhook disabled blocks real webhook
+
+8. test_alert_rules.py
+- default rules created
+- risk halt event creates alert event
+- disabled rule does not fire
+
+9. test_realtime_websocket.py
+- websocket connects with auth
+- receives buffered events
+- tenant filter works
+
+10. test_phase9_api.py
+- tenancy endpoints work
+- worker endpoints work
+- notification endpoints work
+- unauthorized requests rejected
+
+Frontend tests:
+
+1. Organizations.test.tsx
+- renders organizations page
+- workspace switcher appears
+- create organization form exists
+
+2. Workspace.test.tsx
+- shows current workspace
+- shows safety state
+
+3. Workers.test.tsx
+- renders queue status
+- task table appears
+- dry-run enqueue button exists
+
+4. Alerts.test.tsx
+- alert rule table renders
+- notification dry-run state visible
+
+5. RealtimeEvents.test.tsx
+- websocket fallback to polling works
+- event stream displays events
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 9 overview
+- Multi-tenant architecture
+- Organization/workspace model
+- Tenant-scoped RBAC
+- Worker queue architecture
+- WebSocket event stream
+- Alerting and notification system
+- Cloudflare dry-run deployment
+- Terraform templates
+- Kubernetes manifests
+- Release scripts
+- Rollback scripts
+- Runbooks
+- Safety notes
+- Test commands
+
+Add commands:
+
+Run local stack:
+
+docker compose up --build
+
+Run worker:
+
+cd backend
+python -m app.workers.runner
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Cloudflare dry-run:
+
+bash infra/scripts/cloudflare-dry-run.sh
+
+Deploy dev:
+
+bash infra/scripts/deploy-dev.sh
+
+Deploy prod:
+
+DEPLOY_CONFIRM=yes bash infra/scripts/deploy-prod.sh
+
+Rollback:
+
+ROLLBACK_CONFIRM=yes bash infra/scripts/rollback.sh
+
+Kubernetes smoke test:
+
+bash infra/scripts/k8s-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 9 is complete only when:
+
+- Multi-tenant models exist.
+- Default local organization/workspace is bootstrapped.
+- Tenant context resolver works.
+- Tenant-scoped RBAC works.
+- Cross-tenant data access is blocked.
+- Worker queue exists.
+- Worker tasks execute safely.
+- Redis queue support exists with in-memory fallback.
+- WebSocket event stream works.
+- Polling fallback still works.
+- Notification service exists.
+- Alert rules exist.
+- Dry-run notifications work.
+- Cloudflare dry-run templates exist.
+- Terraform templates exist.
+- Kubernetes manifests exist.
+- Release script exists.
+- Deploy scripts exist.
+- Rollback script exists.
+- Runbooks exist.
+- Frontend organization/workspace UI exists.
+- Frontend workers page exists.
+- Frontend alerts page exists.
+- Existing Phase 1–8 behavior remains intact.
+- Existing tests still pass.
+- New Phase 9 tests pass.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- README includes Phase 9 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Terraform templates
+6. Kubernetes manifests
+7. Cloudflare templates
+8. Release/deploy/rollback scripts
+9. Runbooks
+10. Test files
+11. .env.example updates
+12. README updates
+13. Run instructions
+14. Test instructions
+15. Deploy instructions
+16. Production safety checklist
+17. Acceptance checklist
+18. Known limitations
+19. Phase 10 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–8 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use safe defaults.
+- Never hardcode credentials.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Keep Cloudflare actions dry-run by default.
+- Keep notification actions dry-run by default.
+- Keep infrastructure templates editable and provider-safe.
+- Keep code modular enough for Phase 10 billing, marketplace, and enterprise packaging.
+
+Now generate the complete Phase 9 implementation.

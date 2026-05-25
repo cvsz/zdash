@@ -1,0 +1,1867 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 11 · AI OPS + GOVERNANCE + COMPLIANCE CONTROL PLANE
+Model Governance + Prompt Registry + Evaluation System + Policy Engine + Security Review + Marketplace Review Pipeline
+
+Do not rebuild Phase 1–10 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+PHASE 9:
+- Multi-tenant SaaS
+- Organizations/workspaces
+- Tenant-scoped RBAC
+- Workers
+- WebSocket event stream
+- Alerts/notifications
+- Cloudflare/Terraform/Kubernetes templates
+- Release automation
+
+PHASE 10:
+- Billing
+- Usage metering
+- Entitlements
+- Quotas
+- Marketplace
+- Plugin safety
+- Enterprise license
+- White-label branding
+- Export/import
+- Onboarding
+
+============================================================
+PHASE 11 OBJECTIVE
+============================================================
+
+Build the AI operations, governance, and compliance control plane for zDash.
+
+Main goals:
+
+1. Add AI model registry
+2. Add prompt template registry
+3. Add prompt versioning
+4. Add AI request tracing
+5. Add AI cost estimation
+6. Add AI provider routing policy
+7. Add AI evaluation test suites
+8. Add golden dataset evaluation
+9. Add red-team simulation framework
+10. Add governance policy engine
+11. Add compliance rules and evidence collection
+12. Add data retention policy system
+13. Add DLP scanner for secrets and sensitive data
+14. Add marketplace plugin review workflow
+15. Add security review pipeline for plugins and prompts
+16. Add approval workflow engine
+17. Add governance dashboard pages
+18. Add AI Ops dashboard pages
+19. Add compliance report generator
+20. Add tests for governance, AI Ops, policy enforcement, and review workflows
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlement checks.
+- Do not expose secrets in prompts, traces, logs, exports, reports, or frontend.
+- AI providers must be replaceable.
+- Mock AI Ops must work without external API keys.
+- Governance policies must fail closed in production.
+- Plugin review must block unsafe plugins by default.
+- Red-team framework must be defensive and validation-only.
+- Compliance evidence must not contain raw secrets.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/aiops/
+  __init__.py
+  models.py
+  model_registry.py
+  prompt_registry.py
+  prompt_renderer.py
+  provider_router.py
+  ai_trace_service.py
+  cost_service.py
+  eval_models.py
+  eval_datasets.py
+  eval_runner.py
+  redteam.py
+  aiops_service.py
+
+backend/app/governance/
+  __init__.py
+  models.py
+  policy_engine.py
+  approval_workflow.py
+  dlp_scanner.py
+  retention_service.py
+  evidence_service.py
+  compliance_reports.py
+  security_review.py
+
+backend/app/api/aiops.py
+backend/app/api/governance.py
+backend/app/api/compliance.py
+
+frontend/src/pages/AIOps.tsx
+frontend/src/pages/PromptRegistry.tsx
+frontend/src/pages/Evaluations.tsx
+frontend/src/pages/Governance.tsx
+frontend/src/pages/Compliance.tsx
+frontend/src/pages/ReviewCenter.tsx
+
+frontend/src/components/aiops/
+  ModelRegistryTable.tsx
+  PromptTemplateTable.tsx
+  PromptVersionPanel.tsx
+  AITraceTable.tsx
+  CostSummaryCard.tsx
+  ProviderRoutingPanel.tsx
+  EvalSuiteTable.tsx
+  EvalRunResultPanel.tsx
+  RedTeamRunPanel.tsx
+
+frontend/src/components/governance/
+  PolicyTable.tsx
+  PolicyEditor.tsx
+  ApprovalQueue.tsx
+  ApprovalDetailPanel.tsx
+  DLPScanResultPanel.tsx
+  RetentionPolicyPanel.tsx
+  SecurityReviewPanel.tsx
+  ComplianceEvidenceTable.tsx
+  ComplianceReportPanel.tsx
+
+frontend/src/hooks/useAIOps.ts
+frontend/src/hooks/useGovernance.ts
+frontend/src/hooks/useCompliance.ts
+frontend/src/hooks/useReviewCenter.ts
+
+backend/app/tests/
+  test_aiops_models.py
+  test_model_registry.py
+  test_prompt_registry.py
+  test_prompt_renderer.py
+  test_provider_router.py
+  test_ai_trace_service.py
+  test_cost_service.py
+  test_eval_runner.py
+  test_redteam.py
+  test_policy_engine.py
+  test_approval_workflow.py
+  test_dlp_scanner.py
+  test_retention_service.py
+  test_evidence_service.py
+  test_compliance_reports.py
+  test_security_review.py
+  test_aiops_api.py
+  test_governance_api.py
+  test_compliance_api.py
+  test_phase11_tenant_isolation.py
+
+frontend/src/tests/
+  AIOps.test.tsx
+  PromptRegistry.test.tsx
+  Evaluations.test.tsx
+  Governance.test.tsx
+  Compliance.test.tsx
+  ReviewCenter.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/audit/audit_service.py
+backend/app/ai/claude_adapter.py
+backend/app/ai/mock_adapter.py
+backend/app/marketplace/plugin_service.py
+backend/app/marketplace/safety.py
+backend/app/content/policy.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+.env.example
+README.md
+
+docs/
+  architecture/
+    PHASE_11_AI_OPS_GOVERNANCE.md
+    MODEL_GOVERNANCE_MODEL.md
+    PROMPT_REGISTRY_MODEL.md
+    POLICY_ENGINE_MODEL.md
+    COMPLIANCE_EVIDENCE_MODEL.md
+  runbooks/
+    AI_PROVIDER_INCIDENT_RUNBOOK.md
+    PROMPT_ROLLBACK_RUNBOOK.md
+    PLUGIN_REVIEW_RUNBOOK.md
+    DLP_INCIDENT_RUNBOOK.md
+    COMPLIANCE_EXPORT_RUNBOOK.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+AIOPS_ENABLED=true
+AIOPS_TRACE_ENABLED=true
+AIOPS_COST_TRACKING_ENABLED=true
+AIOPS_PROVIDER_ROUTING_ENABLED=true
+AIOPS_DEFAULT_PROVIDER=mock
+AIOPS_FAIL_CLOSED=true
+
+PROMPT_REGISTRY_ENABLED=true
+PROMPT_APPROVAL_REQUIRED=true
+PROMPT_DEFAULT_STATUS=draft
+PROMPT_RENDER_MAX_LENGTH=12000
+
+EVALS_ENABLED=true
+EVALS_MAX_CASES_PER_RUN=100
+EVALS_STORE_RESULTS=true
+EVALS_DEFAULT_DATASET=mock
+
+REDTEAM_ENABLED=true
+REDTEAM_DRY_RUN=true
+REDTEAM_MAX_CASES_PER_RUN=50
+
+GOVERNANCE_ENABLED=true
+POLICY_ENGINE_ENABLED=true
+POLICY_FAIL_CLOSED=true
+APPROVAL_WORKFLOW_ENABLED=true
+
+DLP_ENABLED=true
+DLP_BLOCK_SECRETS=true
+DLP_BLOCK_PRIVATE_KEYS=true
+DLP_BLOCK_TOKENS=true
+DLP_WARN_EMAILS=true
+
+RETENTION_ENABLED=true
+RETENTION_DEFAULT_DAYS=90
+RETENTION_AUDIT_LOG_DAYS=365
+RETENTION_AI_TRACE_DAYS=30
+RETENTION_EVAL_RESULT_DAYS=180
+
+COMPLIANCE_ENABLED=true
+COMPLIANCE_EVIDENCE_ENABLED=true
+COMPLIANCE_REPORTS_ENABLED=true
+COMPLIANCE_EXPORT_REQUIRES_ADMIN=true
+
+PLUGIN_REVIEW_REQUIRED=true
+PLUGIN_SECURITY_SCAN_REQUIRED=true
+PLUGIN_APPROVAL_REQUIRED=true
+
+Rules:
+- Missing config must fail safely.
+- Production must fail closed when governance is enabled.
+- Prompt approval is required by default.
+- Plugin approval is required by default.
+- AI traces must redact secrets.
+- Compliance exports must exclude secrets by default.
+- Red-team mode must be dry-run and defensive by default.
+
+============================================================
+AI OPS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. AIProvider
+
+Allowed values:
+- mock
+- claude
+- openai
+- local
+- custom
+
+2. AIModelStatus
+
+Allowed values:
+- active
+- disabled
+- deprecated
+- review
+
+3. PromptStatus
+
+Allowed values:
+- draft
+- review
+- approved
+- rejected
+- deprecated
+- archived
+
+4. EvalStatus
+
+Allowed values:
+- queued
+- running
+- passed
+- failed
+- error
+- canceled
+
+5. AIModelRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- provider
+- model_name
+- display_name
+- status
+- capabilities
+- max_tokens
+- cost_input_per_1k
+- cost_output_per_1k
+- default_temperature
+- metadata
+- created_at
+- updated_at
+
+6. PromptTemplate
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- slug
+- description
+- status
+- category
+- current_version_id
+- tags
+- metadata
+- created_by
+- created_at
+- updated_at
+
+7. PromptVersion
+
+Fields:
+- id
+- prompt_id
+- version
+- template_text
+- variables
+- status
+- change_notes
+- approval_required
+- approved_by
+- approved_at
+- created_by
+- created_at
+
+8. RenderedPrompt
+
+Fields:
+- prompt_id
+- version_id
+- rendered_text
+- variables
+- token_estimate
+- dlp_passed
+- dlp_warnings
+- timestamp
+
+9. AITrace
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- provider
+- model_name
+- prompt_id
+- prompt_version_id
+- request_type
+- input_summary
+- output_summary
+- token_input
+- token_output
+- estimated_cost
+- latency_ms
+- status
+- error
+- redacted
+- metadata
+- created_at
+
+10. EvalDataset
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- description
+- category
+- cases
+- created_at
+- updated_at
+
+11. EvalCase
+
+Fields:
+- id
+- input
+- expected
+- assertions
+- metadata
+
+12. EvalRun
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- prompt_id
+- prompt_version_id
+- model_id
+- dataset_id
+- status
+- total_cases
+- passed_cases
+- failed_cases
+- score
+- results
+- started_at
+- finished_at
+- duration_ms
+
+13. RedTeamRun
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- target_type
+- target_id
+- status
+- scenario_count
+- blocked_count
+- warning_count
+- findings
+- dry_run
+- started_at
+- finished_at
+
+============================================================
+MODEL REGISTRY REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/model_registry.py
+
+Methods:
+
+- register_model(record)
+- list_models(organization_id, workspace_id)
+- get_model(model_id)
+- update_model(model_id, patch)
+- disable_model(model_id)
+- select_default_model(provider=None, capability=None)
+
+Rules:
+- Tenant scoped.
+- Mock model must be registered by default.
+- Claude model shell may be registered if configured.
+- Disabled model cannot be used.
+- Deprecated model emits warning.
+- No API keys are stored in model registry.
+
+============================================================
+PROMPT REGISTRY REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/prompt_registry.py
+
+Methods:
+
+- create_prompt(request)
+- create_version(prompt_id, template_text, variables, change_notes)
+- list_prompts(status=None)
+- get_prompt(prompt_id)
+- get_version(version_id)
+- submit_for_review(prompt_id)
+- approve_version(version_id, approved_by)
+- reject_version(version_id, reason)
+- deprecate_prompt(prompt_id)
+- rollback_to_version(prompt_id, version_id)
+
+Rules:
+- Tenant scoped.
+- Prompt variables must be explicit.
+- Approved version required for production usage.
+- Draft prompts allowed in development only.
+- Every version change audited.
+- DLP scan must run before approval.
+- Rejected prompts cannot be rendered for production use.
+
+============================================================
+PROMPT RENDERER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/prompt_renderer.py
+
+Methods:
+
+- render(prompt_id, variables, require_approved=True) -> RenderedPrompt
+- estimate_tokens(text) -> int
+- validate_variables(prompt_version, variables)
+- redact_sensitive_values(text)
+
+Rules:
+- Missing variables must raise clean error.
+- Extra variables allowed but ignored or recorded.
+- Rendered prompt length must respect PROMPT_RENDER_MAX_LENGTH.
+- DLP scanner must run on rendered text.
+- Secrets must be redacted in traces.
+
+============================================================
+PROVIDER ROUTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/provider_router.py
+
+Methods:
+
+- choose_provider(request_type, capability, organization_id, workspace_id)
+- route_request(prompt, model_preference=None, fallback=True)
+- record_provider_failure(provider, error)
+- get_provider_status()
+
+Rules:
+- Mock provider always available.
+- External providers require config.
+- If provider unavailable, fallback to mock in development.
+- In production with AIOPS_FAIL_CLOSED=true, block unsafe provider fallback for sensitive actions.
+- Provider decisions must be traced.
+
+============================================================
+AI TRACE AND COST REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/ai_trace_service.py
+
+Methods:
+
+- record_trace(...)
+- list_traces(filters)
+- get_trace(trace_id)
+- redact_trace(trace)
+
+Create:
+
+backend/app/aiops/cost_service.py
+
+Methods:
+
+- estimate_cost(provider, model_name, token_input, token_output)
+- summarize_costs(organization_id, workspace_id, range)
+- get_cost_by_provider()
+- get_cost_by_feature()
+
+Rules:
+- Never store raw secrets in traces.
+- Store input/output summaries, not full sensitive payloads by default.
+- Cost estimation works with mock values.
+- Cost summary must be tenant-scoped.
+
+============================================================
+EVALUATION SYSTEM REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/eval_datasets.py
+backend/app/aiops/eval_runner.py
+
+Default evaluation suites:
+
+1. agent_message_quality
+- CEO → Janie response quality
+- No secret leakage
+- Clear operational summary
+
+2. trading_analysis_safety
+- Trading response includes dry-run / educational wording
+- Does not claim guaranteed profit
+- Does not bypass Guardian
+
+3. content_policy_quality
+- Social content includes required disclaimer when trading-related
+- Blocks misleading claims
+
+4. plugin_safety_quality
+- Plugin result cannot request secrets
+- Plugin result cannot invoke live actions
+
+Eval runner methods:
+
+- create_dataset()
+- list_datasets()
+- run_eval(prompt_id, version_id, model_id, dataset_id)
+- get_eval_run(run_id)
+- list_eval_runs()
+
+Scoring:
+- pass/fail assertions
+- score 0–100
+- failed case details
+- warning notes
+
+Rules:
+- Max cases capped by EVALS_MAX_CASES_PER_RUN.
+- Eval failures do not crash system.
+- Results are tenant-scoped.
+- Eval run events emitted.
+
+============================================================
+RED-TEAM SIMULATION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/aiops/redteam.py
+
+Purpose:
+Defensive validation only.
+
+Methods:
+
+- run_prompt_redteam(prompt_id, version_id)
+- run_plugin_redteam(plugin_id)
+- run_content_policy_redteam()
+- list_redteam_runs()
+- get_redteam_run(run_id)
+
+Scenarios:
+- secret leakage attempt detection
+- prompt injection resistance check
+- policy bypass request check
+- plugin unsafe action check
+- guaranteed-profit language check
+- unauthorized tenant access check
+
+Rules:
+- Do not generate harmful instructions.
+- Use safe abstract test strings.
+- Do not include real credentials.
+- Results should classify:
+  - blocked
+  - warning
+  - failed
+  - passed
+- Red-team runs are dry-run by default.
+
+============================================================
+GOVERNANCE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. PolicyStatus
+Allowed values:
+- active
+- disabled
+- draft
+
+2. PolicyDecision
+Fields:
+- allowed
+- policy_id
+- policy_name
+- reason
+- severity
+- matched_rules
+- timestamp
+
+3. GovernancePolicy
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- description
+- category
+- status
+- rules
+- enforcement_mode
+- created_by
+- created_at
+- updated_at
+
+4. ApprovalStatus
+Allowed values:
+- pending
+- approved
+- rejected
+- canceled
+
+5. ApprovalRequest
+Fields:
+- id
+- organization_id
+- workspace_id
+- resource_type
+- resource_id
+- action
+- status
+- requested_by
+- reviewed_by
+- reason
+- decision_notes
+- metadata
+- created_at
+- reviewed_at
+
+6. DLPScanResult
+Fields:
+- passed
+- severity
+- findings
+- redacted_text
+- blocked
+- warnings
+- timestamp
+
+7. RetentionPolicy
+Fields:
+- id
+- organization_id
+- workspace_id
+- resource_type
+- retention_days
+- enabled
+- action
+- created_at
+- updated_at
+
+8. ComplianceEvidence
+Fields:
+- id
+- organization_id
+- workspace_id
+- control_id
+- control_name
+- evidence_type
+- resource_type
+- resource_id
+- summary
+- metadata
+- created_at
+
+9. ComplianceReport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- framework
+- status
+- controls
+- evidence_count
+- file_path
+- generated_by
+- created_at
+- completed_at
+
+============================================================
+POLICY ENGINE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/policy_engine.py
+
+Methods:
+
+- list_policies()
+- create_policy()
+- update_policy()
+- evaluate(action, resource_type, payload, context) -> list[PolicyDecision]
+- enforce(action, resource_type, payload, context)
+
+Default policies:
+
+1. block_live_trading_without_guardian
+2. block_real_iot_without_confirmation
+3. block_social_post_without_approval
+4. block_secret_leakage
+5. block_cross_tenant_access
+6. require_prompt_approval_for_production
+7. require_plugin_review_before_install
+8. require_dlp_pass_before_export
+9. require_admin_for_secret_export
+10. block_default_secrets_in_production
+
+Rules:
+- Policies are tenant-scoped.
+- Global safety policies cannot be disabled unless admin and production lock allows.
+- In production with POLICY_FAIL_CLOSED=true, policy engine errors block sensitive action.
+- Policy decisions must be auditable.
+
+============================================================
+APPROVAL WORKFLOW REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/approval_workflow.py
+
+Methods:
+
+- create_approval_request(resource_type, resource_id, action, reason)
+- list_pending()
+- approve(request_id, reviewed_by, notes)
+- reject(request_id, reviewed_by, notes)
+- cancel(request_id)
+- require_approval(resource_type, resource_id, action)
+
+Approval required for:
+- prompt production approval
+- plugin marketplace approval
+- enterprise export with sensitive data
+- real social posting config change
+- real IoT config change
+- live trading config change
+- production safety lock override
+
+Rules:
+- Tenant scoped.
+- Requester cannot approve own request unless admin override configured.
+- All decisions audited.
+- Rejected resources remain blocked.
+
+============================================================
+DLP SCANNER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/dlp_scanner.py
+
+Detect:
+
+- API key-like strings
+- access tokens
+- JWT-like tokens
+- private key blocks
+- password assignments
+- bearer tokens
+- Cloudflare token-like values
+- Stripe key-like values
+- email addresses as warning
+- broker credential-like fields
+
+Methods:
+
+- scan_text(text)
+- scan_json(payload)
+- redact_text(text)
+- assert_safe(text)
+
+Rules:
+- Deterministic.
+- No external API calls.
+- Conservative.
+- Secrets are blocked.
+- Emails are warnings, not hard blocks by default.
+- DLP used by:
+  - prompt approval
+  - AI trace logging
+  - compliance export
+  - content policy
+  - plugin review
+
+============================================================
+RETENTION SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/retention_service.py
+
+Methods:
+
+- list_policies()
+- create_policy()
+- apply_retention(resource_type, dry_run=True)
+- estimate_deletions(resource_type)
+- record_retention_action()
+
+Resource types:
+- audit_logs
+- event_logs
+- ai_traces
+- eval_runs
+- content_items
+- backtest_results
+- worker_tasks
+- notification_events
+
+Rules:
+- Dry-run by default.
+- Never delete active compliance evidence.
+- Tenant-scoped.
+- Retention actions audited.
+
+============================================================
+COMPLIANCE EVIDENCE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/evidence_service.py
+
+Methods:
+
+- collect_evidence(control_id, resource_type, resource_id)
+- list_evidence(filters)
+- get_evidence(evidence_id)
+- export_evidence_bundle(include_sensitive=False)
+
+Controls:
+
+- AUTH_RBAC_ENABLED
+- AUDIT_LOGGING_ENABLED
+- TENANT_ISOLATION_ENFORCED
+- DRY_RUN_DEFAULT_ENABLED
+- GUARDIAN_RISK_ENABLED
+- CONTENT_APPROVAL_REQUIRED
+- IOT_CONFIRMATION_REQUIRED
+- PROMPT_APPROVAL_REQUIRED
+- PLUGIN_REVIEW_REQUIRED
+- DLP_SCANNING_ENABLED
+- BACKUP_CONFIGURED
+- PRODUCTION_SAFETY_LOCK_ENABLED
+
+Rules:
+- Evidence summary only by default.
+- Sensitive payload excluded by default.
+- Export requires admin if include_sensitive=true.
+- DLP scan required before export.
+
+============================================================
+COMPLIANCE REPORT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/compliance_reports.py
+
+Methods:
+
+- generate_report(framework, organization_id, workspace_id)
+- list_reports()
+- get_report(report_id)
+- build_markdown_report(report_id)
+
+Frameworks:
+
+- zdash_internal
+- soc2_ready
+- iso27001_ready
+- ai_governance_ready
+
+Report includes:
+- Controls
+- Evidence count
+- Passed controls
+- Missing controls
+- Risks
+- Recommendations
+- Timestamp
+- Explicit note that it is readiness documentation, not certification
+
+============================================================
+SECURITY REVIEW REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/security_review.py
+
+Review targets:
+- prompt_template
+- plugin_manifest
+- content_item
+- export_bundle
+- config_change
+
+Methods:
+
+- review_prompt(prompt_version_id)
+- review_plugin(plugin_id)
+- review_content(content_id)
+- review_export(bundle_id)
+- review_config_change(payload)
+- get_review_result(review_id)
+
+Checks:
+- DLP scan
+- policy engine evaluation
+- unsafe action detection
+- tenant isolation check
+- approval requirement check
+- marketplace safety scan for plugins
+- content policy check for content
+
+Result:
+- approved
+- rejected
+- needs_review
+- blocked
+
+Rules:
+- Plugin approval requires security review passed.
+- Prompt approval requires security review passed.
+- Content publishing requires content policy passed.
+- Sensitive export requires DLP and approval.
+
+============================================================
+AI OPS API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/aiops.py
+
+Endpoints:
+
+GET /api/aiops/status
+
+Models:
+GET /api/aiops/models
+POST /api/aiops/models
+PATCH /api/aiops/models/{model_id}
+POST /api/aiops/models/{model_id}/disable
+
+Prompts:
+GET /api/aiops/prompts
+POST /api/aiops/prompts
+GET /api/aiops/prompts/{prompt_id}
+POST /api/aiops/prompts/{prompt_id}/versions
+POST /api/aiops/prompts/{prompt_id}/submit-review
+POST /api/aiops/prompts/versions/{version_id}/approve
+POST /api/aiops/prompts/versions/{version_id}/reject
+POST /api/aiops/prompts/render
+
+Traces:
+GET /api/aiops/traces
+GET /api/aiops/traces/{trace_id}
+GET /api/aiops/costs
+
+Evaluations:
+GET /api/aiops/evals/datasets
+POST /api/aiops/evals/datasets
+POST /api/aiops/evals/run
+GET /api/aiops/evals/runs
+GET /api/aiops/evals/runs/{run_id}
+
+Red-team:
+POST /api/aiops/redteam/prompt
+POST /api/aiops/redteam/plugin
+GET /api/aiops/redteam/runs
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Prompt approval requires operator/admin.
+- Model registry management requires admin/operator.
+- Trace read requires analyst/operator/admin.
+- Red-team run requires operator/admin.
+- All changes audited.
+
+============================================================
+GOVERNANCE API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/governance.py
+
+Endpoints:
+
+GET /api/governance/status
+
+Policies:
+GET /api/governance/policies
+POST /api/governance/policies
+PATCH /api/governance/policies/{policy_id}
+POST /api/governance/evaluate
+
+Approval:
+GET /api/governance/approvals
+POST /api/governance/approvals
+POST /api/governance/approvals/{request_id}/approve
+POST /api/governance/approvals/{request_id}/reject
+POST /api/governance/approvals/{request_id}/cancel
+
+DLP:
+POST /api/governance/dlp/scan-text
+POST /api/governance/dlp/scan-json
+
+Retention:
+GET /api/governance/retention/policies
+POST /api/governance/retention/policies
+POST /api/governance/retention/apply
+
+Security review:
+POST /api/governance/security-review
+GET /api/governance/security-review/{review_id}
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Admin/operator manage policies.
+- Analyst may run read-only DLP scan.
+- Retention apply requires admin.
+- All decisions audited.
+
+============================================================
+COMPLIANCE API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/compliance.py
+
+Endpoints:
+
+GET /api/compliance/status
+GET /api/compliance/evidence
+POST /api/compliance/evidence/collect
+POST /api/compliance/evidence/export
+
+GET /api/compliance/reports
+POST /api/compliance/reports/generate
+GET /api/compliance/reports/{report_id}
+GET /api/compliance/reports/{report_id}/markdown
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Compliance report generation requires admin/operator.
+- Evidence export requires admin if sensitive.
+- Reports must not include secrets.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+AI Ops:
+- aiops.read
+- aiops.manage_models
+- aiops.manage_prompts
+- aiops.approve_prompts
+- aiops.run_evals
+- aiops.run_redteam
+- aiops.read_traces
+- aiops.read_costs
+
+Governance:
+- governance.read
+- governance.manage_policies
+- governance.evaluate
+- governance.manage_approvals
+- governance.run_dlp
+- governance.manage_retention
+- governance.security_review
+
+Compliance:
+- compliance.read
+- compliance.collect_evidence
+- compliance.generate_reports
+- compliance.export_evidence
+- compliance.export_sensitive
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- aiops.read
+- aiops.manage_prompts
+- aiops.run_evals
+- aiops.run_redteam
+- governance.read
+- governance.evaluate
+- governance.manage_approvals
+- governance.run_dlp
+- governance.security_review
+- compliance.read
+- compliance.collect_evidence
+- compliance.generate_reports
+
+analyst:
+- aiops.read
+- aiops.run_evals
+- aiops.read_traces
+- aiops.read_costs
+- governance.read
+- governance.evaluate
+- governance.run_dlp
+- compliance.read
+
+viewer:
+- aiops.read limited
+- governance.read limited
+- compliance.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- ai_model_records
+- prompt_templates
+- prompt_versions
+- ai_traces
+- eval_datasets
+- eval_runs
+- redteam_runs
+- governance_policies
+- approval_requests
+- dlp_scan_logs
+- retention_policies
+- retention_actions
+- compliance_evidence
+- compliance_reports
+- security_reviews
+
+Requirements:
+- Tenant-scoped where applicable.
+- SQLite compatible.
+- PostgreSQL compatible.
+- Migration/create_all support.
+- No raw secrets.
+- Prompt versions must be immutable once approved.
+- AI traces must store redacted summaries.
+
+============================================================
+FRONTEND PHASE 11 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /aiops
+- /prompts
+- /evaluations
+- /governance
+- /compliance
+- /review-center
+
+Update sidebar:
+- AI Ops
+- Prompt Registry
+- Evaluations
+- Governance
+- Compliance
+- Review Center
+
+1. AI Ops Page
+
+Must show:
+- Model registry table
+- Provider routing status
+- AI trace summary
+- Cost summary
+- Provider health
+- Recent AI errors
+
+2. Prompt Registry Page
+
+Must show:
+- Prompt templates
+- Prompt versions
+- Create prompt form
+- Render prompt test panel
+- Submit for review button
+- Approve/reject controls based on role
+- DLP warnings
+
+3. Evaluations Page
+
+Must show:
+- Eval datasets
+- Run eval form
+- Eval run history
+- Score cards
+- Failed case detail
+- Red-team dry-run panel
+
+4. Governance Page
+
+Must show:
+- Policy table
+- Policy editor
+- Policy evaluation tester
+- Approval queue
+- DLP scanner panel
+- Retention policy panel
+
+5. Compliance Page
+
+Must show:
+- Compliance readiness status
+- Evidence table
+- Generate report form
+- Report list
+- Markdown report viewer
+- Export evidence button with safety warning
+
+6. Review Center Page
+
+Must show:
+- Pending prompt approvals
+- Pending plugin reviews
+- Security review results
+- DLP findings
+- Approval/rejection actions
+- Audit trail summary
+
+Frontend safety:
+- Never show secrets.
+- Display redacted values only.
+- Sensitive export requires typed confirmation:
+  CONFIRM_COMPLIANCE_EXPORT
+- Prompt approval must show DLP status.
+- Plugin approval must show security review status.
+- Red-team UI must clearly show defensive dry-run mode.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+AI Ops:
+- aiops.model.registered
+- aiops.model.disabled
+- aiops.prompt.created
+- aiops.prompt.version.created
+- aiops.prompt.submitted_review
+- aiops.prompt.approved
+- aiops.prompt.rejected
+- aiops.prompt.rendered
+- aiops.trace.recorded
+- aiops.eval.started
+- aiops.eval.completed
+- aiops.eval.failed
+- aiops.redteam.started
+- aiops.redteam.completed
+- aiops.redteam.failed
+
+Governance:
+- governance.policy.created
+- governance.policy.updated
+- governance.policy.evaluated
+- governance.policy.blocked
+- governance.approval.created
+- governance.approval.approved
+- governance.approval.rejected
+- governance.dlp.scan.completed
+- governance.retention.applied
+- governance.security_review.started
+- governance.security_review.completed
+- governance.security_review.blocked
+
+Compliance:
+- compliance.evidence.collected
+- compliance.evidence.exported
+- compliance.report.started
+- compliance.report.completed
+- compliance.report.failed
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- AIOPS_DISABLED
+- MODEL_NOT_FOUND
+- MODEL_DISABLED
+- PROMPT_NOT_FOUND
+- PROMPT_NOT_APPROVED
+- PROMPT_DLP_BLOCKED
+- EVAL_RUN_FAILED
+- REDTEAM_BLOCKED
+- POLICY_BLOCKED
+- APPROVAL_REQUIRED
+- APPROVAL_NOT_FOUND
+- DLP_SCAN_FAILED
+- DLP_SECRET_DETECTED
+- RETENTION_NOT_ALLOWED
+- COMPLIANCE_EXPORT_BLOCKED
+- SECURITY_REVIEW_FAILED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_aiops_models.py
+- model validation
+- prompt status enum
+- eval run status enum
+- AI trace redaction fields
+
+2. test_model_registry.py
+- register model
+- list tenant models
+- disable model
+- default mock model exists
+
+3. test_prompt_registry.py
+- create prompt
+- create immutable version
+- submit review
+- approve version
+- reject version
+- rollback version
+
+4. test_prompt_renderer.py
+- render variables
+- missing variable rejected
+- DLP blocks secret
+- length limit enforced
+
+5. test_provider_router.py
+- mock provider selected by default
+- disabled provider blocked
+- fallback behavior works in dev
+- production fail-closed blocks unsafe fallback
+
+6. test_ai_trace_service.py
+- trace recorded
+- secret redacted
+- tenant scoped trace listing
+
+7. test_cost_service.py
+- cost estimate works
+- provider summary works
+- tenant scoped cost summary
+
+8. test_eval_runner.py
+- default datasets exist
+- run eval
+- score calculated
+- failed cases captured
+
+9. test_redteam.py
+- prompt red-team dry-run
+- plugin red-team dry-run
+- unsafe scenario classified without harmful detail
+
+10. test_policy_engine.py
+- live trading policy blocks
+- IoT confirmation policy blocks
+- social approval policy blocks
+- prompt approval policy blocks
+- cross-tenant policy blocks
+
+11. test_approval_workflow.py
+- create approval request
+- approve request
+- reject request
+- requester cannot approve own request unless allowed
+
+12. test_dlp_scanner.py
+- API key detected
+- private key detected
+- token detected
+- email warning
+- redaction works
+
+13. test_retention_service.py
+- dry-run retention estimate
+- active evidence not deleted
+- retention action audited
+
+14. test_evidence_service.py
+- collect evidence
+- list evidence
+- export excludes sensitive data
+
+15. test_compliance_reports.py
+- generate internal report
+- markdown report includes readiness disclaimer
+- missing controls listed
+
+16. test_security_review.py
+- prompt review blocks secret
+- plugin review blocks unsafe action
+- content review uses policy
+- export review requires DLP
+
+17. test_aiops_api.py
+- status endpoint
+- model endpoints
+- prompt endpoints
+- eval endpoints
+- red-team endpoints
+
+18. test_governance_api.py
+- policy endpoints
+- approval endpoints
+- DLP endpoint
+- retention endpoint
+- security review endpoint
+
+19. test_compliance_api.py
+- evidence endpoints
+- report endpoints
+- export protection
+
+20. test_phase11_tenant_isolation.py
+- org A cannot read org B prompts
+- org A cannot read org B traces
+- org A cannot approve org B plugin
+- org A cannot export org B evidence
+
+Frontend tests:
+
+1. AIOps.test.tsx
+- model registry renders
+- cost summary renders
+- trace table renders
+
+2. PromptRegistry.test.tsx
+- prompt list renders
+- create prompt form exists
+- approve button role-gated
+- DLP warning displayed
+
+3. Evaluations.test.tsx
+- eval suite table renders
+- run eval button exists
+- red-team dry-run label visible
+
+4. Governance.test.tsx
+- policy table renders
+- approval queue renders
+- DLP scanner panel renders
+
+5. Compliance.test.tsx
+- evidence table renders
+- report generator exists
+- sensitive export confirmation required
+
+6. ReviewCenter.test.tsx
+- pending approvals render
+- security review results render
+- reject/approve actions exist based on role
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 11 overview
+- AI Ops architecture
+- Model registry
+- Prompt registry
+- Prompt approval workflow
+- AI tracing
+- Cost tracking
+- Evaluation runner
+- Red-team dry-run framework
+- Governance policy engine
+- DLP scanner
+- Approval workflow
+- Retention policies
+- Compliance evidence
+- Compliance reports
+- Security review workflow
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+List AI models:
+
+curl http://localhost:8000/api/aiops/models \
+  -H "Authorization: Bearer TOKEN"
+
+List prompts:
+
+curl http://localhost:8000/api/aiops/prompts \
+  -H "Authorization: Bearer TOKEN"
+
+Run DLP scan:
+
+curl -X POST http://localhost:8000/api/governance/dlp/scan-text \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "sample text only"}'
+
+List approvals:
+
+curl http://localhost:8000/api/governance/approvals \
+  -H "Authorization: Bearer TOKEN"
+
+Generate compliance report:
+
+curl -X POST http://localhost:8000/api/compliance/reports/generate \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"framework": "zdash_internal"}'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 11 is complete only when:
+
+- AI model registry exists.
+- Prompt registry exists.
+- Prompt versioning works.
+- Prompt approval workflow works.
+- Prompt rendering validates variables.
+- DLP blocks secrets.
+- AI traces are recorded and redacted.
+- AI cost estimation works.
+- Provider router works with mock provider.
+- Eval runner works.
+- Red-team dry-run framework works.
+- Governance policy engine exists.
+- Approval workflow exists.
+- Retention service exists.
+- Compliance evidence service exists.
+- Compliance report generator exists.
+- Security review blocks unsafe prompts/plugins/exports.
+- AI Ops API works.
+- Governance API works.
+- Compliance API works.
+- Frontend AI Ops page works.
+- Frontend Prompt Registry page works.
+- Frontend Evaluations page works.
+- Frontend Governance page works.
+- Frontend Compliance page works.
+- Frontend Review Center page works.
+- Tenant isolation applies to all Phase 11 data.
+- Existing Phase 1–10 behavior remains intact.
+- Existing tests still pass.
+- New Phase 11 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- README includes Phase 11 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. AI Ops models and services
+6. Governance models and services
+7. Compliance models and services
+8. Test files
+9. .env.example updates
+10. README updates
+11. API examples
+12. Run instructions
+13. Test instructions
+14. Production safety checklist
+15. Acceptance checklist
+16. Known limitations
+17. Phase 12 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–10 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never store raw sensitive prompt payloads without redaction.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never approve plugins without security review.
+- Never approve production prompts without DLP scan.
+- Keep red-team framework defensive and dry-run.
+- Keep governance policies fail-closed in production.
+- Keep code modular enough for Phase 12 autonomous operations, enterprise integrations, and managed service expansion.
+
+Now generate the complete Phase 11 implementation.

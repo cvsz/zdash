@@ -1,0 +1,1862 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 18 · AUTONOMOUS AI BOARDROOM + ECOSYSTEM SIMULATION + STRATEGIC PLANNING INTELLIGENCE
+AI Boardroom + Strategy Simulation + Competitive Intelligence + OKR Engine + Executive Decision Support
+
+Do not rebuild Phase 1–17 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–17:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+- Sovereign Enterprise Grid
+- On-Prem Appliance
+- Edge Runners
+- Data Residency Enforcement
+- Global Partner Operations
+- Predictive SRE
+- Optimization Center
+- Growth Intelligence
+- Executive Command Center
+- QBR Reports
+
+============================================================
+PHASE 18 OBJECTIVE
+============================================================
+
+Build the strategic intelligence and AI boardroom layer for zDash.
+
+Main goals:
+
+1. Add AI Boardroom agent system
+2. Add board role simulation:
+   - CEO
+   - COO
+   - CFO
+   - CTO
+   - CISO
+   - CRO
+   - CMO
+   - General Counsel advisor shell
+   - Investor advisor shell
+   - Customer advocate
+3. Add strategic planning engine
+4. Add OKR and initiative management
+5. Add scenario simulation engine
+6. Add ecosystem simulation model
+7. Add competitive intelligence registry
+8. Add market intelligence notes and signals
+9. Add strategic risk register
+10. Add decision memo generator
+11. Add board meeting agenda/minutes generator
+12. Add executive debate workflow
+13. Add strategy recommendation queue
+14. Add initiative prioritization and scoring
+15. Add portfolio roadmap planning
+16. Add capital allocation simulation shell
+17. Add enterprise partner strategy planner
+18. Add strategic review reports
+19. Add frontend AI Boardroom, Strategy Lab, OKR, Decision Memo, Competitive Intelligence pages
+20. Add tests, docs, runbooks, and acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Do not bypass data residency enforcement.
+- AI Boardroom outputs are decision-support only, not automatic execution.
+- Strategic recommendations must be advisory by default.
+- Capital allocation simulation is educational/planning only, not financial advice.
+- Legal/compliance outputs are operational templates only, not legal advice.
+- Market/competitor intelligence must store source summaries and confidence levels.
+- No automated outreach, billing changes, trading actions, hiring/firing actions, legal actions, or public announcements may run automatically.
+- No secrets, credentials, tokens, broker credentials, private customer payloads, raw prompts, API keys, or confidential documents may be logged, exported, synced, or displayed.
+- All recommendations must include assumptions, confidence, evidence summary, risks, and limitations.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/boardroom/
+  __init__.py
+  models.py
+  board_agents.py
+  boardroom_service.py
+  debate_engine.py
+  meeting_service.py
+  decision_memo_service.py
+  board_vote_service.py
+  board_audit.py
+
+backend/app/strategy/
+  __init__.py
+  models.py
+  strategy_service.py
+  okr_service.py
+  initiative_service.py
+  roadmap_service.py
+  scenario_simulator.py
+  ecosystem_simulator.py
+  strategic_risk_service.py
+  capital_allocation.py
+  strategy_report_service.py
+
+backend/app/intelligence/
+  __init__.py
+  models.py
+  market_intelligence.py
+  competitive_intelligence.py
+  signal_service.py
+  evidence_registry.py
+  confidence_scoring.py
+  intelligence_report_service.py
+
+backend/app/api/boardroom.py
+backend/app/api/strategy.py
+backend/app/api/intelligence.py
+
+frontend/src/pages/AIBoardroom.tsx
+frontend/src/pages/StrategyLab.tsx
+frontend/src/pages/OKRs.tsx
+frontend/src/pages/Initiatives.tsx
+frontend/src/pages/Roadmap.tsx
+frontend/src/pages/ScenarioSimulator.tsx
+frontend/src/pages/CompetitiveIntelligence.tsx
+frontend/src/pages/DecisionMemos.tsx
+
+frontend/src/components/boardroom/
+  BoardAgentCard.tsx
+  BoardroomPanel.tsx
+  DebateTranscript.tsx
+  BoardVotePanel.tsx
+  MeetingAgendaPanel.tsx
+  MeetingMinutesPanel.tsx
+  DecisionMemoPanel.tsx
+  BoardAuditTable.tsx
+
+frontend/src/components/strategy/
+  OKRTable.tsx
+  ObjectiveCard.tsx
+  InitiativeScoreCard.tsx
+  InitiativePrioritizationMatrix.tsx
+  RoadmapTimeline.tsx
+  ScenarioSimulationPanel.tsx
+  EcosystemMap.tsx
+  StrategicRiskRegister.tsx
+  CapitalAllocationSimulator.tsx
+  StrategyReportPanel.tsx
+
+frontend/src/components/intelligence/
+  MarketSignalTable.tsx
+  CompetitorProfileCard.tsx
+  CompetitiveLandscapeMatrix.tsx
+  EvidenceSourcePanel.tsx
+  ConfidenceBadge.tsx
+  IntelligenceReportPanel.tsx
+
+frontend/src/hooks/useBoardroom.ts
+frontend/src/hooks/useStrategy.ts
+frontend/src/hooks/useIntelligence.ts
+
+scripts/
+  run-boardroom-simulation.sh
+  generate-decision-memo.sh
+  generate-strategy-report.sh
+  run-scenario-simulation.sh
+  generate-okr-review.sh
+  generate-competitive-intel-report.sh
+  strategy-lab-smoke-test.sh
+
+docs/
+  boardroom/
+    AI_BOARDROOM_MODEL.md
+    EXECUTIVE_DEBATE_WORKFLOW.md
+    DECISION_MEMO_MODEL.md
+    BOARD_MEETING_AUTOMATION.md
+  strategy/
+    STRATEGIC_PLANNING_MODEL.md
+    OKR_ENGINE.md
+    INITIATIVE_PRIORITIZATION.md
+    SCENARIO_SIMULATION.md
+    ECOSYSTEM_SIMULATION.md
+    CAPITAL_ALLOCATION_SIMULATION.md
+  intelligence/
+    COMPETITIVE_INTELLIGENCE_MODEL.md
+    MARKET_SIGNAL_MODEL.md
+    EVIDENCE_CONFIDENCE_MODEL.md
+  runbooks/
+    AI_BOARDROOM_REVIEW_RUNBOOK.md
+    STRATEGY_REVIEW_RUNBOOK.md
+    DECISION_MEMO_RUNBOOK.md
+    COMPETITIVE_INTELLIGENCE_RUNBOOK.md
+    STRATEGIC_RISK_REVIEW_RUNBOOK.md
+
+backend/app/tests/
+  test_boardroom_models.py
+  test_board_agents.py
+  test_boardroom_service.py
+  test_debate_engine.py
+  test_meeting_service.py
+  test_decision_memo_service.py
+  test_board_vote_service.py
+  test_strategy_models.py
+  test_strategy_service.py
+  test_okr_service.py
+  test_initiative_service.py
+  test_roadmap_service.py
+  test_scenario_simulator.py
+  test_ecosystem_simulator.py
+  test_strategic_risk_service.py
+  test_capital_allocation.py
+  test_strategy_report_service.py
+  test_intelligence_models.py
+  test_market_intelligence.py
+  test_competitive_intelligence.py
+  test_signal_service.py
+  test_evidence_registry.py
+  test_confidence_scoring.py
+  test_intelligence_report_service.py
+  test_boardroom_api.py
+  test_strategy_api.py
+  test_intelligence_api.py
+  test_phase18_tenant_isolation.py
+  test_phase18_safety_gates.py
+
+frontend/src/tests/
+  AIBoardroom.test.tsx
+  StrategyLab.test.tsx
+  OKRs.test.tsx
+  Initiatives.test.tsx
+  Roadmap.test.tsx
+  ScenarioSimulator.test.tsx
+  CompetitiveIntelligence.test.tsx
+  DecisionMemos.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/aiops/prompt_registry.py
+backend/app/governance/policy_engine.py
+backend/app/executive/command_center_service.py
+backend/app/product_analytics/event_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+AI_BOARDROOM_ENABLED=true
+AI_BOARDROOM_MODE=advisory
+AI_BOARDROOM_DRY_RUN=true
+AI_BOARDROOM_REQUIRE_HUMAN_APPROVAL=true
+AI_BOARDROOM_MAX_DEBATE_TURNS=12
+
+STRATEGY_ENGINE_ENABLED=true
+STRATEGY_RECOMMENDATIONS_ADVISORY=true
+STRATEGY_REQUIRE_APPROVAL=true
+
+OKR_ENGINE_ENABLED=true
+INITIATIVE_SCORING_ENABLED=true
+ROADMAP_PLANNING_ENABLED=true
+
+SCENARIO_SIMULATION_ENABLED=true
+SCENARIO_SIMULATION_DRY_RUN=true
+SCENARIO_MAX_RUNS_PER_REQUEST=10
+
+ECOSYSTEM_SIMULATION_ENABLED=true
+ECOSYSTEM_SIMULATION_DRY_RUN=true
+
+CAPITAL_ALLOCATION_SIMULATION_ENABLED=true
+CAPITAL_ALLOCATION_DRY_RUN=true
+CAPITAL_ALLOCATION_NOT_FINANCIAL_ADVICE=true
+
+INTELLIGENCE_ENABLED=true
+MARKET_INTELLIGENCE_ENABLED=true
+COMPETITIVE_INTELLIGENCE_ENABLED=true
+INTELLIGENCE_REQUIRE_EVIDENCE=true
+INTELLIGENCE_MIN_CONFIDENCE=0.60
+INTELLIGENCE_STORE_RAW_SOURCES=false
+
+DECISION_MEMOS_ENABLED=true
+BOARD_MEETING_AUTOMATION_ENABLED=true
+BOARD_VOTING_ENABLED=true
+
+Rules:
+- AI Boardroom must be advisory by default.
+- Boardroom must never directly execute operational changes.
+- Strategy recommendations must require human approval before any action.
+- Scenario simulation must be dry-run only.
+- Capital allocation outputs must include planning-only disclaimer.
+- Intelligence outputs must include evidence and confidence.
+- Raw sources must not be stored unless explicitly configured.
+- No secrets or confidential payloads may be included in memos, minutes, reports, or simulations.
+
+============================================================
+BOARDROOM MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. BoardRole
+
+Allowed values:
+- ceo
+- coo
+- cfo
+- cto
+- ciso
+- cro
+- cmo
+- general_counsel
+- investor_advisor
+- customer_advocate
+
+2. BoardDecisionStatus
+
+Allowed values:
+- draft
+- debated
+- voted
+- approved
+- rejected
+- deferred
+- archived
+
+3. BoardVoteValue
+
+Allowed values:
+- approve
+- reject
+- abstain
+- request_more_info
+
+4. BoardAgent
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- role
+- name
+- mandate
+- risk_focus
+- decision_weight
+- enabled
+- created_at
+- updated_at
+
+5. BoardDebateSession
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- topic
+- prompt
+- status
+- participants
+- transcript
+- assumptions
+- risks
+- recommendations
+- confidence
+- created_at
+- completed_at
+
+6. BoardVote
+
+Fields:
+- id
+- session_id
+- agent_role
+- vote
+- rationale
+- confidence
+- created_at
+
+7. BoardDecision
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- summary
+- status
+- decision_type
+- recommended_action
+- owner
+- due_date
+- risks
+- assumptions
+- evidence
+- votes
+- created_at
+- updated_at
+
+8. BoardMeeting
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- agenda
+- minutes
+- decisions
+- action_items
+- created_by
+- scheduled_at
+- completed_at
+- created_at
+
+9. DecisionMemo
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- decision_question
+- context
+- options
+- recommendation
+- risks
+- assumptions
+- evidence
+- dissenting_views
+- confidence
+- limitations
+- status
+- created_by
+- created_at
+- updated_at
+
+============================================================
+BOARDROOM SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/boardroom/board_agents.py
+backend/app/boardroom/boardroom_service.py
+backend/app/boardroom/debate_engine.py
+backend/app/boardroom/meeting_service.py
+backend/app/boardroom/decision_memo_service.py
+backend/app/boardroom/board_vote_service.py
+backend/app/boardroom/board_audit.py
+
+BoardAgentsService methods:
+- register_default_board_agents()
+- list_agents()
+- get_agent(role)
+- update_agent(role, patch)
+- disable_agent(role)
+
+Default board agents:
+- CEO: strategy, priorities, execution clarity
+- COO: operating model, process, delivery risk
+- CFO: unit economics, budget, runway, cost control
+- CTO: architecture, scalability, technical feasibility
+- CISO: security, risk, compliance, data protection
+- CRO: revenue, sales, GTM, customer pipeline
+- CMO: positioning, growth, brand, demand generation
+- General Counsel advisor: legal/commercial template warnings only
+- Investor advisor: fundraising and investor-readiness simulation only
+- Customer advocate: usability, trust, customer outcomes
+
+DebateEngine methods:
+- start_debate(topic, prompt, participants)
+- generate_agent_position(agent, context)
+- run_debate(session_id)
+- summarize_debate(session_id)
+- extract_recommendations(session_id)
+
+Rules:
+- Debate outputs are advisory.
+- Every recommendation includes assumptions, risks, confidence, and limitations.
+- No debate output may execute actions.
+- No legal/financial advice claims.
+
+BoardVoteService methods:
+- create_vote(session_id, role, vote, rationale)
+- tally_votes(session_id)
+- create_decision_from_vote(session_id)
+
+MeetingService methods:
+- create_agenda(topic, context)
+- generate_minutes(meeting_id)
+- list_meetings()
+- get_meeting(meeting_id)
+
+DecisionMemoService methods:
+- create_memo(request)
+- generate_memo_from_debate(session_id)
+- list_memos()
+- get_memo(memo_id)
+- update_status(memo_id, status)
+
+BoardAudit methods:
+- record_board_event()
+- list_board_audit()
+- export_board_audit()
+
+============================================================
+STRATEGY MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. StrategyHorizon
+
+Allowed values:
+- monthly
+- quarterly
+- annual
+- three_year
+
+2. ObjectiveStatus
+
+Allowed values:
+- draft
+- active
+- at_risk
+- completed
+- canceled
+
+3. InitiativeStatus
+
+Allowed values:
+- proposed
+- approved
+- active
+- blocked
+- completed
+- canceled
+
+4. ScenarioType
+
+Allowed values:
+- base_case
+- upside
+- downside
+- stress
+- custom
+
+5. StrategicObjective
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- horizon
+- status
+- owner
+- key_results
+- confidence
+- created_at
+- updated_at
+
+6. KeyResult
+
+Fields:
+- id
+- objective_id
+- title
+- target_value
+- current_value
+- unit
+- status
+- confidence
+- updated_at
+
+7. StrategicInitiative
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- description
+- owner
+- status
+- objective_ids
+- impact_score
+- effort_score
+- risk_score
+- confidence
+- expected_outcome
+- dependencies
+- created_at
+- updated_at
+
+8. RoadmapItem
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- quarter
+- initiative_id
+- status
+- priority
+- dependencies
+- risks
+- created_at
+- updated_at
+
+9. ScenarioSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- scenario_type
+- assumptions
+- inputs
+- outputs
+- risks
+- confidence
+- limitations
+- created_at
+
+10. EcosystemSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- actors
+- relationships
+- assumptions
+- projected_outcomes
+- risks
+- confidence
+- created_at
+
+11. StrategicRisk
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- category
+- severity
+- likelihood
+- impact
+- mitigation
+- owner
+- status
+- created_at
+- updated_at
+
+12. CapitalAllocationSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- budget_pool
+- allocation_options
+- recommended_allocation
+- assumptions
+- expected_outcomes
+- risks
+- confidence
+- planning_only
+- created_at
+
+============================================================
+STRATEGY SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/strategy/strategy_service.py
+backend/app/strategy/okr_service.py
+backend/app/strategy/initiative_service.py
+backend/app/strategy/roadmap_service.py
+backend/app/strategy/scenario_simulator.py
+backend/app/strategy/ecosystem_simulator.py
+backend/app/strategy/strategic_risk_service.py
+backend/app/strategy/capital_allocation.py
+backend/app/strategy/strategy_report_service.py
+
+StrategyService methods:
+- get_strategy_status()
+- generate_strategy_recommendations()
+- list_strategy_recommendations()
+- approve_strategy_recommendation()
+- archive_strategy_recommendation()
+
+OKRService methods:
+- create_objective()
+- list_objectives()
+- update_objective()
+- add_key_result()
+- update_key_result()
+- calculate_okr_health()
+
+InitiativeService methods:
+- create_initiative()
+- score_initiative()
+- prioritize_initiatives()
+- approve_initiative()
+- list_initiatives()
+
+Scoring dimensions:
+- strategic impact
+- revenue impact
+- customer impact
+- risk reduction
+- effort
+- dependency complexity
+- confidence
+
+RoadmapService methods:
+- create_roadmap_item()
+- list_roadmap()
+- generate_roadmap_from_initiatives()
+- detect_roadmap_conflicts()
+
+ScenarioSimulator methods:
+- run_scenario()
+- compare_scenarios()
+- list_scenarios()
+
+Rules:
+- Scenario results are estimates, not guarantees.
+- Must include assumptions and limitations.
+- No direct execution.
+
+EcosystemSimulator methods:
+- create_ecosystem_map()
+- simulate_actor_changes()
+- identify_leverage_points()
+- list_simulations()
+
+StrategicRiskService methods:
+- create_risk()
+- list_risks()
+- update_risk()
+- calculate_risk_score()
+- generate_risk_register_report()
+
+CapitalAllocationService methods:
+- run_allocation_simulation()
+- compare_allocations()
+- list_allocations()
+
+Rules:
+- Planning-only.
+- No investment advice.
+- No automatic budget changes.
+
+StrategyReportService methods:
+- generate_strategy_report()
+- build_markdown_report()
+- list_reports()
+
+============================================================
+INTELLIGENCE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. IntelligenceSignalType
+
+Allowed values:
+- market
+- competitor
+- customer
+- partner
+- regulatory
+- technology
+- pricing
+- product
+
+2. EvidenceType
+
+Allowed values:
+- user_note
+- public_summary
+- internal_metric
+- customer_feedback
+- partner_feedback
+- analyst_note
+- research_note
+
+3. ConfidenceLevel
+
+Allowed values:
+- low
+- medium
+- high
+
+4. MarketSignal
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- signal_type
+- title
+- summary
+- evidence_ids
+- confidence
+- impact
+- urgency
+- recommended_actions
+- created_at
+
+5. CompetitorProfile
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- category
+- positioning_summary
+- strengths
+- weaknesses
+- opportunities
+- threats
+- evidence_ids
+- confidence
+- created_at
+- updated_at
+
+6. EvidenceSource
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- evidence_type
+- title
+- source_summary
+- source_url
+- collected_by
+- confidence
+- redacted
+- created_at
+
+7. CompetitiveLandscape
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- competitors
+- dimensions
+- matrix
+- insights
+- confidence
+- created_at
+
+8. IntelligenceReport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- report_type
+- signals
+- competitors
+- insights
+- recommendations
+- confidence
+- limitations
+- created_at
+
+============================================================
+INTELLIGENCE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/intelligence/market_intelligence.py
+backend/app/intelligence/competitive_intelligence.py
+backend/app/intelligence/signal_service.py
+backend/app/intelligence/evidence_registry.py
+backend/app/intelligence/confidence_scoring.py
+backend/app/intelligence/intelligence_report_service.py
+
+EvidenceRegistry methods:
+- add_evidence()
+- list_evidence()
+- get_evidence()
+- redact_evidence()
+- validate_evidence()
+
+Rules:
+- Store summaries by default, not raw sources.
+- DLP scan evidence summaries.
+- URLs allowed but no secrets.
+
+SignalService methods:
+- create_signal()
+- list_signals()
+- score_signal()
+- archive_signal()
+
+MarketIntelligenceService methods:
+- summarize_market_signals()
+- generate_market_report()
+- identify_opportunities()
+- identify_threats()
+
+CompetitiveIntelligenceService methods:
+- create_competitor_profile()
+- update_competitor_profile()
+- list_competitors()
+- create_landscape()
+- generate_competitive_report()
+
+ConfidenceScoring methods:
+- score_evidence()
+- score_signal_confidence()
+- score_report_confidence()
+
+IntelligenceReportService methods:
+- generate_report()
+- list_reports()
+- get_report()
+- build_markdown_report()
+
+Rules:
+- All claims must link to evidence IDs.
+- Low confidence must be clearly labeled.
+- No defamatory or unsupported claims.
+- No private customer data in public reports.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/boardroom.py
+
+Endpoints:
+
+GET /api/boardroom/status
+GET /api/boardroom/agents
+POST /api/boardroom/agents/register-defaults
+PATCH /api/boardroom/agents/{role}
+
+Debate:
+POST /api/boardroom/debates
+GET /api/boardroom/debates
+GET /api/boardroom/debates/{session_id}
+POST /api/boardroom/debates/{session_id}/run
+POST /api/boardroom/debates/{session_id}/summarize
+POST /api/boardroom/debates/{session_id}/vote
+GET /api/boardroom/debates/{session_id}/votes
+
+Meetings:
+POST /api/boardroom/meetings
+GET /api/boardroom/meetings
+GET /api/boardroom/meetings/{meeting_id}
+POST /api/boardroom/meetings/{meeting_id}/minutes
+
+Decision memos:
+POST /api/boardroom/memos
+GET /api/boardroom/memos
+GET /api/boardroom/memos/{memo_id}
+POST /api/boardroom/memos/from-debate/{session_id}
+PATCH /api/boardroom/memos/{memo_id}/status
+
+Create:
+
+backend/app/api/strategy.py
+
+Endpoints:
+
+GET /api/strategy/status
+POST /api/strategy/recommendations/generate
+GET /api/strategy/recommendations
+POST /api/strategy/recommendations/{recommendation_id}/approve
+
+OKRs:
+POST /api/strategy/objectives
+GET /api/strategy/objectives
+PATCH /api/strategy/objectives/{objective_id}
+POST /api/strategy/objectives/{objective_id}/key-results
+PATCH /api/strategy/key-results/{key_result_id}
+GET /api/strategy/okr-health
+
+Initiatives:
+POST /api/strategy/initiatives
+GET /api/strategy/initiatives
+POST /api/strategy/initiatives/{initiative_id}/score
+POST /api/strategy/initiatives/prioritize
+POST /api/strategy/initiatives/{initiative_id}/approve
+
+Roadmap:
+POST /api/strategy/roadmap
+GET /api/strategy/roadmap
+POST /api/strategy/roadmap/generate
+GET /api/strategy/roadmap/conflicts
+
+Simulation:
+POST /api/strategy/scenarios/run
+GET /api/strategy/scenarios
+POST /api/strategy/scenarios/compare
+POST /api/strategy/ecosystem/simulate
+GET /api/strategy/ecosystem
+
+Risks:
+POST /api/strategy/risks
+GET /api/strategy/risks
+PATCH /api/strategy/risks/{risk_id}
+GET /api/strategy/risks/report
+
+Capital allocation:
+POST /api/strategy/capital-allocation/simulate
+GET /api/strategy/capital-allocation
+
+Reports:
+POST /api/strategy/reports
+GET /api/strategy/reports
+GET /api/strategy/reports/{report_id}/markdown
+
+Create:
+
+backend/app/api/intelligence.py
+
+Endpoints:
+
+GET /api/intelligence/status
+
+Evidence:
+POST /api/intelligence/evidence
+GET /api/intelligence/evidence
+GET /api/intelligence/evidence/{evidence_id}
+POST /api/intelligence/evidence/{evidence_id}/redact
+
+Signals:
+POST /api/intelligence/signals
+GET /api/intelligence/signals
+POST /api/intelligence/signals/{signal_id}/score
+POST /api/intelligence/market/report
+
+Competitors:
+POST /api/intelligence/competitors
+GET /api/intelligence/competitors
+PATCH /api/intelligence/competitors/{competitor_id}
+POST /api/intelligence/landscape
+GET /api/intelligence/landscape
+POST /api/intelligence/competitive-report
+
+Reports:
+POST /api/intelligence/reports
+GET /api/intelligence/reports
+GET /api/intelligence/reports/{report_id}
+GET /api/intelligence/reports/{report_id}/markdown
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Standard response shape required.
+- Advisory by default.
+- All reports must include confidence and limitations.
+- No endpoint may execute operational changes automatically.
+- No endpoint may expose secrets or raw confidential payloads.
+
+============================================================
+FRONTEND PHASE 18 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /ai-boardroom
+- /strategy-lab
+- /okrs
+- /initiatives
+- /roadmap
+- /scenario-simulator
+- /competitive-intelligence
+- /decision-memos
+
+Update sidebar:
+- AI Boardroom
+- Strategy Lab
+- OKRs
+- Initiatives
+- Roadmap
+- Scenario Simulator
+- Competitive Intelligence
+- Decision Memos
+
+1. AI Boardroom Page
+
+Must show:
+- Board agent roster
+- Debate starter form
+- Debate transcript
+- Role-based positions
+- Vote panel
+- Recommendation summary
+- Advisory-mode banner
+
+2. Strategy Lab Page
+
+Must show:
+- Strategic recommendation queue
+- Strategy report generator
+- Strategic risk register
+- Ecosystem simulation summary
+- Capital allocation planning-only banner
+
+3. OKRs Page
+
+Must show:
+- Objectives table
+- Key results
+- OKR health
+- At-risk OKRs
+- Create/update controls
+
+4. Initiatives Page
+
+Must show:
+- Initiative list
+- Prioritization matrix
+- Score cards
+- Approval status
+- Dependency warnings
+
+5. Roadmap Page
+
+Must show:
+- Roadmap timeline
+- Quarter filters
+- Initiative dependencies
+- Conflict warnings
+
+6. Scenario Simulator Page
+
+Must show:
+- Scenario input form
+- Scenario comparison
+- Base/upside/downside/stress outputs
+- Assumptions and limitations
+- Confidence badges
+
+7. Competitive Intelligence Page
+
+Must show:
+- Market signals
+- Competitor profiles
+- Competitive landscape matrix
+- Evidence sources
+- Intelligence reports
+- Confidence indicators
+
+8. Decision Memos Page
+
+Must show:
+- Memo list
+- Create memo form
+- Memo detail
+- Options/risks/assumptions/evidence
+- Dissenting views
+- Status controls
+
+Frontend safety:
+- Never display secrets.
+- Show advisory-mode banner.
+- Show confidence/limitations on all AI-generated strategy outputs.
+- Show planning-only disclaimer on capital allocation.
+- Show evidence IDs for intelligence claims.
+- Do not show unsupported claims as facts.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Boardroom:
+- boardroom.read
+- boardroom.run_debate
+- boardroom.vote
+- boardroom.manage_agents
+- boardroom.generate_memo
+
+Strategy:
+- strategy.read
+- strategy.generate
+- strategy.manage_okrs
+- strategy.manage_initiatives
+- strategy.manage_roadmap
+- strategy.run_simulation
+- strategy.approve
+
+Intelligence:
+- intelligence.read
+- intelligence.manage_evidence
+- intelligence.manage_competitors
+- intelligence.generate_reports
+- intelligence.redact_evidence
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- boardroom.read
+- boardroom.run_debate
+- boardroom.vote
+- boardroom.generate_memo
+- strategy.read
+- strategy.generate
+- strategy.manage_okrs
+- strategy.manage_initiatives
+- strategy.manage_roadmap
+- strategy.run_simulation
+- strategy.approve
+- intelligence.read
+- intelligence.manage_evidence
+- intelligence.manage_competitors
+- intelligence.generate_reports
+
+analyst:
+- boardroom.read
+- boardroom.run_debate
+- strategy.read
+- strategy.generate
+- strategy.run_simulation
+- intelligence.read
+- intelligence.manage_evidence
+- intelligence.generate_reports
+
+viewer:
+- boardroom.read limited
+- strategy.read limited
+- intelligence.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- board_agents
+- board_debate_sessions
+- board_votes
+- board_decisions
+- board_meetings
+- decision_memos
+- board_audit_events
+- strategic_objectives
+- key_results
+- strategic_initiatives
+- roadmap_items
+- scenario_simulations
+- ecosystem_simulations
+- strategic_risks
+- capital_allocation_simulations
+- strategy_reports
+- market_signals
+- competitor_profiles
+- evidence_sources
+- competitive_landscapes
+- intelligence_reports
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped.
+- No secrets.
+- No raw confidential sources by default.
+- Evidence records must be DLP-scanned.
+- Generated memos must store assumptions, confidence, evidence, risks, and limitations.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Boardroom:
+- boardroom.agent.registered
+- boardroom.debate.started
+- boardroom.debate.completed
+- boardroom.vote.created
+- boardroom.decision.created
+- boardroom.meeting.created
+- boardroom.minutes.generated
+- boardroom.memo.created
+- boardroom.memo.generated
+- boardroom.audit.recorded
+
+Strategy:
+- strategy.recommendation.generated
+- strategy.recommendation.approved
+- strategy.objective.created
+- strategy.key_result.updated
+- strategy.initiative.created
+- strategy.initiative.scored
+- strategy.initiative.approved
+- strategy.roadmap.generated
+- strategy.scenario.simulated
+- strategy.ecosystem.simulated
+- strategy.risk.created
+- strategy.capital_allocation.simulated
+- strategy.report.generated
+
+Intelligence:
+- intelligence.evidence.created
+- intelligence.evidence.redacted
+- intelligence.signal.created
+- intelligence.signal.scored
+- intelligence.competitor.created
+- intelligence.landscape.created
+- intelligence.report.generated
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- BOARDROOM_DISABLED
+- BOARD_AGENT_NOT_FOUND
+- BOARD_DEBATE_NOT_FOUND
+- BOARD_DECISION_NOT_FOUND
+- DECISION_MEMO_NOT_FOUND
+- STRATEGY_ENGINE_DISABLED
+- OBJECTIVE_NOT_FOUND
+- KEY_RESULT_NOT_FOUND
+- INITIATIVE_NOT_FOUND
+- ROADMAP_ITEM_NOT_FOUND
+- SCENARIO_SIMULATION_FAILED
+- ECOSYSTEM_SIMULATION_FAILED
+- STRATEGIC_RISK_NOT_FOUND
+- CAPITAL_ALLOCATION_DISABLED
+- INTELLIGENCE_DISABLED
+- EVIDENCE_NOT_FOUND
+- INTELLIGENCE_LOW_CONFIDENCE
+- COMPETITOR_NOT_FOUND
+- INTELLIGENCE_REPORT_NOT_FOUND
+- ADVISORY_ONLY_ACTION
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_boardroom_models.py
+- board role enum
+- vote enum
+- decision status enum
+- decision memo validation
+
+2. test_board_agents.py
+- default board agents registered
+- agent update works
+- disabled agent excluded from debate
+
+3. test_boardroom_service.py
+- status works
+- agent roster works
+- advisory mode enforced
+
+4. test_debate_engine.py
+- debate session created
+- agent positions generated
+- transcript summarized
+- recommendations include confidence and limitations
+
+5. test_meeting_service.py
+- agenda generated
+- minutes generated
+- action items extracted
+
+6. test_decision_memo_service.py
+- memo created
+- memo generated from debate
+- risks and dissenting views included
+- no secrets included
+
+7. test_board_vote_service.py
+- vote created
+- votes tallied
+- decision created from vote
+
+8. test_strategy_models.py
+- objective validation
+- key result validation
+- initiative validation
+- scenario validation
+
+9. test_strategy_service.py
+- recommendations generated
+- advisory mode enforced
+- approval required
+
+10. test_okr_service.py
+- objective created
+- key result added
+- OKR health calculated
+
+11. test_initiative_service.py
+- initiative created
+- scoring works
+- prioritization works
+
+12. test_roadmap_service.py
+- roadmap item created
+- roadmap generated
+- conflict detection works
+
+13. test_scenario_simulator.py
+- base/upside/downside/stress scenarios work
+- assumptions included
+- limitations included
+
+14. test_ecosystem_simulator.py
+- ecosystem map created
+- actor change simulation works
+- leverage points identified
+
+15. test_strategic_risk_service.py
+- risk created
+- risk score calculated
+- report generated
+
+16. test_capital_allocation.py
+- allocation simulation works
+- planning-only flag present
+- no financial advice claims
+
+17. test_strategy_report_service.py
+- strategy report generated
+- markdown generated
+- no secrets included
+
+18. test_intelligence_models.py
+- signal type enum
+- evidence type enum
+- confidence level enum
+
+19. test_market_intelligence.py
+- market report generated
+- opportunities identified
+- threats identified
+- low confidence labeled
+
+20. test_competitive_intelligence.py
+- competitor profile created
+- landscape generated
+- competitive report includes evidence IDs
+
+21. test_signal_service.py
+- signal created
+- signal scored
+- confidence included
+
+22. test_evidence_registry.py
+- evidence created
+- DLP scan blocks secrets
+- evidence redaction works
+
+23. test_confidence_scoring.py
+- evidence confidence scored
+- report confidence calculated
+- low-confidence result labeled
+
+24. test_intelligence_report_service.py
+- report generated
+- markdown generated
+- unsupported claims blocked or marked low confidence
+
+25. test_boardroom_api.py
+- boardroom status endpoint
+- debate endpoints
+- vote endpoint
+- memo endpoint
+
+26. test_strategy_api.py
+- strategy status endpoint
+- OKR endpoints
+- initiative endpoints
+- scenario endpoints
+- report endpoint
+
+27. test_intelligence_api.py
+- evidence endpoint
+- signal endpoint
+- competitor endpoint
+- report endpoint
+
+28. test_phase18_tenant_isolation.py
+- org A cannot read org B board debates
+- org A cannot read org B OKRs
+- org A cannot read org B intelligence reports
+- org A cannot read org B decision memos
+
+29. test_phase18_safety_gates.py
+- boardroom cannot execute actions
+- strategy recommendations require approval
+- capital allocation marked planning-only
+- intelligence evidence blocks secrets
+- generated memos exclude secrets
+
+Frontend tests:
+
+1. AIBoardroom.test.tsx
+- board agent roster renders
+- debate form renders
+- advisory banner visible
+- vote panel visible
+
+2. StrategyLab.test.tsx
+- recommendation queue renders
+- strategic risk register renders
+- planning-only banner visible
+
+3. OKRs.test.tsx
+- objectives table renders
+- key results render
+- OKR health visible
+
+4. Initiatives.test.tsx
+- initiative list renders
+- prioritization matrix visible
+- score cards visible
+
+5. Roadmap.test.tsx
+- roadmap timeline renders
+- dependency warnings visible
+
+6. ScenarioSimulator.test.tsx
+- scenario form renders
+- assumptions displayed
+- confidence badge visible
+
+7. CompetitiveIntelligence.test.tsx
+- competitor cards render
+- evidence panel visible
+- confidence indicators visible
+
+8. DecisionMemos.test.tsx
+- memo list renders
+- memo detail renders
+- risks and assumptions visible
+- limitations note visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 18 overview
+- AI Boardroom architecture
+- Board agent roles
+- Executive debate workflow
+- Board voting workflow
+- Decision memo model
+- Board meeting automation
+- Strategy engine
+- OKR engine
+- Initiative prioritization
+- Roadmap planning
+- Scenario simulation
+- Ecosystem simulation
+- Strategic risk register
+- Capital allocation planning simulation
+- Market intelligence
+- Competitive intelligence
+- Evidence and confidence scoring
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run boardroom simulation:
+
+bash scripts/run-boardroom-simulation.sh
+
+Generate decision memo:
+
+bash scripts/generate-decision-memo.sh
+
+Generate strategy report:
+
+bash scripts/generate-strategy-report.sh
+
+Run scenario simulation:
+
+bash scripts/run-scenario-simulation.sh
+
+Generate OKR review:
+
+bash scripts/generate-okr-review.sh
+
+Generate competitive intelligence report:
+
+bash scripts/generate-competitive-intel-report.sh
+
+Strategy Lab smoke test:
+
+bash scripts/strategy-lab-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 18 is complete only when:
+
+- Boardroom models exist.
+- Default board agents work.
+- AI Boardroom service works.
+- Debate engine works.
+- Board voting works.
+- Meeting agenda/minutes generation works.
+- Decision memo generator works.
+- Strategy models exist.
+- OKR service works.
+- Initiative service works.
+- Roadmap service works.
+- Scenario simulator works.
+- Ecosystem simulator works.
+- Strategic risk register works.
+- Capital allocation simulation works in planning-only mode.
+- Strategy reports work.
+- Intelligence models exist.
+- Evidence registry works.
+- DLP blocks secrets in evidence.
+- Market intelligence works.
+- Competitive intelligence works.
+- Confidence scoring works.
+- Intelligence reports work.
+- Boardroom API works.
+- Strategy API works.
+- Intelligence API works.
+- Frontend AI Boardroom page works.
+- Frontend Strategy Lab page works.
+- Frontend OKRs page works.
+- Frontend Initiatives page works.
+- Frontend Roadmap page works.
+- Frontend Scenario Simulator page works.
+- Frontend Competitive Intelligence page works.
+- Frontend Decision Memos page works.
+- Tenant isolation applies to all Phase 18 data.
+- Existing Phase 1–17 behavior remains intact.
+- Existing tests still pass.
+- New Phase 18 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Boardroom outputs remain advisory.
+- Strategy recommendations require approval.
+- README includes Phase 18 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Boardroom models and services
+6. Strategy models and services
+7. Intelligence models and services
+8. API route files
+9. Build/validation scripts
+10. Test files
+11. .env.example updates
+12. README updates
+13. Boardroom docs
+14. Strategy docs
+15. Intelligence docs
+16. Run instructions
+17. Test instructions
+18. Boardroom safety checklist
+19. Strategy safety checklist
+20. Intelligence safety checklist
+21. Acceptance checklist
+22. Known limitations
+23. Phase 19 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–17 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, reports, memos, minutes, simulations, intelligence records, logs, docs, or exports.
+- Never log API keys, KMS key refs, runner tokens, broker credentials, cloud credentials, private payloads, or confidential sources.
+- Never store raw confidential sources by default.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never bypass data residency enforcement.
+- Never allow AI Boardroom to execute operational changes directly.
+- Never present simulations as guarantees.
+- Never present capital allocation as financial advice.
+- Never present legal/compliance templates as legal advice.
+- Keep all strategic recommendations advisory, evidence-linked, confidence-scored, and approval-gated.
+- Keep code modular and ready for Phase 19: autonomous ecosystem digital twin, macro strategy simulation, and board-level continuous planning.
+
+Now generate the complete Phase 18 implementation.

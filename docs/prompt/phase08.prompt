@@ -1,0 +1,980 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 8 · PRODUCTION HARDENING
+Persistence + Auth/RBAC + Docker Deploy + Observability + Audit System
+
+Do not rebuild Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, or Phase 7 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- Default jobs
+- IoT adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows service scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Dataset Provider
+- Optimizer
+- Strategy Promotion Gate
+- Backtesting API
+- Scheduler backtest integration
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Content Policy Checker
+- Image Adapter
+- Social Adapter
+- Approval-Gated Publishing Workflow
+- Content API
+- Scheduler content integration
+
+PHASE 7:
+- React/Vite Dashboard
+- Team Roster
+- XAU Dashboard
+- Risk Panel
+- Scheduler UI
+- Backtesting UI
+- Content Pipeline UI
+- IoT Control UI
+- Org Map
+- Session Logs
+- Settings
+- Mock fallback API client
+
+============================================================
+PHASE 8 OBJECTIVE
+============================================================
+
+Build the production-hardening layer for zDash.
+
+Main goals:
+
+1. Add persistent database storage
+2. Add SQLAlchemy models and migrations
+3. Add Auth system with JWT
+4. Add RBAC roles and permissions
+5. Add protected backend APIs
+6. Add frontend login/session handling
+7. Add audit log persistence
+8. Add production-grade Docker setup
+9. Add Redis-ready service wiring
+10. Add NGINX reverse proxy config
+11. Add Prometheus-compatible metrics endpoint
+12. Add structured observability
+13. Add backup and restore scripts
+14. Add CI test/build workflow
+15. Add production safety gates
+16. Keep DRY_RUN and approval-required safety defaults
+
+IMPORTANT:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not expose secrets in frontend or logs.
+- Do not weaken Guardian risk controls.
+- Do not bypass approval gates.
+- All production features must fail safely.
+- This phase hardens the system; it must not make dangerous automation easier.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/db/
+  __init__.py
+  base.py
+  session.py
+  models.py
+  repositories.py
+  migrations.py
+
+backend/app/auth/
+  __init__.py
+  models.py
+  password.py
+  jwt.py
+  rbac.py
+  dependencies.py
+  auth_service.py
+
+backend/app/api/auth.py
+backend/app/api/metrics.py
+backend/app/api/admin.py
+
+backend/app/audit/
+  __init__.py
+  models.py
+  audit_service.py
+
+backend/app/observability/
+  __init__.py
+  metrics.py
+  middleware.py
+
+infra/
+  docker/
+    backend.Dockerfile
+    frontend.Dockerfile
+    nginx.Dockerfile
+  nginx/
+    nginx.conf
+    zdash.conf
+  postgres/
+    init.sql
+  prometheus/
+    prometheus.yml
+  scripts/
+    backup-postgres.sh
+    restore-postgres.sh
+    wait-for-service.sh
+    production-smoke-test.sh
+
+.github/
+  workflows/
+    ci.yml
+
+frontend/src/api/auth.ts
+frontend/src/pages/Login.tsx
+frontend/src/pages/Admin.tsx
+frontend/src/hooks/useAuth.ts
+frontend/src/components/auth/ProtectedRoute.tsx
+frontend/src/components/auth/LoginForm.tsx
+frontend/src/components/admin/AuditLogTable.tsx
+frontend/src/components/admin/UserTable.tsx
+
+Create or update:
+
+docker-compose.yml
+docker-compose.prod.yml
+.env.example
+README.md
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/core/responses.py
+backend/app/api/*.py where protection is needed
+frontend/src/App.tsx
+frontend/src/api/client.ts
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/pages/Settings.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/components/layout/Sidebar.tsx
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example` with:
+
+APP_NAME=zDash
+APP_ENV=development
+LOG_LEVEL=INFO
+
+DATABASE_URL=sqlite:///./zdash.db
+POSTGRES_USER=zdash
+POSTGRES_PASSWORD=change-me
+POSTGRES_DB=zdash
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+
+REDIS_URL=redis://redis:6379/0
+
+AUTH_ENABLED=true
+JWT_SECRET_KEY=change-me-super-long-random-secret
+JWT_ALGORITHM=HS256
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
+
+DEFAULT_ADMIN_EMAIL=admin@zdash.local
+DEFAULT_ADMIN_PASSWORD=change-me-now
+
+RBAC_ENABLED=true
+
+AUDIT_LOG_ENABLED=true
+AUDIT_PERSISTENCE_ENABLED=true
+
+METRICS_ENABLED=true
+METRICS_AUTH_REQUIRED=true
+
+FRONTEND_ORIGIN=http://localhost:5173
+CORS_ALLOW_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+DRY_RUN=true
+LIVE_TRADING_ACK=false
+RISK_GUARDIAN_ENABLED=true
+
+IOT_DRY_RUN=true
+IOT_REQUIRE_CONFIRMATION=true
+
+SOCIAL_DRY_RUN=true
+SOCIAL_APPROVAL_REQUIRED=true
+SOCIAL_AUTO_POST_ENABLED=false
+
+PRODUCTION_SAFETY_LOCK=true
+
+Update frontend `.env.example` with:
+
+VITE_APP_NAME=zDash
+VITE_API_BASE_URL=http://localhost:8000
+VITE_ENABLE_MOCK_FALLBACK=true
+VITE_POLL_INTERVAL_MS=5000
+VITE_AUTH_ENABLED=true
+VITE_SHOW_SAFETY_BANNERS=true
+
+Rules:
+
+- Missing secrets must fail safely in production.
+- Development may use SQLite.
+- Production should use PostgreSQL.
+- `JWT_SECRET_KEY=change-me...` must be rejected in production.
+- `DEFAULT_ADMIN_PASSWORD=change-me-now` must be rejected in production.
+- `PRODUCTION_SAFETY_LOCK=true` must prevent unsafe live toggles.
+- Never log passwords, tokens, API keys, or refresh tokens.
+
+============================================================
+DATABASE REQUIREMENTS
+============================================================
+
+Create SQLAlchemy models for:
+
+1. users
+2. refresh_tokens
+3. audit_logs
+4. event_logs
+5. scheduler_jobs
+6. scheduler_runs
+7. halt_state
+8. backtest_results
+9. optimization_results
+10. content_items
+11. content_pipeline_runs
+12. iot_action_logs
+
+Requirements:
+
+- Use SQLAlchemy 2.x style.
+- Use UUID string primary keys.
+- Use created_at and updated_at timestamps.
+- Store JSON payloads using JSON-compatible columns.
+- Keep SQLite compatibility for local development.
+- Keep PostgreSQL compatibility for production.
+- Repositories must be replaceable and testable.
+- In-memory stores from previous phases may remain as fallback, but database persistence should be preferred when enabled.
+
+============================================================
+MIGRATION REQUIREMENTS
+============================================================
+
+Implement lightweight migration system in:
+
+backend/app/db/migrations.py
+
+Requirements:
+
+- Create tables on startup in development.
+- In production, support explicit migration command.
+- Add script-friendly function:
+  - run_migrations()
+  - create_all()
+  - check_database_connection()
+
+Do not require Alembic unless you also generate full Alembic configuration cleanly.
+
+============================================================
+AUTH REQUIREMENTS
+============================================================
+
+Create JWT auth system.
+
+Required endpoints:
+
+POST /api/auth/login
+
+Request:
+
+{
+  "email": "admin@zdash.local",
+  "password": "password"
+}
+
+Response:
+- access_token
+- refresh_token
+- token_type
+- expires_in
+- user
+
+POST /api/auth/refresh
+
+Request:
+{
+  "refresh_token": "..."
+}
+
+Response:
+- new access_token
+- refresh_token rotation result
+
+POST /api/auth/logout
+
+Behavior:
+- invalidates refresh token
+
+GET /api/auth/me
+
+Returns:
+- current user
+- roles
+- permissions
+
+POST /api/auth/bootstrap-admin
+
+Behavior:
+- creates default admin only if no users exist
+- disabled in production unless explicitly allowed
+
+User fields:
+
+- id
+- email
+- display_name
+- role
+- is_active
+- created_at
+- updated_at
+
+Roles:
+
+- admin
+- operator
+- analyst
+- viewer
+
+Permissions:
+
+admin:
+- all permissions
+
+operator:
+- read dashboard
+- run dry-run trading
+- manage scheduler
+- manage content approval
+- run backtests
+- control dry-run IoT
+- halt/resume risk system
+
+analyst:
+- read dashboard
+- run backtests
+- read logs
+- read risk
+- read trading signals
+
+viewer:
+- read dashboard only
+
+Sensitive actions requiring admin or operator:
+- risk halt
+- risk resume
+- scheduler job create/update/delete
+- IoT power actions
+- content approval
+- content publish dry-run
+- backtest promotion check
+
+Admin-only:
+- user management
+- metrics when METRICS_AUTH_REQUIRED=true
+- production safety config
+- audit log export
+
+============================================================
+RBAC REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/auth/rbac.py
+
+Implement:
+
+- Role enum
+- Permission enum
+- role permission map
+- require_permission(permission)
+- require_role(role)
+
+Apply route protection:
+
+Public:
+- GET /health
+- POST /api/auth/login
+- POST /api/auth/refresh
+
+Authenticated:
+- GET /api/agents
+- GET /api/logs
+- GET dashboard-related APIs
+
+Permission protected:
+- POST /api/risk/halt
+- POST /api/risk/resume
+- POST /api/scheduler/jobs
+- POST /api/scheduler/jobs/{id}/run
+- DELETE /api/scheduler/jobs/{id}
+- POST /api/iot/action
+- POST /api/iot/power-cycle
+- POST /api/content/approve
+- POST /api/content/post
+- POST /api/backtesting/results/{id}/promotion-check
+
+============================================================
+AUDIT LOG REQUIREMENTS
+============================================================
+
+Create persistent audit system.
+
+Audit fields:
+
+- id
+- actor_user_id
+- actor_email
+- action
+- resource_type
+- resource_id
+- result
+- ip_address
+- user_agent
+- metadata
+- created_at
+
+Audit these actions:
+
+- login success
+- login failure
+- logout
+- token refresh
+- risk halt
+- risk resume
+- scheduler job create
+- scheduler job run
+- scheduler job delete
+- IoT action requested
+- content approval
+- content publish request
+- backtest run
+- optimization run
+- promotion check
+- admin user action
+
+Required endpoints:
+
+GET /api/admin/audit-logs
+
+Query params:
+- action
+- actor_email
+- resource_type
+- limit
+
+GET /api/admin/users
+
+POST /api/admin/users
+
+PATCH /api/admin/users/{user_id}
+
+DELETE /api/admin/users/{user_id}
+
+Rules:
+
+- Only admin can manage users.
+- Do not permanently delete current authenticated admin.
+- Prefer deactivate over hard delete.
+- Never return password hashes.
+
+============================================================
+OBSERVABILITY REQUIREMENTS
+============================================================
+
+Add:
+
+1. Request ID middleware
+2. Request logging middleware
+3. Error logging middleware
+4. Prometheus-compatible metrics endpoint
+
+Endpoint:
+
+GET /api/metrics
+
+Expose safe metrics:
+
+- zdash_requests_total
+- zdash_request_latency_ms
+- zdash_errors_total
+- zdash_events_total
+- zdash_scheduler_jobs_total
+- zdash_risk_halt_active
+- zdash_backtests_total
+- zdash_content_items_total
+- zdash_iot_actions_total
+
+Rules:
+
+- Do not expose secrets.
+- Metrics endpoint requires admin if METRICS_AUTH_REQUIRED=true.
+- In dev mode, allow local unauthenticated metrics only if configured.
+
+============================================================
+DOCKER REQUIREMENTS
+============================================================
+
+Create:
+
+docker-compose.yml
+
+For local dev:
+
+Services:
+- backend
+- frontend
+- postgres
+- redis
+
+Create:
+
+docker-compose.prod.yml
+
+For production-like deploy:
+
+Services:
+- nginx
+- backend
+- frontend
+- postgres
+- redis
+- prometheus
+
+Backend Dockerfile:
+
+- Python 3.11 slim
+- Non-root user
+- Install dependencies
+- Healthcheck
+- Run uvicorn
+
+Frontend Dockerfile:
+
+- Node build stage
+- NGINX serve stage
+- Static build
+- Healthcheck
+
+NGINX:
+
+- Reverse proxy `/api/*` to backend
+- Serve frontend
+- Security headers
+- Request size limits
+- Optional gzip
+- WebSocket-ready proxy config
+- No secrets embedded
+
+============================================================
+BACKUP AND RESTORE REQUIREMENTS
+============================================================
+
+Create:
+
+infra/scripts/backup-postgres.sh
+
+Requirements:
+
+- Uses pg_dump
+- Outputs timestamped `.sql.gz`
+- Keeps backups under `./backups`
+- Supports retention days
+- No hardcoded passwords
+- Reads env vars
+
+Create:
+
+infra/scripts/restore-postgres.sh
+
+Requirements:
+
+- Restores from provided backup file
+- Requires explicit confirmation:
+  RESTORE_CONFIRM=yes
+- Fails safely if file missing
+- No hardcoded passwords
+
+============================================================
+CI REQUIREMENTS
+============================================================
+
+Create:
+
+.github/workflows/ci.yml
+
+Jobs:
+
+1. backend-tests
+   - setup Python
+   - install backend dependencies
+   - run pytest
+
+2. frontend-tests
+   - setup Node
+   - npm install
+   - npm test
+   - npm run build
+
+3. docker-build
+   - build backend image
+   - build frontend image
+
+CI must not require real external APIs.
+
+============================================================
+FRONTEND AUTH REQUIREMENTS
+============================================================
+
+Add:
+
+- Login page
+- Auth context/hook
+- Token storage
+- API client Authorization header
+- Logout button
+- Protected routes
+- Role-aware navigation
+- Admin page for users and audit logs
+
+Rules:
+
+- Do not store secrets other than access/refresh tokens.
+- Prefer localStorage for Phase 8 simplicity, but isolate token handling in one module.
+- If auth is disabled, dashboard may run in dev mode.
+- If backend returns 401, redirect to login.
+- Do not show admin navigation to non-admin users.
+
+============================================================
+FRONTEND ADMIN PAGE REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/src/pages/Admin.tsx
+
+Must show:
+
+- Current user
+- User table
+- Create user form
+- Activate/deactivate user action
+- Audit log table
+- Filter audit logs by action/resource/user
+
+Safety:
+
+- Never show password hashes.
+- Never show JWT secret.
+- Never show API tokens.
+- Show warning when default admin credentials are detected.
+
+============================================================
+PRODUCTION SAFETY REQUIREMENTS
+============================================================
+
+Add global safety checker:
+
+- If APP_ENV=production:
+  - DRY_RUN must remain true unless PRODUCTION_SAFETY_LOCK=false and explicit config is present.
+  - LIVE_TRADING_ACK cannot be enabled with default secrets.
+  - Social real posting requires explicit approval config.
+  - IoT real actions require explicit confirmation config.
+  - JWT_SECRET_KEY must not be default.
+  - DEFAULT_ADMIN_PASSWORD must not be default.
+  - CORS wildcard must be rejected if credentials are allowed.
+
+Add endpoint:
+
+GET /api/admin/safety-check
+
+Returns:
+
+- config safety status
+- warnings
+- blockers
+- production readiness score
+
+Admin only.
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create backend tests:
+
+backend/app/tests/test_auth_service.py
+backend/app/tests/test_auth_api.py
+backend/app/tests/test_rbac.py
+backend/app/tests/test_audit_service.py
+backend/app/tests/test_database_models.py
+backend/app/tests/test_metrics_api.py
+backend/app/tests/test_admin_api.py
+backend/app/tests/test_production_safety.py
+
+Test:
+
+- admin bootstrap works when no users exist
+- login success
+- login failure
+- JWT validation
+- refresh token rotation
+- logout invalidates token
+- RBAC blocks unauthorized user
+- protected routes require auth
+- audit logs are created
+- database tables can be created
+- metrics endpoint works
+- admin user list does not expose password hashes
+- production default secrets are rejected
+- dry-run remains default
+
+Create frontend tests:
+
+frontend/src/tests/Login.test.tsx
+frontend/src/tests/ProtectedRoute.test.tsx
+frontend/src/tests/Admin.test.tsx
+frontend/src/tests/AuthClient.test.ts
+
+Test:
+
+- login form renders
+- protected route redirects unauthenticated user
+- authenticated user can see dashboard
+- non-admin cannot see admin page
+- admin page shows audit logs
+- API client attaches Authorization header
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 8 overview
+- Production architecture
+- Database persistence
+- Auth and RBAC
+- Audit logs
+- Metrics
+- Docker local dev
+- Docker production deploy
+- Backup and restore
+- CI workflow
+- Safety checklist
+- Default credentials warning
+- How to rotate JWT secret
+- How to disable default admin
+- How to run tests
+
+Add commands:
+
+Local backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Frontend:
+
+cd frontend
+npm run dev
+
+Docker dev:
+
+docker compose up --build
+
+Docker prod-like:
+
+docker compose -f docker-compose.prod.yml up --build -d
+
+Bootstrap admin:
+
+curl -X POST http://localhost:8000/api/auth/bootstrap-admin
+
+Login:
+
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@zdash.local",
+    "password": "change-me-now"
+  }'
+
+Safety check:
+
+curl http://localhost:8000/api/admin/safety-check \
+  -H "Authorization: Bearer TOKEN"
+
+Backup:
+
+bash infra/scripts/backup-postgres.sh
+
+Restore:
+
+RESTORE_CONFIRM=yes bash infra/scripts/restore-postgres.sh backups/FILE.sql.gz
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 8 is complete only when:
+
+- Database layer exists.
+- SQLAlchemy models exist.
+- Database tables can be created.
+- Auth system works.
+- JWT login works.
+- Refresh token flow works.
+- Logout works.
+- RBAC protects sensitive endpoints.
+- Audit logs are persisted.
+- Admin API exists.
+- Metrics endpoint exists.
+- Request logging middleware exists.
+- Production safety checker exists.
+- Docker dev setup works.
+- Docker prod-like setup works.
+- NGINX reverse proxy config exists.
+- Backup script exists.
+- Restore script exists.
+- CI workflow exists.
+- Frontend login page exists.
+- Frontend protected routes work.
+- Frontend admin page exists.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Existing Phase 1–7 behavior remains intact.
+- Existing tests still pass.
+- New Phase 8 tests pass.
+- README includes Phase 8 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Docker files
+6. NGINX configs
+7. Backup/restore scripts
+8. CI workflow
+9. Test files
+10. .env.example updates
+11. README updates
+12. Run instructions
+13. Test instructions
+14. Build instructions
+15. Production safety checklist
+16. Acceptance checklist
+17. Known limitations
+18. Phase 9 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–7 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode credentials.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Keep database repositories replaceable.
+- Keep Docker production-ready but simple.
+- Keep Phase 8 deployable on local VM, Ubuntu server, or Windows Docker Desktop.
+
+Now generate the complete Phase 8 implementation.

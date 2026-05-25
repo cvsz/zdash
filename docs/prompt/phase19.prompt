@@ -1,0 +1,1791 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 19 · AUTONOMOUS ECOSYSTEM DIGITAL TWIN + MACRO STRATEGY SIMULATION + BOARD-LEVEL CONTINUOUS PLANNING
+Digital Twin + Macro Scenario Engine + Continuous Board Planning + Strategy War Room + Ecosystem Stress Testing
+
+Do not rebuild Phase 1–18 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–18:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+- Sovereign Enterprise Grid
+- On-Prem Appliance
+- Edge Runners
+- Data Residency Enforcement
+- Global Partner Operations
+- Predictive SRE
+- Optimization Center
+- Growth Intelligence
+- Executive Command Center
+- QBR Reports
+- AI Boardroom
+- Strategy Engine
+- OKR Engine
+- Scenario Simulation
+- Competitive Intelligence
+- Decision Memos
+
+============================================================
+PHASE 19 OBJECTIVE
+============================================================
+
+Build the autonomous ecosystem digital twin and continuous planning layer for zDash.
+
+Main goals:
+
+1. Add Enterprise Digital Twin model
+2. Add customer / partner / marketplace / region / product graph simulation
+3. Add macro scenario simulation engine
+4. Add board-level continuous planning loop
+5. Add strategy war room workspace
+6. Add strategic stress-test framework
+7. Add dependency graph and blast-radius analysis
+8. Add initiative impact propagation model
+9. Add cross-functional tradeoff simulator
+10. Add market shock simulation shell
+11. Add policy / regulation scenario shell
+12. Add partner ecosystem simulation
+13. Add marketplace supply-demand simulation
+14. Add long-range roadmap simulator
+15. Add strategy memory and decision lineage
+16. Add continuous planning recommendations
+17. Add executive scenario pack generator
+18. Add digital twin dashboard pages
+19. Add strategy war room frontend pages
+20. Add tests, docs, runbooks, and acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Do not bypass data residency enforcement.
+- Digital twin outputs are simulation-only.
+- Macro simulations are planning estimates, not financial advice.
+- Regulation / policy simulations are operational planning templates, not legal advice.
+- Strategy War Room recommendations are advisory only and require human approval.
+- No automated outreach, pricing changes, billing changes, trading actions, hiring/firing actions, legal actions, or public announcements may run automatically.
+- No secrets, credentials, tokens, broker credentials, private customer payloads, raw prompts, API keys, or confidential documents may be logged, exported, synced, or displayed.
+- Every simulation must include assumptions, confidence, evidence, limitations, and risk notes.
+- Low-confidence simulations must be clearly marked as advisory-only.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/digital_twin/
+  __init__.py
+  models.py
+  twin_graph.py
+  entity_registry.py
+  relationship_service.py
+  propagation_engine.py
+  blast_radius.py
+  twin_snapshot_service.py
+  twin_report_service.py
+
+backend/app/macro_simulation/
+  __init__.py
+  models.py
+  macro_scenario_service.py
+  shock_simulator.py
+  policy_scenario_service.py
+  market_dynamics.py
+  supply_demand_simulator.py
+  regional_scenario_service.py
+  scenario_pack_service.py
+
+backend/app/continuous_planning/
+  __init__.py
+  models.py
+  planning_loop.py
+  planning_memory.py
+  decision_lineage.py
+  strategic_tradeoff.py
+  initiative_impact.py
+  roadmap_simulator.py
+  planning_recommendation_service.py
+  war_room_service.py
+
+backend/app/api/digital_twin.py
+backend/app/api/macro_simulation.py
+backend/app/api/continuous_planning.py
+
+frontend/src/pages/DigitalTwin.tsx
+frontend/src/pages/EcosystemGraph.tsx
+frontend/src/pages/MacroSimulation.tsx
+frontend/src/pages/StrategyWarRoom.tsx
+frontend/src/pages/ContinuousPlanning.tsx
+frontend/src/pages/DecisionLineage.tsx
+frontend/src/pages/BlastRadius.tsx
+frontend/src/pages/ScenarioPacks.tsx
+
+frontend/src/components/digital-twin/
+  TwinGraphPanel.tsx
+  TwinEntityTable.tsx
+  RelationshipMap.tsx
+  PropagationResultPanel.tsx
+  BlastRadiusPanel.tsx
+  TwinSnapshotTimeline.tsx
+  TwinReportPanel.tsx
+
+frontend/src/components/macro-simulation/
+  MacroScenarioForm.tsx
+  ShockSimulationPanel.tsx
+  PolicyScenarioPanel.tsx
+  SupplyDemandPanel.tsx
+  RegionalScenarioPanel.tsx
+  ScenarioPackBuilder.tsx
+  ScenarioConfidenceBadge.tsx
+
+frontend/src/components/continuous-planning/
+  PlanningLoopStatus.tsx
+  StrategyMemoryPanel.tsx
+  DecisionLineageGraph.tsx
+  TradeoffMatrix.tsx
+  InitiativeImpactPanel.tsx
+  RoadmapSimulationPanel.tsx
+  PlanningRecommendationQueue.tsx
+  WarRoomWorkspace.tsx
+
+frontend/src/hooks/useDigitalTwin.ts
+frontend/src/hooks/useMacroSimulation.ts
+frontend/src/hooks/useContinuousPlanning.ts
+
+scripts/
+  build-digital-twin-snapshot.sh
+  run-macro-scenario.sh
+  run-ecosystem-stress-test.sh
+  generate-scenario-pack.sh
+  generate-decision-lineage-report.sh
+  run-continuous-planning-cycle.sh
+  strategy-war-room-smoke-test.sh
+
+docs/
+  digital-twin/
+    ENTERPRISE_DIGITAL_TWIN_MODEL.md
+    ECOSYSTEM_GRAPH_MODEL.md
+    IMPACT_PROPAGATION_MODEL.md
+    BLAST_RADIUS_ANALYSIS.md
+  macro-simulation/
+    MACRO_SCENARIO_MODEL.md
+    MARKET_SHOCK_SIMULATION.md
+    POLICY_SCENARIO_SIMULATION.md
+    SUPPLY_DEMAND_SIMULATION.md
+    REGIONAL_SCENARIO_PLANNING.md
+  continuous-planning/
+    CONTINUOUS_PLANNING_LOOP.md
+    STRATEGY_MEMORY_MODEL.md
+    DECISION_LINEAGE_MODEL.md
+    STRATEGIC_TRADEOFF_MODEL.md
+    STRATEGY_WAR_ROOM.md
+  runbooks/
+    DIGITAL_TWIN_REVIEW_RUNBOOK.md
+    MACRO_SCENARIO_REVIEW_RUNBOOK.md
+    STRATEGIC_STRESS_TEST_RUNBOOK.md
+    CONTINUOUS_PLANNING_RUNBOOK.md
+    DECISION_LINEAGE_AUDIT_RUNBOOK.md
+
+backend/app/tests/
+  test_digital_twin_models.py
+  test_twin_graph.py
+  test_entity_registry.py
+  test_relationship_service.py
+  test_propagation_engine.py
+  test_blast_radius.py
+  test_twin_snapshot_service.py
+  test_twin_report_service.py
+  test_macro_simulation_models.py
+  test_macro_scenario_service.py
+  test_shock_simulator.py
+  test_policy_scenario_service.py
+  test_market_dynamics.py
+  test_supply_demand_simulator.py
+  test_regional_scenario_service.py
+  test_scenario_pack_service.py
+  test_continuous_planning_models.py
+  test_planning_loop.py
+  test_planning_memory.py
+  test_decision_lineage.py
+  test_strategic_tradeoff.py
+  test_initiative_impact.py
+  test_roadmap_simulator.py
+  test_planning_recommendation_service.py
+  test_war_room_service.py
+  test_digital_twin_api.py
+  test_macro_simulation_api.py
+  test_continuous_planning_api.py
+  test_phase19_tenant_isolation.py
+  test_phase19_safety_gates.py
+
+frontend/src/tests/
+  DigitalTwin.test.tsx
+  EcosystemGraph.test.tsx
+  MacroSimulation.test.tsx
+  StrategyWarRoom.test.tsx
+  ContinuousPlanning.test.tsx
+  DecisionLineage.test.tsx
+  BlastRadius.test.tsx
+  ScenarioPacks.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/governance/policy_engine.py
+backend/app/executive/command_center_service.py
+backend/app/strategy/strategy_service.py
+backend/app/growth_intelligence/regional_expansion.py
+backend/app/product_analytics/event_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+DIGITAL_TWIN_ENABLED=true
+DIGITAL_TWIN_MODE=advisory
+DIGITAL_TWIN_DRY_RUN=true
+DIGITAL_TWIN_REQUIRE_EVIDENCE=true
+DIGITAL_TWIN_MAX_GRAPH_NODES=5000
+DIGITAL_TWIN_MAX_GRAPH_EDGES=20000
+
+IMPACT_PROPAGATION_ENABLED=true
+BLAST_RADIUS_ANALYSIS_ENABLED=true
+TWIN_SNAPSHOT_ENABLED=true
+TWIN_REPORTS_ENABLED=true
+
+MACRO_SIMULATION_ENABLED=true
+MACRO_SIMULATION_DRY_RUN=true
+MACRO_SIMULATION_MAX_RUNS_PER_REQUEST=10
+MARKET_SHOCK_SIMULATION_ENABLED=true
+POLICY_SCENARIO_SIMULATION_ENABLED=true
+SUPPLY_DEMAND_SIMULATION_ENABLED=true
+REGIONAL_SCENARIO_SIMULATION_ENABLED=true
+
+CONTINUOUS_PLANNING_ENABLED=true
+CONTINUOUS_PLANNING_MODE=advisory
+CONTINUOUS_PLANNING_DRY_RUN=true
+CONTINUOUS_PLANNING_REQUIRE_APPROVAL=true
+CONTINUOUS_PLANNING_CYCLE_INTERVAL_DAYS=7
+
+STRATEGY_MEMORY_ENABLED=true
+DECISION_LINEAGE_ENABLED=true
+STRATEGIC_TRADEOFF_ENABLED=true
+ROADMAP_SIMULATION_ENABLED=true
+STRATEGY_WAR_ROOM_ENABLED=true
+WAR_ROOM_MAX_ACTIVE_SESSIONS=10
+
+Rules:
+- Digital twin must be advisory and dry-run by default.
+- Macro simulation must be dry-run by default.
+- Continuous planning recommendations must require human approval.
+- Strategy War Room must never execute operational changes directly.
+- All scenario outputs must include confidence, assumptions, evidence, limitations, and risk notes.
+- Raw confidential data must not be stored in graph nodes, reports, scenario packs, or war room transcripts.
+- Graph size limits must prevent runaway memory usage.
+
+============================================================
+DIGITAL TWIN MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. TwinEntityType
+
+Allowed values:
+- organization
+- workspace
+- customer
+- partner
+- reseller
+- marketplace_listing
+- product_module
+- region
+- edge_runner
+- initiative
+- objective
+- risk
+- incident
+- integration
+- revenue_stream
+- support_case
+
+2. TwinRelationshipType
+
+Allowed values:
+- owns
+- depends_on
+- influences
+- blocks
+- supports
+- competes_with
+- supplies
+- consumes
+- operates_in
+- governed_by
+- impacted_by
+
+3. SimulationStatus
+
+Allowed values:
+- queued
+- running
+- completed
+- warning
+- failed
+- blocked
+
+4. TwinEntity
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- entity_type
+- external_ref
+- name
+- summary
+- attributes
+- confidence
+- evidence_ids
+- created_at
+- updated_at
+
+5. TwinRelationship
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- source_entity_id
+- target_entity_id
+- relationship_type
+- weight
+- confidence
+- evidence_ids
+- metadata
+- created_at
+- updated_at
+
+6. TwinSnapshot
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- node_count
+- edge_count
+- summary
+- checksum
+- created_at
+
+7. ImpactPropagationResult
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- source_entity_id
+- impact_type
+- affected_entities
+- impact_score
+- confidence
+- assumptions
+- limitations
+- created_at
+
+8. BlastRadiusResult
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- target_entity_id
+- severity
+- affected_domains
+- affected_entities
+- mitigation_options
+- confidence
+- limitations
+- created_at
+
+============================================================
+DIGITAL TWIN SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/digital_twin/entity_registry.py
+backend/app/digital_twin/relationship_service.py
+backend/app/digital_twin/twin_graph.py
+backend/app/digital_twin/propagation_engine.py
+backend/app/digital_twin/blast_radius.py
+backend/app/digital_twin/twin_snapshot_service.py
+backend/app/digital_twin/twin_report_service.py
+
+EntityRegistry methods:
+- create_entity()
+- list_entities()
+- get_entity()
+- update_entity()
+- archive_entity()
+
+RelationshipService methods:
+- create_relationship()
+- list_relationships()
+- get_relationship()
+- delete_relationship()
+- validate_relationship()
+
+TwinGraphService methods:
+- build_graph()
+- get_neighbors(entity_id)
+- get_dependency_path(source_id, target_id)
+- summarize_graph()
+- detect_orphans()
+- detect_cycles()
+
+PropagationEngine methods:
+- simulate_impact(source_entity_id, impact_type, assumptions)
+- rank_affected_entities()
+- list_propagation_results()
+
+BlastRadiusService methods:
+- analyze_blast_radius(target_entity_id, severity)
+- recommend_mitigations()
+- list_blast_radius_results()
+
+TwinSnapshotService methods:
+- create_snapshot()
+- list_snapshots()
+- compare_snapshots()
+- verify_snapshot_checksum()
+
+TwinReportService methods:
+- generate_twin_report()
+- build_markdown_report()
+- list_reports()
+
+Rules:
+- All graph records are tenant-scoped.
+- Evidence IDs required when DIGITAL_TWIN_REQUIRE_EVIDENCE=true.
+- No raw secrets or confidential source content in graph attributes.
+- Graph outputs must include confidence and limitations.
+
+============================================================
+MACRO SIMULATION MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. MacroScenarioType
+
+Allowed values:
+- base_case
+- growth
+- downturn
+- competitive_pressure
+- regulatory_shift
+- regional_expansion
+- supply_constraint
+- demand_spike
+- custom
+
+2. ShockType
+
+Allowed values:
+- market
+- partner
+- infrastructure
+- regulatory
+- pricing
+- demand
+- supply
+- security
+- reputation
+
+3. MacroScenario
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- scenario_type
+- horizon
+- assumptions
+- inputs
+- confidence
+- created_by
+- created_at
+
+4. MacroScenarioResult
+
+Fields:
+- id
+- scenario_id
+- status
+- outputs
+- key_drivers
+- risks
+- opportunities
+- recommended_actions
+- confidence
+- limitations
+- created_at
+
+5. ShockSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- shock_type
+- severity
+- affected_domains
+- assumptions
+- projected_impact
+- mitigation_options
+- confidence
+- created_at
+
+6. PolicyScenario
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- policy_area
+- region
+- assumptions
+- operational_impact
+- compliance_tasks
+- risk_notes
+- confidence
+- template_only
+- created_at
+
+7. SupplyDemandSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- marketplace_category
+- supply_inputs
+- demand_inputs
+- projected_supply
+- projected_demand
+- imbalance_risk
+- recommendations
+- confidence
+- created_at
+
+8. ScenarioPack
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- scenarios
+- summary
+- executive_notes
+- risks
+- opportunities
+- limitations
+- created_at
+
+============================================================
+MACRO SIMULATION SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/macro_simulation/macro_scenario_service.py
+backend/app/macro_simulation/shock_simulator.py
+backend/app/macro_simulation/policy_scenario_service.py
+backend/app/macro_simulation/market_dynamics.py
+backend/app/macro_simulation/supply_demand_simulator.py
+backend/app/macro_simulation/regional_scenario_service.py
+backend/app/macro_simulation/scenario_pack_service.py
+
+MacroScenarioService methods:
+- create_scenario()
+- run_scenario()
+- compare_scenarios()
+- list_scenarios()
+- list_results()
+
+ShockSimulator methods:
+- run_shock_simulation()
+- list_shock_simulations()
+- recommend_mitigations()
+
+PolicyScenarioService methods:
+- run_policy_scenario()
+- list_policy_scenarios()
+- generate_policy_task_list()
+
+Rules:
+- Policy outputs are planning templates only, not legal advice.
+
+MarketDynamicsService methods:
+- simulate_market_dynamics()
+- estimate_competitive_pressure()
+- estimate_adoption_curve()
+
+SupplyDemandSimulator methods:
+- simulate_supply_demand()
+- estimate_imbalance_risk()
+- recommend_marketplace_actions()
+
+RegionalScenarioService methods:
+- simulate_region_entry()
+- compare_regions()
+- evaluate_residency_and_support_readiness()
+
+ScenarioPackService methods:
+- create_pack()
+- generate_executive_pack()
+- list_packs()
+- build_markdown_pack()
+
+Rules:
+- No output may be presented as guaranteed.
+- Every output includes assumptions, confidence, limitations.
+- No automatic business action execution.
+
+============================================================
+CONTINUOUS PLANNING MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. PlanningCycleStatus
+
+Allowed values:
+- scheduled
+- running
+- completed
+- blocked
+- failed
+- canceled
+
+2. RecommendationStatus
+
+Allowed values:
+- proposed
+- under_review
+- approved
+- rejected
+- archived
+
+3. DecisionLineageEventType
+
+Allowed values:
+- decision_created
+- assumption_added
+- evidence_added
+- recommendation_created
+- recommendation_approved
+- recommendation_rejected
+- strategy_changed
+- roadmap_changed
+- outcome_recorded
+
+4. PlanningCycle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- status
+- cycle_start
+- cycle_end
+- inputs_summary
+- recommendations
+- blockers
+- created_at
+- completed_at
+
+5. StrategyMemoryRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- memory_type
+- title
+- summary
+- linked_decisions
+- linked_evidence
+- confidence
+- created_at
+
+6. DecisionLineageEvent
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- decision_id
+- event_type
+- summary
+- actor
+- evidence_ids
+- metadata
+- created_at
+
+7. StrategicTradeoff
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- options
+- criteria
+- scores
+- recommendation
+- confidence
+- limitations
+- created_at
+
+8. InitiativeImpactSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- initiative_id
+- impacted_objectives
+- impacted_entities
+- expected_benefits
+- risks
+- confidence
+- created_at
+
+9. RoadmapSimulation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- roadmap_items
+- constraints
+- projected_outcomes
+- conflicts
+- confidence
+- created_at
+
+10. PlanningRecommendation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- category
+- rationale
+- evidence_ids
+- expected_impact
+- risks
+- confidence
+- status
+- requires_approval
+- created_at
+- updated_at
+
+11. WarRoomSession
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- topic
+- participants
+- context
+- transcript
+- decisions
+- recommendations
+- status
+- created_at
+- completed_at
+
+============================================================
+CONTINUOUS PLANNING SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/continuous_planning/planning_loop.py
+backend/app/continuous_planning/planning_memory.py
+backend/app/continuous_planning/decision_lineage.py
+backend/app/continuous_planning/strategic_tradeoff.py
+backend/app/continuous_planning/initiative_impact.py
+backend/app/continuous_planning/roadmap_simulator.py
+backend/app/continuous_planning/planning_recommendation_service.py
+backend/app/continuous_planning/war_room_service.py
+
+PlanningLoopService methods:
+- start_cycle()
+- run_cycle()
+- complete_cycle()
+- list_cycles()
+- get_latest_cycle()
+
+PlanningMemoryService methods:
+- create_memory_record()
+- list_memory()
+- link_memory_to_decision()
+- search_memory()
+
+DecisionLineageService methods:
+- record_event()
+- list_lineage(decision_id)
+- build_lineage_graph()
+- generate_lineage_report()
+
+StrategicTradeoffService methods:
+- create_tradeoff()
+- score_options()
+- compare_tradeoffs()
+- list_tradeoffs()
+
+InitiativeImpactService methods:
+- simulate_initiative_impact()
+- list_impact_simulations()
+- summarize_impacts()
+
+RoadmapSimulator methods:
+- simulate_roadmap()
+- compare_roadmaps()
+- detect_constraints()
+- list_roadmap_simulations()
+
+PlanningRecommendationService methods:
+- generate_recommendations()
+- list_recommendations()
+- approve_recommendation()
+- reject_recommendation()
+
+WarRoomService methods:
+- create_session()
+- add_context()
+- run_session()
+- summarize_session()
+- create_recommendations_from_session()
+- list_sessions()
+
+Rules:
+- All recommendations are advisory.
+- Approval required before downstream work items are created.
+- No direct execution of operational changes.
+- Decision lineage must preserve evidence summaries and limitations.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/digital_twin.py
+
+Endpoints:
+
+GET /api/digital-twin/status
+POST /api/digital-twin/entities
+GET /api/digital-twin/entities
+GET /api/digital-twin/entities/{entity_id}
+PATCH /api/digital-twin/entities/{entity_id}
+POST /api/digital-twin/relationships
+GET /api/digital-twin/relationships
+DELETE /api/digital-twin/relationships/{relationship_id}
+GET /api/digital-twin/graph
+GET /api/digital-twin/graph/summary
+GET /api/digital-twin/graph/neighbors/{entity_id}
+POST /api/digital-twin/impact/simulate
+GET /api/digital-twin/impact/results
+POST /api/digital-twin/blast-radius/analyze
+GET /api/digital-twin/blast-radius/results
+POST /api/digital-twin/snapshots
+GET /api/digital-twin/snapshots
+POST /api/digital-twin/reports
+GET /api/digital-twin/reports
+GET /api/digital-twin/reports/{report_id}/markdown
+
+Create:
+
+backend/app/api/macro_simulation.py
+
+Endpoints:
+
+GET /api/macro-simulation/status
+POST /api/macro-simulation/scenarios
+GET /api/macro-simulation/scenarios
+POST /api/macro-simulation/scenarios/{scenario_id}/run
+POST /api/macro-simulation/scenarios/compare
+GET /api/macro-simulation/results
+POST /api/macro-simulation/shocks/run
+GET /api/macro-simulation/shocks
+POST /api/macro-simulation/policy/run
+GET /api/macro-simulation/policy
+POST /api/macro-simulation/supply-demand/run
+GET /api/macro-simulation/supply-demand
+POST /api/macro-simulation/regional/run
+GET /api/macro-simulation/regional
+POST /api/macro-simulation/packs
+GET /api/macro-simulation/packs
+GET /api/macro-simulation/packs/{pack_id}/markdown
+
+Create:
+
+backend/app/api/continuous_planning.py
+
+Endpoints:
+
+GET /api/continuous-planning/status
+POST /api/continuous-planning/cycles/start
+POST /api/continuous-planning/cycles/{cycle_id}/run
+POST /api/continuous-planning/cycles/{cycle_id}/complete
+GET /api/continuous-planning/cycles
+GET /api/continuous-planning/cycles/latest
+
+Memory:
+POST /api/continuous-planning/memory
+GET /api/continuous-planning/memory
+POST /api/continuous-planning/memory/{memory_id}/link-decision
+
+Lineage:
+POST /api/continuous-planning/lineage/events
+GET /api/continuous-planning/lineage/{decision_id}
+GET /api/continuous-planning/lineage/{decision_id}/graph
+GET /api/continuous-planning/lineage/{decision_id}/report
+
+Tradeoffs:
+POST /api/continuous-planning/tradeoffs
+GET /api/continuous-planning/tradeoffs
+POST /api/continuous-planning/tradeoffs/{tradeoff_id}/score
+
+Initiative impact:
+POST /api/continuous-planning/initiative-impact/simulate
+GET /api/continuous-planning/initiative-impact
+
+Roadmap simulation:
+POST /api/continuous-planning/roadmap/simulate
+GET /api/continuous-planning/roadmap
+
+Recommendations:
+POST /api/continuous-planning/recommendations/generate
+GET /api/continuous-planning/recommendations
+POST /api/continuous-planning/recommendations/{recommendation_id}/approve
+POST /api/continuous-planning/recommendations/{recommendation_id}/reject
+
+War room:
+POST /api/continuous-planning/war-room/sessions
+GET /api/continuous-planning/war-room/sessions
+POST /api/continuous-planning/war-room/sessions/{session_id}/run
+POST /api/continuous-planning/war-room/sessions/{session_id}/summarize
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Standard response shape required.
+- All outputs advisory.
+- No endpoint may execute operational changes automatically.
+- No endpoint may expose secrets or raw confidential payloads.
+
+============================================================
+FRONTEND PHASE 19 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /digital-twin
+- /ecosystem-graph
+- /macro-simulation
+- /strategy-war-room
+- /continuous-planning
+- /decision-lineage
+- /blast-radius
+- /scenario-packs
+
+Update sidebar:
+- Digital Twin
+- Ecosystem Graph
+- Macro Simulation
+- Strategy War Room
+- Continuous Planning
+- Decision Lineage
+- Blast Radius
+- Scenario Packs
+
+1. Digital Twin Page
+
+Must show:
+- Digital twin status
+- Entity table
+- Relationship summary
+- Snapshot timeline
+- Twin report panel
+- Confidence and evidence indicators
+
+2. Ecosystem Graph Page
+
+Must show:
+- Graph summary
+- Entity relationship map
+- Neighbor explorer
+- Dependency path viewer
+- Orphan/cycle warnings
+
+3. Macro Simulation Page
+
+Must show:
+- Macro scenario form
+- Shock simulation panel
+- Policy scenario panel
+- Supply-demand simulation panel
+- Regional scenario panel
+- Assumptions and limitations
+
+4. Strategy War Room Page
+
+Must show:
+- War room session list
+- Session workspace
+- Context panel
+- Transcript
+- Recommendations
+- Advisory-only banner
+
+5. Continuous Planning Page
+
+Must show:
+- Planning loop status
+- Strategy memory
+- Planning recommendations
+- Recommendation approval controls
+- Cycle history
+
+6. Decision Lineage Page
+
+Must show:
+- Decision lineage graph
+- Evidence links
+- Event timeline
+- Decision audit report
+
+7. Blast Radius Page
+
+Must show:
+- Blast-radius input form
+- Affected domains
+- Affected entities
+- Mitigation options
+- Confidence and limitations
+
+8. Scenario Packs Page
+
+Must show:
+- Scenario pack builder
+- Executive pack preview
+- Markdown export preview
+- Risk/opportunity summary
+
+Frontend safety:
+- Never display secrets.
+- Show simulation-only / advisory banner.
+- Show confidence and limitations.
+- Show evidence IDs when available.
+- Do not show low-confidence outputs as facts.
+- Do not offer execution buttons for simulation recommendations.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Digital Twin:
+- digital_twin.read
+- digital_twin.manage_entities
+- digital_twin.manage_relationships
+- digital_twin.run_simulation
+- digital_twin.generate_reports
+
+Macro Simulation:
+- macro_simulation.read
+- macro_simulation.run
+- macro_simulation.generate_packs
+
+Continuous Planning:
+- continuous_planning.read
+- continuous_planning.run_cycle
+- continuous_planning.manage_memory
+- continuous_planning.manage_lineage
+- continuous_planning.run_war_room
+- continuous_planning.approve_recommendation
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- digital_twin.read
+- digital_twin.manage_entities
+- digital_twin.manage_relationships
+- digital_twin.run_simulation
+- digital_twin.generate_reports
+- macro_simulation.read
+- macro_simulation.run
+- macro_simulation.generate_packs
+- continuous_planning.read
+- continuous_planning.run_cycle
+- continuous_planning.manage_memory
+- continuous_planning.manage_lineage
+- continuous_planning.run_war_room
+- continuous_planning.approve_recommendation
+
+analyst:
+- digital_twin.read
+- digital_twin.run_simulation
+- macro_simulation.read
+- macro_simulation.run
+- continuous_planning.read
+- continuous_planning.run_war_room
+
+viewer:
+- digital_twin.read limited
+- macro_simulation.read limited
+- continuous_planning.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- twin_entities
+- twin_relationships
+- twin_snapshots
+- impact_propagation_results
+- blast_radius_results
+- twin_reports
+- macro_scenarios
+- macro_scenario_results
+- shock_simulations
+- policy_scenarios
+- supply_demand_simulations
+- regional_scenarios
+- scenario_packs
+- planning_cycles
+- strategy_memory_records
+- decision_lineage_events
+- strategic_tradeoffs
+- initiative_impact_simulations
+- roadmap_simulations
+- planning_recommendations
+- war_room_sessions
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped.
+- No secrets.
+- No raw confidential source content.
+- Evidence and assumptions stored as summaries.
+- Simulation outputs must store confidence, assumptions, risks, and limitations.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Digital Twin:
+- digital_twin.entity.created
+- digital_twin.entity.updated
+- digital_twin.relationship.created
+- digital_twin.relationship.deleted
+- digital_twin.graph.built
+- digital_twin.impact.simulated
+- digital_twin.blast_radius.analyzed
+- digital_twin.snapshot.created
+- digital_twin.report.generated
+
+Macro Simulation:
+- macro.scenario.created
+- macro.scenario.run
+- macro.scenario.compared
+- macro.shock.simulated
+- macro.policy.simulated
+- macro.supply_demand.simulated
+- macro.regional.simulated
+- macro.scenario_pack.generated
+
+Continuous Planning:
+- planning.cycle.started
+- planning.cycle.completed
+- planning.memory.created
+- planning.lineage.recorded
+- planning.tradeoff.created
+- planning.initiative_impact.simulated
+- planning.roadmap.simulated
+- planning.recommendation.created
+- planning.recommendation.approved
+- planning.recommendation.rejected
+- planning.war_room.created
+- planning.war_room.completed
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- DIGITAL_TWIN_DISABLED
+- TWIN_ENTITY_NOT_FOUND
+- TWIN_RELATIONSHIP_NOT_FOUND
+- TWIN_GRAPH_LIMIT_EXCEEDED
+- IMPACT_SIMULATION_FAILED
+- BLAST_RADIUS_FAILED
+- MACRO_SIMULATION_DISABLED
+- MACRO_SCENARIO_NOT_FOUND
+- MACRO_SCENARIO_FAILED
+- POLICY_SCENARIO_TEMPLATE_ONLY
+- SCENARIO_PACK_NOT_FOUND
+- CONTINUOUS_PLANNING_DISABLED
+- PLANNING_CYCLE_NOT_FOUND
+- STRATEGY_MEMORY_NOT_FOUND
+- DECISION_LINEAGE_NOT_FOUND
+- TRADEOFF_NOT_FOUND
+- PLANNING_RECOMMENDATION_NOT_FOUND
+- WAR_ROOM_SESSION_NOT_FOUND
+- ADVISORY_ONLY_ACTION
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_digital_twin_models.py
+- entity type enum
+- relationship type enum
+- snapshot validation
+- confidence validation
+
+2. test_twin_graph.py
+- graph builds
+- neighbors returned
+- dependency path works
+- cycle detection works
+- graph limit enforced
+
+3. test_entity_registry.py
+- create entity
+- list entities
+- update entity
+- tenant scoped
+
+4. test_relationship_service.py
+- create relationship
+- invalid relationship rejected
+- delete relationship
+- tenant scoped
+
+5. test_propagation_engine.py
+- impact simulation works
+- affected entities ranked
+- confidence included
+- limitations included
+
+6. test_blast_radius.py
+- blast radius analysis works
+- affected domains listed
+- mitigation options generated
+- no secrets included
+
+7. test_twin_snapshot_service.py
+- snapshot created
+- checksum generated
+- compare snapshots works
+
+8. test_twin_report_service.py
+- report generated
+- markdown generated
+- assumptions and limitations included
+
+9. test_macro_simulation_models.py
+- scenario type enum
+- shock type enum
+- scenario result validation
+
+10. test_macro_scenario_service.py
+- scenario created
+- scenario run
+- scenario comparison works
+- low confidence labeled
+
+11. test_shock_simulator.py
+- market shock simulation works
+- mitigation options generated
+- advisory-only enforced
+
+12. test_policy_scenario_service.py
+- policy scenario generated
+- template-only flag present
+- no legal advice claims
+
+13. test_market_dynamics.py
+- adoption curve estimated
+- competitive pressure estimated
+- no guarantee language
+
+14. test_supply_demand_simulator.py
+- supply-demand simulation works
+- imbalance risk calculated
+- marketplace actions advisory
+
+15. test_regional_scenario_service.py
+- region entry simulation works
+- residency readiness checked
+- support readiness checked
+
+16. test_scenario_pack_service.py
+- scenario pack generated
+- markdown generated
+- risks and limitations included
+
+17. test_continuous_planning_models.py
+- planning cycle validation
+- recommendation status enum
+- decision lineage event enum
+
+18. test_planning_loop.py
+- cycle starts
+- cycle runs
+- cycle completes
+- blockers captured
+
+19. test_planning_memory.py
+- memory record created
+- linked to decision
+- search works
+
+20. test_decision_lineage.py
+- lineage event recorded
+- lineage graph built
+- report generated
+
+21. test_strategic_tradeoff.py
+- tradeoff created
+- options scored
+- recommendation includes confidence
+
+22. test_initiative_impact.py
+- initiative impact simulated
+- objective impacts listed
+- no direct execution
+
+23. test_roadmap_simulator.py
+- roadmap simulation works
+- conflicts detected
+- constraints included
+
+24. test_planning_recommendation_service.py
+- recommendations generated
+- approval works
+- rejection works
+- no execution performed
+
+25. test_war_room_service.py
+- session created
+- context added
+- session run
+- recommendations advisory
+
+26. test_digital_twin_api.py
+- status endpoint
+- entity endpoints
+- relationship endpoints
+- impact endpoint
+- report endpoint
+
+27. test_macro_simulation_api.py
+- status endpoint
+- scenario endpoints
+- shock endpoint
+- policy endpoint
+- pack endpoint
+
+28. test_continuous_planning_api.py
+- status endpoint
+- cycle endpoint
+- memory endpoint
+- lineage endpoint
+- war room endpoint
+
+29. test_phase19_tenant_isolation.py
+- org A cannot read org B twin entities
+- org A cannot read org B scenario packs
+- org A cannot read org B planning cycles
+- org A cannot read org B war room sessions
+
+30. test_phase19_safety_gates.py
+- digital twin cannot execute actions
+- macro scenario cannot trigger billing/pricing changes
+- policy scenario marked template-only
+- war room recommendations require approval
+- reports exclude secrets
+
+Frontend tests:
+
+1. DigitalTwin.test.tsx
+- twin status renders
+- entity table renders
+- snapshot timeline renders
+- advisory banner visible
+
+2. EcosystemGraph.test.tsx
+- graph summary renders
+- relationship map renders
+- cycle warning area visible
+
+3. MacroSimulation.test.tsx
+- scenario form renders
+- shock simulation panel renders
+- assumptions and limitations visible
+
+4. StrategyWarRoom.test.tsx
+- war room workspace renders
+- transcript panel renders
+- advisory-only banner visible
+
+5. ContinuousPlanning.test.tsx
+- planning loop status renders
+- recommendation queue renders
+- approval controls visible
+
+6. DecisionLineage.test.tsx
+- lineage graph renders
+- evidence links visible
+- audit timeline renders
+
+7. BlastRadius.test.tsx
+- blast-radius panel renders
+- affected entities table renders
+- mitigation options visible
+
+8. ScenarioPacks.test.tsx
+- scenario pack builder renders
+- markdown preview renders
+- confidence badge visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 19 overview
+- Enterprise Digital Twin model
+- Ecosystem graph model
+- Impact propagation
+- Blast-radius analysis
+- Macro simulation engine
+- Market shock simulation
+- Policy scenario simulation
+- Supply-demand simulation
+- Regional scenario planning
+- Continuous planning loop
+- Strategy memory
+- Decision lineage
+- Strategic tradeoff model
+- Initiative impact simulation
+- Roadmap simulation
+- Strategy War Room
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Build digital twin snapshot:
+
+bash scripts/build-digital-twin-snapshot.sh
+
+Run macro scenario:
+
+bash scripts/run-macro-scenario.sh
+
+Run ecosystem stress test:
+
+bash scripts/run-ecosystem-stress-test.sh
+
+Generate scenario pack:
+
+bash scripts/generate-scenario-pack.sh
+
+Generate decision lineage report:
+
+bash scripts/generate-decision-lineage-report.sh
+
+Run continuous planning cycle:
+
+bash scripts/run-continuous-planning-cycle.sh
+
+Strategy War Room smoke test:
+
+bash scripts/strategy-war-room-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 19 is complete only when:
+
+- Digital Twin models exist.
+- Entity registry works.
+- Relationship service works.
+- Twin graph builds safely.
+- Impact propagation works.
+- Blast-radius analysis works.
+- Twin snapshots work.
+- Twin reports work.
+- Macro simulation models exist.
+- Macro scenario service works.
+- Shock simulator works.
+- Policy scenario service marks outputs template-only.
+- Supply-demand simulator works.
+- Regional scenario service works.
+- Scenario pack generator works.
+- Continuous planning models exist.
+- Planning loop works.
+- Strategy memory works.
+- Decision lineage works.
+- Strategic tradeoff service works.
+- Initiative impact simulation works.
+- Roadmap simulator works.
+- Planning recommendation service works.
+- War Room service works.
+- Digital Twin API works.
+- Macro Simulation API works.
+- Continuous Planning API works.
+- Frontend Digital Twin page works.
+- Frontend Ecosystem Graph page works.
+- Frontend Macro Simulation page works.
+- Frontend Strategy War Room page works.
+- Frontend Continuous Planning page works.
+- Frontend Decision Lineage page works.
+- Frontend Blast Radius page works.
+- Frontend Scenario Packs page works.
+- Tenant isolation applies to all Phase 19 data.
+- Existing Phase 1–18 behavior remains intact.
+- Existing tests still pass.
+- New Phase 19 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Simulations remain advisory.
+- Planning recommendations require approval.
+- README includes Phase 19 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Digital Twin models and services
+6. Macro Simulation models and services
+7. Continuous Planning models and services
+8. API route files
+9. Build/validation scripts
+10. Test files
+11. .env.example updates
+12. README updates
+13. Digital Twin docs
+14. Macro Simulation docs
+15. Continuous Planning docs
+16. Run instructions
+17. Test instructions
+18. Digital Twin safety checklist
+19. Macro Simulation safety checklist
+20. Continuous Planning safety checklist
+21. Acceptance checklist
+22. Known limitations
+23. Phase 20 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–18 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, reports, scenario packs, graphs, memos, logs, docs, or exports.
+- Never log API keys, KMS key refs, runner tokens, broker credentials, cloud credentials, private payloads, or confidential sources.
+- Never store raw confidential sources by default.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never bypass data residency enforcement.
+- Never allow Digital Twin, Macro Simulation, or Strategy War Room to execute operational changes directly.
+- Never present simulations as guarantees.
+- Never present policy scenarios as legal advice.
+- Never present macro simulations or capital/resource simulations as financial advice.
+- Keep all simulations advisory, evidence-linked, confidence-scored, and approval-gated.
+- Keep code modular and ready for Phase 20: self-evolving enterprise operating system, autonomous governance refinement, and long-horizon strategic intelligence.
+
+Now generate the complete Phase 19 implementation.

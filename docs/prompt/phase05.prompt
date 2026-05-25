@@ -1,0 +1,1145 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 5 · BACKTESTING
+Strategy Lab + Joe Agent + Optimization Engine
+
+Do not rebuild Phase 1, Phase 2, Phase 3, or Phase 4 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- Default jobs
+- IoT adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows service scripts
+
+============================================================
+PHASE 5 OBJECTIVE
+============================================================
+
+Build the complete backtesting and strategy research system for zDash.
+
+Main goals:
+
+1. Create Joe Agent as backtesting and strategy lab coordinator
+2. Create backtesting engine
+3. Create strategy interface
+4. Add strategy variants:
+   - ob_aggressive
+   - ob_conservative
+   - trend_follow
+5. Add mock OHLCV dataset provider
+6. Add CSV dataset loader
+7. Add XAUUSD M5-compatible dataset model
+8. Add parameter sweep optimizer
+9. Add backtest metrics engine
+10. Add strategy ranking
+11. Add strategy promotion gate
+12. Select `ob_aggressive` as primary only after validation
+13. Add backtesting API endpoints
+14. Integrate Phase 4 scheduler backtest job with real Phase 5 service
+15. Add tests for all backtesting behavior
+
+IMPORTANT:
+- This system is for research, simulation, education, and paper-trading validation only.
+- Do not provide financial advice.
+- Backtest results must never be treated as guaranteed future performance.
+- Strategy promotion must be gated by risk metrics.
+- `ob_aggressive` can be the configured primary candidate, but must not be promoted to live execution without passing validation.
+- Live trading must remain disabled by default.
+- DRY_RUN must remain true by default.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/agents/joe.py
+
+backend/app/backtesting/
+  __init__.py
+  models.py
+  datasets.py
+  metrics.py
+  strategy_base.py
+  strategy_lab.py
+  optimizer.py
+  reports.py
+  promotion.py
+  backtest_service.py
+  strategies/
+    __init__.py
+    ob_aggressive.py
+    ob_conservative.py
+    trend_follow.py
+
+backend/app/api/backtesting.py
+
+backend/app/tests/
+  test_backtesting_models.py
+  test_dataset_provider.py
+  test_strategy_base.py
+  test_ob_aggressive_strategy.py
+  test_ob_conservative_strategy.py
+  test_trend_follow_strategy.py
+  test_backtest_engine.py
+  test_backtest_metrics.py
+  test_optimizer.py
+  test_strategy_promotion.py
+  test_backtesting_api.py
+  test_joe_agent.py
+  test_scheduler_backtest_integration.py
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/agents/registry.py
+backend/app/scheduler/scheduler_service.py
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example` with:
+
+BACKTESTING_ENABLED=true
+BACKTEST_DATASET_SOURCE=mock
+BACKTEST_DEFAULT_SYMBOL=XAUUSD
+BACKTEST_DEFAULT_TIMEFRAME=M5
+BACKTEST_INITIAL_BALANCE=10000
+BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT=1
+BACKTEST_COMMISSION_PER_TRADE=0
+BACKTEST_SPREAD_POINTS=25
+BACKTEST_SLIPPAGE_POINTS=5
+
+PRIMARY_STRATEGY=ob_aggressive
+ALLOW_STRATEGY_PROMOTION=false
+
+MIN_PROMOTION_TRADES=50
+MIN_PROMOTION_WIN_RATE=45
+MIN_PROMOTION_PROFIT_FACTOR=1.2
+MAX_PROMOTION_DRAWDOWN_PERCENT=20
+MAX_PROMOTION_CONSECUTIVE_LOSSES=8
+
+OPTIMIZER_MAX_COMBINATIONS=100
+OPTIMIZER_SORT_METRIC=profit_factor
+
+Rules:
+
+- Missing config must fail safely.
+- Backtesting is enabled by default for local dev.
+- Strategy promotion is disabled by default.
+- `PRIMARY_STRATEGY=ob_aggressive` means primary candidate, not live-trading approval.
+- Optimizer must cap combinations to avoid runaway workloads.
+- All values must be environment-configurable.
+
+============================================================
+BACKTESTING MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models in:
+
+backend/app/backtesting/models.py
+
+Models:
+
+1. Candle
+
+Fields:
+- timestamp: datetime
+- open: float
+- high: float
+- low: float
+- close: float
+- volume: float = 0
+
+Validation:
+- high >= open, close, low
+- low <= open, close, high
+- open/high/low/close must be positive
+
+2. StrategySignal
+
+Fields:
+- timestamp: datetime
+- symbol: str
+- timeframe: str
+- strategy: str
+- direction: str
+- entry: float
+- stop_loss: float
+- take_profit: float
+- confidence: float
+- metadata: dict = {}
+
+Allowed direction:
+- buy
+- sell
+- hold
+
+3. SimulatedTrade
+
+Fields:
+- id: str
+- symbol: str
+- timeframe: str
+- strategy: str
+- direction: str
+- entry_time: datetime
+- exit_time: datetime | None
+- entry_price: float
+- exit_price: float | None
+- stop_loss: float
+- take_profit: float
+- size: float
+- pnl: float
+- pnl_percent: float
+- rr: float
+- status: str
+- exit_reason: str | None
+- metadata: dict = {}
+
+Statuses:
+- open
+- closed
+- skipped
+
+Exit reasons:
+- take_profit
+- stop_loss
+- signal_exit
+- end_of_data
+- invalid_signal
+
+4. BacktestRequest
+
+Fields:
+- strategy: str
+- symbol: str = "XAUUSD"
+- timeframe: str = "M5"
+- dataset: str = "mock"
+- initial_balance: float = 10000
+- risk_per_trade_percent: float = 1
+- commission_per_trade: float = 0
+- spread_points: float = 25
+- slippage_points: float = 5
+- parameters: dict = {}
+
+5. BacktestMetrics
+
+Fields:
+- total_trades: int
+- winning_trades: int
+- losing_trades: int
+- win_rate: float
+- gross_profit: float
+- gross_loss: float
+- net_profit: float
+- net_profit_percent: float
+- profit_factor: float
+- max_drawdown_percent: float
+- average_rr: float
+- expectancy: float
+- sharpe_like_score: float
+- consecutive_losses: int
+- monthly_return_table: dict
+
+6. BacktestResult
+
+Fields:
+- id: str
+- request: BacktestRequest
+- strategy: str
+- symbol: str
+- timeframe: str
+- initial_balance: float
+- final_balance: float
+- metrics: BacktestMetrics
+- trades: list[SimulatedTrade]
+- parameters: dict
+- started_at: datetime
+- finished_at: datetime
+- duration_ms: int
+- warnings: list[str] = []
+
+7. OptimizationRequest
+
+Fields:
+- strategy: str
+- symbol: str = "XAUUSD"
+- timeframe: str = "M5"
+- dataset: str = "mock"
+- initial_balance: float = 10000
+- parameter_grid: dict
+- sort_metric: str = "profit_factor"
+- max_combinations: int = 100
+
+8. OptimizationResult
+
+Fields:
+- id: str
+- request: OptimizationRequest
+- ranked_results: list[BacktestResult]
+- best_result: BacktestResult | None
+- sort_metric: str
+- total_combinations: int
+- executed_combinations: int
+- started_at: datetime
+- finished_at: datetime
+- duration_ms: int
+- warnings: list[str] = []
+
+9. StrategyPromotionDecision
+
+Fields:
+- strategy: str
+- approved: bool
+- reason: str
+- metrics: BacktestMetrics | None
+- gates: dict
+- timestamp: datetime
+
+============================================================
+DATASET REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/datasets.py
+
+Implement:
+
+DatasetProvider
+
+Methods:
+- load(dataset: str, symbol: str, timeframe: str) -> list[Candle]
+
+Implement:
+
+MockDatasetProvider
+
+Requirements:
+- Generates deterministic OHLCV candles for XAUUSD M5
+- Use fixed seed or deterministic math
+- Produce at least 300 candles by default
+- Include enough movement for strategies to create trades
+- No external API calls
+
+Implement:
+
+CsvDatasetProvider
+
+Requirements:
+- Load CSV files from:
+  backend/data/backtests/
+- Expected columns:
+  timestamp,open,high,low,close,volume
+- Validate candles using Candle model
+- Return clear error if file missing or invalid
+- Do not allow arbitrary path traversal
+
+Dataset naming:
+- "mock" uses MockDatasetProvider
+- "csv:filename.csv" uses CsvDatasetProvider
+
+============================================================
+STRATEGY BASE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/strategy_base.py
+
+Implement:
+
+BaseStrategy
+
+Fields:
+- name: str
+- default_parameters: dict
+
+Methods:
+- generate_signal(candles: list[Candle], index: int, parameters: dict) -> StrategySignal
+- validate_parameters(parameters: dict) -> dict
+- get_description() -> str
+
+Rules:
+- Strategy must never return invalid stop loss or take profit.
+- If no trade, return direction = hold.
+- Strategy must be deterministic.
+- Strategy must not call live broker APIs.
+- Strategy must not execute trades directly.
+
+============================================================
+STRATEGY VARIANT REQUIREMENTS
+============================================================
+
+Create strategies:
+
+1. backend/app/backtesting/strategies/ob_aggressive.py
+
+Behavior:
+- More frequent entries
+- Uses short lookback breakout / order-block-style simplified structure
+- Higher confidence threshold default: 0.55
+- Tighter stop loss
+- Higher trade frequency
+- Candidate primary strategy
+
+Default parameters:
+{
+  "lookback": 12,
+  "risk_reward": 2.0,
+  "confidence_threshold": 0.55,
+  "atr_multiplier": 1.2
+}
+
+2. backend/app/backtesting/strategies/ob_conservative.py
+
+Behavior:
+- Fewer entries
+- Uses longer lookback confirmation
+- Higher confidence threshold
+- Wider stop loss
+- Lower trade frequency
+
+Default parameters:
+{
+  "lookback": 24,
+  "risk_reward": 1.8,
+  "confidence_threshold": 0.68,
+  "atr_multiplier": 1.8
+}
+
+3. backend/app/backtesting/strategies/trend_follow.py
+
+Behavior:
+- Simple moving average trend-following logic
+- Buy when short MA crosses above long MA
+- Sell when short MA crosses below long MA
+
+Default parameters:
+{
+  "short_window": 10,
+  "long_window": 30,
+  "risk_reward": 1.5,
+  "confidence_threshold": 0.6,
+  "atr_multiplier": 1.5
+}
+
+Strategy signal rules:
+- buy entry near candle close
+- sell entry near candle close
+- stop_loss and take_profit based on ATR-like volatility estimate
+- confidence must be between 0 and 1
+- direction must be buy/sell/hold
+
+============================================================
+STRATEGY LAB REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/strategy_lab.py
+
+Implement:
+
+StrategyLab
+
+Methods:
+- list_strategies() -> list[dict]
+- get_strategy(name: str) -> BaseStrategy
+- run_backtest(request: BacktestRequest) -> BacktestResult
+
+Backtesting logic:
+- Iterate over candles
+- Ask strategy for signal
+- Skip hold signals
+- Simulate trade entry and exit
+- Use risk_per_trade_percent to calculate position size
+- Apply spread/slippage/commission
+- Update equity curve
+- Calculate drawdown
+- Close open trade at end of dataset
+- Store trades
+- Generate metrics through metrics module
+
+Execution simulation:
+- For buy:
+  - TP hit if candle.high >= take_profit
+  - SL hit if candle.low <= stop_loss
+- For sell:
+  - TP hit if candle.low <= take_profit
+  - SL hit if candle.high >= stop_loss
+- If both TP and SL are hit in same candle:
+  - Use conservative assumption: stop_loss first
+- Do not allow overlapping trades for Phase 5 unless explicitly configured.
+- Invalid signals become skipped trades with reason invalid_signal.
+
+============================================================
+METRICS REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/metrics.py
+
+Implement:
+
+BacktestMetricsCalculator
+
+Methods:
+- calculate(
+    trades: list[SimulatedTrade],
+    initial_balance: float,
+    final_balance: float,
+    equity_curve: list[tuple[datetime, float]]
+  ) -> BacktestMetrics
+
+Metrics:
+- total_trades
+- winning_trades
+- losing_trades
+- win_rate
+- gross_profit
+- gross_loss
+- net_profit
+- net_profit_percent
+- profit_factor
+- max_drawdown_percent
+- average_rr
+- expectancy
+- sharpe_like_score
+- consecutive_losses
+- monthly_return_table
+
+Rules:
+- Handle zero trades safely
+- Handle zero gross loss safely
+- Round display metrics to 4 decimals
+- Consecutive losses must count max streak
+- Monthly return table keyed by YYYY-MM
+
+============================================================
+OPTIMIZER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/optimizer.py
+
+Implement:
+
+ParameterOptimizer
+
+Methods:
+- expand_grid(parameter_grid: dict) -> list[dict]
+- optimize(request: OptimizationRequest) -> OptimizationResult
+
+Rules:
+- Cartesian product of parameter values
+- Cap total combinations by max_combinations
+- Use StrategyLab.run_backtest() for each parameter combination
+- Rank by sort_metric
+- Supported sort metrics:
+  - profit_factor
+  - net_profit_percent
+  - win_rate
+  - expectancy
+  - sharpe_like_score
+- If unsupported metric, default to profit_factor
+- Capture warnings when combinations are truncated
+
+============================================================
+STRATEGY PROMOTION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/promotion.py
+
+Implement:
+
+StrategyPromotionGate
+
+Method:
+- evaluate(result: BacktestResult) -> StrategyPromotionDecision
+
+Promotion gates:
+- ALLOW_STRATEGY_PROMOTION must be true
+- total_trades >= MIN_PROMOTION_TRADES
+- win_rate >= MIN_PROMOTION_WIN_RATE
+- profit_factor >= MIN_PROMOTION_PROFIT_FACTOR
+- max_drawdown_percent <= MAX_PROMOTION_DRAWDOWN_PERCENT
+- consecutive_losses <= MAX_PROMOTION_CONSECUTIVE_LOSSES
+
+Rules:
+- If ALLOW_STRATEGY_PROMOTION=false, approved=false
+- Return all gate pass/fail states
+- Never auto-enable live trading
+- Never disable Guardian risk system
+- Promotion only marks strategy as validated candidate
+
+============================================================
+REPORT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/reports.py
+
+Implement:
+
+BacktestReportBuilder
+
+Methods:
+- build_summary(result: BacktestResult) -> dict
+- build_markdown_report(result: BacktestResult) -> str
+- build_optimization_summary(result: OptimizationResult) -> dict
+
+Report must include:
+- Strategy name
+- Dataset
+- Symbol/timeframe
+- Parameters
+- Metrics
+- Risk notes
+- Warnings
+- Statement that results are not guaranteed future performance
+
+============================================================
+BACKTEST SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/backtesting/backtest_service.py
+
+Implement:
+
+BacktestService
+
+Methods:
+- get_status() -> dict
+- list_strategies() -> list[dict]
+- run_backtest(request: BacktestRequest) -> BacktestResult
+- get_results() -> list[BacktestResult]
+- get_result(result_id: str) -> BacktestResult | None
+- optimize(request: OptimizationRequest) -> OptimizationResult
+- get_optimization_results() -> list[OptimizationResult]
+- evaluate_promotion(result_id: str) -> StrategyPromotionDecision
+
+Storage:
+- In-memory result store for Phase 5
+- Replaceable later with database persistence
+
+Events:
+- backtest.started
+- backtest.completed
+- backtest.failed
+- optimizer.started
+- optimizer.completed
+- optimizer.failed
+- strategy.promotion.evaluated
+- strategy.promotion.approved
+- strategy.promotion.rejected
+
+============================================================
+JOE AGENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/agents/joe.py
+
+Joe Agent:
+
+- id: joe
+- name: Joe
+- role: strategy_lab_coordinator
+- status: idle/running/error
+
+Methods:
+- list_strategies()
+- run_backtest(request)
+- optimize(request)
+- evaluate_promotion(result_id)
+- health_check()
+
+Behavior:
+- Uses BacktestService
+- Emits events:
+  - joe.command.received
+  - joe.command.completed
+  - joe.command.failed
+
+Update agent registry so Joe appears in:
+
+GET /api/agents
+
+============================================================
+BACKTESTING API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/backtesting.py
+
+Required endpoints:
+
+1. GET /api/backtesting/status
+
+Returns:
+- enabled
+- available strategies
+- stored result count
+- stored optimization count
+- primary strategy candidate
+- promotion enabled
+
+2. GET /api/backtesting/strategies
+
+Returns strategy list.
+
+3. POST /api/backtesting/run
+
+Request:
+
+{
+  "strategy": "ob_aggressive",
+  "symbol": "XAUUSD",
+  "timeframe": "M5",
+  "dataset": "mock",
+  "initial_balance": 10000,
+  "risk_per_trade_percent": 1,
+  "commission_per_trade": 0,
+  "spread_points": 25,
+  "slippage_points": 5,
+  "parameters": {}
+}
+
+Returns:
+- BacktestResult
+
+4. GET /api/backtesting/results
+
+Returns recent backtest results.
+
+5. GET /api/backtesting/results/{result_id}
+
+Returns one result.
+
+6. POST /api/backtesting/optimize
+
+Request:
+
+{
+  "strategy": "ob_aggressive",
+  "symbol": "XAUUSD",
+  "timeframe": "M5",
+  "dataset": "mock",
+  "initial_balance": 10000,
+  "parameter_grid": {
+    "lookback": [8, 12, 16],
+    "risk_reward": [1.5, 2.0, 2.5],
+    "confidence_threshold": [0.5, 0.55, 0.6],
+    "atr_multiplier": [1.0, 1.2, 1.5]
+  },
+  "sort_metric": "profit_factor",
+  "max_combinations": 50
+}
+
+Returns:
+- OptimizationResult
+
+7. GET /api/backtesting/optimizations
+
+Returns optimization result list.
+
+8. POST /api/backtesting/results/{result_id}/promotion-check
+
+Returns:
+- StrategyPromotionDecision
+
+9. GET /api/backtesting/results/{result_id}/report
+
+Returns:
+- markdown report
+- summary object
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use the existing standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+============================================================
+SCHEDULER INTEGRATION REQUIREMENTS
+============================================================
+
+Update:
+
+backend/app/scheduler/scheduler_service.py
+
+The default backtest job must now call BacktestService.run_backtest() instead of returning only placeholder output.
+
+Default backtest job payload:
+
+{
+  "strategy": "ob_aggressive",
+  "symbol": "XAUUSD",
+  "timeframe": "M5",
+  "dataset": "mock",
+  "initial_balance": 10000,
+  "risk_per_trade_percent": 1,
+  "parameters": {}
+}
+
+Rules:
+- Scheduler must capture backtest success/failure in JobRunResult.
+- Scheduler must not promote a strategy automatically.
+- Scheduler must not enable live trading.
+- Scheduler emits normal job events.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add these event types:
+
+Backtesting:
+- backtest.started
+- backtest.completed
+- backtest.failed
+
+Optimizer:
+- optimizer.started
+- optimizer.completed
+- optimizer.failed
+
+Strategy:
+- strategy.signal.generated
+- strategy.signal.skipped
+- strategy.promotion.evaluated
+- strategy.promotion.approved
+- strategy.promotion.rejected
+
+Joe:
+- joe.command.received
+- joe.command.completed
+- joe.command.failed
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create tests:
+
+1. test_backtesting_models.py
+
+Test:
+- Candle validation
+- invalid OHLC rejects
+- StrategySignal direction validation
+- BacktestRequest defaults
+- OptimizationRequest max combinations
+
+2. test_dataset_provider.py
+
+Test:
+- mock dataset returns valid candles
+- mock dataset is deterministic
+- csv path traversal is rejected
+- missing csv returns clean error
+
+3. test_strategy_base.py
+
+Test:
+- strategy interface behavior
+- parameter validation merges defaults
+- hold signal allowed
+
+4. test_ob_aggressive_strategy.py
+
+Test:
+- strategy returns valid signals
+- parameters validate
+- confidence in range
+- no invalid SL/TP
+
+5. test_ob_conservative_strategy.py
+
+Test:
+- strategy returns valid signals
+- lower frequency than aggressive on same mock dataset
+- parameters validate
+
+6. test_trend_follow_strategy.py
+
+Test:
+- moving average windows validate
+- strategy returns hold until enough candles
+- cross signals are valid
+
+7. test_backtest_engine.py
+
+Test:
+- run mock backtest
+- trades generated
+- final balance calculated
+- no overlapping trades
+- invalid strategy returns clean error
+
+8. test_backtest_metrics.py
+
+Test:
+- zero trades safe
+- win rate calculation
+- profit factor calculation
+- drawdown calculation
+- consecutive losses calculation
+- monthly return table
+
+9. test_optimizer.py
+
+Test:
+- grid expansion
+- max combinations cap
+- optimization ranks results
+- unsupported sort metric defaults safely
+
+10. test_strategy_promotion.py
+
+Test:
+- promotion disabled blocks approval
+- insufficient trades blocks approval
+- high drawdown blocks approval
+- valid metrics approve only when ALLOW_STRATEGY_PROMOTION=true
+
+11. test_backtesting_api.py
+
+Test:
+- GET /api/backtesting/status
+- GET /api/backtesting/strategies
+- POST /api/backtesting/run
+- GET /api/backtesting/results
+- POST /api/backtesting/optimize
+- promotion check endpoint
+- report endpoint
+
+12. test_joe_agent.py
+
+Test:
+- Joe agent is registered
+- Joe lists strategies
+- Joe can run backtest
+- Joe emits events
+
+13. test_scheduler_backtest_integration.py
+
+Test:
+- scheduler backtest job calls BacktestService
+- backtest job returns BacktestResult summary
+- scheduler does not promote strategy automatically
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 5 overview
+- Joe Agent role
+- Strategy Lab architecture
+- Dataset support
+- Strategy variants
+- Backtest metrics
+- Parameter optimizer
+- Strategy promotion gate
+- Scheduler backtest integration
+- API examples
+- Test commands
+- Safety notes
+
+Add curl examples:
+
+List strategies:
+
+curl http://localhost:8000/api/backtesting/strategies
+
+Run backtest:
+
+curl -X POST http://localhost:8000/api/backtesting/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy": "ob_aggressive",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "dataset": "mock",
+    "initial_balance": 10000,
+    "risk_per_trade_percent": 1,
+    "parameters": {}
+  }'
+
+Run optimization:
+
+curl -X POST http://localhost:8000/api/backtesting/optimize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy": "ob_aggressive",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "dataset": "mock",
+    "initial_balance": 10000,
+    "parameter_grid": {
+      "lookback": [8, 12, 16],
+      "risk_reward": [1.5, 2.0, 2.5],
+      "confidence_threshold": [0.5, 0.55, 0.6],
+      "atr_multiplier": [1.0, 1.2, 1.5]
+    },
+    "sort_metric": "profit_factor",
+    "max_combinations": 50
+  }'
+
+Promotion check:
+
+curl -X POST http://localhost:8000/api/backtesting/results/RESULT_ID/promotion-check
+
+Get report:
+
+curl http://localhost:8000/api/backtesting/results/RESULT_ID/report
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 5 is complete only when:
+
+- Joe agent is registered.
+- Backtest service exists.
+- Strategy lab exists.
+- Mock dataset provider works.
+- CSV dataset loader exists and is safe.
+- `ob_aggressive` strategy exists.
+- `ob_conservative` strategy exists.
+- `trend_follow` strategy exists.
+- Backtest engine simulates trades.
+- Metrics are calculated correctly.
+- Optimizer runs parameter sweeps.
+- Optimizer caps workload safely.
+- Strategy promotion gate works.
+- Promotion is disabled by default.
+- Scheduler backtest job calls real BacktestService.
+- Backtesting API endpoints work.
+- Event logs are created for backtest actions.
+- Existing Phase 1–4 tests still pass.
+- New Phase 5 tests pass.
+- README includes Phase 5 documentation.
+- Live trading remains disabled by default.
+- DRY_RUN remains true by default.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Run instructions
+8. Test instructions
+9. Acceptance checklist
+10. Known limitations
+11. Phase 6 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1, Phase 2, Phase 3, or Phase 4 behavior.
+- Keep all existing tests passing.
+- Use typed Python where reasonable.
+- Use Pydantic models.
+- Use safe defaults.
+- Never hardcode credentials.
+- Never enable live trading by default.
+- Never treat backtest results as guaranteed future performance.
+- Never promote a strategy automatically unless the explicit promotion flag is enabled and all gates pass.
+- Keep in-memory result store replaceable for future database persistence.
+- Keep strategy modules replaceable and deterministic.
+- Keep code clean enough for Phase 6 Content Pipeline integration.
+
+Now generate the complete Phase 5 implementation.

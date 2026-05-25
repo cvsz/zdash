@@ -1,0 +1,1938 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 17 · AUTONOMOUS ENTERPRISE OPTIMIZATION + PREDICTIVE SRE + GLOBAL PARTNER ECOSYSTEM AUTOMATION
+Predictive Reliability + Capacity Planning + Cost Optimization + Partner Growth Intelligence + Executive Command Center
+
+Do not rebuild Phase 1–16 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–16:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+- Sovereign Enterprise Grid
+- On-Prem Appliance
+- Edge Runners
+- Data Residency Enforcement
+- Global Partner Operations
+
+============================================================
+PHASE 17 OBJECTIVE
+============================================================
+
+Build the autonomous enterprise optimization layer for zDash.
+
+Main goals:
+
+1. Add predictive SRE engine
+2. Add incident prediction and anomaly forecasting
+3. Add SLO error-budget burn forecasting
+4. Add capacity planning engine
+5. Add workload placement recommendation engine
+6. Add cloud/infra cost optimization shell
+7. Add FinOps dashboard and savings recommendations
+8. Add customer health prediction
+9. Add churn/expansion signal model
+10. Add partner growth intelligence
+11. Add marketplace ranking and promotion recommendations
+12. Add reseller performance analytics
+13. Add regional expansion recommendation engine
+14. Add enterprise renewal and account risk scoring
+15. Add executive command center API
+16. Add quarterly business review report generator
+17. Add optimization action approval workflow
+18. Add autonomous recommendation queue
+19. Add safe execution planner for approved optimizations
+20. Add tests, docs, runbooks, and final acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Do not bypass data residency enforcement.
+- Predictive systems must be advisory by default.
+- Autonomous optimization must not execute destructive changes without approval.
+- Cost optimization must not delete resources by default.
+- Capacity planning must not scale production systems automatically unless explicitly approved.
+- Partner growth automation must not send real outreach or modify billing by default.
+- Marketplace ranking must be transparent and auditable.
+- No secrets, credentials, tokens, broker credentials, raw prompts, raw customer data, or private payloads may be logged, exported, synced, or displayed.
+- All prediction outputs must include confidence and explanation.
+- Forecasts are estimates, not guarantees.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/predictive_sre/
+  __init__.py
+  models.py
+  anomaly_detector.py
+  incident_predictor.py
+  slo_forecaster.py
+  capacity_planner.py
+  reliability_advisor.py
+  error_budget_service.py
+  sre_report_service.py
+
+backend/app/optimization/
+  __init__.py
+  models.py
+  recommendation_engine.py
+  approval_service.py
+  execution_planner.py
+  cost_optimizer.py
+  workload_placement.py
+  finops_service.py
+  optimization_audit.py
+
+backend/app/growth_intelligence/
+  __init__.py
+  models.py
+  customer_health_predictor.py
+  churn_signal_service.py
+  expansion_signal_service.py
+  partner_growth_service.py
+  reseller_performance.py
+  marketplace_ranking.py
+  regional_expansion.py
+  account_review_service.py
+
+backend/app/executive/
+  __init__.py
+  models.py
+  command_center_service.py
+  qbr_report_service.py
+  kpi_service.py
+  portfolio_risk_service.py
+  executive_summary.py
+
+backend/app/api/predictive_sre.py
+backend/app/api/optimization.py
+backend/app/api/growth_intelligence.py
+backend/app/api/executive.py
+
+frontend/src/pages/PredictiveSRE.tsx
+frontend/src/pages/OptimizationCenter.tsx
+frontend/src/pages/FinOps.tsx
+frontend/src/pages/GrowthIntelligence.tsx
+frontend/src/pages/PartnerGrowth.tsx
+frontend/src/pages/ExecutiveCommand.tsx
+frontend/src/pages/QBRReports.tsx
+
+frontend/src/components/predictive-sre/
+  AnomalyForecastPanel.tsx
+  IncidentPredictionTable.tsx
+  ErrorBudgetBurnChart.tsx
+  SLOForecastCard.tsx
+  CapacityPlanPanel.tsx
+  ReliabilityAdvisorPanel.tsx
+  SREReportPanel.tsx
+
+frontend/src/components/optimization/
+  RecommendationQueue.tsx
+  OptimizationApprovalPanel.tsx
+  ExecutionPlanViewer.tsx
+  CostOptimizationPanel.tsx
+  WorkloadPlacementPanel.tsx
+  FinOpsSavingsCard.tsx
+  OptimizationAuditTable.tsx
+
+frontend/src/components/growth-intelligence/
+  CustomerHealthPredictionCard.tsx
+  ChurnSignalTable.tsx
+  ExpansionSignalTable.tsx
+  PartnerGrowthPanel.tsx
+  ResellerPerformanceTable.tsx
+  MarketplaceRankingPanel.tsx
+  RegionalExpansionMap.tsx
+  AccountRiskPanel.tsx
+
+frontend/src/components/executive/
+  ExecutiveKPICard.tsx
+  CommandCenterGrid.tsx
+  PortfolioRiskPanel.tsx
+  QBRReportBuilder.tsx
+  ExecutiveSummaryPanel.tsx
+  GlobalReadinessScore.tsx
+
+frontend/src/hooks/usePredictiveSRE.ts
+frontend/src/hooks/useOptimization.ts
+frontend/src/hooks/useGrowthIntelligence.ts
+frontend/src/hooks/useExecutive.ts
+
+scripts/
+  run-predictive-sre-check.sh
+  generate-capacity-plan.sh
+  generate-finops-report.sh
+  run-optimization-dry-run.sh
+  generate-growth-intelligence-report.sh
+  generate-qbr-report.sh
+  executive-command-center-smoke-test.sh
+
+docs/
+  predictive-sre/
+    PREDICTIVE_SRE_MODEL.md
+    INCIDENT_PREDICTION_MODEL.md
+    SLO_ERROR_BUDGET_FORECASTING.md
+    CAPACITY_PLANNING_MODEL.md
+    RELIABILITY_ADVISOR.md
+  optimization/
+    AUTONOMOUS_OPTIMIZATION_MODEL.md
+    OPTIMIZATION_APPROVAL_WORKFLOW.md
+    FINOPS_MODEL.md
+    WORKLOAD_PLACEMENT_MODEL.md
+    SAFE_EXECUTION_PLANNER.md
+  growth-intelligence/
+    CUSTOMER_HEALTH_PREDICTION.md
+    CHURN_EXPANSION_SIGNALS.md
+    PARTNER_GROWTH_INTELLIGENCE.md
+    MARKETPLACE_RANKING_MODEL.md
+    REGIONAL_EXPANSION_MODEL.md
+  executive/
+    EXECUTIVE_COMMAND_CENTER.md
+    QBR_REPORT_MODEL.md
+    PORTFOLIO_RISK_MODEL.md
+    ENTERPRISE_KPI_MODEL.md
+  runbooks/
+    PREDICTIVE_SRE_RUNBOOK.md
+    OPTIMIZATION_APPROVAL_RUNBOOK.md
+    FINOPS_REVIEW_RUNBOOK.md
+    CUSTOMER_HEALTH_ESCALATION_RUNBOOK.md
+    PARTNER_GROWTH_RUNBOOK.md
+    EXECUTIVE_REVIEW_RUNBOOK.md
+
+backend/app/tests/
+  test_predictive_sre_models.py
+  test_anomaly_detector.py
+  test_incident_predictor.py
+  test_slo_forecaster.py
+  test_capacity_planner.py
+  test_reliability_advisor.py
+  test_error_budget_service.py
+  test_sre_report_service.py
+  test_optimization_models.py
+  test_recommendation_engine.py
+  test_optimization_approval_service.py
+  test_execution_planner.py
+  test_cost_optimizer.py
+  test_workload_placement.py
+  test_finops_service.py
+  test_optimization_audit.py
+  test_growth_intelligence_models.py
+  test_customer_health_predictor.py
+  test_churn_signal_service.py
+  test_expansion_signal_service.py
+  test_partner_growth_service.py
+  test_reseller_performance.py
+  test_marketplace_ranking.py
+  test_regional_expansion.py
+  test_account_review_service.py
+  test_executive_models.py
+  test_command_center_service.py
+  test_qbr_report_service.py
+  test_kpi_service.py
+  test_portfolio_risk_service.py
+  test_executive_summary.py
+  test_predictive_sre_api.py
+  test_optimization_api.py
+  test_growth_intelligence_api.py
+  test_executive_api.py
+  test_phase17_tenant_isolation.py
+  test_phase17_safety_gates.py
+
+frontend/src/tests/
+  PredictiveSRE.test.tsx
+  OptimizationCenter.test.tsx
+  FinOps.test.tsx
+  GrowthIntelligence.test.tsx
+  PartnerGrowth.test.tsx
+  ExecutiveCommand.test.tsx
+  QBRReports.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/billing/usage_meter.py
+backend/app/billing/entitlement_service.py
+backend/app/governance/policy_engine.py
+backend/app/ga/final_safety_gate.py
+backend/app/global_ops/cross_region_observability.py
+backend/app/ops/incident_service.py
+backend/app/ops/sla_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+PREDICTIVE_SRE_ENABLED=true
+PREDICTIVE_SRE_MODE=advisory
+PREDICTIVE_SRE_DRY_RUN=true
+PREDICTIVE_SRE_FAIL_CLOSED=true
+PREDICTIVE_SRE_MIN_CONFIDENCE=0.60
+
+ANOMALY_DETECTION_ENABLED=true
+INCIDENT_PREDICTION_ENABLED=true
+SLO_FORECASTING_ENABLED=true
+ERROR_BUDGET_FORECASTING_ENABLED=true
+CAPACITY_PLANNING_ENABLED=true
+RELIABILITY_ADVISOR_ENABLED=true
+
+OPTIMIZATION_CENTER_ENABLED=true
+OPTIMIZATION_MODE=advisory
+OPTIMIZATION_DRY_RUN=true
+OPTIMIZATION_REQUIRE_APPROVAL=true
+OPTIMIZATION_EXECUTION_ENABLED=false
+OPTIMIZATION_FAIL_CLOSED=true
+
+FINOPS_ENABLED=true
+COST_OPTIMIZATION_ENABLED=true
+COST_OPTIMIZATION_DRY_RUN=true
+WORKLOAD_PLACEMENT_ENABLED=true
+WORKLOAD_PLACEMENT_DRY_RUN=true
+
+GROWTH_INTELLIGENCE_ENABLED=true
+CUSTOMER_HEALTH_PREDICTION_ENABLED=true
+CHURN_SIGNAL_ENABLED=true
+EXPANSION_SIGNAL_ENABLED=true
+PARTNER_GROWTH_ENABLED=true
+RESELLER_PERFORMANCE_ENABLED=true
+MARKETPLACE_RANKING_ENABLED=true
+REGIONAL_EXPANSION_RECOMMENDER_ENABLED=true
+
+EXECUTIVE_COMMAND_CENTER_ENABLED=true
+QBR_REPORTS_ENABLED=true
+EXECUTIVE_SUMMARY_ENABLED=true
+PORTFOLIO_RISK_ENABLED=true
+
+PREDICTION_DATA_RETENTION_DAYS=180
+OPTIMIZATION_RECOMMENDATION_RETENTION_DAYS=180
+
+Rules:
+- Predictive SRE must be advisory by default.
+- Optimization execution must be disabled by default.
+- Cost optimization must be dry-run by default.
+- Workload placement must be dry-run by default.
+- Forecast confidence must be included in all predictive outputs.
+- Low-confidence predictions must be marked as advisory-only.
+- No automated optimization may execute unless approved.
+- No optimization may violate residency, tenant isolation, billing, governance, or GA safety gates.
+- No raw customer payloads, secrets, or credentials may be used in prediction outputs.
+
+============================================================
+PREDICTIVE SRE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. PredictionStatus
+
+Allowed values:
+- generated
+- warning
+- low_confidence
+- blocked
+- expired
+
+2. PredictionSeverity
+
+Allowed values:
+- info
+- warning
+- critical
+- emergency
+
+3. ForecastHorizon
+
+Allowed values:
+- one_hour
+- six_hours
+- one_day
+- seven_days
+- thirty_days
+
+4. AnomalyForecast
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- source
+- metric
+- severity
+- confidence
+- horizon
+- baseline
+- forecast_value
+- anomaly_score
+- explanation
+- recommended_actions
+- created_at
+- expires_at
+
+5. IncidentPrediction
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- predicted_incident_type
+- severity
+- confidence
+- horizon
+- affected_services
+- likely_causes
+- recommended_prevention
+- evidence
+- status
+- created_at
+- expires_at
+
+6. SLOForecast
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- slo_name
+- current_value
+- forecast_value
+- target_value
+- breach_probability
+- confidence
+- horizon
+- explanation
+- created_at
+
+7. ErrorBudgetForecast
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- slo_name
+- current_burn_rate
+- forecast_burn_rate
+- remaining_budget_percent
+- exhaustion_eta
+- confidence
+- recommended_actions
+- created_at
+
+8. CapacityPlan
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- resource_type
+- current_capacity
+- forecast_demand
+- recommended_capacity
+- confidence
+- horizon
+- cost_impact_estimate
+- risk_if_no_action
+- created_at
+
+9. ReliabilityRecommendation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- category
+- severity
+- confidence
+- rationale
+- actions
+- safety_impact
+- cost_impact
+- status
+- created_at
+
+============================================================
+PREDICTIVE SRE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/predictive_sre/anomaly_detector.py
+backend/app/predictive_sre/incident_predictor.py
+backend/app/predictive_sre/slo_forecaster.py
+backend/app/predictive_sre/capacity_planner.py
+backend/app/predictive_sre/reliability_advisor.py
+backend/app/predictive_sre/error_budget_service.py
+backend/app/predictive_sre/sre_report_service.py
+
+AnomalyDetector methods:
+- detect_metric_anomalies(tenant_context, metrics)
+- forecast_anomalies(tenant_context, horizon)
+- score_anomaly(metric_series)
+- list_forecasts()
+
+IncidentPredictor methods:
+- predict_incidents(tenant_context, horizon)
+- score_incident_risk(signals)
+- list_predictions()
+- convert_prediction_to_incident(prediction_id)
+
+Rules:
+- Converting prediction to incident requires permission.
+- Prediction must not create incident automatically unless configured.
+- Advisory mode only suggests.
+
+SLOForecaster methods:
+- forecast_slo(tenant_context, slo_id, horizon)
+- list_slo_forecasts()
+- detect_breach_probability()
+
+ErrorBudgetService methods:
+- calculate_current_burn()
+- forecast_burn()
+- list_error_budget_forecasts()
+- generate_error_budget_report()
+
+CapacityPlanner methods:
+- generate_capacity_plan(tenant_context, resource_type, horizon)
+- estimate_resource_demand()
+- estimate_cost_impact()
+- list_capacity_plans()
+
+ReliabilityAdvisor methods:
+- generate_recommendations(tenant_context)
+- prioritize_recommendations()
+- explain_recommendation()
+- list_recommendations()
+
+SREReportService methods:
+- generate_sre_report(tenant_context)
+- build_markdown_report(report_id)
+- list_reports()
+
+Rules:
+- All outputs tenant-scoped.
+- No raw sensitive payloads.
+- Confidence and explanation required.
+- Low confidence predictions must not trigger automation.
+
+============================================================
+OPTIMIZATION MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. OptimizationCategory
+
+Allowed values:
+- reliability
+- cost
+- capacity
+- performance
+- security
+- compliance
+- marketplace
+- partner
+- customer_success
+
+2. OptimizationStatus
+
+Allowed values:
+- proposed
+- pending_approval
+- approved
+- rejected
+- planned
+- executed
+- failed
+- blocked
+- skipped
+
+3. OptimizationRiskLevel
+
+Allowed values:
+- low
+- medium
+- high
+- critical
+
+4. OptimizationRecommendation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- category
+- title
+- description
+- expected_benefit
+- risk_level
+- confidence
+- estimated_savings
+- estimated_effort
+- required_permissions
+- policy_checks
+- status
+- created_at
+- updated_at
+
+5. OptimizationApproval
+
+Fields:
+- id
+- recommendation_id
+- requested_by
+- reviewed_by
+- status
+- reason
+- notes
+- created_at
+- reviewed_at
+
+6. ExecutionPlan
+
+Fields:
+- id
+- recommendation_id
+- dry_run
+- steps
+- rollback_plan
+- residency_check_passed
+- governance_check_passed
+- safety_gate_passed
+- approved_by
+- status
+- created_at
+- executed_at
+
+7. CostOptimizationFinding
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- resource_type
+- finding_type
+- current_cost_estimate
+- optimized_cost_estimate
+- potential_savings
+- confidence
+- recommendation
+- dry_run
+- created_at
+
+8. WorkloadPlacementRecommendation
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- workload_name
+- current_region
+- recommended_region
+- residency_allowed
+- cost_score
+- latency_score
+- reliability_score
+- explanation
+- status
+- created_at
+
+============================================================
+OPTIMIZATION SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/optimization/recommendation_engine.py
+backend/app/optimization/approval_service.py
+backend/app/optimization/execution_planner.py
+backend/app/optimization/cost_optimizer.py
+backend/app/optimization/workload_placement.py
+backend/app/optimization/finops_service.py
+backend/app/optimization/optimization_audit.py
+
+RecommendationEngine methods:
+- generate_recommendations(tenant_context)
+- list_recommendations()
+- get_recommendation()
+- mark_recommendation_status()
+
+ApprovalService methods:
+- request_approval(recommendation_id, reason)
+- approve(recommendation_id, reviewed_by, notes)
+- reject(recommendation_id, reviewed_by, notes)
+
+ExecutionPlanner methods:
+- create_plan(recommendation_id)
+- validate_plan(plan_id)
+- dry_run_plan(plan_id)
+- execute_approved_plan(plan_id)
+
+Rules:
+- Execution disabled by default.
+- Execution requires approved recommendation.
+- Execution requires governance, residency, billing, and final safety gate pass.
+- Execution must never enable live trading, real IoT, or real social posting.
+- Destructive steps require explicit approval.
+
+CostOptimizer methods:
+- find_cost_optimizations()
+- estimate_savings()
+- list_findings()
+- generate_finops_report()
+
+WorkloadPlacementService methods:
+- recommend_placement()
+- evaluate_region()
+- check_residency()
+- list_recommendations()
+
+FinOpsService methods:
+- get_cost_summary()
+- get_savings_summary()
+- generate_finops_report()
+- list_cost_anomalies()
+
+OptimizationAudit methods:
+- record_optimization_event()
+- list_optimization_audit()
+- export_optimization_audit()
+
+============================================================
+GROWTH INTELLIGENCE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. CustomerRiskLevel
+
+Allowed values:
+- healthy
+- watch
+- at_risk
+- critical
+
+2. GrowthSignalType
+
+Allowed values:
+- churn_risk
+- expansion_opportunity
+- partner_opportunity
+- marketplace_opportunity
+- regional_opportunity
+- renewal_risk
+
+3. SignalStatus
+
+Allowed values:
+- new
+- reviewed
+- actioned
+- dismissed
+- expired
+
+4. CustomerHealthPrediction
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- customer_org_id
+- risk_level
+- score
+- confidence
+- drivers
+- recommended_actions
+- created_at
+
+5. ChurnSignal
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- customer_org_id
+- risk_score
+- confidence
+- reasons
+- recommended_actions
+- status
+- created_at
+
+6. ExpansionSignal
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- customer_org_id
+- opportunity_score
+- confidence
+- suggested_plan
+- reasons
+- recommended_actions
+- status
+- created_at
+
+7. PartnerGrowthSignal
+
+Fields:
+- id
+- partner_id
+- region
+- signal_type
+- score
+- confidence
+- reasons
+- recommended_actions
+- status
+- created_at
+
+8. MarketplaceRankingRecommendation
+
+Fields:
+- id
+- listing_id
+- current_rank
+- recommended_rank
+- quality_score
+- trust_score
+- growth_score
+- explanation
+- status
+- created_at
+
+9. RegionalExpansionRecommendation
+
+Fields:
+- id
+- region
+- opportunity_score
+- readiness_score
+- compliance_risk
+- support_readiness
+- marketplace_readiness
+- recommended_actions
+- created_at
+
+10. AccountReview
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- customer_org_id
+- review_type
+- health_score
+- risks
+- opportunities
+- recommended_actions
+- generated_at
+
+============================================================
+GROWTH INTELLIGENCE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/growth_intelligence/customer_health_predictor.py
+backend/app/growth_intelligence/churn_signal_service.py
+backend/app/growth_intelligence/expansion_signal_service.py
+backend/app/growth_intelligence/partner_growth_service.py
+backend/app/growth_intelligence/reseller_performance.py
+backend/app/growth_intelligence/marketplace_ranking.py
+backend/app/growth_intelligence/regional_expansion.py
+backend/app/growth_intelligence/account_review_service.py
+
+CustomerHealthPredictor methods:
+- predict_customer_health()
+- list_predictions()
+- explain_prediction()
+
+ChurnSignalService methods:
+- detect_churn_signals()
+- list_churn_signals()
+- mark_signal_status()
+
+ExpansionSignalService methods:
+- detect_expansion_signals()
+- list_expansion_signals()
+- mark_signal_status()
+
+PartnerGrowthService methods:
+- analyze_partner_growth()
+- list_partner_signals()
+- recommend_partner_actions()
+
+ResellerPerformanceService methods:
+- summarize_reseller_performance()
+- rank_resellers()
+- detect_reseller_risks()
+
+MarketplaceRankingService methods:
+- generate_ranking_recommendations()
+- explain_ranking()
+- apply_ranking_dry_run()
+
+Rules:
+- Marketplace ranking changes are dry-run/recommendation only by default.
+- Ranking must be explainable and auditable.
+- Certification and quality score must influence rank.
+
+RegionalExpansionService methods:
+- evaluate_region_opportunity()
+- list_regional_recommendations()
+- generate_expansion_report()
+
+AccountReviewService methods:
+- generate_account_review()
+- generate_qbr_inputs()
+- list_account_reviews()
+
+Rules:
+- No legal/tax advice.
+- No automatic customer outreach.
+- No automatic billing changes.
+- No raw customer payloads in reports.
+
+============================================================
+EXECUTIVE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. ExecutiveKPI
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- category
+- value
+- target
+- trend
+- status
+- explanation
+- calculated_at
+
+2. CommandCenterSnapshot
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- health_score
+- revenue_summary
+- usage_summary
+- reliability_summary
+- security_summary
+- growth_summary
+- marketplace_summary
+- partner_summary
+- regional_summary
+- blockers
+- recommendations
+- created_at
+
+3. PortfolioRiskSummary
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- risk_score
+- top_risks
+- risk_trends
+- recommended_actions
+- created_at
+
+4. QBRReport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- customer_org_id
+- period
+- status
+- executive_summary
+- kpis
+- risks
+- wins
+- recommendations
+- file_path
+- generated_at
+
+============================================================
+EXECUTIVE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/executive/command_center_service.py
+backend/app/executive/qbr_report_service.py
+backend/app/executive/kpi_service.py
+backend/app/executive/portfolio_risk_service.py
+backend/app/executive/executive_summary.py
+
+CommandCenterService methods:
+- get_snapshot()
+- generate_snapshot()
+- list_snapshots()
+
+KPIService methods:
+- calculate_kpis()
+- list_kpis()
+- explain_kpi()
+
+PortfolioRiskService methods:
+- calculate_portfolio_risk()
+- list_risk_summaries()
+- generate_risk_report()
+
+QBRReportService methods:
+- generate_qbr_report()
+- list_qbr_reports()
+- get_qbr_report()
+- build_markdown_report()
+
+ExecutiveSummaryService methods:
+- generate_summary()
+- summarize_blockers()
+- summarize_recommendations()
+- summarize_next_actions()
+
+Rules:
+- Executive summaries must be concise and evidence-based.
+- QBR reports must not include secrets.
+- Forecasts must include confidence and limitations.
+- Commercial/legal claims must remain template/advisory only.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/predictive_sre.py
+
+Endpoints:
+
+GET /api/predictive-sre/status
+POST /api/predictive-sre/anomalies/forecast
+GET /api/predictive-sre/anomalies
+POST /api/predictive-sre/incidents/predict
+GET /api/predictive-sre/incidents/predictions
+POST /api/predictive-sre/incidents/predictions/{prediction_id}/convert
+POST /api/predictive-sre/slo/forecast
+GET /api/predictive-sre/slo/forecasts
+POST /api/predictive-sre/error-budget/forecast
+GET /api/predictive-sre/error-budget
+POST /api/predictive-sre/capacity/plan
+GET /api/predictive-sre/capacity/plans
+POST /api/predictive-sre/reliability/recommend
+GET /api/predictive-sre/reliability/recommendations
+POST /api/predictive-sre/report
+GET /api/predictive-sre/reports
+
+Create:
+
+backend/app/api/optimization.py
+
+Endpoints:
+
+GET /api/optimization/status
+POST /api/optimization/recommendations/generate
+GET /api/optimization/recommendations
+GET /api/optimization/recommendations/{recommendation_id}
+POST /api/optimization/recommendations/{recommendation_id}/approval/request
+POST /api/optimization/recommendations/{recommendation_id}/approval/approve
+POST /api/optimization/recommendations/{recommendation_id}/approval/reject
+POST /api/optimization/recommendations/{recommendation_id}/plan
+POST /api/optimization/plans/{plan_id}/dry-run
+POST /api/optimization/plans/{plan_id}/execute
+POST /api/optimization/cost/findings/generate
+GET /api/optimization/cost/findings
+GET /api/optimization/finops/summary
+POST /api/optimization/finops/report
+POST /api/optimization/workload-placement/recommend
+GET /api/optimization/workload-placement/recommendations
+GET /api/optimization/audit
+
+Create:
+
+backend/app/api/growth_intelligence.py
+
+Endpoints:
+
+GET /api/growth-intelligence/status
+POST /api/growth-intelligence/customer-health/predict
+GET /api/growth-intelligence/customer-health
+POST /api/growth-intelligence/churn/detect
+GET /api/growth-intelligence/churn/signals
+POST /api/growth-intelligence/expansion/detect
+GET /api/growth-intelligence/expansion/signals
+POST /api/growth-intelligence/partner/analyze
+GET /api/growth-intelligence/partner/signals
+GET /api/growth-intelligence/resellers/performance
+POST /api/growth-intelligence/marketplace/ranking/recommend
+GET /api/growth-intelligence/marketplace/ranking
+POST /api/growth-intelligence/regional-expansion/evaluate
+GET /api/growth-intelligence/regional-expansion
+POST /api/growth-intelligence/account-review/generate
+GET /api/growth-intelligence/account-review
+
+Create:
+
+backend/app/api/executive.py
+
+Endpoints:
+
+GET /api/executive/status
+POST /api/executive/command-center/snapshot
+GET /api/executive/command-center/snapshot
+GET /api/executive/kpis
+POST /api/executive/kpis/calculate
+POST /api/executive/portfolio-risk/calculate
+GET /api/executive/portfolio-risk
+POST /api/executive/qbr/generate
+GET /api/executive/qbr
+GET /api/executive/qbr/{report_id}
+GET /api/executive/qbr/{report_id}/markdown
+POST /api/executive/summary/generate
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Standard response shape required.
+- All recommendations must be advisory by default.
+- Execution endpoints must be disabled unless explicitly configured and approved.
+- No endpoint may expose raw secrets or raw customer payloads.
+
+============================================================
+FRONTEND PHASE 17 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /predictive-sre
+- /optimization
+- /finops
+- /growth-intelligence
+- /partner-growth
+- /executive-command
+- /qbr-reports
+
+Update sidebar:
+- Predictive SRE
+- Optimization Center
+- FinOps
+- Growth Intelligence
+- Partner Growth
+- Executive Command
+- QBR Reports
+
+1. Predictive SRE Page
+
+Must show:
+- Anomaly forecasts
+- Incident predictions
+- SLO forecast cards
+- Error budget burn chart
+- Capacity planning panel
+- Reliability recommendations
+- Confidence indicators
+- Advisory-mode banner
+
+2. Optimization Center Page
+
+Must show:
+- Recommendation queue
+- Approval workflow
+- Execution plan viewer
+- Dry-run execution panel
+- Safety gate status
+- Optimization audit table
+
+Safety:
+- Execute button disabled unless approved and execution enabled.
+- Show advisory/dry-run state.
+
+3. FinOps Page
+
+Must show:
+- Cost summary
+- Potential savings
+- Cost anomaly findings
+- Optimization recommendations
+- Workload placement suggestions
+- Dry-run banner
+
+4. Growth Intelligence Page
+
+Must show:
+- Customer health predictions
+- Churn signals
+- Expansion signals
+- Account risk panel
+- Regional expansion recommendations
+
+5. Partner Growth Page
+
+Must show:
+- Partner growth signals
+- Reseller performance
+- Marketplace ranking recommendations
+- Partner action recommendations
+- Ranking explanation panel
+
+6. Executive Command Page
+
+Must show:
+- Executive KPI grid
+- Command center snapshot
+- Portfolio risk summary
+- Global readiness score
+- Top blockers
+- Top recommendations
+- Next action summary
+
+7. QBR Reports Page
+
+Must show:
+- QBR report builder
+- Report list
+- Markdown preview
+- Customer risks
+- Customer wins
+- Recommendations
+- Confidence/limitations note
+
+Frontend safety:
+- Never display secrets.
+- Forecasts must show confidence.
+- Recommendations must show advisory status.
+- Optimization execution must be approval-gated.
+- No automatic outreach or billing changes.
+- Commercial forecasts must be marked as estimates.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Predictive SRE:
+- predictive_sre.read
+- predictive_sre.run_forecasts
+- predictive_sre.convert_prediction
+
+Optimization:
+- optimization.read
+- optimization.generate
+- optimization.approve
+- optimization.execute
+- optimization.read_audit
+
+Growth Intelligence:
+- growth.read
+- growth.generate
+- growth.manage_signals
+- growth.marketplace_rank
+
+Executive:
+- executive.read
+- executive.generate_reports
+- executive.generate_qbr
+- executive.read_portfolio_risk
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- predictive_sre.read
+- predictive_sre.run_forecasts
+- predictive_sre.convert_prediction
+- optimization.read
+- optimization.generate
+- optimization.approve
+- growth.read
+- growth.generate
+- growth.manage_signals
+- executive.read
+- executive.generate_reports
+- executive.generate_qbr
+
+analyst:
+- predictive_sre.read
+- predictive_sre.run_forecasts
+- optimization.read
+- growth.read
+- growth.generate
+- executive.read
+- executive.generate_reports
+
+viewer:
+- predictive_sre.read limited
+- optimization.read limited
+- growth.read limited
+- executive.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- anomaly_forecasts
+- incident_predictions
+- slo_forecasts
+- error_budget_forecasts
+- capacity_plans
+- reliability_recommendations
+- sre_reports
+- optimization_recommendations
+- optimization_approvals
+- execution_plans
+- cost_optimization_findings
+- workload_placement_recommendations
+- optimization_audit_events
+- customer_health_predictions
+- churn_signals
+- expansion_signals
+- partner_growth_signals
+- marketplace_ranking_recommendations
+- regional_expansion_recommendations
+- account_reviews
+- executive_kpis
+- command_center_snapshots
+- portfolio_risk_summaries
+- qbr_reports
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- No secrets.
+- No raw customer payloads.
+- No raw prompts.
+- Prediction evidence must be summarized/redacted.
+- Optimization plans must include safety gate fields.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Predictive SRE:
+- predictive_sre.anomaly.forecasted
+- predictive_sre.incident.predicted
+- predictive_sre.incident.converted
+- predictive_sre.slo.forecasted
+- predictive_sre.error_budget.forecasted
+- predictive_sre.capacity.plan_created
+- predictive_sre.reliability.recommendation_created
+- predictive_sre.report.generated
+
+Optimization:
+- optimization.recommendation.created
+- optimization.approval.requested
+- optimization.approval.approved
+- optimization.approval.rejected
+- optimization.plan.created
+- optimization.plan.dry_run
+- optimization.plan.executed
+- optimization.plan.blocked
+- optimization.cost.finding.created
+- optimization.finops.report.generated
+- optimization.workload_placement.recommended
+
+Growth Intelligence:
+- growth.customer_health.predicted
+- growth.churn.signal_created
+- growth.expansion.signal_created
+- growth.partner.signal_created
+- growth.reseller.performance_calculated
+- growth.marketplace.ranking_recommended
+- growth.regional_expansion.recommended
+- growth.account_review.generated
+
+Executive:
+- executive.command_snapshot.generated
+- executive.kpi.calculated
+- executive.portfolio_risk.calculated
+- executive.qbr.generated
+- executive.summary.generated
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- PREDICTIVE_SRE_DISABLED
+- PREDICTION_LOW_CONFIDENCE
+- INCIDENT_PREDICTION_NOT_FOUND
+- SLO_FORECAST_FAILED
+- CAPACITY_PLAN_FAILED
+- OPTIMIZATION_DISABLED
+- OPTIMIZATION_NOT_FOUND
+- OPTIMIZATION_APPROVAL_REQUIRED
+- OPTIMIZATION_EXECUTION_DISABLED
+- OPTIMIZATION_BLOCKED_BY_POLICY
+- COST_OPTIMIZATION_FAILED
+- WORKLOAD_PLACEMENT_BLOCKED
+- GROWTH_INTELLIGENCE_DISABLED
+- SIGNAL_NOT_FOUND
+- MARKETPLACE_RANKING_BLOCKED
+- EXECUTIVE_DISABLED
+- QBR_REPORT_NOT_FOUND
+- FORECAST_DATA_INSUFFICIENT
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_predictive_sre_models.py
+- prediction status enum
+- forecast horizon enum
+- confidence validation
+- forecast model validation
+
+2. test_anomaly_detector.py
+- anomaly score calculated
+- forecast generated
+- low-confidence handled
+- tenant scoped
+
+3. test_incident_predictor.py
+- incident prediction generated
+- evidence summarized
+- prediction conversion requires permission
+- advisory mode does not auto-create incident
+
+4. test_slo_forecaster.py
+- SLO forecast generated
+- breach probability calculated
+- missing data warning
+
+5. test_capacity_planner.py
+- capacity plan generated
+- cost impact estimated
+- no automatic scaling
+
+6. test_reliability_advisor.py
+- recommendations generated
+- prioritized by severity/confidence
+- unsafe actions excluded
+
+7. test_error_budget_service.py
+- burn rate calculated
+- exhaustion ETA handled safely
+- report generated
+
+8. test_sre_report_service.py
+- report generated
+- secrets excluded
+- confidence included
+
+9. test_optimization_models.py
+- optimization category enum
+- status enum
+- execution plan safety fields
+
+10. test_recommendation_engine.py
+- recommendations generated
+- policy checks included
+- tenant scoped
+
+11. test_optimization_approval_service.py
+- approval requested
+- approval accepted
+- rejection works
+- requester cannot bypass approval
+
+12. test_execution_planner.py
+- plan created
+- dry-run works
+- execution disabled by default
+- unsafe step blocked
+
+13. test_cost_optimizer.py
+- finding generated
+- savings estimated
+- dry-run only
+
+14. test_workload_placement.py
+- placement recommendation generated
+- residency blocked region rejected
+- explanation included
+
+15. test_finops_service.py
+- cost summary generated
+- savings summary generated
+- no real cloud calls
+
+16. test_optimization_audit.py
+- audit recorded
+- no secrets stored
+- tenant scoped
+
+17. test_customer_health_predictor.py
+- prediction generated
+- confidence included
+- drivers summarized
+
+18. test_churn_signal_service.py
+- churn signal generated
+- status update works
+- no automatic outreach
+
+19. test_expansion_signal_service.py
+- expansion signal generated
+- no automatic billing change
+
+20. test_partner_growth_service.py
+- partner signal generated
+- recommended action advisory
+
+21. test_reseller_performance.py
+- reseller score calculated
+- performance ranking generated
+
+22. test_marketplace_ranking.py
+- ranking recommendation generated
+- uncertified listing not boosted
+- explanation included
+
+23. test_regional_expansion.py
+- region recommendation generated
+- residency/compliance risk included
+
+24. test_account_review_service.py
+- account review generated
+- QBR inputs generated
+- no raw customer payloads
+
+25. test_executive_models.py
+- KPI model validation
+- command snapshot validation
+- QBR model validation
+
+26. test_command_center_service.py
+- snapshot generated
+- blockers summarized
+- recommendations included
+
+27. test_qbr_report_service.py
+- QBR report generated
+- markdown report generated
+- secrets excluded
+
+28. test_kpi_service.py
+- KPIs calculated
+- trends generated
+- explanation included
+
+29. test_portfolio_risk_service.py
+- portfolio risk calculated
+- top risks summarized
+
+30. test_executive_summary.py
+- summary generated
+- next actions summarized
+- estimates marked as estimates
+
+31. test_predictive_sre_api.py
+- status endpoint
+- anomaly forecast endpoint
+- incident prediction endpoint
+- SLO forecast endpoint
+- report endpoint
+
+32. test_optimization_api.py
+- recommendation endpoint
+- approval endpoint
+- plan endpoint
+- dry-run endpoint
+- execution blocked by default
+
+33. test_growth_intelligence_api.py
+- customer health endpoint
+- churn endpoint
+- expansion endpoint
+- marketplace ranking endpoint
+
+34. test_executive_api.py
+- command snapshot endpoint
+- KPI endpoint
+- QBR endpoint
+- executive summary endpoint
+
+35. test_phase17_tenant_isolation.py
+- org A cannot read org B forecasts
+- org A cannot read org B optimization plans
+- org A cannot read org B growth signals
+- org A cannot read org B QBR reports
+
+36. test_phase17_safety_gates.py
+- optimization cannot enable live trading
+- optimization cannot bypass residency
+- cost optimizer cannot delete resources
+- growth engine cannot change billing automatically
+- marketplace rank cannot boost uncertified listing
+
+Frontend tests:
+
+1. PredictiveSRE.test.tsx
+- anomaly panel renders
+- incident prediction table renders
+- confidence indicator visible
+- advisory banner visible
+
+2. OptimizationCenter.test.tsx
+- recommendation queue renders
+- approval panel renders
+- execution button disabled by default
+- safety gate status visible
+
+3. FinOps.test.tsx
+- savings card renders
+- cost findings render
+- dry-run banner visible
+
+4. GrowthIntelligence.test.tsx
+- customer health predictions render
+- churn signals render
+- expansion signals render
+
+5. PartnerGrowth.test.tsx
+- partner signals render
+- reseller performance renders
+- marketplace ranking explanation visible
+
+6. ExecutiveCommand.test.tsx
+- KPI cards render
+- command center snapshot renders
+- blockers render
+- next actions render
+
+7. QBRReports.test.tsx
+- QBR builder renders
+- report list renders
+- markdown preview renders
+- limitations note visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 17 overview
+- Predictive SRE architecture
+- Incident prediction model
+- SLO and error-budget forecasting
+- Capacity planning
+- Reliability advisor
+- Optimization center
+- Approval-gated execution planner
+- FinOps and cost optimization
+- Workload placement recommendations
+- Growth intelligence
+- Customer health prediction
+- Churn and expansion signals
+- Partner growth intelligence
+- Marketplace ranking recommendations
+- Executive command center
+- QBR reports
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run predictive SRE check:
+
+bash scripts/run-predictive-sre-check.sh
+
+Generate capacity plan:
+
+bash scripts/generate-capacity-plan.sh
+
+Generate FinOps report:
+
+bash scripts/generate-finops-report.sh
+
+Run optimization dry-run:
+
+bash scripts/run-optimization-dry-run.sh
+
+Generate growth intelligence report:
+
+bash scripts/generate-growth-intelligence-report.sh
+
+Generate QBR report:
+
+bash scripts/generate-qbr-report.sh
+
+Executive smoke test:
+
+bash scripts/executive-command-center-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 17 is complete only when:
+
+- Predictive SRE models exist.
+- Anomaly detection works.
+- Incident prediction works.
+- SLO forecasting works.
+- Error-budget forecasting works.
+- Capacity planning works.
+- Reliability advisor works.
+- SRE report generator works.
+- Optimization models exist.
+- Recommendation engine works.
+- Approval workflow works.
+- Execution planner is dry-run/approval-gated.
+- Cost optimizer works in dry-run mode.
+- Workload placement respects residency.
+- FinOps report works.
+- Growth intelligence models exist.
+- Customer health prediction works.
+- Churn signal detection works.
+- Expansion signal detection works.
+- Partner growth intelligence works.
+- Reseller performance analytics work.
+- Marketplace ranking recommendations are explainable and safe.
+- Regional expansion recommendations work.
+- Account review and QBR inputs work.
+- Executive command center works.
+- QBR report generator works.
+- Predictive SRE API works.
+- Optimization API works.
+- Growth Intelligence API works.
+- Executive API works.
+- Frontend Predictive SRE page works.
+- Frontend Optimization Center page works.
+- Frontend FinOps page works.
+- Frontend Growth Intelligence page works.
+- Frontend Partner Growth page works.
+- Frontend Executive Command page works.
+- Frontend QBR Reports page works.
+- Tenant isolation applies to all Phase 17 data.
+- Existing Phase 1–16 behavior remains intact.
+- Existing tests still pass.
+- New Phase 17 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Optimization execution remains disabled by default.
+- README includes Phase 17 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Predictive SRE models and services
+6. Optimization models and services
+7. Growth Intelligence models and services
+8. Executive models and services
+9. API route files
+10. Build/validation scripts
+11. Test files
+12. .env.example updates
+13. README updates
+14. Predictive SRE docs
+15. Optimization docs
+16. Growth Intelligence docs
+17. Executive docs
+18. Run instructions
+19. Test instructions
+20. Predictive SRE safety checklist
+21. Optimization safety checklist
+22. Growth intelligence safety checklist
+23. Executive reporting checklist
+24. Acceptance checklist
+25. Known limitations
+26. Phase 18 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–16 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, logs, reports, docs, exports, or prediction outputs.
+- Never log API keys, KMS key refs, runner tokens, broker credentials, cloud credentials, or private payloads.
+- Never store raw customer payloads in predictive outputs.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never bypass data residency enforcement.
+- Never automatically execute optimization changes by default.
+- Never delete or scale resources automatically by default.
+- Never change customer billing automatically.
+- Never boost uncertified marketplace listings.
+- Keep predictive systems advisory by default.
+- Keep all forecasts explainable, confidence-scored, and marked as estimates.
+- Keep code modular and ready for Phase 18: autonomous AI boardroom, ecosystem simulation, and strategic planning intelligence.
+
+Now generate the complete Phase 17 implementation.

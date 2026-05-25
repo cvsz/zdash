@@ -1,3 +1,19 @@
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0 ·
+***
+Creating a safe, educational finance prompt for automation
+
+
+I need to create a meta prompt in Thai and English, considering safety concerns, especially due to the user's age and the potential risks of financial trading. I'll focus on educational content and ensure there are disclaimers like "not financial advice." I'll also suggest paper trading by default and avoid live trading without proper regulation. The user is likely looking for a coding prompt for an MT5 integration, so I'll provide a comprehensive structure that ensures risk controls.
+
+
+Creating a safe and structured trading meta prompt
+
+
+I’ll advise creating a "FULL SYSTEM BLUEPRINT v2.0" that's clear and concise. It’ll include Thai, a simple plan, and code blocks. However, I won’t include live trading instructions with aggressive settings. I’ll provide a configurable, safer risk model with a warning, and ensure “Kill Switch -50%” is an emergency feature, not default. The prompt must clarify no real-money trading by default, with safety rules, and I’ll include tests and outputs.
+
+Below is a Meta Master Prompt สำหรับใช้กับ AI Coding Agent / Codex / Claude Code / Cursor เพื่อสร้างระบบ ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0 แบบ full-stack, modular, testable, และปลอดภัยโดย default
+***
+
 You are a Senior AI Systems Architect, Quant Trading Engineer, Full-Stack Developer, DevOps Engineer, and Security Auditor.
 
 Your mission is to build:

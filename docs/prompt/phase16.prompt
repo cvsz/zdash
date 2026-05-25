@@ -1,0 +1,1788 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 16 · SOVEREIGN ENTERPRISE GRID + ON-PREM APPLIANCE + GLOBAL EXPANSION CONTROL PLANE
+Multi-Region Control Plane + On-Prem Appliance + Edge Runners + Data Residency Enforcement + Global Partner Operations
+
+Do not rebuild Phase 1–15 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–15:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+
+============================================================
+PHASE 16 OBJECTIVE
+============================================================
+
+Build the sovereign enterprise and global expansion layer for zDash.
+
+Main goals:
+
+1. Add multi-region control plane model
+2. Add region-aware tenant routing
+3. Add data residency enforcement engine
+4. Add sovereign deployment profile system
+5. Add on-prem appliance packaging model
+6. Add edge runner registration and heartbeat
+7. Add edge job dispatch and result collection
+8. Add offline-first enterprise sync model
+9. Add customer-managed key shell
+10. Add BYOK/KMS adapter interface
+11. Add enterprise policy bundle export
+12. Add partner reseller operations workflow
+13. Add regional marketplace governance
+14. Add regional billing / tax metadata shell
+15. Add global support escalation matrix
+16. Add enterprise account hierarchy
+17. Add cross-region observability summary
+18. Add global rollout planner
+19. Add sovereign compliance dashboard
+20. Add final Phase 16 tests, docs, runbooks, and acceptance checklist
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Data residency policies must fail closed when enforcement is enabled.
+- Edge runners must default to dry-run/simulation mode.
+- On-prem appliance must not embed secrets.
+- Customer-managed key integration must be shell/mock by default.
+- No raw keys, secrets, broker credentials, signing keys, cloud credentials, API keys, or tokens may be logged, exported, synced, or displayed.
+- Cross-region sync must never move tenant data to a forbidden region.
+- Offline sync must be redacted and conflict-safe.
+- Reseller and partner workflows must not bypass tenant ownership or billing authority.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/sovereign/
+  __init__.py
+  models.py
+  region_registry.py
+  residency_engine.py
+  sovereign_profiles.py
+  kms_adapters.py
+  key_management_service.py
+  policy_bundle_service.py
+  compliance_dashboard.py
+
+backend/app/edge/
+  __init__.py
+  models.py
+  edge_registry.py
+  heartbeat_service.py
+  edge_job_service.py
+  sync_service.py
+  offline_bundle_service.py
+  edge_security.py
+
+backend/app/global_ops/
+  __init__.py
+  models.py
+  account_hierarchy.py
+  reseller_service.py
+  regional_marketplace.py
+  regional_billing.py
+  support_escalation.py
+  global_rollout.py
+  cross_region_observability.py
+
+backend/app/api/sovereign.py
+backend/app/api/edge.py
+backend/app/api/global_ops.py
+
+frontend/src/pages/SovereignControl.tsx
+frontend/src/pages/Regions.tsx
+frontend/src/pages/EdgeRunners.tsx
+frontend/src/pages/OnPremAppliance.tsx
+frontend/src/pages/GlobalOps.tsx
+frontend/src/pages/ResellerOps.tsx
+frontend/src/pages/SovereignCompliance.tsx
+
+frontend/src/components/sovereign/
+  RegionRegistryTable.tsx
+  DataResidencyPolicyPanel.tsx
+  SovereignProfileCard.tsx
+  KMSStatusCard.tsx
+  PolicyBundlePanel.tsx
+  SovereignCompliancePanel.tsx
+
+frontend/src/components/edge/
+  EdgeRunnerTable.tsx
+  EdgeRunnerDetail.tsx
+  EdgeJobTable.tsx
+  OfflineSyncPanel.tsx
+  ApplianceBundlePanel.tsx
+  EdgeSecurityPanel.tsx
+
+frontend/src/components/global-ops/
+  AccountHierarchyTree.tsx
+  ResellerTable.tsx
+  RegionalMarketplacePanel.tsx
+  RegionalBillingPanel.tsx
+  SupportEscalationMatrix.tsx
+  GlobalRolloutPlanner.tsx
+  CrossRegionObservabilityPanel.tsx
+
+frontend/src/hooks/useSovereign.ts
+frontend/src/hooks/useEdge.ts
+frontend/src/hooks/useGlobalOps.ts
+
+scripts/
+  generate-onprem-appliance-bundle.sh
+  validate-data-residency.sh
+  run-sovereign-compliance-check.sh
+  register-edge-runner.sh
+  simulate-edge-job.sh
+  export-policy-bundle.sh
+  global-rollout-dry-run.sh
+  cross-region-observability-check.sh
+
+docs/
+  sovereign/
+    SOVEREIGN_ENTERPRISE_MODEL.md
+    DATA_RESIDENCY_ENFORCEMENT.md
+    CUSTOMER_MANAGED_KEYS.md
+    SOVEREIGN_DEPLOYMENT_PROFILES.md
+    POLICY_BUNDLE_EXPORT.md
+  edge/
+    EDGE_RUNNER_MODEL.md
+    ON_PREM_APPLIANCE_MODEL.md
+    OFFLINE_SYNC_MODEL.md
+    EDGE_SECURITY_MODEL.md
+  global-ops/
+    GLOBAL_EXPANSION_MODEL.md
+    REGIONAL_MARKETPLACE_GOVERNANCE.md
+    RESELLER_OPERATIONS.md
+    SUPPORT_ESCALATION_MATRIX.md
+    GLOBAL_ROLLOUT_PLANNER.md
+  runbooks/
+    DATA_RESIDENCY_INCIDENT_RUNBOOK.md
+    EDGE_RUNNER_INCIDENT_RUNBOOK.md
+    ON_PREM_APPLIANCE_DEPLOYMENT_RUNBOOK.md
+    KMS_INTEGRATION_RUNBOOK.md
+    GLOBAL_ROLLOUT_RUNBOOK.md
+    REGIONAL_COMPLIANCE_RUNBOOK.md
+
+backend/app/tests/
+  test_sovereign_models.py
+  test_region_registry.py
+  test_residency_engine.py
+  test_sovereign_profiles.py
+  test_kms_adapters.py
+  test_key_management_service.py
+  test_policy_bundle_service.py
+  test_sovereign_compliance_dashboard.py
+  test_edge_models.py
+  test_edge_registry.py
+  test_heartbeat_service.py
+  test_edge_job_service.py
+  test_edge_sync_service.py
+  test_offline_bundle_service.py
+  test_edge_security.py
+  test_global_ops_models.py
+  test_account_hierarchy.py
+  test_reseller_service.py
+  test_regional_marketplace.py
+  test_regional_billing.py
+  test_support_escalation.py
+  test_global_rollout.py
+  test_cross_region_observability.py
+  test_sovereign_api.py
+  test_edge_api.py
+  test_global_ops_api.py
+  test_phase16_tenant_isolation.py
+  test_phase16_residency_safety.py
+
+frontend/src/tests/
+  SovereignControl.test.tsx
+  Regions.test.tsx
+  EdgeRunners.test.tsx
+  OnPremAppliance.test.tsx
+  GlobalOps.test.tsx
+  ResellerOps.test.tsx
+  SovereignCompliance.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/tenancy/tenant_context.py
+backend/app/governance/policy_engine.py
+backend/app/compliance/evidence_service.py
+backend/app/ga/final_safety_gate.py
+backend/app/billing/entitlement_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+desktop/src/pages/DesktopSettings.tsx
+mobile/src/screens/SettingsScreen.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+SOVEREIGN_MODE_ENABLED=true
+SOVEREIGN_FAIL_CLOSED=true
+DEFAULT_DATA_REGION=local
+ALLOWED_DATA_REGIONS=local,us,eu,apac
+DISALLOWED_DATA_REGIONS=
+DATA_RESIDENCY_ENFORCEMENT_ENABLED=true
+CROSS_REGION_SYNC_ENABLED=false
+CROSS_REGION_SYNC_DRY_RUN=true
+
+SOVEREIGN_PROFILE_DEFAULT=local
+SOVEREIGN_POLICY_BUNDLE_ENABLED=true
+SOVEREIGN_COMPLIANCE_DASHBOARD_ENABLED=true
+
+CUSTOMER_MANAGED_KEYS_ENABLED=true
+KMS_PROVIDER=mock
+KMS_DRY_RUN=true
+KMS_KEY_REF=
+KMS_REQUIRE_CUSTOMER_APPROVAL=true
+
+EDGE_RUNNERS_ENABLED=true
+EDGE_RUNNER_DRY_RUN=true
+EDGE_RUNNER_REGISTRATION_ENABLED=true
+EDGE_JOB_DISPATCH_ENABLED=true
+EDGE_JOB_DISPATCH_DRY_RUN=true
+EDGE_OFFLINE_SYNC_ENABLED=true
+EDGE_OFFLINE_SYNC_DRY_RUN=true
+EDGE_SYNC_CONFLICT_POLICY=manual_review
+
+ONPREM_APPLIANCE_ENABLED=true
+ONPREM_APPLIANCE_BUNDLE_DRY_RUN=true
+ONPREM_EXCLUDE_SECRETS=true
+ONPREM_REQUIRE_ADMIN=true
+
+GLOBAL_OPS_ENABLED=true
+GLOBAL_ROLLOUT_ENABLED=true
+GLOBAL_ROLLOUT_DRY_RUN=true
+GLOBAL_ROLLOUT_REQUIRE_APPROVAL=true
+
+RESELLER_OPS_ENABLED=true
+RESELLER_BILLING_AUTHORITY_REQUIRED=true
+
+REGIONAL_MARKETPLACE_ENABLED=true
+REGIONAL_MARKETPLACE_FAIL_CLOSED=true
+
+REGIONAL_BILLING_METADATA_ENABLED=true
+REGIONAL_TAX_METADATA_DRY_RUN=true
+
+GLOBAL_SUPPORT_ESCALATION_ENABLED=true
+CROSS_REGION_OBSERVABILITY_ENABLED=true
+CROSS_REGION_OBSERVABILITY_REDACTED=true
+
+Rules:
+- Sovereign mode must fail closed when enabled.
+- Cross-region sync is disabled by default.
+- KMS integration is mock/dry-run by default.
+- Edge jobs are dry-run by default.
+- On-prem appliance excludes secrets by default.
+- Global rollout is dry-run and approval-gated by default.
+- Regional marketplace must block uncertified or region-disallowed listings.
+- Cross-region observability must show summaries only, not raw tenant data.
+- No secret values may appear in configs, logs, reports, bundles, frontend, desktop, mobile, or docs.
+
+============================================================
+SOVEREIGN MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. DataRegion
+
+Allowed values:
+- local
+- us
+- eu
+- apac
+- custom
+
+2. ResidencyEnforcementMode
+
+Allowed values:
+- advisory
+- enforced
+- fail_closed
+
+3. SovereignProfileStatus
+
+Allowed values:
+- draft
+- active
+- disabled
+- archived
+
+4. KMSProvider
+
+Allowed values:
+- mock
+- aws_kms
+- gcp_kms
+- azure_key_vault
+- hashicorp_vault
+- custom
+
+5. RegionRecord
+
+Fields:
+- id
+- code
+- name
+- jurisdiction
+- status
+- allowed
+- metadata
+- created_at
+- updated_at
+
+6. DataResidencyRule
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- allowed_regions
+- disallowed_regions
+- default_region
+- enforcement_mode
+- applies_to
+- reason
+- created_at
+- updated_at
+
+7. ResidencyDecision
+
+Fields:
+- allowed
+- source_region
+- target_region
+- resource_type
+- reason
+- enforcement_mode
+- matched_rules
+- timestamp
+
+8. SovereignDeploymentProfile
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- profile_type
+- status
+- data_region
+- allowed_integrations
+- disabled_features
+- kms_required
+- offline_supported
+- policy_bundle_id
+- metadata
+- created_at
+- updated_at
+
+9. KMSKeyRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- provider
+- key_ref_hash
+- status
+- customer_managed
+- rotation_required
+- last_rotated_at
+- metadata
+- created_at
+- updated_at
+
+10. PolicyBundle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- version
+- includes_governance
+- includes_compliance
+- includes_residency
+- includes_rbac
+- includes_safety_gates
+- file_path
+- checksum
+- secrets_excluded
+- created_by
+- created_at
+
+============================================================
+SOVEREIGN SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/sovereign/region_registry.py
+backend/app/sovereign/residency_engine.py
+backend/app/sovereign/sovereign_profiles.py
+backend/app/sovereign/kms_adapters.py
+backend/app/sovereign/key_management_service.py
+backend/app/sovereign/policy_bundle_service.py
+backend/app/sovereign/compliance_dashboard.py
+
+RegionRegistry methods:
+- list_regions()
+- get_region(region_code)
+- register_region()
+- update_region_status()
+- is_region_allowed(region_code)
+
+ResidencyEngine methods:
+- evaluate_transfer(source_region, target_region, resource_type, tenant_context)
+- enforce_residency(action, resource_type, target_region, tenant_context)
+- list_rules()
+- create_rule()
+- update_rule()
+- explain_decision()
+
+Rules:
+- If DATA_RESIDENCY_ENFORCEMENT_ENABLED=true, forbidden transfers must block.
+- If SOVEREIGN_FAIL_CLOSED=true, unknown region must block.
+- Cross-region sync must call ResidencyEngine before moving data.
+- Evidence must be recorded for blocked or allowed sensitive transfers.
+
+SovereignProfileService methods:
+- create_profile()
+- list_profiles()
+- activate_profile()
+- disable_profile()
+- get_active_profile()
+- validate_profile()
+
+KeyManagementService methods:
+- register_key_ref()
+- validate_key_ref()
+- rotate_key_metadata()
+- get_kms_status()
+- test_kms_connection()
+
+Rules:
+- Store only key reference hash.
+- Mock KMS works without cloud credentials.
+- Real KMS requires explicit config.
+- Never log key refs or secrets.
+
+PolicyBundleService methods:
+- create_bundle()
+- list_bundles()
+- get_bundle()
+- export_bundle()
+
+Rules:
+- Secrets excluded by default.
+- Bundle must include safety gates, RBAC summary, compliance summary, data residency rules, and audit policy summary.
+- Export requires admin/operator.
+
+SovereignComplianceDashboard methods:
+- get_status()
+- get_region_summary()
+- get_residency_violations()
+- get_kms_summary()
+- get_policy_bundle_summary()
+- generate_report()
+
+============================================================
+EDGE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. EdgeRunnerStatus
+
+Allowed values:
+- registered
+- active
+- offline
+- degraded
+- disabled
+- revoked
+
+2. EdgeJobStatus
+
+Allowed values:
+- queued
+- dispatched
+- running
+- completed
+- failed
+- canceled
+- blocked
+
+3. EdgeSyncStatus
+
+Allowed values:
+- pending
+- syncing
+- completed
+- failed
+- conflict
+- blocked
+
+4. EdgeRunner
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- runner_type
+- status
+- region
+- version
+- dry_run
+- capabilities
+- last_heartbeat_at
+- metadata
+- created_at
+- updated_at
+
+5. EdgeHeartbeat
+
+Fields:
+- id
+- runner_id
+- status
+- region
+- version
+- health_score
+- metrics_summary
+- created_at
+
+6. EdgeJob
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- runner_id
+- job_type
+- status
+- payload_summary
+- result_summary
+- dry_run
+- error
+- created_at
+- updated_at
+- started_at
+- finished_at
+
+7. EdgeSyncRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- runner_id
+- source_region
+- target_region
+- resource_type
+- status
+- conflict_policy
+- payload_summary
+- result_summary
+- created_at
+- updated_at
+
+8. OnPremApplianceBundle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- version
+- status
+- file_path
+- checksum
+- includes_docs
+- includes_policy_bundle
+- includes_runtime
+- includes_secrets
+- created_by
+- created_at
+- completed_at
+
+============================================================
+EDGE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/edge/edge_registry.py
+backend/app/edge/heartbeat_service.py
+backend/app/edge/edge_job_service.py
+backend/app/edge/sync_service.py
+backend/app/edge/offline_bundle_service.py
+backend/app/edge/edge_security.py
+
+EdgeRegistry methods:
+- register_runner()
+- list_runners()
+- get_runner()
+- disable_runner()
+- revoke_runner()
+- update_runner_capabilities()
+
+HeartbeatService methods:
+- record_heartbeat()
+- get_latest_heartbeat()
+- detect_offline_runners()
+- summarize_runner_health()
+
+EdgeJobService methods:
+- dispatch_job()
+- list_jobs()
+- get_job()
+- cancel_job()
+- record_result()
+
+Allowed dry-run edge job types:
+- health_check
+- risk_status_read
+- scheduler_status_read
+- backtest_dry_run
+- content_pipeline_dry_run
+- compliance_check
+- policy_bundle_validate
+
+Rules:
+- No edge job may enable live trading.
+- No edge job may run real IoT actions.
+- No edge job may publish social content.
+- Edge jobs must pass entitlement, governance, and residency checks.
+- Payloads must be summarized/redacted.
+
+EdgeSyncService methods:
+- request_sync()
+- evaluate_sync()
+- record_sync_result()
+- list_sync_records()
+- resolve_conflict()
+
+Rules:
+- Cross-region sync disabled by default.
+- ResidencyEngine must approve before sync.
+- Conflicts default to manual_review.
+- Raw secrets must never sync.
+
+OfflineBundleService methods:
+- create_onprem_bundle()
+- list_bundles()
+- get_bundle()
+- validate_bundle()
+
+Rules:
+- Secrets excluded by default.
+- Bundle includes deployment docs, policy bundle, sample env, docker compose, and safety checklist.
+- include_secrets requires admin and explicit confirmation:
+  CONFIRM_ONPREM_SECRET_BUNDLE
+
+EdgeSecurityService methods:
+- validate_runner_registration()
+- rotate_runner_token_metadata()
+- scan_payload()
+- enforce_edge_policy()
+
+Rules:
+- Store only token hash/metadata.
+- Never log runner tokens.
+- DLP scan all payload summaries.
+
+============================================================
+GLOBAL OPS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. AccountType
+
+Allowed values:
+- customer
+- reseller
+- distributor
+- msp
+- internal
+
+2. ResellerStatus
+
+Allowed values:
+- applicant
+- active
+- suspended
+- terminated
+
+3. RegionalMarketplaceStatus
+
+Allowed values:
+- active
+- disabled
+- restricted
+- review_required
+
+4. GlobalRolloutStatus
+
+Allowed values:
+- draft
+- planned
+- running
+- paused
+- completed
+- blocked
+- rolled_back
+
+5. EnterpriseAccount
+
+Fields:
+- id
+- organization_id
+- parent_account_id
+- account_type
+- name
+- region
+- owner_user_id
+- status
+- metadata
+- created_at
+- updated_at
+
+6. ResellerProfile
+
+Fields:
+- id
+- organization_id
+- reseller_org_id
+- status
+- regions
+- authorized_plans
+- billing_authority
+- support_tier
+- metadata
+- created_at
+- updated_at
+
+7. RegionalMarketplaceRule
+
+Fields:
+- id
+- region
+- allowed_categories
+- blocked_categories
+- requires_local_review
+- status
+- notes
+- created_at
+- updated_at
+
+8. RegionalBillingMetadata
+
+Fields:
+- id
+- organization_id
+- region
+- currency
+- tax_mode
+- invoice_notes
+- provider_metadata
+- dry_run
+- created_at
+- updated_at
+
+9. SupportEscalationRule
+
+Fields:
+- id
+- organization_id
+- region
+- severity
+- target_team
+- response_minutes
+- escalation_path
+- enabled
+- created_at
+- updated_at
+
+10. GlobalRolloutPlan
+
+Fields:
+- id
+- name
+- version
+- target_regions
+- status
+- dry_run
+- requires_approval
+- current_region
+- blockers
+- created_by
+- created_at
+- updated_at
+
+============================================================
+GLOBAL OPS SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/global_ops/account_hierarchy.py
+backend/app/global_ops/reseller_service.py
+backend/app/global_ops/regional_marketplace.py
+backend/app/global_ops/regional_billing.py
+backend/app/global_ops/support_escalation.py
+backend/app/global_ops/global_rollout.py
+backend/app/global_ops/cross_region_observability.py
+
+AccountHierarchyService methods:
+- create_account()
+- list_accounts()
+- get_account_tree()
+- assign_parent()
+- validate_account_access()
+
+ResellerService methods:
+- create_reseller_profile()
+- list_resellers()
+- activate_reseller()
+- suspend_reseller()
+- validate_billing_authority()
+- assign_customer_to_reseller()
+
+RegionalMarketplaceService methods:
+- create_rule()
+- list_rules()
+- evaluate_listing_for_region()
+- enforce_regional_listing_policy()
+
+Rules:
+- Uncertified packages blocked everywhere.
+- Region-disallowed categories blocked.
+- Local review required when configured.
+
+RegionalBillingService methods:
+- get_metadata()
+- update_metadata()
+- validate_region_billing()
+- summarize_billing_regions()
+
+Rules:
+- Metadata only / dry-run by default.
+- No tax advice.
+- No real payment movement.
+
+SupportEscalationService methods:
+- create_rule()
+- list_rules()
+- evaluate_escalation()
+- route_incident()
+- summarize_matrix()
+
+GlobalRolloutService methods:
+- create_plan()
+- start_plan()
+- pause_plan()
+- advance_region()
+- rollback_plan()
+- evaluate_region_blockers()
+
+Rules:
+- Dry-run by default.
+- Approval required.
+- Final safety gate and regional residency must pass before advancing.
+
+CrossRegionObservabilityService methods:
+- get_global_summary()
+- get_region_health()
+- get_cross_region_incident_summary()
+- get_replicated_metrics_summary()
+
+Rules:
+- Summaries only.
+- No raw tenant payloads.
+- No secrets.
+- Respect residency policies.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/sovereign.py
+
+Endpoints:
+
+GET /api/sovereign/status
+GET /api/sovereign/regions
+POST /api/sovereign/regions
+GET /api/sovereign/residency/rules
+POST /api/sovereign/residency/rules
+POST /api/sovereign/residency/evaluate
+POST /api/sovereign/residency/enforce
+GET /api/sovereign/profiles
+POST /api/sovereign/profiles
+POST /api/sovereign/profiles/{profile_id}/activate
+POST /api/sovereign/profiles/{profile_id}/disable
+GET /api/sovereign/kms/status
+POST /api/sovereign/kms/register-key-ref
+POST /api/sovereign/kms/test
+GET /api/sovereign/policy-bundles
+POST /api/sovereign/policy-bundles
+GET /api/sovereign/compliance/dashboard
+GET /api/sovereign/compliance/report
+
+Create:
+
+backend/app/api/edge.py
+
+Endpoints:
+
+GET /api/edge/status
+GET /api/edge/runners
+POST /api/edge/runners/register
+GET /api/edge/runners/{runner_id}
+POST /api/edge/runners/{runner_id}/heartbeat
+POST /api/edge/runners/{runner_id}/disable
+POST /api/edge/runners/{runner_id}/revoke
+GET /api/edge/jobs
+POST /api/edge/jobs
+GET /api/edge/jobs/{job_id}
+POST /api/edge/jobs/{job_id}/cancel
+POST /api/edge/jobs/{job_id}/result
+GET /api/edge/sync
+POST /api/edge/sync
+POST /api/edge/sync/{sync_id}/resolve-conflict
+GET /api/edge/onprem-bundles
+POST /api/edge/onprem-bundles
+GET /api/edge/onprem-bundles/{bundle_id}
+
+Create:
+
+backend/app/api/global_ops.py
+
+Endpoints:
+
+GET /api/global-ops/status
+GET /api/global-ops/accounts
+POST /api/global-ops/accounts
+GET /api/global-ops/accounts/tree
+GET /api/global-ops/resellers
+POST /api/global-ops/resellers
+POST /api/global-ops/resellers/{reseller_id}/activate
+POST /api/global-ops/resellers/{reseller_id}/suspend
+GET /api/global-ops/regional-marketplace/rules
+POST /api/global-ops/regional-marketplace/rules
+POST /api/global-ops/regional-marketplace/evaluate
+GET /api/global-ops/regional-billing
+PATCH /api/global-ops/regional-billing
+GET /api/global-ops/support-escalation
+POST /api/global-ops/support-escalation
+POST /api/global-ops/support-escalation/evaluate
+GET /api/global-ops/rollouts
+POST /api/global-ops/rollouts
+POST /api/global-ops/rollouts/{plan_id}/start
+POST /api/global-ops/rollouts/{plan_id}/advance
+POST /api/global-ops/rollouts/{plan_id}/pause
+POST /api/global-ops/rollouts/{plan_id}/rollback
+GET /api/global-ops/observability/summary
+GET /api/global-ops/observability/regions
+
+Rules:
+- Auth required.
+- Tenant scoped unless global admin/MSP permission exists.
+- Standard response shape required.
+- Sensitive actions require admin/operator.
+- Cross-region operations require residency approval.
+- On-prem secret bundle requires typed confirmation.
+- No endpoint returns raw secrets.
+
+============================================================
+FRONTEND PHASE 16 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /sovereign
+- /regions
+- /edge-runners
+- /onprem-appliance
+- /global-ops
+- /reseller-ops
+- /sovereign-compliance
+
+Update sidebar:
+- Sovereign Control
+- Regions
+- Edge Runners
+- On-Prem Appliance
+- Global Ops
+- Reseller Ops
+- Sovereign Compliance
+
+1. Sovereign Control Page
+
+Must show:
+- Active sovereign profile
+- Data residency enforcement mode
+- KMS status
+- Policy bundle status
+- Region summary
+- Residency decision tester
+
+2. Regions Page
+
+Must show:
+- Region registry
+- Allowed/disallowed regions
+- Jurisdiction notes
+- Region health summary
+- Cross-region sync warning
+
+3. Edge Runners Page
+
+Must show:
+- Edge runner table
+- Runner health
+- Heartbeat summary
+- Edge job table
+- Dispatch dry-run job form
+- Edge security status
+
+4. On-Prem Appliance Page
+
+Must show:
+- Appliance bundle generator
+- Secrets excluded banner
+- Policy bundle inclusion
+- Offline sync mode
+- Download manifest placeholder
+- Confirmation for secret bundle:
+  CONFIRM_ONPREM_SECRET_BUNDLE
+
+5. Global Ops Page
+
+Must show:
+- Account hierarchy tree
+- Cross-region observability summary
+- Global rollout planner
+- Support escalation matrix
+- Region blockers
+
+6. Reseller Ops Page
+
+Must show:
+- Reseller profiles
+- Authorized regions
+- Billing authority state
+- Assigned customers
+- Regional billing metadata dry-run banner
+
+7. Sovereign Compliance Page
+
+Must show:
+- Residency compliance report
+- KMS summary
+- Policy bundle evidence
+- Residency violations
+- Export report action
+
+Frontend safety:
+- Never display secrets.
+- Cross-region sync warning must be prominent.
+- KMS key refs must be redacted.
+- On-prem bundle must show secrets-excluded state.
+- Global rollout actions must be dry-run and approval-gated.
+- Regional billing must show metadata-only / not tax advice notice.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Sovereign:
+- sovereign.read
+- sovereign.manage_regions
+- sovereign.manage_residency
+- sovereign.manage_profiles
+- sovereign.manage_kms
+- sovereign.export_policy_bundle
+- sovereign.read_compliance
+
+Edge:
+- edge.read
+- edge.register_runner
+- edge.manage_runner
+- edge.dispatch_job
+- edge.manage_sync
+- edge.create_onprem_bundle
+- edge.include_secrets
+
+Global Ops:
+- global_ops.read
+- global_ops.manage_accounts
+- global_ops.manage_resellers
+- global_ops.manage_regional_marketplace
+- global_ops.manage_regional_billing
+- global_ops.manage_support_escalation
+- global_ops.manage_rollout
+- global_ops.cross_region_observability
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- sovereign.read
+- sovereign.manage_residency
+- sovereign.export_policy_bundle
+- sovereign.read_compliance
+- edge.read
+- edge.register_runner
+- edge.dispatch_job
+- edge.create_onprem_bundle
+- global_ops.read
+- global_ops.manage_support_escalation
+- global_ops.manage_rollout
+
+analyst:
+- sovereign.read
+- sovereign.read_compliance
+- edge.read
+- global_ops.read
+- global_ops.cross_region_observability
+
+viewer:
+- sovereign.read limited
+- edge.read limited
+- global_ops.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- region_records
+- data_residency_rules
+- residency_decisions
+- sovereign_deployment_profiles
+- kms_key_records
+- policy_bundles
+- edge_runners
+- edge_heartbeats
+- edge_jobs
+- edge_sync_records
+- onprem_appliance_bundles
+- enterprise_accounts
+- reseller_profiles
+- regional_marketplace_rules
+- regional_billing_metadata
+- support_escalation_rules
+- global_rollout_plans
+- cross_region_observability_snapshots
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- No raw secrets.
+- KMS key refs hashed/redacted.
+- Runner tokens hashed only.
+- Observability snapshots contain summaries only.
+- Residency decisions auditable.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Sovereign:
+- sovereign.region.registered
+- sovereign.region.updated
+- sovereign.residency.evaluated
+- sovereign.residency.blocked
+- sovereign.profile.created
+- sovereign.profile.activated
+- sovereign.profile.disabled
+- sovereign.kms.key_ref.registered
+- sovereign.kms.tested
+- sovereign.policy_bundle.created
+- sovereign.compliance.report.generated
+
+Edge:
+- edge.runner.registered
+- edge.runner.heartbeat
+- edge.runner.disabled
+- edge.runner.revoked
+- edge.job.dispatched
+- edge.job.completed
+- edge.job.failed
+- edge.job.blocked
+- edge.sync.requested
+- edge.sync.completed
+- edge.sync.blocked
+- edge.sync.conflict
+- edge.onprem_bundle.started
+- edge.onprem_bundle.completed
+- edge.onprem_bundle.blocked
+
+Global Ops:
+- global_ops.account.created
+- global_ops.account.parent_assigned
+- global_ops.reseller.created
+- global_ops.reseller.activated
+- global_ops.reseller.suspended
+- global_ops.regional_marketplace.rule_created
+- global_ops.regional_marketplace.evaluated
+- global_ops.regional_billing.updated
+- global_ops.support_escalation.rule_created
+- global_ops.rollout.created
+- global_ops.rollout.started
+- global_ops.rollout.advanced
+- global_ops.rollout.blocked
+- global_ops.rollout.rolled_back
+- global_ops.observability.summary_generated
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- SOVEREIGN_DISABLED
+- REGION_NOT_FOUND
+- REGION_NOT_ALLOWED
+- RESIDENCY_POLICY_BLOCKED
+- SOVEREIGN_PROFILE_NOT_FOUND
+- KMS_NOT_CONFIGURED
+- KMS_KEY_REF_INVALID
+- POLICY_BUNDLE_NOT_FOUND
+- EDGE_DISABLED
+- EDGE_RUNNER_NOT_FOUND
+- EDGE_RUNNER_REVOKED
+- EDGE_JOB_NOT_FOUND
+- EDGE_JOB_BLOCKED
+- EDGE_SYNC_BLOCKED
+- EDGE_SYNC_CONFLICT
+- ONPREM_BUNDLE_NOT_FOUND
+- ONPREM_SECRET_CONFIRMATION_REQUIRED
+- GLOBAL_OPS_DISABLED
+- ACCOUNT_NOT_FOUND
+- RESELLER_NOT_FOUND
+- RESELLER_AUTHORITY_REQUIRED
+- REGIONAL_MARKETPLACE_BLOCKED
+- REGIONAL_BILLING_METADATA_ONLY
+- GLOBAL_ROLLOUT_BLOCKED
+- CROSS_REGION_OBSERVABILITY_REDACTED
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_sovereign_models.py
+- data region enum
+- enforcement mode enum
+- sovereign profile validation
+- KMS record redaction fields
+
+2. test_region_registry.py
+- default regions exist
+- disallowed region blocks
+- region update works
+
+3. test_residency_engine.py
+- allowed transfer passes
+- disallowed transfer blocks
+- unknown region fail-closed
+- evidence recorded
+
+4. test_sovereign_profiles.py
+- create profile
+- activate profile
+- disabled profile cannot be active
+- profile validates region rules
+
+5. test_kms_adapters.py
+- mock KMS test works
+- real KMS missing config blocks
+- key ref never logged
+
+6. test_key_management_service.py
+- register key ref stores hash
+- rotate metadata
+- KMS status works
+
+7. test_policy_bundle_service.py
+- bundle created
+- secrets excluded
+- checksum generated
+- export requires permission
+
+8. test_sovereign_compliance_dashboard.py
+- status summary works
+- violations listed
+- report excludes secrets
+
+9. test_edge_models.py
+- runner status enum
+- edge job status enum
+- sync status enum
+- on-prem bundle validation
+
+10. test_edge_registry.py
+- register runner
+- list runners
+- revoke runner
+- revoked runner cannot receive jobs
+
+11. test_heartbeat_service.py
+- heartbeat recorded
+- offline runner detected
+- health summary works
+
+12. test_edge_job_service.py
+- dispatch dry-run job
+- unsafe job blocked
+- result recorded
+- tenant scoped
+
+13. test_edge_sync_service.py
+- sync request evaluated
+- residency blocked sync
+- conflict state recorded
+- manual resolution works
+
+14. test_offline_bundle_service.py
+- on-prem bundle created without secrets
+- secret bundle requires confirmation
+- bundle validates
+
+15. test_edge_security.py
+- runner token not logged
+- payload DLP scan works
+- unsafe edge action blocked
+
+16. test_global_ops_models.py
+- account type enum
+- reseller status enum
+- rollout status enum
+
+17. test_account_hierarchy.py
+- create account
+- parent assignment
+- tree generated
+- cross-tenant access blocked
+
+18. test_reseller_service.py
+- create reseller
+- activate/suspend reseller
+- billing authority required
+- customer assignment works
+
+19. test_regional_marketplace.py
+- uncertified listing blocked
+- region-blocked category rejected
+- local review required when configured
+
+20. test_regional_billing.py
+- metadata updated
+- dry-run notice present
+- no tax advice claims
+
+21. test_support_escalation.py
+- rule created
+- incident routed
+- escalation matrix summarized
+
+22. test_global_rollout.py
+- rollout dry-run works
+- approval required
+- residency blocker stops rollout
+- rollback works
+
+23. test_cross_region_observability.py
+- global summary redacted
+- no raw tenant payloads
+- region health summarized
+
+24. test_sovereign_api.py
+- status endpoint
+- residency evaluate endpoint
+- profile endpoint
+- KMS endpoint
+- policy bundle endpoint
+
+25. test_edge_api.py
+- runner registration endpoint
+- heartbeat endpoint
+- job dispatch endpoint
+- on-prem bundle endpoint
+
+26. test_global_ops_api.py
+- account endpoint
+- reseller endpoint
+- regional marketplace endpoint
+- rollout endpoint
+- observability endpoint
+
+27. test_phase16_tenant_isolation.py
+- org A cannot access org B regions/rules where tenant scoped
+- org A cannot access org B edge runners
+- org A cannot access org B on-prem bundles
+- org A cannot access org B reseller assignments
+
+28. test_phase16_residency_safety.py
+- forbidden region blocks sync
+- unknown region fail-closed
+- edge job cannot move data across blocked region
+- on-prem bundle excludes secrets by default
+
+Frontend tests:
+
+1. SovereignControl.test.tsx
+- sovereign profile renders
+- residency enforcement state visible
+- KMS status visible
+- policy bundle panel visible
+
+2. Regions.test.tsx
+- region table renders
+- disallowed region badge visible
+- cross-region warning visible
+
+3. EdgeRunners.test.tsx
+- runner table renders
+- heartbeat status visible
+- dry-run edge job form visible
+
+4. OnPremAppliance.test.tsx
+- bundle generator renders
+- secrets excluded banner visible
+- confirmation required for secret bundle
+
+5. GlobalOps.test.tsx
+- account hierarchy renders
+- rollout planner visible
+- observability summary redacted label visible
+
+6. ResellerOps.test.tsx
+- reseller table renders
+- billing authority state visible
+- metadata-only billing notice visible
+
+7. SovereignCompliance.test.tsx
+- compliance report renders
+- residency violations visible
+- KMS summary visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 16 overview
+- Sovereign enterprise architecture
+- Region registry
+- Data residency enforcement
+- Sovereign deployment profiles
+- Customer-managed keys / KMS shell
+- Policy bundle export
+- Edge runner model
+- On-prem appliance bundle
+- Offline sync safety
+- Global account hierarchy
+- Reseller operations
+- Regional marketplace governance
+- Regional billing metadata shell
+- Support escalation matrix
+- Global rollout planner
+- Cross-region observability
+- Frontend pages
+- API examples
+- Test commands
+- Sovereign safety checklist
+- Edge safety checklist
+- Global rollout checklist
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Validate data residency:
+
+bash scripts/validate-data-residency.sh
+
+Run sovereign compliance check:
+
+bash scripts/run-sovereign-compliance-check.sh
+
+Generate on-prem appliance bundle:
+
+bash scripts/generate-onprem-appliance-bundle.sh
+
+Register edge runner:
+
+bash scripts/register-edge-runner.sh
+
+Simulate edge job:
+
+bash scripts/simulate-edge-job.sh
+
+Export policy bundle:
+
+bash scripts/export-policy-bundle.sh
+
+Run global rollout dry-run:
+
+bash scripts/global-rollout-dry-run.sh
+
+Cross-region observability check:
+
+bash scripts/cross-region-observability-check.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 16 is complete only when:
+
+- Sovereign models exist.
+- Region registry works.
+- Data residency engine works.
+- Forbidden region transfers are blocked.
+- Unknown regions fail closed when configured.
+- Sovereign profiles work.
+- Mock KMS adapter works.
+- Key refs are hashed/redacted.
+- Policy bundle export works and excludes secrets.
+- Sovereign compliance dashboard works.
+- Edge runner registry works.
+- Edge heartbeat works.
+- Edge job dispatch works in dry-run mode.
+- Unsafe edge jobs are blocked.
+- Offline/on-prem bundle generation works without secrets.
+- Edge sync respects residency engine.
+- Global account hierarchy works.
+- Reseller operations work.
+- Regional marketplace governance works.
+- Regional billing metadata shell works.
+- Support escalation matrix works.
+- Global rollout planner works in dry-run mode.
+- Cross-region observability is redacted.
+- Sovereign API works.
+- Edge API works.
+- Global Ops API works.
+- Frontend Sovereign Control page works.
+- Frontend Regions page works.
+- Frontend Edge Runners page works.
+- Frontend On-Prem Appliance page works.
+- Frontend Global Ops page works.
+- Frontend Reseller Ops page works.
+- Frontend Sovereign Compliance page works.
+- Tenant isolation applies to all Phase 16 data.
+- Existing Phase 1–15 behavior remains intact.
+- Existing tests still pass.
+- New Phase 16 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Cross-region sync remains disabled by default.
+- README includes Phase 16 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Sovereign models and services
+6. Edge models and services
+7. Global Ops models and services
+8. API route files
+9. Build/validation scripts
+10. Test files
+11. .env.example updates
+12. README updates
+13. Sovereign docs
+14. Edge docs
+15. Global Ops docs
+16. Run instructions
+17. Test instructions
+18. Sovereign safety checklist
+19. Edge safety checklist
+20. Global rollout checklist
+21. Acceptance checklist
+22. Known limitations
+23. Phase 17 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–15 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, edge bundles, on-prem bundles, logs, reports, docs, or exports.
+- Never log KMS key refs, runner tokens, API keys, broker credentials, or cloud credentials.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never move tenant data to a disallowed region.
+- Keep edge runners dry-run by default.
+- Keep cross-region sync disabled by default.
+- Keep on-prem appliance bundles secrets-excluded by default.
+- Keep regional billing metadata-only and avoid tax/legal claims.
+- Keep code modular and ready for Phase 17: autonomous enterprise optimization, predictive SRE, and global partner ecosystem automation.
+
+Now generate the complete Phase 16 implementation.

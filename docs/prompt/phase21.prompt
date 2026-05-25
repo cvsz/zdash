@@ -1,0 +1,2234 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 21 · AUTONOMOUS ECOSYSTEM GOVERNANCE FEDERATION + CROSS-ENTERPRISE TRUST NETWORK + VERIFIABLE AI OPERATING SYSTEM
+Federated Governance + Trust Registry + Attestation Ledger + AI Provenance + Compliance Passport + Verifiable Release Chain
+
+Do not rebuild Phase 1–20 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1–20:
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk System
+- Scheduler / IoT dry-run automation
+- Backtesting Lab
+- Content Pipeline
+- React Dashboard
+- Auth / RBAC / Audit
+- Multi-tenant SaaS
+- Workers / Realtime / Alerts
+- Billing / Marketplace / Enterprise Packaging
+- AI Ops / Governance / Compliance
+- Ops Autopilot / Incident / SLA / Integrations
+- Mobile App / Partner API / SDKs / Sandbox
+- Tauri Desktop / Distribution / Public Launch
+- GA Readiness / Marketplace V2 / Partner Program / Product Analytics / LegalOps
+- Sovereign Enterprise Grid
+- On-Prem Appliance
+- Edge Runners
+- Data Residency Enforcement
+- Global Partner Operations
+- Predictive SRE
+- Optimization Center
+- Growth Intelligence
+- Executive Command Center
+- QBR Reports
+- AI Boardroom
+- Strategy Engine
+- OKR Engine
+- Scenario Simulation
+- Competitive Intelligence
+- Decision Memos
+- Enterprise Digital Twin
+- Macro Simulation
+- Continuous Planning
+- Strategy War Room
+- Decision Lineage
+- Enterprise OS
+- Self-Evolution Proposal System
+- Governance Refinement
+- Long-Horizon Strategy Intelligence
+- Lessons Memory
+
+============================================================
+PHASE 21 OBJECTIVE
+============================================================
+
+Build the federated governance and verifiable AI operating system layer for zDash.
+
+Main goals:
+
+1. Add cross-enterprise governance federation model
+2. Add federation membership and trust boundary system
+3. Add trust registry for enterprises, partners, resellers, regions, edge runners, marketplace listings, and certified agents
+4. Add verifiable attestation system
+5. Add compliance passport model
+6. Add privacy-preserving trust exchange workflow
+7. Add signed evidence bundle shell
+8. Add AI provenance ledger
+9. Add prompt/model/evaluation provenance tracking
+10. Add release attestation chain
+11. Add SBOM/provenance linkage
+12. Add policy-as-code attestation shell
+13. Add control evidence attestation
+14. Add federated marketplace governance workflow
+15. Add regional trust policy exchange
+16. Add trust score and reputation model
+17. Add verification request workflow
+18. Add verifiable audit trail export
+19. Add frontend pages for federation, trust network, attestations, provenance, compliance passport, verification center
+20. Add tests, docs, runbooks, and final acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not bypass final GA safety gates.
+- Do not bypass data residency enforcement.
+- Do not allow self-modifying production code.
+- Do not auto-commit, auto-merge, auto-deploy, auto-migrate, auto-scale, auto-delete, or auto-change infrastructure.
+- Federation membership must not bypass tenant ownership.
+- Trust exchange must be explicit-consent and redacted by default.
+- Compliance passports must be summaries, not raw secret-bearing evidence.
+- Attestation signatures are shell/mock by default unless signing is explicitly configured.
+- No raw signing keys, private keys, API keys, KMS refs, runner tokens, broker credentials, cloud credentials, customer secrets, raw prompts, raw documents, or confidential payloads may be logged, exported, synced, displayed, or embedded in attestations.
+- Verification outputs are evidence summaries, not legal certification.
+- Trust scores must be explainable and auditable.
+- Reputation and marketplace rankings must not boost uncertified or unsafe listings.
+- Federated governance must fail closed when configured.
+- Every attestation, verification, trust score, and passport must include scope, evidence summary, confidence, limitations, timestamp, and issuer.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/federation/
+  __init__.py
+  models.py
+  federation_registry.py
+  membership_service.py
+  trust_boundary_service.py
+  governance_federation_service.py
+  federation_policy_service.py
+  regional_trust_exchange.py
+  federation_report_service.py
+
+backend/app/trust_network/
+  __init__.py
+  models.py
+  trust_registry.py
+  trust_score_service.py
+  reputation_service.py
+  trust_exchange_service.py
+  verification_request_service.py
+  compliance_passport_service.py
+  partner_trust_service.py
+
+backend/app/verifiable_os/
+  __init__.py
+  models.py
+  attestation_service.py
+  evidence_bundle_service.py
+  signature_service.py
+  provenance_ledger.py
+  release_attestation.py
+  sbom_attestation.py
+  policy_attestation.py
+  audit_export_service.py
+
+backend/app/ai_provenance/
+  __init__.py
+  models.py
+  prompt_provenance.py
+  model_provenance.py
+  eval_provenance.py
+  decision_provenance.py
+  ai_lineage_service.py
+  provenance_report_service.py
+
+backend/app/api/federation.py
+backend/app/api/trust_network.py
+backend/app/api/verifiable_os.py
+backend/app/api/ai_provenance.py
+
+frontend/src/pages/FederationControl.tsx
+frontend/src/pages/TrustNetwork.tsx
+frontend/src/pages/AttestationCenter.tsx
+frontend/src/pages/ProvenanceLedger.tsx
+frontend/src/pages/CompliancePassport.tsx
+frontend/src/pages/VerificationCenter.tsx
+frontend/src/pages/AIProvenance.tsx
+frontend/src/pages/FederatedMarketplaceGovernance.tsx
+
+frontend/src/components/federation/
+  FederationRegistryTable.tsx
+  FederationMemberCard.tsx
+  TrustBoundaryPanel.tsx
+  FederationPolicyPanel.tsx
+  RegionalTrustExchangePanel.tsx
+  FederationReportPanel.tsx
+
+frontend/src/components/trust-network/
+  TrustRegistryTable.tsx
+  TrustScoreCard.tsx
+  ReputationTimeline.tsx
+  TrustExchangePanel.tsx
+  VerificationRequestTable.tsx
+  CompliancePassportPanel.tsx
+  PartnerTrustProfile.tsx
+
+frontend/src/components/verifiable-os/
+  AttestationTable.tsx
+  AttestationDetailPanel.tsx
+  EvidenceBundlePanel.tsx
+  SignatureStatusCard.tsx
+  ReleaseAttestationChain.tsx
+  SBOMAttestationPanel.tsx
+  PolicyAttestationPanel.tsx
+  VerifiableAuditExportPanel.tsx
+
+frontend/src/components/ai-provenance/
+  PromptProvenancePanel.tsx
+  ModelProvenancePanel.tsx
+  EvalProvenancePanel.tsx
+  DecisionProvenancePanel.tsx
+  AILineageGraph.tsx
+  ProvenanceReportPanel.tsx
+
+frontend/src/hooks/useFederation.ts
+frontend/src/hooks/useTrustNetwork.ts
+frontend/src/hooks/useVerifiableOS.ts
+frontend/src/hooks/useAIProvenance.ts
+
+scripts/
+  run-federation-health-check.sh
+  generate-compliance-passport.sh
+  create-attestation-bundle.sh
+  verify-attestation-bundle.sh
+  export-verifiable-audit-trail.sh
+  generate-ai-provenance-report.sh
+  validate-federated-marketplace-policy.sh
+  federation-smoke-test.sh
+
+docs/
+  federation/
+    FEDERATED_GOVERNANCE_MODEL.md
+    FEDERATION_MEMBERSHIP_MODEL.md
+    TRUST_BOUNDARIES.md
+    REGIONAL_TRUST_EXCHANGE.md
+    FEDERATED_MARKETPLACE_GOVERNANCE.md
+  trust-network/
+    TRUST_REGISTRY_MODEL.md
+    TRUST_SCORE_MODEL.md
+    REPUTATION_MODEL.md
+    COMPLIANCE_PASSPORT_MODEL.md
+    VERIFICATION_REQUEST_WORKFLOW.md
+  verifiable-os/
+    VERIFIABLE_AI_OS_MODEL.md
+    ATTESTATION_MODEL.md
+    EVIDENCE_BUNDLE_MODEL.md
+    PROVENANCE_LEDGER_MODEL.md
+    RELEASE_ATTESTATION_CHAIN.md
+    POLICY_AS_CODE_ATTESTATION.md
+    VERIFIABLE_AUDIT_EXPORT.md
+  ai-provenance/
+    AI_PROVENANCE_MODEL.md
+    PROMPT_PROVENANCE.md
+    MODEL_PROVENANCE.md
+    EVAL_PROVENANCE.md
+    DECISION_PROVENANCE.md
+    AI_LINEAGE_MODEL.md
+  runbooks/
+    FEDERATION_ONBOARDING_RUNBOOK.md
+    TRUST_EXCHANGE_RUNBOOK.md
+    ATTESTATION_INCIDENT_RUNBOOK.md
+    COMPLIANCE_PASSPORT_REVIEW_RUNBOOK.md
+    PROVENANCE_AUDIT_RUNBOOK.md
+    FEDERATED_MARKETPLACE_REVIEW_RUNBOOK.md
+
+backend/app/tests/
+  test_federation_models.py
+  test_federation_registry.py
+  test_membership_service.py
+  test_trust_boundary_service.py
+  test_governance_federation_service.py
+  test_federation_policy_service.py
+  test_regional_trust_exchange.py
+  test_federation_report_service.py
+  test_trust_network_models.py
+  test_trust_registry.py
+  test_trust_score_service.py
+  test_reputation_service.py
+  test_trust_exchange_service.py
+  test_verification_request_service.py
+  test_compliance_passport_service.py
+  test_partner_trust_service.py
+  test_verifiable_os_models.py
+  test_attestation_service.py
+  test_evidence_bundle_service.py
+  test_signature_service.py
+  test_provenance_ledger.py
+  test_release_attestation.py
+  test_sbom_attestation.py
+  test_policy_attestation.py
+  test_audit_export_service.py
+  test_ai_provenance_models.py
+  test_prompt_provenance.py
+  test_model_provenance.py
+  test_eval_provenance.py
+  test_decision_provenance.py
+  test_ai_lineage_service.py
+  test_provenance_report_service.py
+  test_federation_api.py
+  test_trust_network_api.py
+  test_verifiable_os_api.py
+  test_ai_provenance_api.py
+  test_phase21_tenant_isolation.py
+  test_phase21_safety_gates.py
+
+frontend/src/tests/
+  FederationControl.test.tsx
+  TrustNetwork.test.tsx
+  AttestationCenter.test.tsx
+  ProvenanceLedger.test.tsx
+  CompliancePassport.test.tsx
+  VerificationCenter.test.tsx
+  AIProvenance.test.tsx
+  FederatedMarketplaceGovernance.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/governance/policy_engine.py
+backend/app/compliance/evidence_service.py
+backend/app/marketplace_v2/review_queue.py
+backend/app/marketplace_v2/install_policy.py
+backend/app/aiops/prompt_registry.py
+backend/app/aiops/eval_runner.py
+backend/app/distribution/release_notes.py
+backend/app/distribution/marketplace_publish_service.py
+backend/app/sovereign/residency_engine.py
+backend/app/enterprise_os/enterprise_state_service.py
+backend/app/lessons/lessons_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+desktop/src/pages/DesktopSettings.tsx
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+FEDERATION_ENABLED=true
+FEDERATION_MODE=advisory
+FEDERATION_FAIL_CLOSED=true
+FEDERATION_MEMBERSHIP_APPROVAL_REQUIRED=true
+FEDERATION_TRUST_EXCHANGE_ENABLED=true
+FEDERATION_TRUST_EXCHANGE_DRY_RUN=true
+
+TRUST_NETWORK_ENABLED=true
+TRUST_REGISTRY_ENABLED=true
+TRUST_SCORE_ENABLED=true
+TRUST_SCORE_MIN_CONFIDENCE=0.60
+REPUTATION_TRACKING_ENABLED=true
+COMPLIANCE_PASSPORT_ENABLED=true
+COMPLIANCE_PASSPORT_SUMMARY_ONLY=true
+
+VERIFIABLE_OS_ENABLED=true
+ATTESTATION_ENABLED=true
+ATTESTATION_SIGNING_PROVIDER=mock
+ATTESTATION_SIGNING_DRY_RUN=true
+ATTESTATION_REQUIRE_EVIDENCE=true
+ATTESTATION_EXCLUDE_SECRETS=true
+
+EVIDENCE_BUNDLE_ENABLED=true
+EVIDENCE_BUNDLE_SUMMARY_ONLY=true
+EVIDENCE_BUNDLE_REQUIRE_DLP=true
+
+PROVENANCE_LEDGER_ENABLED=true
+PROVENANCE_LEDGER_MODE=hash_chain
+PROVENANCE_LEDGER_DRY_RUN=true
+PROVENANCE_RETENTION_DAYS=365
+
+RELEASE_ATTESTATION_ENABLED=true
+SBOM_ATTESTATION_ENABLED=true
+POLICY_ATTESTATION_ENABLED=true
+AUDIT_EXPORT_VERIFIABLE_ENABLED=true
+
+AI_PROVENANCE_ENABLED=true
+PROMPT_PROVENANCE_ENABLED=true
+MODEL_PROVENANCE_ENABLED=true
+EVAL_PROVENANCE_ENABLED=true
+DECISION_PROVENANCE_ENABLED=true
+AI_LINEAGE_ENABLED=true
+
+FEDERATED_MARKETPLACE_GOVERNANCE_ENABLED=true
+FEDERATED_MARKETPLACE_FAIL_CLOSED=true
+
+Rules:
+- Federation must be advisory by default.
+- Federation trust exchange must be dry-run by default.
+- Trust exchange requires explicit approval.
+- Compliance passports are summary-only by default.
+- Evidence bundles must exclude secrets.
+- DLP must run before evidence bundles and attestations.
+- Signing provider is mock/dry-run by default.
+- Provenance ledger is hash-chain shell by default, not a real blockchain.
+- No raw private keys, signing keys, API keys, or secrets may be persisted.
+- Federated marketplace governance must fail closed when safety state is unknown.
+
+============================================================
+FEDERATION MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. FederationStatus
+
+Allowed values:
+- draft
+- active
+- suspended
+- archived
+
+2. FederationMemberRole
+
+Allowed values:
+- owner
+- enterprise
+- partner
+- reseller
+- marketplace_publisher
+- auditor
+- observer
+
+3. TrustBoundaryType
+
+Allowed values:
+- tenant
+- organization
+- region
+- marketplace
+- partner
+- edge
+- compliance
+- ai_system
+
+4. FederationPolicyStatus
+
+Allowed values:
+- draft
+- active
+- deprecated
+- disabled
+
+5. FederationRecord
+
+Fields:
+- id
+- name
+- slug
+- description
+- status
+- owner_organization_id
+- allowed_regions
+- governance_mode
+- metadata
+- created_at
+- updated_at
+
+6. FederationMember
+
+Fields:
+- id
+- federation_id
+- organization_id
+- role
+- status
+- joined_at
+- approved_by
+- metadata
+- created_at
+- updated_at
+
+7. TrustBoundary
+
+Fields:
+- id
+- federation_id
+- organization_id
+- boundary_type
+- name
+- allowed_data_classes
+- allowed_regions
+- exchange_rules
+- enforcement_mode
+- created_at
+- updated_at
+
+8. FederationPolicy
+
+Fields:
+- id
+- federation_id
+- name
+- description
+- status
+- policy_type
+- rules
+- enforcement_mode
+- created_by
+- created_at
+- updated_at
+
+9. RegionalTrustExchange
+
+Fields:
+- id
+- federation_id
+- source_region
+- target_region
+- exchange_type
+- status
+- residency_decision
+- evidence_summary
+- confidence
+- created_at
+
+10. FederationReport
+
+Fields:
+- id
+- federation_id
+- title
+- summary
+- members
+- policies
+- trust_boundaries
+- risks
+- recommendations
+- limitations
+- created_at
+
+============================================================
+FEDERATION SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/federation/federation_registry.py
+backend/app/federation/membership_service.py
+backend/app/federation/trust_boundary_service.py
+backend/app/federation/governance_federation_service.py
+backend/app/federation/federation_policy_service.py
+backend/app/federation/regional_trust_exchange.py
+backend/app/federation/federation_report_service.py
+
+FederationRegistry methods:
+- create_federation()
+- list_federations()
+- get_federation()
+- update_federation()
+- archive_federation()
+
+MembershipService methods:
+- request_membership()
+- approve_membership()
+- suspend_member()
+- list_members()
+- validate_member_access()
+
+TrustBoundaryService methods:
+- create_boundary()
+- list_boundaries()
+- evaluate_boundary()
+- enforce_boundary()
+- explain_boundary_decision()
+
+GovernanceFederationService methods:
+- get_federation_status()
+- summarize_federation_governance()
+- validate_federation_health()
+- detect_federation_risks()
+
+FederationPolicyService methods:
+- create_policy()
+- list_policies()
+- update_policy()
+- evaluate_policy()
+- enforce_policy()
+
+RegionalTrustExchangeService methods:
+- request_exchange()
+- evaluate_exchange()
+- approve_exchange()
+- block_exchange()
+- list_exchanges()
+
+FederationReportService methods:
+- generate_report()
+- list_reports()
+- build_markdown_report()
+
+Rules:
+- Federation membership cannot bypass tenant access.
+- Cross-region exchanges must call ResidencyEngine.
+- Federation policies cannot weaken local safety controls.
+- Exchange payloads are summary-only and DLP-scanned.
+- Every decision must be auditable.
+
+============================================================
+TRUST NETWORK MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. TrustEntityType
+
+Allowed values:
+- enterprise
+- partner
+- reseller
+- edge_runner
+- marketplace_listing
+- certified_agent
+- region
+- compliance_control
+- ai_model
+- prompt_template
+- release_package
+
+2. TrustStatus
+
+Allowed values:
+- unknown
+- trusted
+- provisional
+- review_required
+- suspended
+- revoked
+
+3. VerificationStatus
+
+Allowed values:
+- requested
+- in_review
+- verified
+- rejected
+- expired
+- revoked
+
+4. TrustEntity
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- entity_type
+- external_ref
+- name
+- status
+- trust_score
+- confidence
+- evidence_ids
+- metadata
+- created_at
+- updated_at
+
+5. TrustScore
+
+Fields:
+- id
+- entity_id
+- total_score
+- security_score
+- compliance_score
+- reliability_score
+- marketplace_score
+- provenance_score
+- confidence
+- explanation
+- calculated_at
+
+6. ReputationEvent
+
+Fields:
+- id
+- entity_id
+- event_type
+- impact
+- summary
+- evidence_ids
+- created_at
+
+7. TrustExchangeRequest
+
+Fields:
+- id
+- source_organization_id
+- target_organization_id
+- requested_scope
+- status
+- evidence_requested
+- evidence_shared
+- redacted
+- approved_by
+- created_at
+- updated_at
+
+8. VerificationRequest
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- entity_id
+- verification_type
+- status
+- requested_by
+- reviewed_by
+- evidence_summary
+- decision_notes
+- created_at
+- reviewed_at
+
+9. CompliancePassport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- passport_type
+- status
+- controls_summary
+- evidence_summary
+- attestations
+- trust_score
+- limitations
+- issued_at
+- expires_at
+
+============================================================
+TRUST NETWORK SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trust_network/trust_registry.py
+backend/app/trust_network/trust_score_service.py
+backend/app/trust_network/reputation_service.py
+backend/app/trust_network/trust_exchange_service.py
+backend/app/trust_network/verification_request_service.py
+backend/app/trust_network/compliance_passport_service.py
+backend/app/trust_network/partner_trust_service.py
+
+TrustRegistry methods:
+- register_entity()
+- list_entities()
+- get_entity()
+- update_status()
+- revoke_entity()
+
+TrustScoreService methods:
+- calculate_score()
+- explain_score()
+- list_scores()
+- recalculate_all()
+
+ReputationService methods:
+- record_event()
+- list_events()
+- summarize_reputation()
+
+TrustExchangeService methods:
+- create_exchange_request()
+- approve_exchange()
+- reject_exchange()
+- share_redacted_evidence()
+- list_exchange_requests()
+
+VerificationRequestService methods:
+- create_request()
+- list_requests()
+- approve_verification()
+- reject_verification()
+- expire_verification()
+
+CompliancePassportService methods:
+- generate_passport()
+- list_passports()
+- get_passport()
+- revoke_passport()
+- build_markdown_passport()
+
+PartnerTrustService methods:
+- get_partner_trust_profile()
+- summarize_partner_trust()
+- recommend_trust_actions()
+
+Rules:
+- Trust scores must be explainable.
+- Unknown evidence must lower confidence.
+- Trust exchange requires explicit approval.
+- Compliance passports are not legal certifications.
+- Passports must not include raw evidence with secrets.
+- Revoked entities cannot be trusted by marketplace install policy.
+
+============================================================
+VERIFIABLE OS MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. AttestationType
+
+Allowed values:
+- release
+- sbom
+- policy
+- compliance_control
+- audit_log
+- ai_prompt
+- ai_model
+- eval_run
+- marketplace_listing
+- edge_runner
+- data_residency
+
+2. AttestationStatus
+
+Allowed values:
+- draft
+- signed
+- verified
+- failed
+- revoked
+- expired
+
+3. SignatureProvider
+
+Allowed values:
+- mock
+- local
+- kms
+- external
+
+4. AttestationRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- attestation_type
+- subject_type
+- subject_id
+- status
+- issuer
+- evidence_bundle_id
+- signature_provider
+- signature_ref
+- checksum
+- claims
+- limitations
+- issued_at
+- expires_at
+- created_at
+
+5. EvidenceBundle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- bundle_type
+- evidence_refs
+- summary
+- checksum
+- dlp_passed
+- secrets_excluded
+- created_by
+- created_at
+
+6. ProvenanceLedgerEntry
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- entry_type
+- subject_type
+- subject_id
+- previous_hash
+- entry_hash
+- payload_summary
+- redacted
+- created_at
+
+7. ReleaseAttestation
+
+Fields:
+- id
+- release_id
+- version
+- package_id
+- sbom_id
+- policy_attestation_id
+- status
+- checksum
+- signature_ref
+- created_at
+
+8. PolicyAttestation
+
+Fields:
+- id
+- policy_id
+- policy_version
+- controls
+- enforcement_mode
+- safety_summary
+- checksum
+- signature_ref
+- created_at
+
+9. VerifiableAuditExport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- export_type
+- status
+- file_path
+- checksum
+- attestation_id
+- secrets_excluded
+- created_by
+- created_at
+
+============================================================
+VERIFIABLE OS SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/verifiable_os/attestation_service.py
+backend/app/verifiable_os/evidence_bundle_service.py
+backend/app/verifiable_os/signature_service.py
+backend/app/verifiable_os/provenance_ledger.py
+backend/app/verifiable_os/release_attestation.py
+backend/app/verifiable_os/sbom_attestation.py
+backend/app/verifiable_os/policy_attestation.py
+backend/app/verifiable_os/audit_export_service.py
+
+AttestationService methods:
+- create_attestation()
+- sign_attestation()
+- verify_attestation()
+- revoke_attestation()
+- list_attestations()
+- get_attestation()
+
+EvidenceBundleService methods:
+- create_bundle()
+- list_bundles()
+- get_bundle()
+- verify_bundle()
+- build_bundle_summary()
+
+SignatureService methods:
+- sign_payload()
+- verify_signature()
+- get_signature_status()
+
+Rules:
+- Mock signing works without private keys.
+- Real signing requires explicit provider config.
+- Never log signing keys.
+- Missing real signing config blocks real signing.
+
+ProvenanceLedgerService methods:
+- append_entry()
+- verify_chain()
+- list_entries()
+- get_entry()
+- export_ledger_summary()
+
+Rules:
+- Hash-chain shell only.
+- No raw secrets in payload.
+- Redacted payload summaries only.
+
+ReleaseAttestationService methods:
+- create_release_attestation()
+- verify_release_chain()
+- list_release_attestations()
+
+SBOMAttestationService methods:
+- create_sbom_attestation()
+- verify_sbom_attestation()
+- link_sbom_to_release()
+
+PolicyAttestationService methods:
+- create_policy_attestation()
+- verify_policy_attestation()
+- list_policy_attestations()
+
+AuditExportService methods:
+- create_verifiable_audit_export()
+- list_exports()
+- verify_export()
+- build_export_manifest()
+
+Rules:
+- Audit export excludes secrets by default.
+- include_sensitive is not allowed in Phase 21.
+- All exports must be DLP-scanned.
+
+============================================================
+AI PROVENANCE MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. AIProvenanceType
+
+Allowed values:
+- prompt
+- prompt_version
+- model
+- eval_dataset
+- eval_run
+- ai_trace
+- decision
+- recommendation
+
+2. AIProvenanceStatus
+
+Allowed values:
+- recorded
+- verified
+- warning
+- incomplete
+- revoked
+
+3. PromptProvenanceRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- prompt_id
+- prompt_version_id
+- status
+- created_by
+- approval_status
+- dlp_status
+- eval_status
+- evidence_summary
+- checksum
+- created_at
+
+4. ModelProvenanceRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- model_id
+- provider
+- model_name
+- status
+- capabilities
+- approval_status
+- eval_summary
+- limitations
+- checksum
+- created_at
+
+5. EvalProvenanceRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- eval_run_id
+- dataset_id
+- prompt_version_id
+- model_id
+- score
+- passed
+- findings_summary
+- checksum
+- created_at
+
+6. DecisionProvenanceRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- decision_id
+- decision_type
+- source_modules
+- evidence_refs
+- assumptions
+- confidence
+- limitations
+- attestation_id
+- created_at
+
+7. AILineageGraph
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- nodes
+- edges
+- summary
+- confidence
+- created_at
+
+============================================================
+AI PROVENANCE SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/ai_provenance/prompt_provenance.py
+backend/app/ai_provenance/model_provenance.py
+backend/app/ai_provenance/eval_provenance.py
+backend/app/ai_provenance/decision_provenance.py
+backend/app/ai_provenance/ai_lineage_service.py
+backend/app/ai_provenance/provenance_report_service.py
+
+PromptProvenanceService methods:
+- record_prompt_provenance()
+- list_prompt_provenance()
+- verify_prompt_provenance()
+- link_prompt_attestation()
+
+ModelProvenanceService methods:
+- record_model_provenance()
+- list_model_provenance()
+- verify_model_provenance()
+
+EvalProvenanceService methods:
+- record_eval_provenance()
+- list_eval_provenance()
+- verify_eval_provenance()
+
+DecisionProvenanceService methods:
+- record_decision_provenance()
+- list_decision_provenance()
+- verify_decision_provenance()
+- link_decision_attestation()
+
+AILineageService methods:
+- build_lineage_graph()
+- list_lineage_graphs()
+- summarize_lineage()
+- detect_missing_provenance()
+
+ProvenanceReportService methods:
+- generate_report()
+- build_markdown_report()
+- list_reports()
+
+Rules:
+- Raw prompts are not stored in provenance records by default.
+- Store checksums and redacted summaries only.
+- DLP status required before verification.
+- Provenance reports include limitations and incomplete provenance warnings.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/federation.py
+
+Endpoints:
+
+GET /api/federation/status
+POST /api/federation/records
+GET /api/federation/records
+GET /api/federation/records/{federation_id}
+PATCH /api/federation/records/{federation_id}
+POST /api/federation/records/{federation_id}/archive
+
+Membership:
+POST /api/federation/{federation_id}/membership/request
+POST /api/federation/{federation_id}/membership/{member_id}/approve
+POST /api/federation/{federation_id}/membership/{member_id}/suspend
+GET /api/federation/{federation_id}/members
+
+Trust boundaries:
+POST /api/federation/{federation_id}/boundaries
+GET /api/federation/{federation_id}/boundaries
+POST /api/federation/{federation_id}/boundaries/evaluate
+
+Policies:
+POST /api/federation/{federation_id}/policies
+GET /api/federation/{federation_id}/policies
+POST /api/federation/{federation_id}/policies/evaluate
+
+Regional trust exchange:
+POST /api/federation/{federation_id}/regional-exchange/request
+GET /api/federation/{federation_id}/regional-exchange
+POST /api/federation/{federation_id}/regional-exchange/{exchange_id}/approve
+POST /api/federation/{federation_id}/regional-exchange/{exchange_id}/block
+
+Reports:
+POST /api/federation/{federation_id}/reports
+GET /api/federation/{federation_id}/reports
+GET /api/federation/reports/{report_id}/markdown
+
+Create:
+
+backend/app/api/trust_network.py
+
+Endpoints:
+
+GET /api/trust-network/status
+POST /api/trust-network/entities
+GET /api/trust-network/entities
+GET /api/trust-network/entities/{entity_id}
+PATCH /api/trust-network/entities/{entity_id}/status
+POST /api/trust-network/entities/{entity_id}/revoke
+
+Trust scores:
+POST /api/trust-network/entities/{entity_id}/score
+GET /api/trust-network/entities/{entity_id}/score
+GET /api/trust-network/scores
+
+Reputation:
+POST /api/trust-network/entities/{entity_id}/reputation
+GET /api/trust-network/entities/{entity_id}/reputation
+
+Trust exchange:
+POST /api/trust-network/exchange
+GET /api/trust-network/exchange
+POST /api/trust-network/exchange/{exchange_id}/approve
+POST /api/trust-network/exchange/{exchange_id}/reject
+
+Verification:
+POST /api/trust-network/verification
+GET /api/trust-network/verification
+POST /api/trust-network/verification/{request_id}/approve
+POST /api/trust-network/verification/{request_id}/reject
+
+Compliance passport:
+POST /api/trust-network/passports
+GET /api/trust-network/passports
+GET /api/trust-network/passports/{passport_id}
+GET /api/trust-network/passports/{passport_id}/markdown
+POST /api/trust-network/passports/{passport_id}/revoke
+
+Create:
+
+backend/app/api/verifiable_os.py
+
+Endpoints:
+
+GET /api/verifiable-os/status
+
+Attestations:
+POST /api/verifiable-os/attestations
+GET /api/verifiable-os/attestations
+GET /api/verifiable-os/attestations/{attestation_id}
+POST /api/verifiable-os/attestations/{attestation_id}/sign
+POST /api/verifiable-os/attestations/{attestation_id}/verify
+POST /api/verifiable-os/attestations/{attestation_id}/revoke
+
+Evidence bundles:
+POST /api/verifiable-os/evidence-bundles
+GET /api/verifiable-os/evidence-bundles
+GET /api/verifiable-os/evidence-bundles/{bundle_id}
+POST /api/verifiable-os/evidence-bundles/{bundle_id}/verify
+
+Provenance ledger:
+POST /api/verifiable-os/ledger/append
+GET /api/verifiable-os/ledger
+POST /api/verifiable-os/ledger/verify-chain
+GET /api/verifiable-os/ledger/export-summary
+
+Release/SBOM/policy attestations:
+POST /api/verifiable-os/releases/attest
+GET /api/verifiable-os/releases/attestations
+POST /api/verifiable-os/sbom/attest
+POST /api/verifiable-os/policies/attest
+GET /api/verifiable-os/policies/attestations
+
+Audit exports:
+POST /api/verifiable-os/audit-exports
+GET /api/verifiable-os/audit-exports
+POST /api/verifiable-os/audit-exports/{export_id}/verify
+
+Create:
+
+backend/app/api/ai_provenance.py
+
+Endpoints:
+
+GET /api/ai-provenance/status
+
+Prompt provenance:
+POST /api/ai-provenance/prompts/record
+GET /api/ai-provenance/prompts
+POST /api/ai-provenance/prompts/{record_id}/verify
+
+Model provenance:
+POST /api/ai-provenance/models/record
+GET /api/ai-provenance/models
+POST /api/ai-provenance/models/{record_id}/verify
+
+Eval provenance:
+POST /api/ai-provenance/evals/record
+GET /api/ai-provenance/evals
+POST /api/ai-provenance/evals/{record_id}/verify
+
+Decision provenance:
+POST /api/ai-provenance/decisions/record
+GET /api/ai-provenance/decisions
+POST /api/ai-provenance/decisions/{record_id}/verify
+
+Lineage:
+POST /api/ai-provenance/lineage/build
+GET /api/ai-provenance/lineage
+GET /api/ai-provenance/lineage/{graph_id}
+
+Reports:
+POST /api/ai-provenance/reports
+GET /api/ai-provenance/reports
+GET /api/ai-provenance/reports/{report_id}/markdown
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Standard response shape required.
+- No endpoint may expose raw secrets, raw signing keys, raw prompts, or raw confidential payloads.
+- All evidence and passport exports must be summary-only.
+- Federation and trust exchange actions require explicit permission.
+- Verification and attestation outputs must include limitations.
+
+============================================================
+FRONTEND PHASE 21 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /federation
+- /trust-network
+- /attestations
+- /provenance-ledger
+- /compliance-passport
+- /verification-center
+- /ai-provenance
+- /federated-marketplace-governance
+
+Update sidebar:
+- Federation Control
+- Trust Network
+- Attestation Center
+- Provenance Ledger
+- Compliance Passport
+- Verification Center
+- AI Provenance
+- Federated Marketplace Governance
+
+1. Federation Control Page
+
+Must show:
+- Federation registry
+- Federation member cards
+- Trust boundaries
+- Federation policies
+- Regional trust exchange
+- Federation health summary
+- Advisory/fail-closed banner
+
+2. Trust Network Page
+
+Must show:
+- Trust registry table
+- Trust score cards
+- Reputation timeline
+- Partner trust profile
+- Trust score explanations
+- Unknown-confidence warnings
+
+3. Attestation Center Page
+
+Must show:
+- Attestation table
+- Evidence bundle panel
+- Signature status
+- Attestation detail
+- Sign/verify actions
+- Mock-signing banner
+
+4. Provenance Ledger Page
+
+Must show:
+- Hash-chain ledger entries
+- Chain verification status
+- Redacted payload indicators
+- Export summary action
+- Limitations note
+
+5. Compliance Passport Page
+
+Must show:
+- Passport list
+- Passport detail
+- Controls summary
+- Evidence summary
+- Attestations
+- Markdown preview
+- “Not legal certification” note
+
+6. Verification Center Page
+
+Must show:
+- Verification request table
+- Approve/reject workflow
+- Evidence summary
+- Decision notes
+- Expiration/revocation state
+
+7. AI Provenance Page
+
+Must show:
+- Prompt provenance
+- Model provenance
+- Eval provenance
+- Decision provenance
+- AI lineage graph
+- Missing provenance warnings
+- DLP status
+
+8. Federated Marketplace Governance Page
+
+Must show:
+- Federated marketplace policy state
+- Regional listing eligibility
+- Certified listing trust state
+- Revoked entity warnings
+- Install policy result
+- Fail-closed banner
+
+Frontend safety:
+- Never display secrets.
+- Never display raw signing keys, raw prompts, raw evidence payloads, or private documents.
+- Show mock/dry-run signing state.
+- Show summary-only evidence state.
+- Show confidence and limitations.
+- Show “not legal certification” for compliance passport.
+- Revoked or unknown trust entities must be visually prominent.
+- Federation actions must show approval requirements.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Federation:
+- federation.read
+- federation.manage
+- federation.manage_members
+- federation.manage_policies
+- federation.manage_trust_boundaries
+- federation.approve_exchange
+- federation.generate_reports
+
+Trust Network:
+- trust_network.read
+- trust_network.register_entity
+- trust_network.manage_scores
+- trust_network.manage_verification
+- trust_network.manage_exchange
+- trust_network.generate_passport
+
+Verifiable OS:
+- verifiable_os.read
+- verifiable_os.create_attestation
+- verifiable_os.sign_attestation
+- verifiable_os.verify_attestation
+- verifiable_os.revoke_attestation
+- verifiable_os.export_audit
+
+AI Provenance:
+- ai_provenance.read
+- ai_provenance.record
+- ai_provenance.verify
+- ai_provenance.generate_reports
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- federation.read
+- federation.manage_members
+- federation.manage_trust_boundaries
+- federation.approve_exchange
+- federation.generate_reports
+- trust_network.read
+- trust_network.register_entity
+- trust_network.manage_verification
+- trust_network.generate_passport
+- verifiable_os.read
+- verifiable_os.create_attestation
+- verifiable_os.verify_attestation
+- verifiable_os.export_audit
+- ai_provenance.read
+- ai_provenance.record
+- ai_provenance.verify
+- ai_provenance.generate_reports
+
+analyst:
+- federation.read
+- trust_network.read
+- verifiable_os.read
+- verifiable_os.verify_attestation
+- ai_provenance.read
+- ai_provenance.generate_reports
+
+viewer:
+- federation.read limited
+- trust_network.read limited
+- verifiable_os.read limited
+- ai_provenance.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- federation_records
+- federation_members
+- trust_boundaries
+- federation_policies
+- regional_trust_exchanges
+- federation_reports
+- trust_entities
+- trust_scores
+- reputation_events
+- trust_exchange_requests
+- verification_requests
+- compliance_passports
+- attestation_records
+- evidence_bundles
+- provenance_ledger_entries
+- release_attestations
+- policy_attestations
+- verifiable_audit_exports
+- prompt_provenance_records
+- model_provenance_records
+- eval_provenance_records
+- decision_provenance_records
+- ai_lineage_graphs
+- ai_provenance_reports
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- No secrets.
+- No raw signing keys.
+- No raw prompts by default.
+- No raw confidential evidence.
+- Checksums and hashes are allowed.
+- Evidence summaries must be DLP-scanned.
+- Attestation and provenance records must include limitations.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Federation:
+- federation.record.created
+- federation.record.updated
+- federation.member.requested
+- federation.member.approved
+- federation.member.suspended
+- federation.boundary.created
+- federation.boundary.evaluated
+- federation.policy.created
+- federation.policy.evaluated
+- federation.exchange.requested
+- federation.exchange.approved
+- federation.exchange.blocked
+- federation.report.generated
+
+Trust Network:
+- trust.entity.registered
+- trust.entity.status_updated
+- trust.entity.revoked
+- trust.score.calculated
+- trust.reputation.recorded
+- trust.exchange.requested
+- trust.exchange.approved
+- trust.exchange.rejected
+- trust.verification.requested
+- trust.verification.approved
+- trust.verification.rejected
+- trust.passport.generated
+- trust.passport.revoked
+
+Verifiable OS:
+- verifiable.attestation.created
+- verifiable.attestation.signed
+- verifiable.attestation.verified
+- verifiable.attestation.revoked
+- verifiable.evidence_bundle.created
+- verifiable.evidence_bundle.verified
+- verifiable.ledger.appended
+- verifiable.ledger.verified
+- verifiable.release.attested
+- verifiable.sbom.attested
+- verifiable.policy.attested
+- verifiable.audit_export.created
+- verifiable.audit_export.verified
+
+AI Provenance:
+- ai_provenance.prompt.recorded
+- ai_provenance.prompt.verified
+- ai_provenance.model.recorded
+- ai_provenance.model.verified
+- ai_provenance.eval.recorded
+- ai_provenance.eval.verified
+- ai_provenance.decision.recorded
+- ai_provenance.decision.verified
+- ai_provenance.lineage.built
+- ai_provenance.report.generated
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- FEDERATION_DISABLED
+- FEDERATION_NOT_FOUND
+- FEDERATION_MEMBER_NOT_FOUND
+- FEDERATION_MEMBERSHIP_APPROVAL_REQUIRED
+- TRUST_BOUNDARY_BLOCKED
+- FEDERATION_POLICY_BLOCKED
+- REGIONAL_TRUST_EXCHANGE_BLOCKED
+- TRUST_NETWORK_DISABLED
+- TRUST_ENTITY_NOT_FOUND
+- TRUST_ENTITY_REVOKED
+- TRUST_SCORE_LOW_CONFIDENCE
+- TRUST_EXCHANGE_APPROVAL_REQUIRED
+- VERIFICATION_REQUEST_NOT_FOUND
+- COMPLIANCE_PASSPORT_NOT_FOUND
+- COMPLIANCE_PASSPORT_SUMMARY_ONLY
+- VERIFIABLE_OS_DISABLED
+- ATTESTATION_NOT_FOUND
+- ATTESTATION_SIGNING_NOT_CONFIGURED
+- ATTESTATION_VERIFICATION_FAILED
+- EVIDENCE_BUNDLE_NOT_FOUND
+- EVIDENCE_BUNDLE_DLP_BLOCKED
+- PROVENANCE_LEDGER_INVALID
+- AUDIT_EXPORT_BLOCKED
+- AI_PROVENANCE_DISABLED
+- PROMPT_PROVENANCE_NOT_FOUND
+- MODEL_PROVENANCE_NOT_FOUND
+- EVAL_PROVENANCE_NOT_FOUND
+- DECISION_PROVENANCE_NOT_FOUND
+- AI_LINEAGE_INCOMPLETE
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_federation_models.py
+- federation status enum
+- member role enum
+- trust boundary type enum
+- federation record validation
+
+2. test_federation_registry.py
+- create federation
+- list federations
+- update federation
+- archive federation
+
+3. test_membership_service.py
+- request membership
+- approval required
+- approve membership
+- suspend member
+- tenant scoped access
+
+4. test_trust_boundary_service.py
+- create boundary
+- evaluate boundary
+- blocked exchange fails closed
+- explanation included
+
+5. test_governance_federation_service.py
+- federation health summarized
+- federation risks detected
+- governance status works
+
+6. test_federation_policy_service.py
+- create policy
+- evaluate policy
+- policy cannot weaken local safety controls
+
+7. test_regional_trust_exchange.py
+- exchange request created
+- residency engine called
+- disallowed region blocks
+- redacted evidence only
+
+8. test_federation_report_service.py
+- report generated
+- markdown generated
+- limitations included
+- no secrets included
+
+9. test_trust_network_models.py
+- trust entity type enum
+- trust status enum
+- verification status enum
+- compliance passport validation
+
+10. test_trust_registry.py
+- register entity
+- update status
+- revoke entity
+- revoked entity cannot be trusted
+
+11. test_trust_score_service.py
+- score calculated
+- explanation included
+- unknown evidence lowers confidence
+
+12. test_reputation_service.py
+- reputation event recorded
+- reputation summary works
+- evidence linked
+
+13. test_trust_exchange_service.py
+- exchange requested
+- explicit approval required
+- redacted evidence shared
+- rejection works
+
+14. test_verification_request_service.py
+- verification request created
+- approve/reject works
+- expired verification handled
+
+15. test_compliance_passport_service.py
+- passport generated
+- summary-only enforced
+- no raw evidence included
+- not-legal-certification note present
+
+16. test_partner_trust_service.py
+- partner trust profile generated
+- recommended trust actions advisory
+- revoked entity warning shown
+
+17. test_verifiable_os_models.py
+- attestation type enum
+- attestation status enum
+- signature provider enum
+- evidence bundle validation
+
+18. test_attestation_service.py
+- attestation created
+- mock signing works
+- verification works
+- revocation works
+
+19. test_evidence_bundle_service.py
+- evidence bundle created
+- DLP required
+- secrets excluded
+- checksum generated
+
+20. test_signature_service.py
+- mock signature created
+- verification works
+- real signing missing config blocks
+- signing key not logged
+
+21. test_provenance_ledger.py
+- entry appended
+- hash chain verified
+- tampered chain fails
+- redacted payload summary only
+
+22. test_release_attestation.py
+- release attestation created
+- release chain verified
+- SBOM linked
+
+23. test_sbom_attestation.py
+- SBOM attestation created
+- verification works
+- missing SBOM blocks release attestation
+
+24. test_policy_attestation.py
+- policy attestation created
+- safety summary included
+- weakening policy blocked
+
+25. test_audit_export_service.py
+- verifiable audit export created
+- secrets excluded
+- export verification works
+
+26. test_ai_provenance_models.py
+- provenance type enum
+- provenance status enum
+- prompt provenance validation
+
+27. test_prompt_provenance.py
+- prompt provenance recorded
+- raw prompt not stored by default
+- DLP status required
+- attestation linked
+
+28. test_model_provenance.py
+- model provenance recorded
+- approval/eval summary included
+- limitations included
+
+29. test_eval_provenance.py
+- eval provenance recorded
+- checksum generated
+- failed eval warning included
+
+30. test_decision_provenance.py
+- decision provenance recorded
+- assumptions and limitations included
+- attestation linked
+
+31. test_ai_lineage_service.py
+- lineage graph built
+- missing provenance detected
+- summary generated
+
+32. test_provenance_report_service.py
+- report generated
+- markdown generated
+- incomplete provenance warnings included
+
+33. test_federation_api.py
+- status endpoint
+- federation CRUD endpoints
+- membership endpoint
+- boundary endpoint
+- report endpoint
+
+34. test_trust_network_api.py
+- status endpoint
+- trust entity endpoints
+- score endpoint
+- verification endpoint
+- passport endpoint
+
+35. test_verifiable_os_api.py
+- status endpoint
+- attestation endpoint
+- evidence bundle endpoint
+- ledger endpoint
+- audit export endpoint
+
+36. test_ai_provenance_api.py
+- status endpoint
+- prompt provenance endpoint
+- model provenance endpoint
+- eval provenance endpoint
+- lineage endpoint
+
+37. test_phase21_tenant_isolation.py
+- org A cannot read org B federation-scoped private data
+- org A cannot read org B trust entities
+- org A cannot read org B attestations
+- org A cannot read org B AI provenance records
+- federation membership does not bypass tenant ownership
+
+38. test_phase21_safety_gates.py
+- federation policy cannot weaken safety controls
+- trust exchange requires explicit approval
+- compliance passport excludes raw evidence
+- attestation excludes secrets
+- provenance ledger stores redacted summaries only
+- revoked trust entity blocks marketplace install policy
+
+Frontend tests:
+
+1. FederationControl.test.tsx
+- federation registry renders
+- member cards render
+- trust boundary panel renders
+- fail-closed banner visible
+
+2. TrustNetwork.test.tsx
+- trust registry renders
+- trust score card renders
+- reputation timeline renders
+- unknown confidence warning visible
+
+3. AttestationCenter.test.tsx
+- attestation table renders
+- evidence bundle panel renders
+- mock signing banner visible
+- verify action visible
+
+4. ProvenanceLedger.test.tsx
+- ledger entries render
+- chain verification status visible
+- redacted payload indicator visible
+
+5. CompliancePassport.test.tsx
+- passport panel renders
+- controls summary visible
+- not legal certification note visible
+- raw evidence not displayed
+
+6. VerificationCenter.test.tsx
+- verification requests render
+- approve/reject controls role-gated
+- evidence summary visible
+
+7. AIProvenance.test.tsx
+- prompt provenance renders
+- model provenance renders
+- eval provenance renders
+- lineage graph visible
+- missing provenance warning visible
+
+8. FederatedMarketplaceGovernance.test.tsx
+- federated policy state renders
+- regional eligibility renders
+- revoked entity warning visible
+- fail-closed banner visible
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Mobile:
+
+cd mobile
+npm test
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+SDKs:
+
+cd sdk/typescript
+npm test
+npm run build
+
+cd sdk/python
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 21 overview
+- Federated governance architecture
+- Federation membership model
+- Trust boundaries
+- Regional trust exchange
+- Trust registry
+- Trust score and reputation model
+- Compliance passport model
+- Verification workflow
+- Verifiable OS architecture
+- Attestation model
+- Evidence bundle model
+- Signature shell
+- Provenance ledger
+- Release attestation chain
+- SBOM attestation
+- Policy attestation
+- AI provenance model
+- Prompt/model/eval/decision provenance
+- AI lineage graph
+- Federated marketplace governance
+- Frontend pages
+- API examples
+- Test commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run frontend:
+
+cd frontend
+npm run dev
+
+Run federation health check:
+
+bash scripts/run-federation-health-check.sh
+
+Generate compliance passport:
+
+bash scripts/generate-compliance-passport.sh
+
+Create attestation bundle:
+
+bash scripts/create-attestation-bundle.sh
+
+Verify attestation bundle:
+
+bash scripts/verify-attestation-bundle.sh
+
+Export verifiable audit trail:
+
+bash scripts/export-verifiable-audit-trail.sh
+
+Generate AI provenance report:
+
+bash scripts/generate-ai-provenance-report.sh
+
+Validate federated marketplace policy:
+
+bash scripts/validate-federated-marketplace-policy.sh
+
+Federation smoke test:
+
+bash scripts/federation-smoke-test.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 21 is complete only when:
+
+- Federation models exist.
+- Federation registry works.
+- Federation membership workflow works.
+- Membership approval is required.
+- Trust boundary service works.
+- Federation policy service works.
+- Federation policies cannot weaken local safety controls.
+- Regional trust exchange works and calls residency checks.
+- Federation report generator works.
+- Trust network models exist.
+- Trust registry works.
+- Trust score service works with explainability.
+- Reputation service works.
+- Trust exchange requires explicit approval.
+- Verification request workflow works.
+- Compliance passport works and remains summary-only.
+- Partner trust profile works.
+- Verifiable OS models exist.
+- Attestation service works.
+- Mock signing works.
+- Evidence bundle service works and excludes secrets.
+- Provenance ledger hash-chain shell works.
+- Release attestation works.
+- SBOM attestation works.
+- Policy attestation works.
+- Verifiable audit export works.
+- AI provenance models exist.
+- Prompt provenance works.
+- Model provenance works.
+- Eval provenance works.
+- Decision provenance works.
+- AI lineage graph works.
+- Provenance report works.
+- Federation API works.
+- Trust Network API works.
+- Verifiable OS API works.
+- AI Provenance API works.
+- Frontend Federation Control page works.
+- Frontend Trust Network page works.
+- Frontend Attestation Center page works.
+- Frontend Provenance Ledger page works.
+- Frontend Compliance Passport page works.
+- Frontend Verification Center page works.
+- Frontend AI Provenance page works.
+- Frontend Federated Marketplace Governance page works.
+- Tenant isolation applies to all Phase 21 data.
+- Existing Phase 1–20 behavior remains intact.
+- Existing tests still pass.
+- New Phase 21 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Federation remains advisory by default.
+- Trust exchange remains approval-gated.
+- Evidence bundles remain summary-only and DLP-scanned.
+- README includes Phase 21 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full patched code for every updated file
+5. Federation models and services
+6. Trust Network models and services
+7. Verifiable OS models and services
+8. AI Provenance models and services
+9. API route files
+10. Build/validation scripts
+11. Test files
+12. .env.example updates
+13. README updates
+14. Federation docs
+15. Trust Network docs
+16. Verifiable OS docs
+17. AI Provenance docs
+18. Run instructions
+19. Test instructions
+20. Federation safety checklist
+21. Trust Exchange safety checklist
+22. Attestation safety checklist
+23. AI Provenance safety checklist
+24. Federated Marketplace safety checklist
+25. Acceptance checklist
+26. Known limitations
+27. Phase 22 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–20 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Keep mobile tests passing.
+- Keep desktop tests passing.
+- Keep SDK tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, SDKs, reports, passports, attestations, evidence bundles, ledger entries, logs, docs, or exports.
+- Never log API keys, KMS key refs, signing keys, runner tokens, broker credentials, cloud credentials, private payloads, raw prompts, or confidential evidence.
+- Never store raw confidential evidence by default.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Never bypass final GA safety gates.
+- Never bypass data residency enforcement.
+- Never allow federation membership to bypass tenant ownership.
+- Never allow federation policies to weaken local controls.
+- Never allow trust exchange without explicit approval.
+- Never publish or boost uncertified marketplace listings through federated governance.
+- Never treat compliance passports as legal certification.
+- Keep attestation signing mock/dry-run by default.
+- Keep provenance ledger as a hash-chain shell unless explicitly upgraded.
+- Keep all verification outputs evidence-linked, confidence-scored, limitation-aware, and auditable.
+- Keep code modular and ready for Phase 22: cryptographic trust fabric, confidential computing readiness, and verifiable multi-agent governance.
+
+Now generate the complete Phase 21 implementation.

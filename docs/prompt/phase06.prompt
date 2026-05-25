@@ -1,0 +1,1275 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 6 · CONTENT PIPELINE
+Editor Agent + Graphic Agent + Social Agent + Approval-Gated Publishing Workflow
+
+Do not rebuild Phase 1, Phase 2, Phase 3, Phase 4, or Phase 5 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- Default jobs
+- IoT adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows service scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Dataset Provider
+- Optimizer
+- Strategy Promotion Gate
+- Backtesting API
+- Scheduler backtest integration
+
+============================================================
+PHASE 6 OBJECTIVE
+============================================================
+
+Build the complete content automation pipeline for zDash.
+
+Main goals:
+
+1. Create Editor Agent
+2. Create Graphic Agent
+3. Create Social Agent
+4. Build content pipeline orchestration:
+   Editor → Graphic → Social
+5. Add AI image generation adapter interface
+6. Add mock image generation adapter
+7. Add social media adapter interface
+8. Add mock social media adapter
+9. Add approval-required publishing workflow
+10. Add scheduled content workflow
+11. Add content item store
+12. Add content logs and audit trail
+13. Add FastAPI content endpoints
+14. Integrate Phase 4 scheduler content_pipeline job with real Phase 6 service
+15. Add tests for the entire content system
+
+IMPORTANT:
+- Auto-posting must be disabled by default.
+- SOCIAL_DRY_RUN must be true by default.
+- SOCIAL_APPROVAL_REQUIRED must be true by default.
+- No social post may be published unless approval is granted.
+- Do not hardcode social API tokens.
+- Do not generate deceptive, spammy, misleading, impersonation, or policy-violating content.
+- All external integrations must be replaceable through adapter interfaces.
+- Use mock adapters when real APIs are unavailable.
+- All content actions must be logged.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/agents/editor.py
+backend/app/agents/graphic.py
+backend/app/agents/social.py
+
+backend/app/content/
+  __init__.py
+  models.py
+  store.py
+  editor_service.py
+  graphic_service.py
+  social_service.py
+  pipeline.py
+  image_adapters.py
+  social_adapters.py
+  policy.py
+  reports.py
+
+backend/app/api/content.py
+
+backend/app/tests/
+  test_content_models.py
+  test_content_store.py
+  test_editor_agent.py
+  test_graphic_agent.py
+  test_social_agent.py
+  test_editor_service.py
+  test_graphic_service.py
+  test_social_service.py
+  test_content_policy.py
+  test_content_pipeline.py
+  test_content_api.py
+  test_scheduler_content_integration.py
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/agents/registry.py
+backend/app/scheduler/scheduler_service.py
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example` with:
+
+CONTENT_PIPELINE_ENABLED=true
+CONTENT_STORE=in_memory
+
+EDITOR_AGENT_ENABLED=true
+GRAPHIC_AGENT_ENABLED=true
+SOCIAL_AGENT_ENABLED=true
+
+CONTENT_DEFAULT_BRAND=zDash
+CONTENT_DEFAULT_LANGUAGE=en
+CONTENT_DEFAULT_TONE=professional
+CONTENT_REQUIRE_POLICY_CHECK=true
+
+IMAGE_GENERATION_PROVIDER=mock
+IMAGE_DRY_RUN=true
+IMAGE_OUTPUT_DIR=backend/data/content/images
+
+SOCIAL_PROVIDER=mock
+SOCIAL_DRY_RUN=true
+SOCIAL_APPROVAL_REQUIRED=true
+SOCIAL_AUTO_POST_ENABLED=false
+SOCIAL_DEFAULT_PLATFORMS=x,tiktok,facebook,instagram,linkedin
+
+SOCIAL_X_API_KEY=
+SOCIAL_X_API_SECRET=
+SOCIAL_TIKTOK_ACCESS_TOKEN=
+SOCIAL_FACEBOOK_ACCESS_TOKEN=
+SOCIAL_INSTAGRAM_ACCESS_TOKEN=
+SOCIAL_LINKEDIN_ACCESS_TOKEN=
+
+Rules:
+
+- Missing config must fail safely.
+- Mock providers must work without external credentials.
+- Social posting must default to dry-run.
+- Auto-post must be disabled by default.
+- Approval must be required by default.
+- Real posting requires:
+  - SOCIAL_DRY_RUN=false
+  - SOCIAL_AUTO_POST_ENABLED=true
+  - SOCIAL_APPROVAL_REQUIRED=false or item status approved
+  - valid platform token
+  - policy check passed
+
+============================================================
+CONTENT MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models in:
+
+backend/app/content/models.py
+
+Models:
+
+1. ContentStatus
+
+Allowed values:
+- draft
+- edited
+- graphic_requested
+- graphic_ready
+- scheduled
+- approved
+- posted
+- failed
+- rejected
+
+2. ContentPlatform
+
+Allowed values:
+- x
+- tiktok
+- facebook
+- instagram
+- linkedin
+- blog
+- generic
+
+3. ContentType
+
+Allowed values:
+- text_post
+- image_post
+- short_video_script
+- thread
+- blog_outline
+- announcement
+- market_note
+- educational
+
+4. ContentItem
+
+Fields:
+- id: str
+- title: str
+- content_type: ContentType
+- status: ContentStatus
+- brand: str
+- language: str
+- tone: str
+- topic: str
+- draft_text: str | None
+- edited_text: str | None
+- graphic_prompt: str | None
+- graphic_asset_url: str | None
+- platforms: list[ContentPlatform]
+- scheduled_at: datetime | None
+- approved_at: datetime | None
+- posted_at: datetime | None
+- policy_passed: bool
+- policy_notes: list[str]
+- metadata: dict
+- created_at: datetime
+- updated_at: datetime
+
+5. CreateContentRequest
+
+Fields:
+- topic: str
+- content_type: ContentType = "text_post"
+- brand: str | None = None
+- language: str | None = None
+- tone: str | None = None
+- platforms: list[ContentPlatform] = ["generic"]
+- context: dict = {}
+
+Validation:
+- topic must not be empty
+- platforms must not be empty
+
+6. EditContentRequest
+
+Fields:
+- content_id: str
+- instructions: str | None = None
+- tone: str | None = None
+- language: str | None = None
+
+7. GraphicRequest
+
+Fields:
+- content_id: str
+- style: str = "clean professional dashboard visual"
+- aspect_ratio: str = "16:9"
+- instructions: str | None = None
+
+8. ScheduleContentRequest
+
+Fields:
+- content_id: str
+- scheduled_at: datetime
+- platforms: list[ContentPlatform] | None = None
+
+9. ApproveContentRequest
+
+Fields:
+- content_id: str
+- approved_by: str = "operator"
+- notes: str | None = None
+
+10. PublishContentRequest
+
+Fields:
+- content_id: str
+- platforms: list[ContentPlatform] | None = None
+- confirmation: bool = false
+
+11. SocialPostResult
+
+Fields:
+- platform: ContentPlatform
+- ok: bool
+- dry_run: bool
+- external_id: str | None
+- message: str
+- output: dict
+- timestamp: datetime
+
+12. PipelineRunResult
+
+Fields:
+- id: str
+- content_id: str
+- ok: bool
+- status: ContentStatus
+- steps: list[dict]
+- message: str
+- started_at: datetime
+- finished_at: datetime
+- duration_ms: int
+
+============================================================
+CONTENT STORE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/store.py
+
+Implement:
+
+InMemoryContentStore
+
+Methods:
+
+- create_item(request: CreateContentRequest) -> ContentItem
+- get_item(content_id: str) -> ContentItem | None
+- list_items(status: ContentStatus | None = None) -> list[ContentItem]
+- update_item(content_id: str, patch: dict) -> ContentItem
+- delete_item(content_id: str) -> bool
+- record_pipeline_run(result: PipelineRunResult) -> PipelineRunResult
+- list_pipeline_runs(content_id: str | None = None) -> list[PipelineRunResult]
+
+Rules:
+
+- Use UUID for content item IDs.
+- Store content in memory for Phase 6.
+- Design for future database persistence.
+- Do not crash on missing item; raise clean domain error.
+- Always update updated_at on mutation.
+
+============================================================
+CONTENT POLICY REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/policy.py
+
+Implement:
+
+ContentPolicyChecker
+
+Method:
+
+- check_text(text: str, context: dict | None = None) -> dict
+
+Return:
+
+{
+  "passed": true,
+  "notes": [],
+  "blocked_terms": [],
+  "warnings": []
+}
+
+Policy checks:
+
+- Reject empty content.
+- Reject obvious credential leakage patterns:
+  - API keys
+  - access tokens
+  - passwords
+  - private keys
+- Reject misleading guaranteed-profit language.
+- Reject impersonation language.
+- Reject spam patterns:
+  - excessive repeated hashtags
+  - excessive emojis
+  - repeated links
+- Warn if the content mentions trading or market results.
+- Warn if post lacks educational or risk disclaimer when discussing strategy/backtesting/trading.
+
+Rules:
+
+- Keep policy deterministic.
+- Do not call external APIs.
+- Policy checker must be conservative.
+- Policy failure blocks approval and publishing.
+
+============================================================
+EDITOR SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/editor_service.py
+
+Implement:
+
+EditorService
+
+Methods:
+
+- create_draft(request: CreateContentRequest) -> ContentItem
+- edit_content(request: EditContentRequest) -> ContentItem
+- generate_variants(content_id: str, count: int = 3) -> list[str]
+
+Behavior:
+
+- Uses AI adapter if available.
+- Falls back to deterministic mock text if AI is unavailable.
+- Draft text should be generated from topic, brand, tone, language, and content_type.
+- Edited text should be concise, readable, and platform-safe.
+- For trading-related content, add educational/simulation disclaimer.
+- Emits events:
+  - content.draft.created
+  - content.edited
+  - content.variant.generated
+  - content.policy.checked
+  - content.policy.failed
+
+============================================================
+GRAPHIC SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/graphic_service.py
+
+Implement:
+
+GraphicService
+
+Methods:
+
+- create_graphic_prompt(request: GraphicRequest) -> ContentItem
+- generate_graphic(request: GraphicRequest) -> ContentItem
+
+Behavior:
+
+- Uses ImageGenerationAdapter.
+- Mock adapter returns deterministic fake image URL or local placeholder path.
+- Should not require real image generation.
+- Should create a graphic prompt based on edited_text or draft_text.
+- Must respect IMAGE_DRY_RUN.
+- Emits events:
+  - content.graphic.requested
+  - content.graphic.prompt.created
+  - content.graphic.generated
+  - content.graphic.failed
+
+============================================================
+IMAGE ADAPTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/image_adapters.py
+
+Define:
+
+ImageGenerationAdapter
+
+Methods:
+
+- generate_image(prompt: str, options: dict | None = None) -> dict
+
+Implement:
+
+MockImageGenerationAdapter
+
+Return:
+
+{
+  "ok": true,
+  "dry_run": true,
+  "asset_url": "mock://image/{hash}",
+  "provider": "mock",
+  "prompt": "...",
+  "metadata": {}
+}
+
+Rules:
+
+- Do not call external image API.
+- Keep adapter replaceable.
+- Do not crash if provider is unknown; fallback to mock.
+
+============================================================
+SOCIAL SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/social_service.py
+
+Implement:
+
+SocialService
+
+Methods:
+
+- schedule_content(request: ScheduleContentRequest) -> ContentItem
+- approve_content(request: ApproveContentRequest) -> ContentItem
+- publish_content(request: PublishContentRequest) -> list[SocialPostResult]
+
+Behavior:
+
+- Approval requires policy_passed=true.
+- Publish requires:
+  - item exists
+  - item status approved or SOCIAL_APPROVAL_REQUIRED=false
+  - policy_passed=true
+  - SOCIAL_DRY_RUN=true or confirmation=true
+- In dry-run mode, simulate posting and return mock external IDs.
+- In real mode, use SocialMediaAdapter.
+- Never publish rejected or failed content.
+- Emits events:
+  - content.scheduled
+  - content.approved
+  - content.rejected
+  - content.publish.requested
+  - content.publish.simulated
+  - content.published
+  - content.publish.blocked
+  - content.publish.failed
+
+============================================================
+SOCIAL ADAPTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/social_adapters.py
+
+Define:
+
+SocialMediaAdapter
+
+Methods:
+
+- publish(platform: ContentPlatform, text: str, asset_url: str | None, metadata: dict | None = None) -> SocialPostResult
+
+Implement:
+
+MockSocialMediaAdapter
+
+Behavior:
+
+- Always returns dry-run result.
+- Generates deterministic mock external_id.
+- Does not call external APIs.
+
+Placeholder real adapters:
+
+- XAdapter
+- TikTokAdapter
+- FacebookAdapter
+- InstagramAdapter
+- LinkedInAdapter
+
+Rules:
+
+- Real adapters must be stubs only for Phase 6.
+- If credentials are missing, return blocked result, not crash.
+- Do not hardcode tokens.
+- Keep all platform integrations replaceable.
+
+============================================================
+PIPELINE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/pipeline.py
+
+Implement:
+
+ContentPipeline
+
+Methods:
+
+- run_full_pipeline(request: CreateContentRequest) -> PipelineRunResult
+- create_then_edit(request: CreateContentRequest) -> PipelineRunResult
+- generate_graphic(content_id: str) -> PipelineRunResult
+- schedule(content_id: str, scheduled_at: datetime, platforms: list[ContentPlatform] | None = None) -> PipelineRunResult
+- approve(content_id: str, approved_by: str = "operator") -> PipelineRunResult
+- publish(content_id: str, platforms: list[ContentPlatform] | None = None, confirmation: bool = false) -> PipelineRunResult
+
+Full pipeline order:
+
+1. Create draft
+2. Edit content
+3. Run policy check
+4. Generate graphic prompt
+5. Generate mock graphic
+6. Do not approve automatically
+7. Do not publish automatically
+
+Rules:
+
+- Pipeline must stop on policy failure.
+- Pipeline must not auto-publish.
+- Pipeline must record each step.
+- Pipeline must emit start/completed/failed events.
+- Failures must be captured in PipelineRunResult.
+
+Events:
+
+- content.pipeline.started
+- content.pipeline.step.completed
+- content.pipeline.completed
+- content.pipeline.failed
+
+============================================================
+REPORT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/content/reports.py
+
+Implement:
+
+ContentReportBuilder
+
+Methods:
+
+- build_item_summary(item: ContentItem) -> dict
+- build_pipeline_summary(result: PipelineRunResult) -> dict
+- build_markdown_report(item: ContentItem) -> str
+
+Report includes:
+
+- Content ID
+- Topic
+- Brand
+- Platforms
+- Status
+- Policy state
+- Draft text
+- Edited text
+- Graphic prompt
+- Graphic asset URL
+- Schedule/post timestamps
+- Safety notes
+
+============================================================
+AGENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/agents/editor.py
+
+Editor Agent:
+- id: editor
+- name: Editor
+- role: content_editor
+- status: idle/running/error
+
+Methods:
+- create_draft(request)
+- edit_content(request)
+- generate_variants(content_id, count)
+- health_check()
+
+Create:
+
+backend/app/agents/graphic.py
+
+Graphic Agent:
+- id: graphic
+- name: Graphic
+- role: creative_designer
+- status: idle/running/error
+
+Methods:
+- create_graphic_prompt(request)
+- generate_graphic(request)
+- health_check()
+
+Create:
+
+backend/app/agents/social.py
+
+Social Agent:
+- id: social
+- name: Social
+- role: social_publisher
+- status: idle/running/error
+
+Methods:
+- schedule_content(request)
+- approve_content(request)
+- publish_content(request)
+- health_check()
+
+Update registry so these appear in:
+
+GET /api/agents
+
+Agent events:
+
+- editor.command.received
+- editor.command.completed
+- editor.command.failed
+- graphic.command.received
+- graphic.command.completed
+- graphic.command.failed
+- social.command.received
+- social.command.completed
+- social.command.failed
+
+============================================================
+CONTENT API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/content.py
+
+Required endpoints:
+
+1. GET /api/content/status
+
+Returns:
+- enabled
+- store type
+- social dry-run state
+- approval required state
+- auto-post enabled state
+- item count
+- pipeline run count
+
+2. POST /api/content/create
+
+Request:
+
+{
+  "topic": "zDash XAU scanner dry-run update",
+  "content_type": "market_note",
+  "brand": "zDash",
+  "language": "en",
+  "tone": "professional",
+  "platforms": ["x", "linkedin"],
+  "context": {
+    "note": "Educational dry-run only"
+  }
+}
+
+Returns:
+- ContentItem
+
+3. POST /api/content/edit
+
+Request:
+
+{
+  "content_id": "CONTENT_ID",
+  "instructions": "Make it shorter and clearer",
+  "tone": "professional",
+  "language": "en"
+}
+
+Returns:
+- ContentItem
+
+4. POST /api/content/generate-graphic
+
+Request:
+
+{
+  "content_id": "CONTENT_ID",
+  "style": "clean futuristic dashboard visual",
+  "aspect_ratio": "16:9",
+  "instructions": "Use zDash product style"
+}
+
+Returns:
+- ContentItem
+
+5. POST /api/content/schedule
+
+Request:
+
+{
+  "content_id": "CONTENT_ID",
+  "scheduled_at": "2026-05-25T09:00:00+07:00",
+  "platforms": ["x", "linkedin"]
+}
+
+Returns:
+- ContentItem
+
+6. POST /api/content/approve
+
+Request:
+
+{
+  "content_id": "CONTENT_ID",
+  "approved_by": "operator",
+  "notes": "Reviewed and approved"
+}
+
+Returns:
+- ContentItem
+
+7. POST /api/content/post
+
+Request:
+
+{
+  "content_id": "CONTENT_ID",
+  "platforms": ["x", "linkedin"],
+  "confirmation": false
+}
+
+Returns:
+- list[SocialPostResult]
+
+8. POST /api/content/pipeline/run
+
+Request:
+
+{
+  "topic": "zDash Strategy Lab backtesting summary",
+  "content_type": "educational",
+  "brand": "zDash",
+  "language": "en",
+  "tone": "professional",
+  "platforms": ["x", "linkedin"],
+  "context": {
+    "phase": "Phase 5",
+    "disclaimer": "Backtest results are not guaranteed future performance."
+  }
+}
+
+Returns:
+- PipelineRunResult
+
+9. GET /api/content/items
+
+Returns:
+- list[ContentItem]
+
+Optional query:
+- status
+
+10. GET /api/content/items/{content_id}
+
+Returns:
+- ContentItem
+
+11. GET /api/content/runs
+
+Returns:
+- list[PipelineRunResult]
+
+12. GET /api/content/items/{content_id}/report
+
+Returns:
+- markdown report
+- summary object
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use the existing standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+============================================================
+SCHEDULER INTEGRATION REQUIREMENTS
+============================================================
+
+Update:
+
+backend/app/scheduler/scheduler_service.py
+
+The default content_pipeline job must now call ContentPipeline.run_full_pipeline() instead of returning only placeholder output.
+
+Default content pipeline job payload:
+
+{
+  "topic": "zDash weekly system update",
+  "content_type": "announcement",
+  "brand": "zDash",
+  "language": "en",
+  "tone": "professional",
+  "platforms": ["x", "linkedin"],
+  "context": {
+    "source": "scheduler",
+    "approval_required": true,
+    "dry_run": true
+  }
+}
+
+Rules:
+- Scheduler must capture content pipeline success/failure in JobRunResult.
+- Scheduler must not approve content automatically.
+- Scheduler must not publish content automatically.
+- Scheduler emits normal job events.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add these event types:
+
+Content:
+- content.draft.created
+- content.edited
+- content.variant.generated
+- content.policy.checked
+- content.policy.failed
+- content.graphic.requested
+- content.graphic.prompt.created
+- content.graphic.generated
+- content.graphic.failed
+- content.scheduled
+- content.approved
+- content.rejected
+- content.publish.requested
+- content.publish.simulated
+- content.published
+- content.publish.blocked
+- content.publish.failed
+
+Pipeline:
+- content.pipeline.started
+- content.pipeline.step.completed
+- content.pipeline.completed
+- content.pipeline.failed
+
+Agents:
+- editor.command.received
+- editor.command.completed
+- editor.command.failed
+- graphic.command.received
+- graphic.command.completed
+- graphic.command.failed
+- social.command.received
+- social.command.completed
+- social.command.failed
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create tests:
+
+1. test_content_models.py
+
+Test:
+- ContentItem defaults
+- status enum values
+- platform enum values
+- create request validation
+- publish request confirmation default
+
+2. test_content_store.py
+
+Test:
+- create item
+- get item
+- list items
+- update item
+- delete item
+- record pipeline run
+
+3. test_content_policy.py
+
+Test:
+- empty content rejected
+- token-like secret rejected
+- guaranteed profit language rejected
+- spam hashtag pattern rejected
+- trading content warning added
+- safe educational content passes
+
+4. test_editor_service.py
+
+Test:
+- create draft
+- edit content
+- policy check runs
+- trading disclaimer added when relevant
+- variants generated
+
+5. test_graphic_service.py
+
+Test:
+- graphic prompt created
+- mock image generated
+- missing content handled cleanly
+- dry-run result does not call external API
+
+6. test_social_service.py
+
+Test:
+- schedule content
+- approval requires policy_passed=true
+- publish blocked before approval
+- dry-run publish simulated after approval
+- real publish blocked without confirmation
+- rejected content cannot be posted
+
+7. test_content_pipeline.py
+
+Test:
+- full pipeline creates draft
+- full pipeline edits content
+- full pipeline generates graphic
+- full pipeline does not auto-approve
+- full pipeline does not auto-publish
+- policy failure stops pipeline
+
+8. test_content_api.py
+
+Test:
+- GET /api/content/status
+- POST /api/content/create
+- POST /api/content/edit
+- POST /api/content/generate-graphic
+- POST /api/content/schedule
+- POST /api/content/approve
+- POST /api/content/post
+- POST /api/content/pipeline/run
+- GET /api/content/items
+- GET /api/content/items/{content_id}/report
+
+9. test_editor_agent.py
+
+Test:
+- Editor agent is registered
+- Editor can create draft
+- Editor emits events
+
+10. test_graphic_agent.py
+
+Test:
+- Graphic agent is registered
+- Graphic can generate graphic prompt
+- Graphic emits events
+
+11. test_social_agent.py
+
+Test:
+- Social agent is registered
+- Social can schedule content
+- Social blocks publish without approval
+- Social emits events
+
+12. test_scheduler_content_integration.py
+
+Test:
+- scheduler content_pipeline job calls ContentPipeline
+- content job returns PipelineRunResult summary
+- scheduler does not approve content automatically
+- scheduler does not publish content automatically
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 6 overview
+- Editor Agent role
+- Graphic Agent role
+- Social Agent role
+- Content pipeline architecture
+- Content policy checker
+- Image generation adapter
+- Social media adapter
+- Approval-gated publishing workflow
+- Scheduler content integration
+- API examples
+- Test commands
+- Safety notes
+
+Add curl examples:
+
+Create content:
+
+curl -X POST http://localhost:8000/api/content/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "zDash Strategy Lab backtesting summary",
+    "content_type": "educational",
+    "brand": "zDash",
+    "language": "en",
+    "tone": "professional",
+    "platforms": ["x", "linkedin"],
+    "context": {
+      "disclaimer": "Backtest results are not guaranteed future performance."
+    }
+  }'
+
+Generate graphic:
+
+curl -X POST http://localhost:8000/api/content/generate-graphic \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "style": "clean futuristic dashboard visual",
+    "aspect_ratio": "16:9",
+    "instructions": "Use zDash product style"
+  }'
+
+Approve content:
+
+curl -X POST http://localhost:8000/api/content/approve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "approved_by": "operator",
+    "notes": "Reviewed and approved"
+  }'
+
+Dry-run post:
+
+curl -X POST http://localhost:8000/api/content/post \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "platforms": ["x", "linkedin"],
+    "confirmation": false
+  }'
+
+Run full pipeline:
+
+curl -X POST http://localhost:8000/api/content/pipeline/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "zDash weekly system update",
+    "content_type": "announcement",
+    "brand": "zDash",
+    "language": "en",
+    "tone": "professional",
+    "platforms": ["x", "linkedin"],
+    "context": {
+      "source": "manual",
+      "approval_required": true,
+      "dry_run": true
+    }
+  }'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 6 is complete only when:
+
+- Editor agent is registered.
+- Graphic agent is registered.
+- Social agent is registered.
+- Content models exist.
+- Content store works.
+- Content policy checker works.
+- Editor service creates and edits content.
+- Graphic service creates prompt and mock asset.
+- Social service schedules, approves, and dry-run posts.
+- Publishing is blocked before approval.
+- Publishing is blocked on policy failure.
+- Auto-post is disabled by default.
+- Social dry-run is true by default.
+- Content pipeline runs Editor → Graphic → Social preparation.
+- Pipeline does not auto-approve.
+- Pipeline does not auto-publish.
+- Scheduler content_pipeline job calls real ContentPipeline.
+- Content API endpoints work.
+- Event logs are created for content actions.
+- Existing Phase 1–5 tests still pass.
+- New Phase 6 tests pass.
+- README includes Phase 6 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Run instructions
+8. Test instructions
+9. Acceptance checklist
+10. Known limitations
+11. Phase 7 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1, Phase 2, Phase 3, Phase 4, or Phase 5 behavior.
+- Keep all existing tests passing.
+- Use typed Python where reasonable.
+- Use Pydantic models.
+- Use safe defaults.
+- Never hardcode credentials.
+- Never auto-post by default.
+- Never publish without approval unless explicitly configured.
+- Never bypass content policy checks.
+- Never call real external social APIs by default.
+- Never call real external image APIs by default.
+- Keep in-memory content store replaceable for future database persistence.
+- Keep social and image providers replaceable through adapter interfaces.
+- Keep code clean enough for Phase 7 Dashboard integration.
+
+Now generate the complete Phase 6 implementation.

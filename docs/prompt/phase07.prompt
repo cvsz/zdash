@@ -1,0 +1,1179 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 7 · DASHBOARD
+Full React/Vite Dashboard + All Modules + Live Session UI
+
+Do not rebuild Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, or Phase 6 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- Default jobs
+- IoT adapter
+- Tapo dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM Windows service scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Dataset Provider
+- Optimizer
+- Strategy Promotion Gate
+- Backtesting API
+- Scheduler backtest integration
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Content Policy Checker
+- Image Adapter
+- Social Adapter
+- Approval-Gated Publishing Workflow
+- Content API
+- Scheduler content integration
+
+============================================================
+PHASE 7 OBJECTIVE
+============================================================
+
+Build the complete zDash frontend dashboard.
+
+Main goals:
+
+1. Create React + Vite + TypeScript frontend
+2. Add Tailwind CSS UI system
+3. Add API client wrapper
+4. Add mock fallback data layer
+5. Add full dashboard layout
+6. Add Team Roster page
+7. Add XAU Trading Dashboard
+8. Add Risk Panel
+9. Add Scheduler UI
+10. Add Backtest Results page
+11. Add Content Pipeline UI
+12. Add IoT Control page
+13. Add Org Map page
+14. Add Session Logs page
+15. Add System Settings page
+16. Add loading, error, and empty states
+17. Add responsive dark-mode-ready UI
+18. Add frontend tests
+19. Add backend CORS/frontend config if missing
+20. Add README dashboard instructions
+
+IMPORTANT:
+- Dashboard must be read-safe by default.
+- Trading execution buttons must clearly show dry-run status.
+- No live trading toggle should be enabled by default.
+- Kill Switch and Halt status must be visually prominent.
+- Social publishing must clearly show approval state and dry-run status.
+- IoT power actions must clearly show dry-run/confirmation requirement.
+- Backtest results must show risk disclaimer.
+- Dashboard must still render with mock data if backend is unavailable.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+frontend/
+  package.json
+  index.html
+  vite.config.ts
+  tsconfig.json
+  tsconfig.node.json
+  postcss.config.js
+  tailwind.config.js
+  .env.example
+  src/
+    main.tsx
+    App.tsx
+    styles.css
+    api/
+      client.ts
+      endpoints.ts
+      types.ts
+      mockData.ts
+    components/
+      layout/
+        AppLayout.tsx
+        Sidebar.tsx
+        Topbar.tsx
+        PageHeader.tsx
+      common/
+        StatusCard.tsx
+        MetricCard.tsx
+        DataTable.tsx
+        EmptyState.tsx
+        ErrorState.tsx
+        LoadingState.tsx
+        Badge.tsx
+        Button.tsx
+        SectionCard.tsx
+        ConfirmDialog.tsx
+      agents/
+        AgentCard.tsx
+        AgentRoster.tsx
+      trading/
+        SignalTable.tsx
+        XauScannerPanel.tsx
+        DryRunBanner.tsx
+      risk/
+        RiskStatusCard.tsx
+        KillSwitchBanner.tsx
+        DrawdownGauge.tsx
+        HaltControlPanel.tsx
+      scheduler/
+        JobTable.tsx
+        JobRunHistory.tsx
+        CreateJobForm.tsx
+      backtesting/
+        BacktestSummary.tsx
+        BacktestResultTable.tsx
+        OptimizationPanel.tsx
+        StrategyList.tsx
+      content/
+        ContentBoard.tsx
+        ContentItemCard.tsx
+        ContentCreateForm.tsx
+        PublishPanel.tsx
+      iot/
+        IoTStatusPanel.tsx
+        IoTActionPanel.tsx
+      logs/
+        LogStream.tsx
+        EventLogTable.tsx
+      org/
+        OrgMap.tsx
+    pages/
+      Dashboard.tsx
+      TeamRoster.tsx
+      XauDashboard.tsx
+      RiskPanel.tsx
+      Scheduler.tsx
+      Backtests.tsx
+      ContentPipeline.tsx
+      IoTControl.tsx
+      OrgMapPage.tsx
+      SessionLogs.tsx
+      Settings.tsx
+      NotFound.tsx
+    hooks/
+      useApi.ts
+      usePolling.ts
+      useSystemStatus.ts
+      useAgents.ts
+      useLogs.ts
+    utils/
+      format.ts
+      status.ts
+      safety.ts
+    tests/
+      App.test.tsx
+      apiClient.test.ts
+      Dashboard.test.tsx
+      RiskPanel.test.tsx
+      Scheduler.test.tsx
+      ContentPipeline.test.tsx
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+.env.example
+README.md
+
+Optional if needed:
+
+backend/app/api/health.py
+backend/app/api/logs.py
+backend/app/api/agents.py
+backend/app/api/trading.py
+backend/app/api/risk.py
+backend/app/api/scheduler.py
+backend/app/api/backtesting.py
+backend/app/api/content.py
+backend/app/api/iot.py
+
+============================================================
+FRONTEND STACK REQUIREMENTS
+============================================================
+
+Use:
+
+- React 18+
+- Vite
+- TypeScript
+- Tailwind CSS
+- React Router
+- Lucide React icons
+- Recharts for charts
+- Vitest
+- React Testing Library
+
+Do not use heavy UI kits unless already present.
+Create clean local components instead.
+
+============================================================
+FRONTEND ENV REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/.env.example
+
+With:
+
+VITE_APP_NAME=zDash
+VITE_API_BASE_URL=http://localhost:8000
+VITE_ENABLE_MOCK_FALLBACK=true
+VITE_POLL_INTERVAL_MS=5000
+VITE_DEFAULT_THEME=dark
+VITE_SHOW_SAFETY_BANNERS=true
+
+Rules:
+
+- API base URL must be configurable.
+- Mock fallback must be enabled by default.
+- Polling interval must be configurable.
+- Dashboard should not crash if API is offline.
+
+============================================================
+BACKEND CONFIG UPDATES
+============================================================
+
+Update backend `.env.example` if needed:
+
+FRONTEND_ORIGIN=http://localhost:5173
+CORS_ALLOW_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+
+Update backend CORS config in FastAPI:
+
+- Allow frontend dev origin
+- Keep production configurable
+- Do not allow wildcard credentials in production
+- Preserve all existing routes
+
+============================================================
+GLOBAL UI DESIGN REQUIREMENTS
+============================================================
+
+Design style:
+
+- Dark-mode-first operational dashboard
+- Clean SaaS/admin aesthetic
+- High contrast status indicators
+- Responsive sidebar layout
+- Mobile-friendly stacked cards
+- No clutter
+- Consistent spacing
+- Rounded panels
+- Clear safety banners
+
+Required layout:
+
+- Sidebar navigation
+- Topbar with system status
+- Main content area
+- Page header
+- Cards/tables/charts
+- Toast-style or inline feedback for actions
+
+Navigation items:
+
+1. Dashboard
+2. Team Roster
+3. XAU Dashboard
+4. Risk Panel
+5. Scheduler
+6. Backtests
+7. Content Pipeline
+8. IoT Control
+9. Org Map
+10. Session Logs
+11. Settings
+
+============================================================
+API CLIENT REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/src/api/client.ts
+
+Requirements:
+
+- Central fetch wrapper
+- Handles standard API response shape:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+- Throws typed error for `ok=false`
+- Supports GET, POST, DELETE
+- Supports timeout
+- Supports mock fallback when backend is unavailable
+- Does not hardcode API URL
+
+Create:
+
+frontend/src/api/endpoints.ts
+
+Include functions:
+
+System:
+- getHealth()
+- getLogs()
+
+Agents:
+- getAgents()
+- sendAgentMessage()
+
+Trading:
+- getTradingStatus()
+- runTradingScan()
+- validateSignal()
+- dryRunExecution()
+
+Risk:
+- getRiskStatus()
+- checkRisk()
+- getDrawdown()
+- haltRisk()
+- resumeRisk()
+- approveExecution()
+
+Scheduler:
+- getSchedulerStatus()
+- listJobs()
+- createJob()
+- runJob()
+- pauseJob()
+- resumeJob()
+- deleteJob()
+- listRuns()
+
+Backtesting:
+- getBacktestingStatus()
+- listStrategies()
+- runBacktest()
+- listBacktestResults()
+- getBacktestResult()
+- runOptimization()
+- listOptimizations()
+- checkPromotion()
+- getBacktestReport()
+
+Content:
+- getContentStatus()
+- createContent()
+- editContent()
+- generateGraphic()
+- scheduleContent()
+- approveContent()
+- publishContent()
+- runContentPipeline()
+- listContentItems()
+- getContentItem()
+- listContentRuns()
+- getContentReport()
+
+IoT:
+- getIoTStatus()
+- runIoTAction()
+- powerCycleIoT()
+
+============================================================
+TYPES REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/src/api/types.ts
+
+Define TypeScript types for:
+
+- ApiResponse<T>
+- ApiError
+- HealthStatus
+- Agent
+- EventLog
+- TradingSignal
+- ExecutionResult
+- AccountSnapshot
+- DrawdownResult
+- HaltState
+- RiskDecision
+- ScheduledJob
+- JobRunResult
+- BacktestRequest
+- BacktestResult
+- BacktestMetrics
+- OptimizationResult
+- StrategyPromotionDecision
+- ContentItem
+- PipelineRunResult
+- SocialPostResult
+- IoTActionResult
+
+Types must match backend models from Phases 1–6.
+
+============================================================
+MOCK FALLBACK DATA REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/src/api/mockData.ts
+
+Provide realistic mock data for:
+
+- Health status
+- Agent roster:
+  - CEO
+  - Janie
+  - Guardian
+  - Friday
+  - Joe
+  - Editor
+  - Graphic
+  - Social
+- Recent event logs
+- XAU trading signals
+- Risk state
+- Scheduler jobs
+- Backtest results
+- Content items
+- IoT status
+
+Rules:
+
+- Mock data must clearly identify itself as mock.
+- UI must show “Mock fallback mode” banner when used.
+- Mock fallback must not simulate live execution as real.
+
+============================================================
+PAGE REQUIREMENTS
+============================================================
+
+============================================================
+1. MAIN DASHBOARD
+============================================================
+
+Create:
+
+frontend/src/pages/Dashboard.tsx
+
+Must show:
+
+- System health
+- Backend connection state
+- Mock fallback banner if active
+- Agent status summary
+- Trading dry-run status
+- Risk status
+- Kill switch/halt status
+- Scheduler status
+- Backtest summary
+- Content pipeline summary
+- IoT dry-run status
+- Recent session logs
+
+Cards:
+
+- Janie Server
+- Agent Runtime
+- XAU Scanner
+- Guardian Risk
+- Scheduler
+- Backtesting Lab
+- Content Pipeline
+- IoT Automation
+
+============================================================
+2. TEAM ROSTER
+============================================================
+
+Create:
+
+frontend/src/pages/TeamRoster.tsx
+
+Must show all agents:
+
+- CEO
+- Janie
+- Guardian
+- Friday
+- Joe
+- Editor
+- Graphic
+- Social
+
+For each agent show:
+
+- Name
+- Role
+- Status
+- Health
+- Last event
+- Capabilities
+
+Add message panel:
+
+- Send CEO → Janie message
+- Show response
+- Show error state
+
+============================================================
+3. XAU DASHBOARD
+============================================================
+
+Create:
+
+frontend/src/pages/XauDashboard.tsx
+
+Must show:
+
+- XAUUSD M5 scanner status
+- DRY_RUN banner
+- Funnel Filter 21/10/3 state
+- Latest signals table
+- Signal validation status
+- AI summary
+- Dry-run execution button
+- Risk approval status
+
+Safety:
+
+- Execution button must clearly say “Dry-run execute”
+- Live execution must not be exposed unless explicitly configured
+- Show warning that dashboard is not financial advice
+
+============================================================
+4. RISK PANEL
+============================================================
+
+Create:
+
+frontend/src/pages/RiskPanel.tsx
+
+Must show:
+
+- Guardian enabled state
+- Halt state
+- Kill switch state
+- Total drawdown
+- Daily drawdown
+- Risk level
+- Thresholds:
+  - daily drawdown
+  - total drawdown
+  - emergency kill switch
+- Manual halt button
+- Manual resume form with reason
+- Risk check form using AccountSnapshot
+
+Must include:
+
+- Confirmation dialog for manual resume
+- Prominent red emergency state
+- Event log filtered to risk events
+
+============================================================
+5. SCHEDULER PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/Scheduler.tsx
+
+Must show:
+
+- Scheduler enabled state
+- Default jobs
+- Job table
+- Job run history
+- Create job form
+- Run job button
+- Pause/resume/delete controls
+
+Job types:
+
+- trading_scan
+- risk_check
+- backtest
+- content_pipeline
+- health_check
+- iot_power_cycle
+- custom
+
+Safety:
+
+- iot_power_cycle job must show confirmation warning
+- trading_scan job must show risk-guarded label
+
+============================================================
+6. BACKTESTS PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/Backtests.tsx
+
+Must show:
+
+- Strategy list
+- Run backtest form
+- Backtest results
+- Metrics cards:
+  - total trades
+  - win rate
+  - profit factor
+  - max drawdown
+  - net profit percent
+  - consecutive losses
+- Equity curve chart using Recharts
+- Monthly return table
+- Optimization form
+- Optimization ranked results
+- Promotion check panel
+
+Safety:
+
+- Show disclaimer:
+  “Backtest results are not guaranteed future performance.”
+- Show that promotion does not enable live trading.
+
+============================================================
+7. CONTENT PIPELINE PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/ContentPipeline.tsx
+
+Must show:
+
+- Content status summary
+- Create content form
+- Content board grouped by status:
+  - draft
+  - edited
+  - graphic_ready
+  - scheduled
+  - approved
+  - posted
+  - failed
+  - rejected
+- Edit content action
+- Generate graphic action
+- Schedule action
+- Approve action
+- Dry-run publish action
+- Pipeline run button
+- Policy notes
+
+Safety:
+
+- Publish button disabled unless approved
+- Show SOCIAL_DRY_RUN state
+- Show approval-required state
+- Show policy failure notes clearly
+
+============================================================
+8. IOT CONTROL PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/IoTControl.tsx
+
+Must show:
+
+- Device alias
+- IoT enabled state
+- IOT_DRY_RUN state
+- Confirmation required state
+- Device mock/real status
+- Actions:
+  - status
+  - turn_on
+  - turn_off
+  - power_cycle
+
+Safety:
+
+- Power cycle requires confirmation dialog
+- In dry-run mode, clearly show simulated result
+- In real mode, require typed confirmation text:
+  CONFIRM_POWER_ACTION
+
+============================================================
+9. ORG MAP PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/OrgMapPage.tsx
+
+Must show visual organization map:
+
+CEO
+└── Janie
+    ├── Guardian
+    ├── Friday
+    ├── Joe
+    ├── Editor
+    ├── Graphic
+    └── Social
+
+Show module ownership:
+
+- Guardian → Risk
+- Friday → Scheduler + IoT
+- Joe → Backtesting
+- Editor/Graphic/Social → Content Pipeline
+- Janie → Runtime Orchestration
+
+Can use simple cards and connector lines.
+No heavy graph library required.
+
+============================================================
+10. SESSION LOGS PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/SessionLogs.tsx
+
+Must show:
+
+- Event logs table
+- Filter by event type
+- Filter by source
+- Search box
+- Auto-refresh toggle
+- JSON payload viewer
+- Recent errors panel
+
+Event categories:
+
+- system
+- agent
+- trading
+- risk
+- scheduler
+- iot
+- backtest
+- content
+
+============================================================
+11. SETTINGS PAGE
+============================================================
+
+Create:
+
+frontend/src/pages/Settings.tsx
+
+Must show read-only configuration summary:
+
+- API base URL
+- Mock fallback enabled
+- Poll interval
+- Dry-run state
+- Social approval required
+- IoT dry-run state
+- Primary strategy
+- App version placeholder
+
+Do not expose secrets.
+Never display API keys or tokens.
+
+============================================================
+COMPONENT REQUIREMENTS
+============================================================
+
+Create reusable components:
+
+StatusCard:
+- title
+- status
+- description
+- icon
+- severity
+
+MetricCard:
+- label
+- value
+- delta
+- severity
+
+DataTable:
+- generic table renderer
+- empty state
+- loading state
+
+Badge:
+- variants:
+  - normal
+  - warning
+  - danger
+  - success
+  - muted
+
+Button:
+- variants:
+  - primary
+  - secondary
+  - danger
+  - ghost
+  - disabled
+
+ConfirmDialog:
+- title
+- message
+- confirmation text optional
+- confirm/cancel callbacks
+
+LogStream:
+- auto-refresh support
+- category filtering
+
+============================================================
+HOOK REQUIREMENTS
+============================================================
+
+Create:
+
+useApi.ts
+- generic loading/error/data state wrapper
+
+usePolling.ts
+- polling with cleanup
+- configurable interval
+- pause/resume
+
+useSystemStatus.ts
+- fetch health, agents, risk, scheduler, content, iot
+
+useAgents.ts
+- fetch agents
+- send message
+
+useLogs.ts
+- fetch logs
+- filter logs
+
+============================================================
+FORMAT UTILS REQUIREMENTS
+============================================================
+
+Create:
+
+frontend/src/utils/format.ts
+
+Functions:
+
+- formatDateTime()
+- formatPercent()
+- formatCurrency()
+- formatDurationMs()
+- truncateText()
+
+Create:
+
+frontend/src/utils/status.ts
+
+Functions:
+
+- getSeverityFromStatus()
+- getBadgeVariant()
+- isDangerStatus()
+
+Create:
+
+frontend/src/utils/safety.ts
+
+Functions:
+
+- isLiveTradingBlocked()
+- requiresApproval()
+- canPublishContent()
+- canRunIoTAction()
+- getSafetyBannerText()
+
+============================================================
+ROUTING REQUIREMENTS
+============================================================
+
+Use React Router.
+
+Routes:
+
+- /
+- /team
+- /xau
+- /risk
+- /scheduler
+- /backtests
+- /content
+- /iot
+- /org
+- /logs
+- /settings
+- *
+
+Unknown route must show NotFound page.
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Use Vitest + React Testing Library.
+
+Create tests:
+
+1. App.test.tsx
+
+Test:
+- app renders
+- sidebar navigation exists
+- dashboard route works
+
+2. apiClient.test.ts
+
+Test:
+- successful API response unwraps data
+- error API response throws typed error
+- mock fallback activates when fetch fails
+- timeout handled safely
+
+3. Dashboard.test.tsx
+
+Test:
+- dashboard renders system cards
+- mock fallback banner appears when mock data used
+- risk card appears
+- content card appears
+
+4. RiskPanel.test.tsx
+
+Test:
+- kill switch banner renders
+- halt button exists
+- resume requires reason
+- risk status displays drawdown
+
+5. Scheduler.test.tsx
+
+Test:
+- job table renders
+- run job button appears
+- iot_power_cycle warning appears
+
+6. ContentPipeline.test.tsx
+
+Test:
+- content board renders
+- publish disabled before approval
+- policy notes displayed
+- dry-run state displayed
+
+All frontend tests must pass with:
+
+cd frontend
+npm test
+
+Build must pass with:
+
+cd frontend
+npm run build
+
+============================================================
+BACKEND COMPATIBILITY REQUIREMENTS
+============================================================
+
+Update backend only as needed:
+
+1. Enable CORS for frontend dev origin.
+2. Ensure all existing API endpoints return stable response shapes.
+3. Ensure `/api/logs` returns recent event logs.
+4. Ensure `/api/agents` includes all agents.
+5. Ensure no backend behavior is removed.
+
+Do not break existing backend tests.
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 7 overview
+- Dashboard architecture
+- Frontend setup
+- Environment variables
+- Run backend + frontend together
+- Mock fallback behavior
+- Page list
+- Safety banners
+- Test commands
+- Build commands
+
+Add commands:
+
+Install frontend:
+
+cd frontend
+npm install
+
+Run frontend:
+
+npm run dev
+
+Build frontend:
+
+npm run build
+
+Run tests:
+
+npm test
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Full local dev:
+
+Terminal 1:
+cd backend
+uvicorn app.main:app --reload
+
+Terminal 2:
+cd frontend
+npm run dev
+
+Open:
+
+http://localhost:5173
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 7 is complete only when:
+
+- React/Vite frontend exists.
+- TypeScript compiles.
+- Tailwind CSS works.
+- Sidebar navigation works.
+- Dashboard page works.
+- Team Roster page works.
+- XAU Dashboard page works.
+- Risk Panel page works.
+- Scheduler page works.
+- Backtests page works.
+- Content Pipeline page works.
+- IoT Control page works.
+- Org Map page works.
+- Session Logs page works.
+- Settings page works.
+- API client handles standard backend response format.
+- Mock fallback works when backend is unavailable.
+- Kill switch/halt status is visually prominent.
+- Dry-run state is visually prominent.
+- Publishing requires approval in UI.
+- IoT power cycle requires confirmation in UI.
+- Backtest page displays risk disclaimer.
+- Frontend tests pass.
+- Frontend build passes.
+- Backend CORS supports frontend dev server.
+- Existing Phase 1–6 backend tests still pass.
+- README includes Phase 7 instructions.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new frontend file
+3. Full patched code for every updated backend file
+4. Test files
+5. frontend/.env.example
+6. package.json
+7. Tailwind/Vite/TypeScript config files
+8. README updates
+9. Run instructions
+10. Test instructions
+11. Build instructions
+12. Acceptance checklist
+13. Known limitations
+14. Final full-system handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–6 behavior.
+- Keep all existing backend tests passing.
+- Use TypeScript types.
+- Use safe UI defaults.
+- Never expose secrets in the frontend.
+- Never enable live trading by default.
+- Never make real social posting look like dry-run.
+- Never make real IoT power action available without confirmation.
+- Keep API client resilient.
+- Keep components modular.
+- Keep UI clean, responsive, and dashboard-ready.
+- Make the dashboard usable even when backend is offline through mock fallback.
+
+Now generate the complete Phase 7 implementation.

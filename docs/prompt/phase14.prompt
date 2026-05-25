@@ -1,0 +1,1706 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 14 · NATIVE DESKTOP + PARTNER MARKETPLACE DISTRIBUTION + PUBLIC CLOUD LAUNCH
+Tauri Desktop App + Partner Marketplace Publishing + Public Cloud Launch Kit + Installer/Updater + Launch Readiness
+
+Do not rebuild Phase 1–13 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+
+PHASE 4:
+- Friday Agent
+- Scheduler Service
+- IoT dry-run adapter
+- Scheduler API
+- IoT API
+- NSSM scripts
+
+PHASE 5:
+- Joe Agent
+- Backtesting Service
+- Strategy Lab
+- Optimizer
+- Promotion Gate
+- Backtesting API
+
+PHASE 6:
+- Editor Agent
+- Graphic Agent
+- Social Agent
+- Content Pipeline
+- Approval-gated publishing
+- Content API
+
+PHASE 7:
+- React/Vite Dashboard
+- Full operational UI
+- Mock fallback API client
+
+PHASE 8:
+- Persistence
+- Auth/JWT
+- RBAC
+- Audit logs
+- Docker
+- NGINX
+- Metrics
+- Backup/restore
+- CI
+- Production safety checker
+
+PHASE 9:
+- Multi-tenant SaaS
+- Organizations/workspaces
+- Tenant-scoped RBAC
+- Workers
+- WebSocket event stream
+- Alerts/notifications
+- Cloudflare/Terraform/Kubernetes templates
+- Release automation
+
+PHASE 10:
+- Billing
+- Usage metering
+- Entitlements
+- Quotas
+- Marketplace
+- Plugin safety
+- Enterprise license
+- White-label branding
+- Export/import
+- Onboarding
+
+PHASE 11:
+- AI Ops
+- Prompt registry
+- Governance policy engine
+- DLP scanner
+- Compliance evidence
+- Security review workflow
+
+PHASE 12:
+- Ops Autopilot
+- Incident management
+- SLA/SLO tracking
+- Enterprise integrations
+- SSO/SCIM shells
+- SIEM/webhook/ticketing adapters
+- Managed service console
+- Support workflow
+- Fleet management
+
+PHASE 13:
+- Expo Mobile App
+- Developer platform
+- Partner API
+- API keys
+- Sandbox
+- SDKs
+- Partner webhooks
+- Public OpenAPI export
+
+============================================================
+PHASE 14 OBJECTIVE
+============================================================
+
+Build the native desktop, partner distribution, and public launch layer for zDash.
+
+Main goals:
+
+1. Add Tauri desktop app shell
+2. Package zDash as a secure native desktop control panel
+3. Add desktop login/session flow
+4. Add desktop tray status monitor
+5. Add desktop local agent bridge
+6. Add offline-readonly mode
+7. Add desktop auto-update shell
+8. Add installer build scripts for Windows/macOS/Linux
+9. Add partner marketplace publishing workflow
+10. Add plugin/package distribution pipeline
+11. Add public cloud launch landing system
+12. Add public waitlist and invite system
+13. Add launch readiness checklist
+14. Add public status page shell
+15. Add product telemetry with privacy controls
+16. Add release notes and changelog automation
+17. Add package signing placeholders
+18. Add public documentation publishing scripts
+19. Add enterprise deployment bundle generator
+20. Add final launch tests and acceptance gates
+
+IMPORTANT SAFETY RULES:
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- Do not bypass billing entitlements.
+- Do not bypass governance policies.
+- Do not expose secrets in desktop, frontend, mobile, logs, telemetry, installers, exports, docs, or marketplace metadata.
+- Desktop app must never store raw API keys or raw passwords.
+- Desktop local bridge must be disabled by default.
+- Marketplace publishing must require security review.
+- Public launch flows must default to sandbox/demo mode.
+- Telemetry must be opt-in or privacy-safe.
+- Installer scripts must fail safely.
+- Update system must verify signatures when real signing is configured.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+desktop/
+  package.json
+  index.html
+  vite.config.ts
+  tsconfig.json
+  src/
+    main.tsx
+    App.tsx
+    styles.css
+    api/
+      desktopClient.ts
+      desktopTypes.ts
+      mockDesktopData.ts
+    auth/
+      DesktopAuthProvider.tsx
+      secureTokenStore.ts
+    components/
+      DesktopLayout.tsx
+      TrayStatusPanel.tsx
+      OfflineModeBanner.tsx
+      LocalBridgePanel.tsx
+      DesktopSettingsPanel.tsx
+      UpdateStatusCard.tsx
+      InstallerInfoCard.tsx
+    pages/
+      DesktopHome.tsx
+      DesktopRisk.tsx
+      DesktopAgents.tsx
+      DesktopLogs.tsx
+      DesktopSettings.tsx
+      DesktopOffline.tsx
+    hooks/
+      useDesktopStatus.ts
+      useLocalBridge.ts
+      useDesktopUpdates.ts
+    tests/
+      DesktopApp.test.tsx
+      DesktopAuthProvider.test.tsx
+      DesktopHome.test.tsx
+      LocalBridgePanel.test.tsx
+  src-tauri/
+    Cargo.toml
+    tauri.conf.json
+    build.rs
+    src/
+      main.rs
+      commands.rs
+      config.rs
+      secure_store.rs
+      local_bridge.rs
+      updater.rs
+      tray.rs
+
+backend/app/launch/
+  __init__.py
+  models.py
+  waitlist_service.py
+  invite_service.py
+  public_status_service.py
+  launch_readiness.py
+  release_notes.py
+  telemetry_service.py
+  docs_publish_service.py
+
+backend/app/distribution/
+  __init__.py
+  models.py
+  package_registry.py
+  marketplace_publish_service.py
+  signing_service.py
+  desktop_release_service.py
+  enterprise_bundle_service.py
+  installer_manifest_service.py
+
+backend/app/api/launch.py
+backend/app/api/distribution.py
+backend/app/api/desktop.py
+
+frontend/src/pages/PublicLaunch.tsx
+frontend/src/pages/Waitlist.tsx
+frontend/src/pages/PublicStatus.tsx
+frontend/src/pages/LaunchAdmin.tsx
+frontend/src/pages/Distribution.tsx
+frontend/src/pages/DesktopDownloads.tsx
+
+frontend/src/components/launch/
+  WaitlistForm.tsx
+  InviteCodePanel.tsx
+  LaunchReadinessPanel.tsx
+  PublicStatusBoard.tsx
+  ReleaseNotesPanel.tsx
+  TelemetryPrivacyPanel.tsx
+
+frontend/src/components/distribution/
+  PackageRegistryTable.tsx
+  MarketplacePublishPanel.tsx
+  SigningStatusCard.tsx
+  DesktopReleaseTable.tsx
+  InstallerManifestPanel.tsx
+  EnterpriseBundlePanel.tsx
+
+frontend/src/hooks/useLaunch.ts
+frontend/src/hooks/useDistribution.ts
+frontend/src/hooks/useDesktopDownloads.ts
+
+scripts/
+  build-desktop.sh
+  build-desktop.ps1
+  package-desktop-windows.ps1
+  package-desktop-linux.sh
+  package-desktop-macos.sh
+  generate-release-notes.sh
+  publish-docs.sh
+  launch-readiness-check.sh
+  build-enterprise-bundle.sh
+  verify-installer-manifest.sh
+
+docs/
+  launch/
+    PUBLIC_LAUNCH_PLAN.md
+    WAITLIST_AND_INVITES.md
+    LAUNCH_READINESS_CHECKLIST.md
+    STATUS_PAGE_MODEL.md
+    PRIVACY_TELEMETRY.md
+  desktop/
+    DESKTOP_APP_MODEL.md
+    DESKTOP_INSTALLATION.md
+    DESKTOP_SECURITY.md
+    LOCAL_BRIDGE_MODEL.md
+    DESKTOP_AUTO_UPDATE.md
+  distribution/
+    PARTNER_MARKETPLACE_DISTRIBUTION.md
+    PACKAGE_SIGNING_MODEL.md
+    ENTERPRISE_BUNDLE_MODEL.md
+    RELEASE_CHANNELS.md
+  runbooks/
+    DESKTOP_RELEASE_RUNBOOK.md
+    INSTALLER_INCIDENT_RUNBOOK.md
+    MARKETPLACE_PUBLISHING_RUNBOOK.md
+    PUBLIC_LAUNCH_RUNBOOK.md
+    STATUS_PAGE_INCIDENT_RUNBOOK.md
+
+backend/app/tests/
+  test_launch_models.py
+  test_waitlist_service.py
+  test_invite_service.py
+  test_public_status_service.py
+  test_launch_readiness.py
+  test_release_notes.py
+  test_telemetry_service.py
+  test_distribution_models.py
+  test_package_registry.py
+  test_marketplace_publish_service.py
+  test_signing_service.py
+  test_desktop_release_service.py
+  test_enterprise_bundle_service.py
+  test_installer_manifest_service.py
+  test_launch_api.py
+  test_distribution_api.py
+  test_desktop_api.py
+  test_phase14_tenant_isolation.py
+  test_phase14_safety_gates.py
+
+frontend/src/tests/
+  PublicLaunch.test.tsx
+  Waitlist.test.tsx
+  PublicStatus.test.tsx
+  LaunchAdmin.test.tsx
+  Distribution.test.tsx
+  DesktopDownloads.test.tsx
+
+Update:
+
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/billing/entitlement_service.py
+backend/app/governance/policy_engine.py
+backend/app/marketplace/plugin_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/api/client.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/components/layout/Topbar.tsx
+frontend/src/pages/Settings.tsx
+
+mobile/src/screens/SettingsScreen.tsx
+sdk/typescript/README.md
+sdk/python/README.md
+
+docker-compose.yml
+docker-compose.prod.yml
+.github/workflows/ci.yml
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update root `.env.example`:
+
+DESKTOP_APP_ENABLED=true
+DESKTOP_LOCAL_BRIDGE_ENABLED=false
+DESKTOP_LOCAL_BRIDGE_DRY_RUN=true
+DESKTOP_OFFLINE_MODE_ENABLED=true
+DESKTOP_SECURE_STORE_PROVIDER=mock
+DESKTOP_AUTO_UPDATE_ENABLED=false
+DESKTOP_UPDATE_CHANNEL=stable
+DESKTOP_UPDATE_MANIFEST_URL=
+DESKTOP_SIGNING_REQUIRED=false
+
+DISTRIBUTION_ENABLED=true
+PACKAGE_REGISTRY_ENABLED=true
+MARKETPLACE_PUBLISHING_ENABLED=true
+MARKETPLACE_PUBLISHING_DRY_RUN=true
+MARKETPLACE_SECURITY_REVIEW_REQUIRED=true
+PACKAGE_SIGNING_ENABLED=false
+PACKAGE_SIGNING_DRY_RUN=true
+PACKAGE_SIGNING_KEY_REF=
+
+ENTERPRISE_BUNDLE_ENABLED=true
+ENTERPRISE_BUNDLE_EXCLUDE_SECRETS=true
+ENTERPRISE_BUNDLE_REQUIRE_ADMIN=true
+
+PUBLIC_LAUNCH_ENABLED=true
+PUBLIC_LAUNCH_MODE=waitlist
+PUBLIC_DEMO_MODE=true
+PUBLIC_SANDBOX_ONLY=true
+WAITLIST_ENABLED=true
+INVITE_CODES_ENABLED=true
+INVITE_CODE_REQUIRED=false
+
+PUBLIC_STATUS_PAGE_ENABLED=true
+PUBLIC_STATUS_PAGE_PUBLIC=true
+STATUS_PAGE_INCIDENTS_PUBLIC_SUMMARY_ONLY=true
+
+TELEMETRY_ENABLED=true
+TELEMETRY_MODE=privacy_safe
+TELEMETRY_OPT_OUT_ENABLED=true
+TELEMETRY_COLLECT_PERSONAL_DATA=false
+TELEMETRY_COLLECT_SECRETS=false
+
+RELEASE_NOTES_ENABLED=true
+DOCS_PUBLISH_ENABLED=true
+DOCS_PUBLISH_DRY_RUN=true
+PUBLIC_DOCS_OUTPUT_DIR=docs/public-site
+
+Rules:
+- Desktop local bridge disabled by default.
+- Desktop auto-update disabled unless manifest URL is configured.
+- Package signing dry-run by default.
+- Marketplace publishing dry-run by default.
+- Security review required before package publishing.
+- Enterprise bundles exclude secrets by default.
+- Public launch defaults to waitlist/demo/sandbox.
+- Telemetry must not collect secrets or personal payloads.
+- Production must reject unsafe launch config.
+
+Create desktop `.env.example`:
+
+VITE_DESKTOP_APP_NAME=zDash Desktop
+VITE_API_BASE_URL=http://localhost:8000
+VITE_ENABLE_MOCK_FALLBACK=true
+VITE_ENABLE_OFFLINE_MODE=true
+VITE_LOCAL_BRIDGE_ENABLED=false
+VITE_SHOW_SAFETY_BANNERS=true
+VITE_UPDATE_CHANNEL=stable
+
+============================================================
+DESKTOP APP REQUIREMENTS
+============================================================
+
+Create Tauri desktop app in `desktop/`.
+
+Stack:
+- Tauri
+- React
+- Vite
+- TypeScript
+- Rust backend commands
+- Local secure token store abstraction
+- System tray shell
+- Offline readonly cache shell
+- Auto-update shell
+- Mock fallback data
+
+Desktop pages:
+
+1. DesktopHome
+- System status
+- API connection state
+- Offline mode banner
+- Risk halt state
+- Active incidents
+- Pending approvals
+- Recent logs
+
+2. DesktopRisk
+- Guardian status
+- Halt state
+- Kill switch state
+- Drawdown summary
+- Manual halt button
+- Resume with reason
+- Confirmation required
+
+3. DesktopAgents
+- Agent roster
+- CEO → Janie message panel
+- Agent health cards
+
+4. DesktopLogs
+- Recent event logs
+- Filter by category
+- Offline cached logs indicator
+
+5. DesktopSettings
+- API base URL
+- Update channel
+- Offline mode toggle
+- Local bridge status
+- Privacy telemetry toggle
+- Logout
+
+6. DesktopOffline
+- Cached status
+- Last synced time
+- Readonly warning
+
+Safety:
+- Desktop must not expose secrets.
+- Desktop must not store raw API keys.
+- Risk resume requires reason.
+- Local bridge is disabled by default.
+- Offline mode is read-only.
+- All destructive actions require confirmation.
+
+============================================================
+TAURI RUST REQUIREMENTS
+============================================================
+
+Implement:
+
+desktop/src-tauri/src/main.rs
+desktop/src-tauri/src/commands.rs
+desktop/src-tauri/src/config.rs
+desktop/src-tauri/src/secure_store.rs
+desktop/src-tauri/src/local_bridge.rs
+desktop/src-tauri/src/updater.rs
+desktop/src-tauri/src/tray.rs
+
+Commands:
+- get_app_config()
+- get_desktop_status()
+- save_token_securely()
+- clear_token()
+- get_offline_cache_summary()
+- refresh_offline_cache()
+- get_local_bridge_status()
+- start_local_bridge_dry_run()
+- stop_local_bridge()
+- check_for_updates()
+- get_tray_status()
+
+Rules:
+- Secure store can be mock/file-backed for Phase 14, but must not log tokens.
+- Local bridge must be dry-run only unless explicitly enabled.
+- Local bridge cannot execute live trading or real IoT.
+- Update check must not install updates unless auto-update enabled.
+- Tray status must not expose sensitive info.
+
+============================================================
+DESKTOP API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/desktop.py
+
+Endpoints:
+
+GET /api/desktop/status
+GET /api/desktop/bootstrap
+POST /api/desktop/offline-sync
+POST /api/desktop/local-bridge/check
+POST /api/desktop/telemetry
+GET /api/desktop/releases
+GET /api/desktop/releases/latest
+
+Rules:
+- JWT auth required except latest public release metadata if configured.
+- Tenant scoped where applicable.
+- Telemetry must be privacy-safe.
+- Offline sync payload must be redacted.
+- Local bridge check cannot enable unsafe actions.
+- Standard API response shape required.
+
+============================================================
+LAUNCH MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. WaitlistStatus
+
+Allowed values:
+- pending
+- invited
+- activated
+- rejected
+
+2. InviteStatus
+
+Allowed values:
+- active
+- used
+- expired
+- revoked
+
+3. LaunchMode
+
+Allowed values:
+- private
+- waitlist
+- invite_only
+- public
+
+4. PublicServiceStatus
+
+Allowed values:
+- operational
+- degraded
+- partial_outage
+- major_outage
+- maintenance
+
+5. WaitlistEntry
+
+Fields:
+- id
+- email
+- name
+- organization_name
+- use_case
+- status
+- source
+- invite_code_id
+- metadata
+- created_at
+- updated_at
+
+6. InviteCode
+
+Fields:
+- id
+- code_hash
+- label
+- status
+- max_uses
+- used_count
+- expires_at
+- created_by
+- created_at
+- updated_at
+
+7. PublicStatusComponent
+
+Fields:
+- id
+- name
+- status
+- description
+- updated_at
+
+8. PublicStatusIncident
+
+Fields:
+- id
+- title
+- summary
+- status
+- severity
+- public
+- started_at
+- resolved_at
+- updates
+- created_at
+- updated_at
+
+9. LaunchReadinessCheck
+
+Fields:
+- id
+- category
+- name
+- status
+- severity
+- message
+- blockers
+- warnings
+- checked_at
+
+10. TelemetryEvent
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- source
+- event_name
+- anonymous_id
+- payload_summary
+- privacy_mode
+- created_at
+
+============================================================
+LAUNCH SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/launch/waitlist_service.py
+backend/app/launch/invite_service.py
+backend/app/launch/public_status_service.py
+backend/app/launch/launch_readiness.py
+backend/app/launch/release_notes.py
+backend/app/launch/telemetry_service.py
+backend/app/launch/docs_publish_service.py
+
+WaitlistService:
+- join_waitlist(request)
+- list_entries()
+- update_status(entry_id, status)
+- attach_invite(entry_id, invite_code_id)
+- activate_entry(entry_id)
+
+InviteService:
+- create_invite_code(request)
+- validate_invite_code(code)
+- consume_invite_code(code)
+- revoke_invite_code(invite_id)
+
+PublicStatusService:
+- list_components()
+- update_component_status()
+- create_public_incident()
+- update_public_incident()
+- resolve_public_incident()
+- get_public_status_summary()
+
+LaunchReadinessService:
+- run_all_checks()
+- run_check(category, name)
+- get_blockers()
+- get_launch_score()
+
+Checks:
+- production safety lock enabled
+- default secrets rejected
+- DRY_RUN default safe
+- Guardian enabled
+- content approval enabled
+- IoT dry-run enabled
+- social dry-run enabled
+- tenant isolation tests passed
+- billing fail-closed enabled
+- governance fail-closed enabled
+- public docs generated
+- status page enabled
+- backup configured
+- audit logging enabled
+
+ReleaseNotesService:
+- generate_release_notes(from_version, to_version)
+- list_release_notes()
+- publish_release_notes(dry_run=True)
+
+TelemetryService:
+- record_event()
+- summarize_usage()
+- opt_out()
+- redact_payload()
+
+DocsPublishService:
+- build_public_docs()
+- publish_docs(dry_run=True)
+- validate_public_docs()
+
+Rules:
+- Waitlist must not expose emails publicly.
+- Invite codes stored hashed.
+- Telemetry must not store secrets.
+- Public status incidents show public summary only.
+- Launch readiness must fail if production safety blockers exist.
+
+============================================================
+DISTRIBUTION MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models:
+
+1. PackageType
+
+Allowed values:
+- desktop_windows
+- desktop_macos
+- desktop_linux
+- sdk_typescript
+- sdk_python
+- plugin
+- enterprise_bundle
+- docs_bundle
+
+2. PackageStatus
+
+Allowed values:
+- draft
+- built
+- signed
+- review
+- approved
+- published
+- failed
+- revoked
+
+3. PackageRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- package_type
+- name
+- version
+- status
+- file_path
+- checksum
+- signature_ref
+- metadata
+- created_by
+- created_at
+- updated_at
+
+4. MarketplacePublishRequest
+
+Fields:
+- package_id
+- marketplace
+- channel
+- dry_run
+- notes
+
+5. MarketplacePublishResult
+
+Fields:
+- id
+- package_id
+- marketplace
+- channel
+- status
+- dry_run
+- publish_url
+- message
+- created_at
+
+6. SigningResult
+
+Fields:
+- package_id
+- signed
+- dry_run
+- signature_ref
+- checksum
+- message
+- timestamp
+
+7. DesktopRelease
+
+Fields:
+- id
+- version
+- channel
+- platform
+- package_id
+- update_manifest_url
+- status
+- release_notes
+- published_at
+- created_at
+
+8. EnterpriseBundle
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- version
+- status
+- file_path
+- include_docs
+- include_configs
+- include_audit_template
+- include_secrets
+- checksum
+- created_by
+- created_at
+- completed_at
+
+============================================================
+DISTRIBUTION SERVICES REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/distribution/package_registry.py
+backend/app/distribution/marketplace_publish_service.py
+backend/app/distribution/signing_service.py
+backend/app/distribution/desktop_release_service.py
+backend/app/distribution/enterprise_bundle_service.py
+backend/app/distribution/installer_manifest_service.py
+
+PackageRegistry:
+- create_package_record()
+- list_packages()
+- get_package()
+- update_package_status()
+- compute_checksum()
+- revoke_package()
+
+MarketplacePublishService:
+- validate_publish_request()
+- submit_for_security_review()
+- publish_package()
+- list_publish_results()
+
+Rules:
+- Publishing requires package approved.
+- Publishing requires security review passed.
+- Dry-run by default.
+- No real marketplace API calls in Phase 14 unless explicitly configured.
+
+SigningService:
+- sign_package(package_id, dry_run=True)
+- verify_signature(package_id)
+- get_signing_status()
+
+Rules:
+- Signing dry-run by default.
+- No private signing key in code or logs.
+- Real signing requires PACKAGE_SIGNING_ENABLED=true and key reference.
+
+DesktopReleaseService:
+- create_release()
+- list_releases()
+- get_latest_release(platform, channel)
+- generate_update_manifest()
+- publish_release(dry_run=True)
+
+EnterpriseBundleService:
+- create_bundle()
+- list_bundles()
+- get_bundle()
+- export_bundle()
+
+Rules:
+- Secrets excluded by default.
+- include_secrets requires admin and explicit confirmation:
+  CONFIRM_ENTERPRISE_SECRET_BUNDLE
+- Bundle must include safety checklist.
+
+InstallerManifestService:
+- generate_manifest()
+- verify_manifest()
+- list_manifests()
+
+============================================================
+DISTRIBUTION API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/distribution.py
+
+Endpoints:
+
+GET /api/distribution/status
+GET /api/distribution/packages
+POST /api/distribution/packages
+GET /api/distribution/packages/{package_id}
+POST /api/distribution/packages/{package_id}/sign
+POST /api/distribution/packages/{package_id}/submit-review
+POST /api/distribution/packages/{package_id}/publish
+POST /api/distribution/packages/{package_id}/revoke
+
+Desktop releases:
+GET /api/distribution/desktop/releases
+POST /api/distribution/desktop/releases
+GET /api/distribution/desktop/releases/latest
+POST /api/distribution/desktop/releases/{release_id}/publish
+GET /api/distribution/desktop/update-manifest
+
+Enterprise bundles:
+GET /api/distribution/enterprise-bundles
+POST /api/distribution/enterprise-bundles
+GET /api/distribution/enterprise-bundles/{bundle_id}
+
+Installer manifests:
+GET /api/distribution/installer-manifests
+POST /api/distribution/installer-manifests
+POST /api/distribution/installer-manifests/{manifest_id}/verify
+
+Rules:
+- Auth required except public latest desktop release if configured.
+- Tenant scoped.
+- Publishing requires admin/operator.
+- Secret bundle requires admin and confirmation.
+- Standard response shape required.
+
+============================================================
+LAUNCH API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/launch.py
+
+Public endpoints:
+GET /api/launch/public/status
+POST /api/launch/waitlist/join
+POST /api/launch/invites/validate
+
+Admin/operator endpoints:
+GET /api/launch/status
+GET /api/launch/waitlist
+PATCH /api/launch/waitlist/{entry_id}
+POST /api/launch/invites
+GET /api/launch/invites
+POST /api/launch/invites/{invite_id}/revoke
+POST /api/launch/readiness/run
+GET /api/launch/readiness
+GET /api/launch/readiness/blockers
+POST /api/launch/status/components
+PATCH /api/launch/status/components/{component_id}
+POST /api/launch/status/incidents
+PATCH /api/launch/status/incidents/{incident_id}
+POST /api/launch/status/incidents/{incident_id}/resolve
+GET /api/launch/release-notes
+POST /api/launch/release-notes/generate
+POST /api/launch/docs/publish
+GET /api/launch/telemetry/summary
+
+Rules:
+- Public waitlist validates input and rate limits.
+- Admin waitlist list requires permission.
+- Invite code values returned only when created.
+- Public status returns public-safe summaries only.
+- Readiness blockers must not expose secrets.
+- Standard response shape required.
+
+============================================================
+FRONTEND PHASE 14 REQUIREMENTS
+============================================================
+
+Add routes:
+
+- /launch
+- /waitlist
+- /status
+- /launch-admin
+- /distribution
+- /desktop-downloads
+
+Update sidebar:
+- Public Launch
+- Waitlist
+- Public Status
+- Launch Admin
+- Distribution
+- Desktop Downloads
+
+1. PublicLaunch Page
+
+Must show:
+- Product launch hero
+- Demo/sandbox mode banner
+- Waitlist CTA
+- Safety-first positioning
+- Developer docs link
+- Desktop/mobile/sdk download links
+
+2. Waitlist Page
+
+Must show:
+- Waitlist form
+- Invite code validation
+- Success state
+- Privacy notice
+
+3. PublicStatus Page
+
+Must show:
+- Public service status
+- Components
+- Public incidents
+- Maintenance notices
+
+4. LaunchAdmin Page
+
+Must show:
+- Launch readiness score
+- Blockers
+- Warnings
+- Waitlist entries
+- Invite code manager
+- Release notes generator
+- Docs publish dry-run button
+- Telemetry privacy summary
+
+5. Distribution Page
+
+Must show:
+- Package registry table
+- Package signing status
+- Marketplace publishing panel
+- Security review requirement
+- Enterprise bundle generator
+- Installer manifest verifier
+
+6. DesktopDownloads Page
+
+Must show:
+- Latest desktop releases
+- Windows/macOS/Linux cards
+- Channel selector
+- Update manifest
+- Safety notes
+- Offline mode support
+
+Frontend safety:
+- Never display secrets.
+- Invite codes shown only once on creation.
+- Publishing actions require confirmation.
+- Secret enterprise bundle requires typed confirmation:
+  CONFIRM_ENTERPRISE_SECRET_BUNDLE
+- Marketplace publishing must show dry-run or review status.
+
+============================================================
+RBAC UPDATES
+============================================================
+
+Add permissions:
+
+Desktop:
+- desktop.read
+- desktop.telemetry
+- desktop.release.read
+- desktop.release.manage
+
+Launch:
+- launch.read
+- launch.manage_waitlist
+- launch.manage_invites
+- launch.run_readiness
+- launch.manage_status
+- launch.publish_docs
+- launch.manage_release_notes
+- launch.read_telemetry
+
+Distribution:
+- distribution.read
+- distribution.manage_packages
+- distribution.sign_packages
+- distribution.publish_marketplace
+- distribution.manage_desktop_releases
+- distribution.create_enterprise_bundle
+- distribution.include_secrets
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- desktop.read
+- launch.read
+- launch.manage_waitlist
+- launch.manage_invites
+- launch.run_readiness
+- launch.manage_status
+- launch.manage_release_notes
+- distribution.read
+- distribution.manage_packages
+- distribution.manage_desktop_releases
+- distribution.create_enterprise_bundle
+
+analyst:
+- desktop.read
+- launch.read
+- launch.run_readiness
+- distribution.read
+
+viewer:
+- desktop.read limited
+- launch.read limited
+- distribution.read limited
+
+============================================================
+DATABASE UPDATES
+============================================================
+
+Add SQLAlchemy tables:
+
+- waitlist_entries
+- invite_codes
+- public_status_components
+- public_status_incidents
+- launch_readiness_checks
+- telemetry_events
+- package_records
+- marketplace_publish_results
+- signing_results
+- desktop_releases
+- enterprise_bundles
+- installer_manifests
+- desktop_sync_events
+
+Requirements:
+- SQLite compatible.
+- PostgreSQL compatible.
+- Tenant-scoped where applicable.
+- Invite codes hashed only.
+- No secrets in telemetry.
+- No secrets in installer manifests.
+- Enterprise bundle records must mark whether secrets were excluded.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+Desktop:
+- desktop.session.started
+- desktop.offline_sync.requested
+- desktop.local_bridge.checked
+- desktop.local_bridge.blocked
+- desktop.update.checked
+- desktop.telemetry.recorded
+
+Launch:
+- launch.waitlist.joined
+- launch.waitlist.updated
+- launch.invite.created
+- launch.invite.consumed
+- launch.invite.revoked
+- launch.readiness.started
+- launch.readiness.completed
+- launch.readiness.blocked
+- launch.status.component.updated
+- launch.status.incident.created
+- launch.status.incident.resolved
+- launch.release_notes.generated
+- launch.docs.publish.started
+- launch.docs.publish.completed
+
+Distribution:
+- distribution.package.created
+- distribution.package.signed
+- distribution.package.review_submitted
+- distribution.package.published
+- distribution.package.publish_blocked
+- distribution.package.revoked
+- distribution.desktop_release.created
+- distribution.desktop_release.published
+- distribution.enterprise_bundle.started
+- distribution.enterprise_bundle.completed
+- distribution.enterprise_bundle.blocked
+- distribution.installer_manifest.generated
+- distribution.installer_manifest.verified
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+Required error codes:
+
+- DESKTOP_API_DISABLED
+- DESKTOP_LOCAL_BRIDGE_DISABLED
+- DESKTOP_LOCAL_BRIDGE_BLOCKED
+- DESKTOP_UPDATE_NOT_CONFIGURED
+- LAUNCH_DISABLED
+- WAITLIST_DISABLED
+- INVITE_CODE_INVALID
+- INVITE_CODE_EXPIRED
+- INVITE_CODE_REVOKED
+- LAUNCH_READINESS_BLOCKED
+- PUBLIC_STATUS_DISABLED
+- TELEMETRY_DISABLED
+- DISTRIBUTION_DISABLED
+- PACKAGE_NOT_FOUND
+- PACKAGE_SIGNING_NOT_CONFIGURED
+- PACKAGE_SECURITY_REVIEW_REQUIRED
+- MARKETPLACE_PUBLISH_BLOCKED
+- DESKTOP_RELEASE_NOT_FOUND
+- ENTERPRISE_BUNDLE_SECRET_CONFIRMATION_REQUIRED
+- INSTALLER_MANIFEST_INVALID
+- TENANT_ACCESS_DENIED
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Backend tests:
+
+1. test_launch_models.py
+- waitlist status enum
+- invite status enum
+- public service status enum
+- launch readiness model validation
+
+2. test_waitlist_service.py
+- join waitlist
+- duplicate email handled
+- update status
+- no public email exposure
+
+3. test_invite_service.py
+- create invite code
+- stored code hashed
+- validate invite code
+- consume invite code
+- revoked code rejected
+
+4. test_public_status_service.py
+- list components
+- update component status
+- create public incident
+- public summary excludes private metadata
+
+5. test_launch_readiness.py
+- readiness checks run
+- blockers detected
+- launch score calculated
+- unsafe production config blocks launch
+
+6. test_release_notes.py
+- generate release notes
+- publish dry-run works
+- notes exclude secrets
+
+7. test_telemetry_service.py
+- privacy-safe event recorded
+- secret payload redacted
+- opt-out respected
+
+8. test_distribution_models.py
+- package type enum
+- package status enum
+- release model validation
+- enterprise bundle model validation
+
+9. test_package_registry.py
+- create package
+- compute checksum
+- update status
+- revoke package
+
+10. test_marketplace_publish_service.py
+- publish dry-run works
+- security review required
+- unapproved package blocked
+
+11. test_signing_service.py
+- dry-run signing works
+- missing real key blocks real signing
+- verify signature shell works
+
+12. test_desktop_release_service.py
+- create release
+- latest release by platform/channel
+- update manifest generated
+- publish dry-run works
+
+13. test_enterprise_bundle_service.py
+- create bundle without secrets
+- secret bundle requires confirmation
+- bundle includes safety checklist
+
+14. test_installer_manifest_service.py
+- generate manifest
+- verify manifest
+- invalid checksum rejected
+
+15. test_launch_api.py
+- public status endpoint
+- waitlist join endpoint
+- readiness endpoint
+- invite endpoint protected
+
+16. test_distribution_api.py
+- package endpoints
+- signing endpoint
+- marketplace publish endpoint
+- enterprise bundle endpoint protected
+
+17. test_desktop_api.py
+- desktop status endpoint
+- bootstrap endpoint
+- telemetry endpoint redacts payload
+- local bridge check blocked by default
+
+18. test_phase14_tenant_isolation.py
+- org A cannot read org B packages
+- org A cannot read org B enterprise bundles
+- org A cannot read org B telemetry
+
+19. test_phase14_safety_gates.py
+- desktop bridge cannot enable live trading
+- marketplace publish requires review
+- enterprise bundle excludes secrets by default
+- launch readiness blocks unsafe production config
+
+Frontend tests:
+
+1. PublicLaunch.test.tsx
+- launch hero renders
+- sandbox/demo banner visible
+- waitlist CTA visible
+
+2. Waitlist.test.tsx
+- waitlist form renders
+- invite validation UI exists
+- privacy notice visible
+
+3. PublicStatus.test.tsx
+- component status renders
+- incident summary renders
+- private metadata not shown
+
+4. LaunchAdmin.test.tsx
+- readiness score renders
+- blockers visible
+- invite manager visible
+- docs publish dry-run button visible
+
+5. Distribution.test.tsx
+- package registry renders
+- signing status visible
+- marketplace review requirement visible
+- enterprise bundle form exists
+
+6. DesktopDownloads.test.tsx
+- desktop release cards render
+- platform cards visible
+- update channel selector visible
+- safety notes visible
+
+Desktop tests:
+
+1. DesktopApp.test.tsx
+- desktop app renders
+- offline banner available
+- navigation works
+
+2. DesktopAuthProvider.test.tsx
+- token stored through secure store abstraction
+- logout clears token
+- token is not logged
+
+3. DesktopHome.test.tsx
+- status cards render
+- incident summary visible
+- safety banner visible
+
+4. LocalBridgePanel.test.tsx
+- local bridge disabled by default
+- dry-run bridge action visible
+- unsafe bridge action blocked
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+Desktop:
+
+cd desktop
+npm test
+npm run build
+
+Tauri build dry-run/check:
+
+cd desktop
+npm run tauri:build:check
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 14 overview
+- Desktop app architecture
+- Tauri security model
+- Offline readonly mode
+- Desktop local bridge safety model
+- Desktop update model
+- Installer/package scripts
+- Marketplace distribution workflow
+- Package signing model
+- Public launch system
+- Waitlist and invite model
+- Public status page
+- Launch readiness checklist
+- Privacy-safe telemetry
+- Enterprise bundle generator
+- Frontend launch/distribution pages
+- Test commands
+- Build commands
+- Safety notes
+
+Add commands:
+
+Run backend:
+
+cd backend
+uvicorn app.main:app --reload
+
+Run web frontend:
+
+cd frontend
+npm run dev
+
+Run desktop dev:
+
+cd desktop
+npm install
+npm run dev
+
+Run Tauri desktop:
+
+cd desktop
+npm run tauri:dev
+
+Build desktop:
+
+bash scripts/build-desktop.sh
+
+Windows package:
+
+powershell -ExecutionPolicy Bypass -File scripts/package-desktop-windows.ps1
+
+Linux package:
+
+bash scripts/package-desktop-linux.sh
+
+Generate release notes:
+
+bash scripts/generate-release-notes.sh
+
+Run launch readiness:
+
+bash scripts/launch-readiness-check.sh
+
+Build enterprise bundle:
+
+bash scripts/build-enterprise-bundle.sh
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 14 is complete only when:
+
+- Tauri desktop app exists.
+- Desktop login/session shell works.
+- Desktop offline readonly mode exists.
+- Desktop local bridge is disabled by default.
+- Desktop tray/status shell exists.
+- Desktop update shell exists.
+- Desktop build scripts exist.
+- Launch models exist.
+- Waitlist service works.
+- Invite service stores invite codes hashed.
+- Public status service works.
+- Launch readiness checks work.
+- Release notes generator exists.
+- Privacy-safe telemetry service works.
+- Distribution models exist.
+- Package registry works.
+- Marketplace publishing workflow requires review.
+- Signing service exists and defaults to dry-run.
+- Desktop release service works.
+- Enterprise bundle service excludes secrets by default.
+- Installer manifest service works.
+- Launch API works.
+- Distribution API works.
+- Desktop API works.
+- Public Launch frontend page works.
+- Waitlist frontend page works.
+- Public Status frontend page works.
+- Launch Admin frontend page works.
+- Distribution frontend page works.
+- Desktop Downloads frontend page works.
+- Tenant isolation applies to all Phase 14 data.
+- Existing Phase 1–13 behavior remains intact.
+- Existing tests still pass.
+- New Phase 14 tests pass.
+- No secrets are exposed.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- Marketplace publishing remains review-gated.
+- README includes Phase 14 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new backend file
+3. Full source code for every new frontend file
+4. Full source code for every desktop file
+5. Full Rust/Tauri source files
+6. Full patched code for every updated file
+7. Launch models and services
+8. Distribution models and services
+9. Desktop API route file
+10. Launch API route file
+11. Distribution API route file
+12. Build/package scripts
+13. Test files
+14. .env.example updates
+15. README updates
+16. Launch docs
+17. Desktop docs
+18. Distribution docs
+19. Run instructions
+20. Test instructions
+21. Desktop build instructions
+22. Installer build instructions
+23. Launch safety checklist
+24. Distribution safety checklist
+25. Desktop safety checklist
+26. Acceptance checklist
+27. Known limitations
+28. Phase 15 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1–13 behavior.
+- Keep all existing backend tests passing.
+- Keep all existing frontend tests passing.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Use safe Rust patterns for Tauri commands.
+- Use SQLAlchemy 2.x style.
+- Never hardcode secrets.
+- Never expose secrets in frontend, mobile, desktop, logs, telemetry, installers, docs, or bundles.
+- Never log tokens.
+- Never store raw invite codes.
+- Never store raw signing keys.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass billing entitlements.
+- Never bypass governance policies.
+- Keep desktop local bridge disabled and dry-run by default.
+- Keep marketplace publishing security-review-gated.
+- Keep public launch sandbox/demo-first.
+- Keep telemetry privacy-safe.
+- Keep code modular enough for Phase 15 AI marketplace expansion, enterprise partner launch, and production GA.
+
+Now generate the complete Phase 14 implementation.

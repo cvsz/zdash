@@ -1,0 +1,925 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 4 · AUTOMATION
+Scheduler + Friday Agent + IoT Adapter + Windows Service
+
+Do not rebuild Phase 1, Phase 2, or Phase 3 from scratch.
+Extend the existing codebase cleanly.
+
+Assume these phases already exist:
+
+PHASE 1:
+- FastAPI Janie Server
+- Agent Runtime
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event logs
+- API response wrapper
+
+PHASE 2:
+- Trading Core
+- XAU Scanner
+- MT5 adapter shell
+- Funnel Filter 21/10/3
+- Signal validation
+- Dry-run execution engine
+
+PHASE 3:
+- Guardian Agent
+- Drawdown Guard
+- Halt Flag
+- Kill Switch
+- Guardian Service
+- Risk API
+- Risk-gated execution engine
+
+============================================================
+PHASE 4 OBJECTIVE
+============================================================
+
+Build the automation layer for zDash.
+
+Main goals:
+
+1. Create Friday Agent as automation coordinator
+2. Create scheduler system
+3. Add recurring job support
+4. Add manual job run/pause/resume/delete controls
+5. Add predefined system jobs
+6. Add IoT adapter interface
+7. Add Tapo Smart Plug adapter shell
+8. Add dry-run IoT action mode
+9. Add Windows NSSM service installer
+10. Add scheduler API endpoints
+11. Add automation audit logs
+12. Add tests for scheduler and IoT safety
+
+IMPORTANT:
+- Automation must default to safe dry-run mode.
+- IoT power actions must not run for real unless IOT_DRY_RUN=false.
+- Trading jobs must respect Guardian risk system.
+- Scheduler must not bypass risk controls.
+- Do not hardcode Tapo credentials or device IP.
+- Do not implement real destructive power-cycle logic without safety confirmation flags.
+- Use mock adapters when external dependencies are unavailable.
+
+============================================================
+REQUIRED FILES TO CREATE OR UPDATE
+============================================================
+
+Create:
+
+backend/app/agents/friday.py
+
+backend/app/scheduler/
+  __init__.py
+  models.py
+  job_store.py
+  jobs.py
+  scheduler_service.py
+  friday_agent.py
+
+backend/app/iot/
+  __init__.py
+  models.py
+  base.py
+  tapo_adapter.py
+  iot_service.py
+
+backend/app/api/scheduler.py
+backend/app/api/iot.py
+
+scripts/install-nssm-service.ps1
+scripts/uninstall-nssm-service.ps1
+scripts/run-scheduler-smoke-test.sh
+
+backend/app/tests/
+  test_scheduler_models.py
+  test_scheduler_service.py
+  test_scheduler_api.py
+  test_friday_agent.py
+  test_iot_service.py
+  test_tapo_adapter_dry_run.py
+  test_scheduler_risk_integration.py
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/agents/registry.py
+backend/app/api/trading.py if needed
+backend/app/trading/execution_engine.py if needed
+.env.example
+README.md
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example` with:
+
+SCHEDULER_ENABLED=true
+SCHEDULER_TIMEZONE=Asia/Bangkok
+SCHEDULER_DEFAULT_MAX_RUNTIME_SECONDS=300
+SCHEDULER_ALLOW_MANUAL_RUN=true
+SCHEDULER_STORE=in_memory
+
+FRIDAY_AGENT_ENABLED=true
+
+IOT_ENABLED=true
+IOT_DRY_RUN=true
+IOT_REQUIRE_CONFIRMATION=true
+
+TAPO_USERNAME=
+TAPO_PASSWORD=
+TAPO_DEVICE_IP=
+TAPO_DEVICE_ALIAS=zdash-power-node
+
+NSSM_SERVICE_NAME=zdash-janie-server
+NSSM_DISPLAY_NAME=zDash Janie Server
+NSSM_DESCRIPTION=zDash Janie Server and Agent Runtime
+NSSM_BACKEND_HOST=127.0.0.1
+NSSM_BACKEND_PORT=8000
+
+Rules:
+
+- Missing config must fail safely.
+- Scheduler is enabled by default for local dev.
+- IoT is dry-run by default.
+- Real IoT actions require:
+  - IOT_ENABLED=true
+  - IOT_DRY_RUN=false
+  - IOT_REQUIRE_CONFIRMATION=false or explicit confirmation payload
+- Scheduler timezone must default to Asia/Bangkok.
+- Scheduler store must be replaceable later with database persistence.
+
+============================================================
+SCHEDULER MODEL REQUIREMENTS
+============================================================
+
+Create Pydantic models in:
+
+backend/app/scheduler/models.py
+
+Models:
+
+1. JobStatus
+
+Allowed values:
+- pending
+- running
+- paused
+- completed
+- failed
+- disabled
+
+2. JobType
+
+Allowed values:
+- trading_scan
+- risk_check
+- backtest
+- content_pipeline
+- health_check
+- iot_power_cycle
+- custom
+
+3. ScheduleType
+
+Allowed values:
+- interval
+- cron
+- manual
+
+4. ScheduledJob
+
+Fields:
+- id: str
+- name: str
+- job_type: JobType
+- schedule_type: ScheduleType
+- status: JobStatus
+- enabled: bool
+- cron: str | None
+- interval_seconds: int | None
+- payload: dict
+- max_runtime_seconds: int
+- created_at: datetime
+- updated_at: datetime
+- last_run_at: datetime | None
+- next_run_at: datetime | None
+- run_count: int
+- fail_count: int
+
+5. JobRunResult
+
+Fields:
+- job_id: str
+- job_type: JobType
+- status: str
+- ok: bool
+- message: str
+- output: dict
+- started_at: datetime
+- finished_at: datetime
+- duration_ms: int
+
+6. CreateJobRequest
+
+Fields:
+- name: str
+- job_type: JobType
+- schedule_type: ScheduleType
+- cron: str | None
+- interval_seconds: int | None
+- payload: dict = {}
+- enabled: bool = true
+
+Validation:
+- interval jobs require interval_seconds > 0
+- cron jobs require cron string
+- manual jobs do not require cron or interval
+- max_runtime_seconds must be positive
+
+============================================================
+JOB STORE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/scheduler/job_store.py
+
+Implement:
+
+InMemoryJobStore
+
+Methods:
+
+- list_jobs() -> list[ScheduledJob]
+- get_job(job_id: str) -> ScheduledJob | None
+- create_job(request: CreateJobRequest) -> ScheduledJob
+- update_job(job_id: str, patch: dict) -> ScheduledJob
+- delete_job(job_id: str) -> bool
+- pause_job(job_id: str) -> ScheduledJob
+- resume_job(job_id: str) -> ScheduledJob
+- record_run(job_id: str, result: JobRunResult) -> ScheduledJob
+- list_runs(job_id: str | None = None) -> list[JobRunResult]
+
+Rules:
+
+- Use UUID for job IDs.
+- Store jobs in memory for Phase 4.
+- Design for future DB replacement.
+- Do not crash on missing job; raise clean domain error.
+
+============================================================
+SCHEDULER SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/scheduler/scheduler_service.py
+
+Implement:
+
+SchedulerService
+
+Methods:
+
+- start() -> dict
+- stop() -> dict
+- get_status() -> dict
+- register_default_jobs() -> list[ScheduledJob]
+- list_jobs() -> list[ScheduledJob]
+- create_job(request: CreateJobRequest) -> ScheduledJob
+- run_job(job_id: str, manual: bool = true) -> JobRunResult
+- pause_job(job_id: str) -> ScheduledJob
+- resume_job(job_id: str) -> ScheduledJob
+- delete_job(job_id: str) -> bool
+- list_runs(job_id: str | None = None) -> list[JobRunResult]
+
+Default jobs:
+
+1. health_check
+   - schedule_type: interval
+   - interval_seconds: 60
+   - payload: {}
+
+2. risk_check
+   - schedule_type: interval
+   - interval_seconds: 120
+   - payload:
+     {
+       "balance": 10000,
+       "equity": 10000,
+       "peak_equity": 10000,
+       "daily_start_equity": 10000,
+       "open_positions": 0,
+       "floating_pnl": 0,
+       "realized_pnl_today": 0
+     }
+
+3. trading_scan
+   - schedule_type: manual
+   - payload:
+     {
+       "symbol": "XAUUSD",
+       "timeframe": "M5",
+       "dry_run": true
+     }
+
+4. backtest
+   - schedule_type: manual
+   - payload:
+     {
+       "strategy": "ob_aggressive",
+       "dataset": "mock"
+     }
+
+5. content_pipeline
+   - schedule_type: manual
+   - payload:
+     {
+       "approval_required": true,
+       "dry_run": true
+     }
+
+6. iot_power_cycle
+   - schedule_type: manual
+   - enabled: false
+   - payload:
+     {
+       "device_alias": "zdash-power-node",
+       "action": "power_cycle",
+       "confirmation": false
+     }
+
+Job execution behavior:
+
+- health_check calls internal health status.
+- risk_check calls GuardianService.check().
+- trading_scan calls existing trading scanner or returns safe mock result if unavailable.
+- backtest returns placeholder/mock until Phase 5 exists.
+- content_pipeline returns placeholder/mock until Phase 6 exists.
+- iot_power_cycle calls IoTService.power_cycle().
+- Every job emits events.
+- Failures must be captured in JobRunResult, not crash the scheduler.
+
+============================================================
+FRIDAY AGENT REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/agents/friday.py
+
+Friday Agent:
+
+- id: friday
+- name: Friday
+- role: automation_coordinator
+- status: idle/running/error
+
+Methods:
+
+- list_jobs()
+- create_job(request)
+- run_job(job_id)
+- pause_job(job_id)
+- resume_job(job_id)
+- delete_job(job_id)
+- health_check()
+
+Behavior:
+
+- Uses SchedulerService.
+- Emits events:
+  - scheduler.job.created
+  - scheduler.job.started
+  - scheduler.job.completed
+  - scheduler.job.failed
+  - scheduler.job.paused
+  - scheduler.job.resumed
+  - scheduler.job.deleted
+
+Update agent registry so Friday appears in:
+
+GET /api/agents
+
+============================================================
+IOT MODEL REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/iot/models.py
+
+Models:
+
+1. IoTAction
+
+Fields:
+- device_alias: str
+- action: str
+- confirmation: bool = false
+- payload: dict = {}
+
+Allowed actions:
+- status
+- turn_on
+- turn_off
+- power_cycle
+
+2. IoTActionResult
+
+Fields:
+- ok: bool
+- dry_run: bool
+- device_alias: str
+- action: str
+- message: str
+- output: dict
+- timestamp: datetime
+
+============================================================
+IOT ADAPTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/iot/base.py
+
+Define:
+
+class IoTAdapter:
+  - get_status(device_alias: str) -> IoTActionResult
+  - turn_on(device_alias: str) -> IoTActionResult
+  - turn_off(device_alias: str) -> IoTActionResult
+  - power_cycle(device_alias: str) -> IoTActionResult
+
+Create:
+
+backend/app/iot/tapo_adapter.py
+
+Implement:
+
+TapoAdapter
+
+Requirements:
+
+- Reads TAPO_USERNAME, TAPO_PASSWORD, TAPO_DEVICE_IP, TAPO_DEVICE_ALIAS from config.
+- Must support dry-run.
+- If credentials are missing, must return safe dry-run/mock result.
+- Do not crash if real Tapo library is missing.
+- Leave clean placeholder integration for future real Tapo API.
+- For power_cycle:
+  - In dry-run mode, simulate turn_off → wait → turn_on
+  - In real mode, require confirmation
+  - Never power-cycle without confirmation if IOT_REQUIRE_CONFIRMATION=true
+
+============================================================
+IOT SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/iot/iot_service.py
+
+Implement:
+
+IoTService
+
+Methods:
+
+- get_status(device_alias: str | None = None) -> IoTActionResult
+- execute(action: IoTAction) -> IoTActionResult
+- turn_on(device_alias: str, confirmation: bool = false) -> IoTActionResult
+- turn_off(device_alias: str, confirmation: bool = false) -> IoTActionResult
+- power_cycle(device_alias: str, confirmation: bool = false) -> IoTActionResult
+
+Safety rules:
+
+- IOT_DRY_RUN=true must simulate all actions.
+- If IOT_ENABLED=false, block real action.
+- If IOT_REQUIRE_CONFIRMATION=true and confirmation=false, block real action.
+- Emit events:
+  - iot.action.requested
+  - iot.action.simulated
+  - iot.action.completed
+  - iot.action.blocked
+  - iot.action.failed
+
+============================================================
+SCHEDULER API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/scheduler.py
+
+Required endpoints:
+
+1. GET /api/scheduler/status
+
+Returns scheduler status.
+
+2. GET /api/scheduler/jobs
+
+Returns all jobs.
+
+3. POST /api/scheduler/jobs
+
+Request:
+
+{
+  "name": "Manual XAU scan",
+  "job_type": "trading_scan",
+  "schedule_type": "manual",
+  "payload": {
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "dry_run": true
+  },
+  "enabled": true
+}
+
+4. POST /api/scheduler/jobs/{job_id}/run
+
+Runs job manually.
+
+5. POST /api/scheduler/jobs/{job_id}/pause
+
+Pauses job.
+
+6. POST /api/scheduler/jobs/{job_id}/resume
+
+Resumes job.
+
+7. DELETE /api/scheduler/jobs/{job_id}
+
+Deletes job.
+
+8. GET /api/scheduler/runs
+
+Returns recent job runs.
+
+9. GET /api/scheduler/runs/{job_id}
+
+Returns runs for one job.
+
+============================================================
+IOT API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/iot.py
+
+Required endpoints:
+
+1. GET /api/iot/status
+
+Returns device status or dry-run mock status.
+
+2. POST /api/iot/action
+
+Request:
+
+{
+  "device_alias": "zdash-power-node",
+  "action": "status",
+  "confirmation": false,
+  "payload": {}
+}
+
+3. POST /api/iot/power-cycle
+
+Request:
+
+{
+  "device_alias": "zdash-power-node",
+  "confirmation": false
+}
+
+Behavior:
+- In dry-run mode: simulate and return ok.
+- In real mode without confirmation: block.
+- With confirmation and correct config: call adapter.
+
+============================================================
+API RESPONSE FORMAT
+============================================================
+
+All endpoints must use existing standard response shape:
+
+Success:
+
+{
+  "ok": true,
+  "data": {},
+  "error": null,
+  "timestamp": "ISO_DATE"
+}
+
+Error:
+
+{
+  "ok": false,
+  "data": null,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable message"
+  },
+  "timestamp": "ISO_DATE"
+}
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add these event types:
+
+Scheduler:
+- scheduler.started
+- scheduler.stopped
+- scheduler.default_jobs.registered
+- scheduler.job.created
+- scheduler.job.updated
+- scheduler.job.deleted
+- scheduler.job.started
+- scheduler.job.completed
+- scheduler.job.failed
+- scheduler.job.paused
+- scheduler.job.resumed
+- scheduler.job.skipped
+
+Friday:
+- friday.command.received
+- friday.command.completed
+- friday.command.failed
+
+IoT:
+- iot.action.requested
+- iot.action.simulated
+- iot.action.completed
+- iot.action.blocked
+- iot.action.failed
+
+Windows service:
+- service.install.script.generated
+- service.uninstall.script.generated
+
+============================================================
+WINDOWS NSSM SERVICE SCRIPT REQUIREMENTS
+============================================================
+
+Create:
+
+scripts/install-nssm-service.ps1
+
+The script must:
+
+1. Require PowerShell 5+
+2. Check if nssm.exe exists in PATH
+3. Read environment variables:
+   - NSSM_SERVICE_NAME
+   - NSSM_DISPLAY_NAME
+   - NSSM_DESCRIPTION
+   - NSSM_BACKEND_HOST
+   - NSSM_BACKEND_PORT
+4. Detect backend path
+5. Detect Python executable
+6. Install service:
+   - app path: python
+   - args: -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+   - startup directory: backend path
+7. Configure:
+   - display name
+   - description
+   - restart on failure
+   - stdout log path
+   - stderr log path
+8. Print commands to start/stop service
+9. Never embed secrets
+
+Create:
+
+scripts/uninstall-nssm-service.ps1
+
+The script must:
+
+1. Check if service exists
+2. Stop service if running
+3. Remove service using NSSM
+4. Print result
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create tests:
+
+1. test_scheduler_models.py
+
+Test:
+- valid interval job
+- invalid interval job rejects missing interval_seconds
+- cron job requires cron string
+- manual job accepts no schedule
+- status enum values
+
+2. test_scheduler_service.py
+
+Test:
+- register default jobs
+- create custom job
+- list jobs
+- pause job
+- resume job
+- delete job
+- run health_check job
+- failed job is captured as JobRunResult
+
+3. test_scheduler_api.py
+
+Test:
+- GET /api/scheduler/status
+- GET /api/scheduler/jobs
+- POST /api/scheduler/jobs
+- POST /api/scheduler/jobs/{id}/run
+- pause/resume/delete job
+
+4. test_friday_agent.py
+
+Test:
+- Friday agent is registered
+- Friday lists jobs
+- Friday can run a manual job
+- Friday emits events
+
+5. test_iot_service.py
+
+Test:
+- status returns dry-run result
+- power_cycle simulates in dry-run
+- real action blocked without confirmation
+- disabled IoT blocks action
+- events are emitted
+
+6. test_tapo_adapter_dry_run.py
+
+Test:
+- missing credentials do not crash
+- dry-run turn_on returns simulated
+- dry-run turn_off returns simulated
+- dry-run power_cycle returns simulated
+
+7. test_scheduler_risk_integration.py
+
+Test:
+- risk_check job calls Guardian service
+- trading_scan job does not bypass halt flag
+- when halt flag active, trading job returns blocked_by_risk or skipped
+- scheduler emits risk-related job output
+
+All tests must pass with:
+
+cd backend
+pytest
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 4 overview
+- Scheduler architecture
+- Friday Agent role
+- Default jobs
+- IoT safety rules
+- Tapo adapter dry-run behavior
+- Windows NSSM service installation
+- API examples
+- Test commands
+- Safety notes
+
+Add curl examples:
+
+Get scheduler status:
+
+curl http://localhost:8000/api/scheduler/status
+
+List jobs:
+
+curl http://localhost:8000/api/scheduler/jobs
+
+Create manual job:
+
+curl -X POST http://localhost:8000/api/scheduler/jobs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Manual XAU scan",
+    "job_type": "trading_scan",
+    "schedule_type": "manual",
+    "payload": {
+      "symbol": "XAUUSD",
+      "timeframe": "M5",
+      "dry_run": true
+    },
+    "enabled": true
+  }'
+
+Run job:
+
+curl -X POST http://localhost:8000/api/scheduler/jobs/JOB_ID/run
+
+IoT dry-run status:
+
+curl http://localhost:8000/api/iot/status
+
+IoT dry-run power cycle:
+
+curl -X POST http://localhost:8000/api/iot/power-cycle \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_alias": "zdash-power-node",
+    "confirmation": false
+  }'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 4 is complete only when:
+
+- Friday agent is registered.
+- Scheduler service exists.
+- Default jobs are registered.
+- Jobs can be created.
+- Jobs can be listed.
+- Jobs can be run manually.
+- Jobs can be paused.
+- Jobs can be resumed.
+- Jobs can be deleted.
+- Job run history is recorded.
+- Risk check job integrates with Guardian service.
+- Trading scan job does not bypass halt flag.
+- IoT service defaults to dry-run.
+- Tapo adapter does not crash without credentials.
+- Real IoT actions are blocked without confirmation.
+- NSSM install script is generated.
+- NSSM uninstall script is generated.
+- Scheduler API endpoints work.
+- IoT API endpoints work.
+- Event logs are created for automation actions.
+- Existing Phase 1–3 tests still pass.
+- New Phase 4 tests pass.
+- README includes Phase 4 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Windows NSSM scripts
+8. Run instructions
+9. Test instructions
+10. Acceptance checklist
+11. Known limitations
+12. Phase 5 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove Phase 1, Phase 2, or Phase 3 behavior.
+- Keep all existing tests passing.
+- Use typed Python where reasonable.
+- Use Pydantic models.
+- Use safe defaults.
+- Never hardcode credentials.
+- Never enable real IoT action by default.
+- Never bypass Guardian risk checks.
+- Scheduler must capture failures instead of crashing.
+- Keep in-memory job store replaceable for future database persistence.
+- Keep Tapo integration replaceable through adapter interface.
+- Keep code clean enough for Phase 5 Backtesting integration.
+
+Now generate the complete Phase 4 implementation.

@@ -1,0 +1,1060 @@
+Continue from the previous zDash implementation.
+
+Project:
+
+⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 23 · SOVEREIGN ENTERPRISE CONTROL PLANE
+AI Governance + Policy Engine + Disaster Recovery + Compliance Evidence + Autonomous Ops Command Center
+
+IMPORTANT:
+The repository may or may not contain all intermediate Phase 11–22 modules.
+Before coding, inspect the existing repository and detect which phases/modules already exist.
+
+Do not rebuild Phase 1–10 from scratch.
+Do not assume Phase 11–22 files exist unless they are present.
+If a required dependency module is missing, create a safe compatibility shim or minimal interface instead of breaking the build.
+
+============================================================
+PHASE 23 OBJECTIVE
+============================================================
+
+Build the Sovereign Enterprise Control Plane for zDash.
+
+Main goals:
+
+1. Add global governance policy engine
+2. Add AI agent permission governance
+3. Add cross-module safety enforcement
+4. Add compliance evidence collector
+5. Add immutable audit export bundle
+6. Add disaster recovery orchestration
+7. Add backup verification and restore drills
+8. Add incident command center
+9. Add operational risk register
+10. Add enterprise policy simulator
+11. Add autonomous ops runbook executor in dry-run mode
+12. Add control-plane dashboard pages
+13. Add governance APIs
+14. Add disaster recovery APIs
+15. Add compliance APIs
+16. Add full tests
+
+Critical safety rule:
+This phase must make the system safer, more auditable, and more recoverable.
+It must not enable live trading, real IoT actions, real social posting, secret access, or unsafe automation by default.
+
+============================================================
+ASSUMED EXISTING CORE MODULES
+============================================================
+
+The system may already include:
+
+- FastAPI backend
+- React/Vite frontend
+- Auth/JWT
+- RBAC
+- Multi-tenant organizations/workspaces
+- Audit logs
+- Scheduler
+- Worker queue
+- Risk Guardian
+- Backtesting
+- Content pipeline
+- Marketplace plugins
+- Billing and entitlements
+- Notifications
+- Metrics
+- Docker/Kubernetes/Terraform templates
+
+If these exist, integrate with them.
+If they do not exist, create safe adapter interfaces and clear TODO markers without breaking tests.
+
+============================================================
+PHASE 23 MODULES TO ADD
+============================================================
+
+Create backend modules:
+
+backend/app/governance/
+  __init__.py
+  models.py
+  policy_engine.py
+  policy_store.py
+  agent_permissions.py
+  safety_enforcer.py
+  policy_simulator.py
+  governance_service.py
+
+backend/app/compliance/
+  __init__.py
+  models.py
+  evidence_collector.py
+  evidence_store.py
+  audit_exporter.py
+  compliance_service.py
+  reports.py
+
+backend/app/disaster_recovery/
+  __init__.py
+  models.py
+  backup_registry.py
+  restore_drill.py
+  recovery_planner.py
+  dr_service.py
+
+backend/app/incidents/
+  __init__.py
+  models.py
+  incident_service.py
+  risk_register.py
+  runbook_executor.py
+
+backend/app/api/governance.py
+backend/app/api/compliance.py
+backend/app/api/disaster_recovery.py
+backend/app/api/incidents.py
+
+Create frontend modules:
+
+frontend/src/pages/Governance.tsx
+frontend/src/pages/Compliance.tsx
+frontend/src/pages/DisasterRecovery.tsx
+frontend/src/pages/IncidentCommand.tsx
+
+frontend/src/components/governance/
+  PolicyTable.tsx
+  PolicyEditor.tsx
+  PolicySimulationPanel.tsx
+  AgentPermissionMatrix.tsx
+  SafetyGateStatus.tsx
+
+frontend/src/components/compliance/
+  EvidenceTable.tsx
+  ComplianceReportPanel.tsx
+  AuditExportPanel.tsx
+  ControlCoverageMatrix.tsx
+
+frontend/src/components/disasterRecovery/
+  BackupRegistryTable.tsx
+  RestoreDrillPanel.tsx
+  RecoveryPlanCard.tsx
+  RecoveryReadinessScore.tsx
+
+frontend/src/components/incidents/
+  IncidentTable.tsx
+  IncidentTimeline.tsx
+  RiskRegisterTable.tsx
+  RunbookExecutorPanel.tsx
+
+frontend/src/hooks/useGovernance.ts
+frontend/src/hooks/useCompliance.ts
+frontend/src/hooks/useDisasterRecovery.ts
+frontend/src/hooks/useIncidents.ts
+
+Update:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/auth/rbac.py
+backend/app/audit/audit_service.py
+
+frontend/src/App.tsx
+frontend/src/api/types.ts
+frontend/src/api/endpoints.ts
+frontend/src/components/layout/Sidebar.tsx
+frontend/src/pages/Settings.tsx
+
+README.md
+.env.example
+
+============================================================
+CONFIG REQUIREMENTS
+============================================================
+
+Update `.env.example`:
+
+GOVERNANCE_ENABLED=true
+POLICY_ENGINE_ENABLED=true
+POLICY_FAIL_CLOSED=true
+POLICY_SIMULATION_ENABLED=true
+
+AGENT_GOVERNANCE_ENABLED=true
+AGENT_DEFAULT_PERMISSION_MODE=deny
+AGENT_REQUIRE_EXPLICIT_GRANTS=true
+
+SAFETY_ENFORCER_ENABLED=true
+SAFETY_BLOCK_LIVE_TRADING=true
+SAFETY_BLOCK_REAL_IOT=true
+SAFETY_BLOCK_REAL_SOCIAL_POSTING=true
+SAFETY_BLOCK_SECRET_EXPORT=true
+SAFETY_BLOCK_UNREVIEWED_PLUGINS=true
+
+COMPLIANCE_ENABLED=true
+COMPLIANCE_EVIDENCE_COLLECTION=true
+COMPLIANCE_EXPORT_ENABLED=true
+COMPLIANCE_EXPORT_INCLUDE_SECRETS=false
+
+DISASTER_RECOVERY_ENABLED=true
+BACKUP_VERIFICATION_ENABLED=true
+RESTORE_DRILL_DRY_RUN=true
+RECOVERY_POINT_OBJECTIVE_MINUTES=60
+RECOVERY_TIME_OBJECTIVE_MINUTES=120
+
+INCIDENT_COMMAND_ENABLED=true
+RUNBOOK_EXECUTOR_ENABLED=true
+RUNBOOK_EXECUTOR_DRY_RUN=true
+RISK_REGISTER_ENABLED=true
+
+Rules:
+
+- Fail closed when policy engine is unavailable.
+- Agent default permission mode must be deny.
+- Live trading must remain blocked by default.
+- Real IoT must remain blocked by default.
+- Real social posting must remain blocked by default.
+- Secret export must remain blocked by default.
+- Runbook executor must default to dry-run.
+- Restore drills must default to dry-run.
+
+============================================================
+GOVERNANCE MODELS
+============================================================
+
+Create Pydantic models:
+
+1. GovernancePolicy
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- description
+- category
+- effect
+- resource_type
+- action
+- condition
+- priority
+- enabled
+- created_at
+- updated_at
+
+Policy effects:
+- allow
+- deny
+- require_approval
+- dry_run_only
+- audit_only
+
+Categories:
+- trading
+- risk
+- iot
+- social
+- content
+- marketplace
+- billing
+- worker
+- data_export
+- admin
+- ai_agent
+
+2. PolicyDecision
+
+Fields:
+- allowed
+- effect
+- reason
+- policy_id
+- resource_type
+- action
+- actor
+- requires_approval
+- dry_run_required
+- audit_required
+- timestamp
+
+3. AgentPermissionGrant
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- agent_id
+- resource_type
+- action
+- allowed
+- constraints
+- expires_at
+- created_by
+- created_at
+- updated_at
+
+4. PolicySimulationRequest
+
+Fields:
+- actor
+- agent_id
+- resource_type
+- action
+- payload
+- context
+
+5. PolicySimulationResult
+
+Fields:
+- decision
+- matched_policies
+- safety_warnings
+- blocked_reasons
+- recommended_changes
+
+============================================================
+POLICY ENGINE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/policy_engine.py
+
+Implement:
+
+PolicyEngine
+
+Methods:
+
+- evaluate(actor, resource_type, action, payload, context) -> PolicyDecision
+- evaluate_agent_action(agent_id, resource_type, action, payload, context) -> PolicyDecision
+- explain_decision(decision) -> dict
+- list_effective_policies(context) -> list[GovernancePolicy]
+
+Default deny policies:
+
+- deny live trading unless explicitly allowed and Guardian approves
+- deny real IoT power action unless explicit confirmation and operator permission
+- deny real social posting unless approved content and social config permit
+- deny secret export unless admin and typed confirmation
+- deny plugin secret access unless reviewed and explicitly granted
+- deny cross-tenant data access
+- require audit for admin actions
+- require dry-run for runbook executor by default
+
+Rules:
+- Higher priority policies override lower priority policies.
+- Explicit deny overrides allow.
+- `require_approval` must not auto-approve.
+- `dry_run_only` must force dry-run even if caller requested live mode.
+- Missing policy store must fail closed if POLICY_FAIL_CLOSED=true.
+
+============================================================
+SAFETY ENFORCER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/governance/safety_enforcer.py
+
+Implement:
+
+SafetyEnforcer
+
+Methods:
+
+- enforce_trading_action(payload, context)
+- enforce_iot_action(payload, context)
+- enforce_social_action(payload, context)
+- enforce_export_action(payload, context)
+- enforce_plugin_action(payload, context)
+- enforce_worker_task(payload, context)
+
+Each method must return PolicyDecision.
+
+Rules:
+- Never bypass Risk Guardian.
+- Never bypass content approval.
+- Never bypass tenant isolation.
+- Never allow unsafe live action by default.
+- Every blocked action must emit event and audit log.
+
+============================================================
+COMPLIANCE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/compliance/models.py
+
+Models:
+
+1. ComplianceControl
+
+Fields:
+- id
+- name
+- category
+- description
+- required_evidence
+- status
+- owner
+- created_at
+- updated_at
+
+2. EvidenceRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- control_id
+- evidence_type
+- title
+- description
+- source
+- payload
+- hash
+- collected_at
+- created_at
+
+3. ComplianceReport
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- report_type
+- status
+- controls_total
+- controls_passed
+- controls_failed
+- evidence_count
+- summary
+- generated_at
+
+Control categories:
+- access_control
+- audit_logging
+- risk_management
+- data_protection
+- incident_response
+- backup_recovery
+- tenant_isolation
+- ai_governance
+- change_management
+
+Implement:
+
+backend/app/compliance/evidence_collector.py
+
+Collect evidence for:
+- RBAC role map
+- active safety config
+- audit log status
+- tenant isolation checks
+- risk Guardian status
+- dry-run state
+- backup registry
+- incident register
+- policy engine decisions
+- production safety checker output
+
+Implement:
+
+backend/app/compliance/audit_exporter.py
+
+Requirements:
+- Export audit/evidence bundle as JSON
+- Include SHA256 hashes
+- Exclude secrets by default
+- Include manifest file
+- Include timestamp and tenant scope
+- Require admin permission
+- Secret inclusion requires explicit typed confirmation:
+  CONFIRM_SECRET_EXPORT
+
+============================================================
+DISASTER RECOVERY REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/disaster_recovery/models.py
+
+Models:
+
+1. BackupRecord
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- backup_type
+- location
+- status
+- size_bytes
+- checksum
+- created_at
+- verified_at
+- metadata
+
+2. RestoreDrill
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- backup_id
+- status
+- dry_run
+- started_at
+- finished_at
+- duration_ms
+- result
+- errors
+
+3. RecoveryPlan
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- name
+- rpo_minutes
+- rto_minutes
+- steps
+- contacts
+- status
+- created_at
+- updated_at
+
+Implement:
+
+backend/app/disaster_recovery/dr_service.py
+
+Methods:
+
+- list_backups()
+- register_backup(record)
+- verify_backup(backup_id)
+- run_restore_drill(backup_id, dry_run=true)
+- generate_recovery_plan()
+- get_readiness_score()
+
+Rules:
+- Restore drill is dry-run by default.
+- Real restore must require admin and typed confirmation:
+  CONFIRM_RESTORE
+- Do not overwrite live data by default.
+- Verification must calculate checksum where possible.
+- Recovery readiness score must include:
+  - recent verified backup
+  - restore drill success
+  - RPO/RTO config
+  - incident runbook availability
+  - audit export availability
+
+============================================================
+INCIDENT COMMAND REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/incidents/models.py
+
+Models:
+
+1. Incident
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- severity
+- status
+- category
+- description
+- owner
+- timeline
+- created_at
+- updated_at
+- resolved_at
+
+Severity:
+- low
+- medium
+- high
+- critical
+
+Status:
+- open
+- investigating
+- mitigated
+- resolved
+- closed
+
+2. RiskRegisterItem
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- title
+- category
+- likelihood
+- impact
+- risk_score
+- mitigation
+- owner
+- status
+- created_at
+- updated_at
+
+3. RunbookExecution
+
+Fields:
+- id
+- organization_id
+- workspace_id
+- runbook_name
+- dry_run
+- status
+- steps
+- output
+- started_at
+- finished_at
+
+Implement:
+
+backend/app/incidents/runbook_executor.py
+
+Default runbooks:
+- risk_halt_response
+- worker_failure_response
+- backup_failure_response
+- suspicious_login_response
+- content_policy_failure_response
+- iot_action_blocked_response
+- production_safety_blocker_response
+
+Rules:
+- Dry-run by default.
+- No destructive actions.
+- Runbooks produce recommended steps and safe commands.
+- Real execution requires admin and explicit confirmation.
+- Every runbook execution must be audited.
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Governance API:
+
+GET /api/governance/status
+GET /api/governance/policies
+POST /api/governance/policies
+PATCH /api/governance/policies/{policy_id}
+DELETE /api/governance/policies/{policy_id}
+GET /api/governance/agent-permissions
+POST /api/governance/agent-permissions
+POST /api/governance/simulate
+POST /api/governance/enforce
+
+Compliance API:
+
+GET /api/compliance/status
+GET /api/compliance/controls
+GET /api/compliance/evidence
+POST /api/compliance/collect-evidence
+POST /api/compliance/report
+POST /api/compliance/export
+
+Disaster Recovery API:
+
+GET /api/disaster-recovery/status
+GET /api/disaster-recovery/backups
+POST /api/disaster-recovery/backups/register
+POST /api/disaster-recovery/backups/{backup_id}/verify
+POST /api/disaster-recovery/restore-drill
+GET /api/disaster-recovery/recovery-plan
+GET /api/disaster-recovery/readiness-score
+
+Incident API:
+
+GET /api/incidents
+POST /api/incidents
+PATCH /api/incidents/{incident_id}
+GET /api/incidents/risk-register
+POST /api/incidents/risk-register
+PATCH /api/incidents/risk-register/{item_id}
+POST /api/incidents/runbooks/execute
+GET /api/incidents/runbooks/executions
+
+All endpoints must use standard API response shape.
+
+============================================================
+RBAC REQUIREMENTS
+============================================================
+
+Add permissions:
+
+- governance.read
+- governance.manage
+- governance.simulate
+- compliance.read
+- compliance.collect
+- compliance.export
+- disaster_recovery.read
+- disaster_recovery.manage
+- disaster_recovery.restore
+- incidents.read
+- incidents.manage
+- runbooks.execute
+- runbooks.execute_real
+
+Role mapping:
+
+admin:
+- all permissions
+
+operator:
+- governance.read
+- governance.simulate
+- compliance.read
+- compliance.collect
+- disaster_recovery.read
+- incidents.read
+- incidents.manage
+- runbooks.execute
+
+analyst:
+- governance.read
+- governance.simulate
+- compliance.read
+- disaster_recovery.read
+- incidents.read
+
+viewer:
+- governance.read limited
+- compliance.read limited
+- disaster_recovery.read limited
+- incidents.read limited
+
+============================================================
+FRONTEND REQUIREMENTS
+============================================================
+
+Add sidebar pages:
+
+- Governance
+- Compliance
+- Disaster Recovery
+- Incident Command
+
+Governance page must show:
+- Policy table
+- Policy editor
+- Agent permission matrix
+- Policy simulation panel
+- Safety gate status
+
+Compliance page must show:
+- Compliance control coverage
+- Evidence table
+- Generate report button
+- Audit export panel
+- Evidence hash status
+
+Disaster Recovery page must show:
+- Backup registry
+- Restore drill panel
+- Recovery readiness score
+- Recovery plan
+- RPO/RTO display
+
+Incident Command page must show:
+- Open incidents
+- Incident timeline
+- Risk register
+- Runbook executor
+- Dry-run runbook result
+
+Safety:
+- Real restore button must require typed confirmation.
+- Secret export must require typed confirmation.
+- Runbook real execution must be hidden unless admin.
+- UI must clearly label dry-run operations.
+
+============================================================
+EVENT TYPES
+============================================================
+
+Add events:
+
+Governance:
+- governance.policy.created
+- governance.policy.updated
+- governance.policy.deleted
+- governance.policy.evaluated
+- governance.action.allowed
+- governance.action.blocked
+- governance.agent.permission.granted
+- governance.agent.permission.revoked
+- governance.simulation.completed
+
+Compliance:
+- compliance.evidence.collected
+- compliance.report.generated
+- compliance.audit.export.started
+- compliance.audit.export.completed
+- compliance.audit.export.blocked
+
+Disaster Recovery:
+- dr.backup.registered
+- dr.backup.verified
+- dr.restore_drill.started
+- dr.restore_drill.completed
+- dr.restore.blocked
+- dr.recovery_plan.generated
+
+Incidents:
+- incident.created
+- incident.updated
+- incident.resolved
+- risk_register.item.created
+- risk_register.item.updated
+- runbook.execution.started
+- runbook.execution.completed
+- runbook.execution.blocked
+
+============================================================
+TEST REQUIREMENTS
+============================================================
+
+Create backend tests:
+
+backend/app/tests/test_governance_models.py
+backend/app/tests/test_policy_engine.py
+backend/app/tests/test_agent_permissions.py
+backend/app/tests/test_safety_enforcer.py
+backend/app/tests/test_policy_simulator.py
+backend/app/tests/test_governance_api.py
+backend/app/tests/test_compliance_evidence.py
+backend/app/tests/test_audit_exporter.py
+backend/app/tests/test_compliance_api.py
+backend/app/tests/test_disaster_recovery.py
+backend/app/tests/test_restore_drill.py
+backend/app/tests/test_incident_service.py
+backend/app/tests/test_runbook_executor.py
+backend/app/tests/test_phase23_tenant_isolation.py
+
+Test:
+- deny overrides allow
+- dry_run_only forces dry-run
+- live trading blocked by default
+- real IoT blocked by default
+- real social posting blocked by default
+- secret export blocked without confirmation
+- agent has no permission by default
+- policy simulation explains decisions
+- evidence collection works
+- audit export excludes secrets
+- restore drill defaults to dry-run
+- real restore requires confirmation
+- runbook execution defaults to dry-run
+- tenant A cannot read tenant B governance/compliance/DR/incident data
+- API endpoints return standard response shape
+
+Create frontend tests:
+
+frontend/src/tests/Governance.test.tsx
+frontend/src/tests/Compliance.test.tsx
+frontend/src/tests/DisasterRecovery.test.tsx
+frontend/src/tests/IncidentCommand.test.tsx
+
+Test:
+- Governance page renders policies
+- Policy simulation panel appears
+- Compliance evidence table renders
+- Secret export requires confirmation
+- DR restore drill panel renders
+- Real restore requires confirmation
+- Incident table renders
+- Runbook executor shows dry-run mode
+
+All tests must pass:
+
+Backend:
+
+cd backend
+pytest
+
+Frontend:
+
+cd frontend
+npm test
+npm run build
+
+============================================================
+README UPDATE REQUIREMENTS
+============================================================
+
+Update README with:
+
+- Phase 23 overview
+- Sovereign Enterprise Control Plane architecture
+- Governance policy engine
+- Agent permission governance
+- Safety enforcer
+- Compliance evidence collector
+- Audit export bundle
+- Disaster recovery readiness
+- Restore drill workflow
+- Incident command center
+- Risk register
+- Runbook executor
+- API examples
+- Frontend pages
+- Test commands
+- Safety checklist
+
+Add curl examples:
+
+Governance status:
+
+curl http://localhost:8000/api/governance/status \
+  -H "Authorization: Bearer TOKEN"
+
+Simulate policy:
+
+curl -X POST http://localhost:8000/api/governance/simulate \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "actor": "operator",
+    "agent_id": "friday",
+    "resource_type": "iot",
+    "action": "power_cycle",
+    "payload": {
+      "dry_run": false,
+      "confirmation": false
+    },
+    "context": {}
+  }'
+
+Collect compliance evidence:
+
+curl -X POST http://localhost:8000/api/compliance/collect-evidence \
+  -H "Authorization: Bearer TOKEN"
+
+Run dry-run restore drill:
+
+curl -X POST http://localhost:8000/api/disaster-recovery/restore-drill \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "backup_id": "BACKUP_ID",
+    "dry_run": true
+  }'
+
+Execute dry-run runbook:
+
+curl -X POST http://localhost:8000/api/incidents/runbooks/execute \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "runbook_name": "risk_halt_response",
+    "dry_run": true,
+    "context": {}
+  }'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 23 is complete only when:
+
+- Governance module exists.
+- Policy engine works.
+- Safety enforcer blocks unsafe actions.
+- Agent permission governance defaults to deny.
+- Policy simulator explains decisions.
+- Compliance evidence collector works.
+- Audit export bundle works and excludes secrets by default.
+- Disaster recovery module exists.
+- Backup registry works.
+- Restore drill defaults to dry-run.
+- Recovery readiness score works.
+- Incident command module exists.
+- Risk register works.
+- Runbook executor defaults to dry-run.
+- APIs work.
+- Frontend pages work.
+- Tenant isolation is enforced.
+- RBAC protects sensitive actions.
+- Event logs are emitted.
+- Audit logs are created.
+- Existing Phase 1–10 behavior remains intact.
+- Existing tests still pass.
+- New Phase 23 tests pass.
+- No live trading is enabled by default.
+- No real IoT action is enabled by default.
+- No real social posting is enabled by default.
+- No secret export is allowed without explicit confirmation.
+- README includes Phase 23 documentation.
+
+============================================================
+DELIVERABLE FORMAT
+============================================================
+
+Generate:
+
+1. Repository inspection summary
+2. Folder tree changes
+3. Full source code for every new backend file
+4. Full source code for every new frontend file
+5. Full patched code for every updated file
+6. Test files
+7. .env.example updates
+8. README updates
+9. API examples
+10. Run instructions
+11. Test instructions
+12. Safety checklist
+13. Acceptance checklist
+14. Known limitations
+15. Phase 24 handoff notes
+
+============================================================
+IMPORTANT IMPLEMENTATION RULES
+============================================================
+
+- Do not use pseudocode.
+- Do not skip files.
+- Do not remove existing behavior.
+- Keep existing backend tests passing.
+- Keep existing frontend tests passing.
+- Detect missing intermediate modules and add safe shims.
+- Use typed Python where reasonable.
+- Use TypeScript types.
+- Never hardcode credentials.
+- Never expose secrets in frontend.
+- Never log secrets.
+- Never enable live trading by default.
+- Never enable real social posting by default.
+- Never enable real IoT power actions by default.
+- Never bypass Guardian risk checks.
+- Never bypass content approval checks.
+- Never bypass tenant isolation.
+- Never bypass RBAC.
+- Governance must fail closed.
+- Restore must be dry-run by default.
+- Runbooks must be dry-run by default.
+- Secret export must be blocked by default.
+- Keep the implementation modular enough for Phase 24 autonomous certification, external auditor portal, and enterprise customer deployment packs.
+
+Now generate the complete Phase 23 implementation.
