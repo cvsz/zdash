@@ -1,0 +1,74 @@
+# Next Prompt · PHASE 27
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase27.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 27 · AI OPS AUTOPILOT + SELF-HEALING + SRE COPILOT
+Anomaly Detection + Remediation Planner + RCA Packs + SRE ChatOps
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- AI Ops, remediation, self-healing, and SRE workflows are dry-run and recommendation-only by default.
+- Real remediation is disabled by default and must require admin permission, typed confirmation, passing safety checks, rollback plan, and audit logging.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe shell execution by default.
+- Never bypass Guardian, content approval, RBAC, or tenant isolation.
+
+OBJECTIVE:
+Build AI Ops and SRE copilot layer:
+1. Deterministic anomaly detection over events, audit logs, SLA samples, scheduler failures, worker tasks, risk events, support cases, and fleet health.
+2. Remediation plan generator with blast-radius notes, rollback-first design, dry-run simulation, and approval gates.
+3. Self-healing executor interface that is disabled for real actions by default.
+4. RCA pack builder for incidents, failed jobs, failed updates, SLA burn-rate alerts, and support cases.
+5. SRE Copilot endpoint/UI for safe operational Q&A, runbook suggestions, and incident summarization.
+6. Frontend AI Ops dashboard with anomalies, remediation plans, RCA reports, and SRE Copilot panel.
+
+BACKEND MODULES:
+- backend/app/ai_ops/{__init__.py,models.py,anomaly_detector.py,remediation_planner.py,self_healing.py,rca_builder.py,sre_copilot.py,ai_ops_service.py}
+- backend/app/api/ai_ops.py
+
+FRONTEND MODULES:
+- frontend/src/pages/AIOps.tsx
+- frontend/src/components/aiOps/{AnomalyTable.tsx,RemediationPlanPanel.tsx,RcaReportPanel.tsx,SreCopilotPanel.tsx}
+- frontend/src/hooks/useAIOps.ts
+
+CONFIG TO ADD:
+AI_OPS_ENABLED=true
+AI_OPS_AUTOPILOT_DRY_RUN=true
+AI_OPS_ALLOW_REAL_REMEDIATION=false
+SELF_HEALING_ENABLED=true
+SELF_HEALING_REAL_ACTIONS=false
+SELF_HEALING_REQUIRE_APPROVAL=true
+SRE_COPILOT_ENABLED=true
+RCA_PACK_INCLUDE_SECRETS=false
+AI_OPS_STRICT_REDACTION=true
+
+APIS:
+- GET /api/ai-ops/status
+- GET /api/ai-ops/anomalies
+- POST /api/ai-ops/anomalies/detect
+- GET /api/ai-ops/remediation-plans
+- POST /api/ai-ops/remediation-plans
+- POST /api/ai-ops/remediation-plans/{plan_id}/simulate
+- POST /api/ai-ops/remediation-plans/{plan_id}/approve
+- POST /api/ai-ops/remediation-plans/{plan_id}/execute
+- POST /api/ai-ops/rca
+- POST /api/ai-ops/copilot/message
+
+TESTS:
+Anomaly detector handles empty data, deterministic anomaly scoring, remediation plan is dry-run, real remediation blocked by default, RCA excludes secrets, SRE copilot cannot reveal secrets, runbook suggestions are safe, RBAC protects execute endpoints, tenant isolation enforced.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 28 handoff.
+
+Now generate Phase 27 and save this prompt into docs/prompt/phase27.prompt.
+```
