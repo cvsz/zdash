@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.agents.registry import bootstrap_agents
-from app.api import admin, agents, auth, backtesting, content, health, iot, logs, metrics, risk, scheduler
+from app.api import admin, agents, auth, backtesting, billing, content, enterprise, health, iot, logs, marketplace, metrics, risk, scheduler
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
@@ -61,3 +61,7 @@ app.include_router(content.router)
 app.include_router(auth.router)
 app.include_router(metrics.router)
 app.include_router(admin.router)
+
+app.include_router(billing.router)
+app.include_router(marketplace.router)
+app.include_router(enterprise.router)

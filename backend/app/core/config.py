@@ -88,6 +88,12 @@ class Settings(BaseSettings):
     optimizer_max_combinations: int = Field(default=100, alias='OPTIMIZER_MAX_COMBINATIONS')
     optimizer_sort_metric: str = Field(default='profit_factor', alias='OPTIMIZER_SORT_METRIC')
 
+    
+    billing_enabled: bool = Field(default=True, alias='BILLING_ENABLED')
+    billing_provider: str = Field(default='mock', alias='BILLING_PROVIDER')
+    stripe_enabled: bool = Field(default=False, alias='STRIPE_ENABLED')
+    stripe_secret_key: str = Field(default='', alias='STRIPE_SECRET_KEY')
+    stripe_webhook_secret: str = Field(default='', alias='STRIPE_WEBHOOK_SECRET')
     frontend_origin: str = Field(default='http://localhost:5173', alias='FRONTEND_ORIGIN')
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
 
