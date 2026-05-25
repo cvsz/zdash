@@ -1,0 +1,81 @@
+# Next Prompt · PHASE 26
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase26.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 26 · MANAGED FLEET CONTROL + CUSTOMER AGENT RELAY + REMOTE DIAGNOSTICS
+Fleet Registry + Relay Nodes + Remote Diagnostics + Support Sessions
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+- Fleet, relay, and remote diagnostics are read-only or dry-run by default.
+- Remote commands must be planned first and require admin approval plus typed confirmation before any real mutation.
+- Shell relay is disabled by default.
+- Never enable live trading, real IoT, real social posting, secret export, or unsafe remote execution by default.
+- Never bypass Guardian, content approval, RBAC, or tenant isolation.
+
+OBJECTIVE:
+Build a managed fleet control plane:
+1. Tenant-scoped fleet registry for customer zDash installations.
+2. Customer relay agent model, heartbeat, version inventory, and environment metadata.
+3. Remote diagnostics collector with strict redaction.
+4. Support session workflow with expiration and approval.
+5. Remote command planner and queue that defaults to dry-run.
+6. Fleet health score, update readiness, SLA linkage, support bundle linkage.
+7. Frontend pages for Fleet Control and Remote Diagnostics.
+
+BACKEND MODULES:
+- backend/app/fleet/{__init__.py,models.py,fleet_registry.py,node_heartbeat.py,relay_gateway.py,remote_diagnostics.py,fleet_health.py,fleet_service.py}
+- backend/app/relay/{__init__.py,models.py,relay_auth.py,command_planner.py,command_queue.py,relay_service.py}
+- backend/app/api/{fleet.py,relay.py}
+
+FRONTEND MODULES:
+- frontend/src/pages/{FleetControl.tsx,RemoteDiagnostics.tsx}
+- frontend/src/components/fleet/{FleetNodeTable.tsx,FleetHealthCard.tsx,NodeDetailPanel.tsx,SupportSessionPanel.tsx}
+- frontend/src/components/relay/{RelayStatusCard.tsx,CommandPlanPanel.tsx,CommandQueueTable.tsx,RemoteDiagnosticPanel.tsx}
+- frontend/src/hooks/{useFleet.ts,useRelay.ts}
+
+CONFIG TO ADD:
+FLEET_CONTROL_ENABLED=true
+FLEET_REMOTE_DIAGNOSTICS_DRY_RUN=true
+FLEET_NODE_HEARTBEAT_TTL_SECONDS=300
+FLEET_SUPPORT_SESSION_EXPIRE_MINUTES=60
+RELAY_ENABLED=true
+RELAY_COMMANDS_DRY_RUN=true
+RELAY_REQUIRE_MUTATION_APPROVAL=true
+RELAY_ALLOW_SHELL=false
+RELAY_STRICT_REDACTION=true
+REMOTE_DIAGNOSTICS_INCLUDE_SECRETS=false
+
+APIS:
+- GET /api/fleet/status
+- GET /api/fleet/nodes
+- POST /api/fleet/nodes/register
+- GET /api/fleet/nodes/{node_id}
+- POST /api/fleet/nodes/{node_id}/heartbeat
+- POST /api/fleet/nodes/{node_id}/diagnostics
+- POST /api/fleet/nodes/{node_id}/support-session
+- GET /api/relay/status
+- POST /api/relay/commands/plan
+- GET /api/relay/commands
+- POST /api/relay/commands/{command_id}/approve
+- POST /api/relay/commands/{command_id}/cancel
+
+TESTS:
+Node registration is tenant-scoped, heartbeat updates health, diagnostics are read-only, strict redaction removes secrets, shell relay disabled by default, mutation command requires approval, support sessions expire, cross-tenant fleet and relay access denied.
+
+DELIVERABLES:
+Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 27 handoff.
+
+Now generate Phase 26 and save this prompt into docs/prompt/phase26.prompt.
+```
