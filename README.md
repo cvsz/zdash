@@ -128,3 +128,17 @@ pytest
 - This implementation is for simulation/paper-trading guarded automation.
 - No financial advice is provided.
 - Live execution is blocked unless configuration gates explicitly permit it.
+
+## Phase 5 Backtesting
+- Joe agent coordinates strategy lab runs and optimization.
+- Supported strategies: `ob_aggressive`, `ob_conservative`, `trend_follow`.
+- Dataset sources: deterministic `mock`, or `csv:<filename.csv>` from `backend/data/backtests/`.
+- Backtests are simulation-only and do not guarantee future performance.
+- Strategy promotion is gated and disabled by default (`ALLOW_STRATEGY_PROMOTION=false`).
+
+### API Examples
+```bash
+curl http://localhost:8000/api/backtesting/strategies
+curl -X POST http://localhost:8000/api/backtesting/run -H "Content-Type: application/json" -d '{"strategy":"ob_aggressive"}'
+curl -X POST http://localhost:8000/api/backtesting/optimize -H "Content-Type: application/json" -d '{"strategy":"ob_aggressive","parameter_grid":{"lookback":[8,12],"risk_reward":[1.5,2.0]}}'
+```

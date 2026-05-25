@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from app.agents.base import AgentMessage, BaseAgent
 from app.agents.ceo import CEOAgent
 from app.agents.janie import JanieAgent
+from app.agents.joe import JoeAgent
 from app.ai.claude_adapter import ClaudeAdapter
 from app.ai.mock_adapter import MockAIAdapter
 from app.core.config import get_settings
@@ -100,7 +101,7 @@ registry = AgentRegistry()
 
 
 def bootstrap_agents() -> None:
-    if registry.get('ceo') and registry.get('janie') and registry.get('guardian'):
+    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('joe'):
         return
 
     ceo = registry.get('ceo') or CEOAgent()
@@ -109,9 +110,11 @@ def bootstrap_agents() -> None:
     from app.risk.guardian_service import get_guardian_agent
 
     guardian = registry.get('guardian') or get_guardian_agent()
+    joe = registry.get('joe') or JoeAgent()
 
     registry.register(ceo)
     registry.register(janie)
     registry.register(guardian)
+    registry.register(joe)
 
-    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian']})
+    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'joe']})

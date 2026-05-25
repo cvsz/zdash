@@ -1,3 +1,5 @@
-from . import ob_aggressive, ob_conservative, trend_follow
+from app.backtesting.strategies.ob_aggressive import OBAggressiveStrategy
+from app.backtesting.strategies.ob_conservative import OBConservativeStrategy
+from app.backtesting.strategies.trend_follow import TrendFollowStrategy
 
-__all__ = ['ob_aggressive', 'ob_conservative', 'trend_follow']
+__all__ = ["OBAggressiveStrategy", "OBConservativeStrategy", "TrendFollowStrategy"]
