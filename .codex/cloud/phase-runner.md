@@ -5,9 +5,9 @@ Use these prompts as Codex Cloud tasks.
 ## Run a specific phase
 
 ```text
-Read docs/prompt/phase04.prompt.
+Read docs/prompt/phase21.prompt.
 
-Implement Phase 04 only.
+Implement Phase 21 only.
 
 Requirements:
 - Inspect repo first.
@@ -27,12 +27,11 @@ Return:
 6. Next phase handoff
 ```
 
-
-## Run all remaining phases (sequential)
+## Run all integrated phases sequentially
 
 ```text
-Read .codex/cloud/README.md first, then run the remaining phase prompts in order:
-phase24.prompt → phase25.prompt → phase26.prompt → phase27.prompt → phase28.prompt → phase29.prompt → phase30.prompt → phase31.prompt → phase32.prompt.
+Read .codex/cloud/README.md first, then run the integrated phase prompts in order:
+phase21.prompt → phase22.prompt → phase23.prompt → phase24.prompt → phase25.prompt → phase26.prompt → phase27.prompt → phase28.prompt → phase29.prompt → phase30.prompt → phase31.prompt → phase32.prompt.
 
 Implement one phase at a time and keep behavior backward-compatible between phases.
 After each phase:
@@ -81,32 +80,15 @@ Run all relevant backend and frontend checks before final response.
 After running `.codex/cloud/setup.sh`, the setup script creates:
 
 ```bash
-bash .codex/run-phase.sh 24
+bash .codex/run-phase.sh 21
 ```
 
 This prints the selected prompt file so Codex can use it as task context.
 
-## Recommended phase order
+## Recommended integrated phase order
 
 ```text
 docs/prompt/
-├── phase04.prompt
-├── phase05.prompt
-├── phase06.prompt
-├── phase07.prompt
-├── phase08.prompt
-├── phase09.prompt
-├── phase10.prompt
-├── phase11.prompt
-├── phase12.prompt
-├── phase13.prompt
-├── phase14.prompt
-├── phase15.prompt
-├── phase16.prompt
-├── phase17.prompt
-├── phase18.prompt
-├── phase19.prompt
-├── phase20.prompt
 ├── phase21.prompt
 ├── phase22.prompt
 ├── phase23.prompt
@@ -120,6 +102,10 @@ docs/prompt/
 ├── phase31.prompt
 └── phase32.prompt
 ```
+
+## Legacy earlier prompt inventory
+
+Some repos may also include earlier prompts such as `phase04.prompt` through `phase20.prompt`. Treat those as already-completed context unless the user explicitly asks to run them.
 
 ## Verification
 
