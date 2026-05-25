@@ -1,0 +1,258 @@
+# Instincts generated from https://github.com/cvsz/zdash
+# Generated: 2026-05-25T02:27:21.048Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: zdash-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/cvsz/zdash
+---
+
+# Zdash Commit Length
+
+## Action
+
+Keep commit messages concise (~47 characters)
+
+## Evidence
+
+- Average commit message length: 47 chars
+- Based on 1 commits
+
+---
+id: zdash-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/cvsz/zdash
+---
+
+# Zdash Naming Files
+
+## Action
+
+Use snake_case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: snake_case
+
+---
+id: zdash-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/cvsz/zdash
+---
+
+# Zdash Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: zdash-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/cvsz/zdash
+---
+
+# Zdash Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: zdash-instinct-file-naming
+trigger: "When creating a new Python file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct File Naming
+
+## Action
+
+Name the file using snake_case
+
+## Evidence
+
+- Pattern in namingConventions.files
+
+---
+id: zdash-instinct-function-naming
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Function Naming
+
+## Action
+
+Name the function using camelCase
+
+## Evidence
+
+- Pattern in namingConventions.functions
+
+---
+id: zdash-instinct-class-naming
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Class Naming
+
+## Action
+
+Name the class using PascalCase
+
+## Evidence
+
+- Pattern in namingConventions.classes
+
+---
+id: zdash-instinct-constant-naming
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Constant Naming
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE
+
+## Evidence
+
+- Pattern in namingConventions.constants
+
+---
+id: zdash-instinct-import-style
+trigger: "When importing modules in Python files"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Import Style
+
+## Action
+
+Use relative imports
+
+## Evidence
+
+- Pattern in importStyle
+
+---
+id: zdash-instinct-export-style
+trigger: "When exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Export Style
+
+## Action
+
+Use named exports
+
+## Evidence
+
+- Pattern in exportStyle
+
+---
+id: zdash-instinct-git-commit-prefix
+trigger: "When writing a commit related to a new feature or change"
+confidence: 0.8
+domain: git
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Git Commit Prefix
+
+## Action
+
+Prefix the commit message with 'phase4:'
+
+## Evidence
+
+- Seen in commit 'phase4: scaffold scheduler and iot safety layer'
+- Pattern in commits.prefixes
+
+---
+id: zdash-instinct-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 47 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+
+---
+id: zdash-instinct-test-location
+trigger: "When adding or updating tests"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: cvsz/zdash
+---
+
+# Zdash Instinct Test Location
+
+## Action
+
+Place test files in mixed locations within the repository
+
+## Evidence
+
+- Pattern in architecture.folderStructure.testLocation
+
