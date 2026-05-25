@@ -1,0 +1,16 @@
+services:
+  nginx:
+    build: { context: ., dockerfile: infra/docker/nginx.Dockerfile }
+    ports: ["80:80"]
+    depends_on: [backend, frontend]
+  backend:
+    build: { context: ., dockerfile: infra/docker/backend.Dockerfile }
+  frontend:
+    build: { context: ., dockerfile: infra/docker/frontend.Dockerfile }
+  postgres:
+    image: postgres:16
+  redis:
+    image: redis:7
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes: ["./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
