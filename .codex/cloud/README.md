@@ -71,13 +71,13 @@ docs/prompt/phase32.prompt
 4. Start a Codex task with one phase only, for example:
 
 ```text
-Read docs/prompt/phase21.prompt.
-Implement Phase 21 only.
+Read docs/prompt/phase01.prompt.
+Implement Phase01 only.
 Run backend and frontend checks.
 Return inspection summary, files changed, tests run, safety checklist, limitations, and next handoff.
 ```
 
-For batch execution, use `.codex/cloud/phase-runner.md` section **Run all integrated phases sequentially** to process phases 21→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
+For batch execution, use `.codex/cloud/phase-runner.md` section **Run all integrated phases sequentially** to process phases 01→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
 
 ## Verification commands
 
