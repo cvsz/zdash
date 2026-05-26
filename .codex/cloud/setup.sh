@@ -112,7 +112,7 @@ fi
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
   npm install --legacy-peer-deps --no-audit --fund=false
-  npm test -- --run
+  npm test
   npm run build
   cd "$ROOT_DIR"
 fi
