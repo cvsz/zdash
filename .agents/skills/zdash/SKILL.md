@@ -1,84 +1,119 @@
-```markdown
-# zdash Development Patterns
+---
+name: zdash
+description: zDash repository development patterns, safety invariants, phase workflow, and validation commands for cvsz/zdash.
+---
 
-> Auto-generated skill from repository analysis
+# zDash Development Skill
 
-## Overview
-This skill teaches the core development patterns and conventions used in the `zdash` Python codebase. You'll learn how to structure files, write imports and exports, follow commit message styles, and understand the testing approach. This guide is ideal for contributors looking to maintain consistency and quality in the project.
+Use this skill when working in `cvsz/zdash`.
 
-## Coding Conventions
+zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
 
-### File Naming
-- Use **snake_case** for all Python files.
-  - Example: `data_loader.py`, `user_profile_manager.py`
+## Core Rules
 
-### Import Style
-- Use **relative imports** within the package.
-  - Example:
-    ```python
-    from .utils import parse_config
-    from ..models import User
-    ```
+- Read `AGENTS.md` before changing code.
+- Read the requested `docs/prompt/phaseXX.prompt` before phase work.
+- Implement only the requested phase or task.
+- Preserve the current green CI baseline.
+- Do not rewrite the repository from scratch.
+- Do not commit secrets or private data.
+- Use mocks, adapters, and dependency injection for external providers.
+- Keep live trading, real broker execution, real IoT actions, real social posting, real infrastructure mutation, raw shell relay, and destructive automation disabled by default.
 
-### Export Style
-- Use **named exports** (explicitly define what is exported from modules).
-  - Example:
-    ```python
-    __all__ = ["parse_config", "User"]
-    ```
+## Runtime Defaults
 
-### Commit Messages
-- No strict format, but commonly prefixed with `phase4`.
-- Keep messages concise (average 47 characters).
-  - Example: `phase4: add user authentication handler`
+- Backend default port: `8004`
+- Backend health endpoint: `http://localhost:8004/health`
+- Frontend dev endpoint: `http://localhost:5173`
+- Support domain: `https://zdash.zeaz.dev`
+- Cloudflare operator repo: `CVSz/zeaz-platform`
 
-## Workflows
+## Backend Commands
 
-### Adding a New Module
-**Trigger:** When you need to introduce new functionality.
-**Command:** `/add-module`
+```bash
+cd backend
+pytest
+```
 
-1. Create a new Python file using snake_case (e.g., `feature_x.py`).
-2. Use relative imports to bring in dependencies from within the package.
-   ```python
-   from .utils import helper_function
-   ```
-3. Define `__all__` to specify exported functions/classes.
-   ```python
-   __all__ = ["FeatureX"]
-   ```
-4. Write concise commit messages, optionally prefixed with `phase4`.
-5. Add or update corresponding test files (see Testing Patterns).
+If dependencies are missing:
 
-### Writing Tests
-**Trigger:** When adding or updating code.
-**Command:** `/write-test`
+```bash
+bash .codex/cloud/repair-backend-deps.sh
+```
 
-1. Create a test file matching the pattern `*.test.*` (e.g., `feature_x.test.py`).
-2. Place test files alongside the modules they test or in a dedicated test directory.
-3. Use your preferred testing framework (none detected, so choose as appropriate).
-4. Write tests for all public functions and classes.
-5. Run tests before committing changes.
+## Frontend Commands
 
-## Testing Patterns
+```bash
+cd frontend
+npm install --legacy-peer-deps --no-audit --fund=false
+npm test
+npm run build
+```
 
-- Test files follow the pattern `*.test.*` (e.g., `module.test.py`).
-- No specific testing framework detected; choose one that fits your workflow (e.g., `unittest`, `pytest`).
-- Place tests in files named after the module being tested.
-- Example test file structure:
-  ```python
-  # feature_x.test.py
-  import unittest
-  from .feature_x import FeatureX
+Important:
 
-  class TestFeatureX(unittest.TestCase):
-      def test_feature(self):
-          self.assertTrue(FeatureX().do_something())
-  ```
+- Use `npm test`, not `npm test -- --run`.
+- `npm test` already runs Vitest with `--run`.
+- Production build uses `frontend/tsconfig.build.json` and must not compile `src/tests/**`.
 
-## Commands
-| Command        | Purpose                                   |
-|----------------|-------------------------------------------|
-| /add-module    | Scaffold a new module with conventions    |
-| /write-test    | Create and structure a new test file      |
+## Docker Commands
+
+```bash
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
+
+## Phase Workflow
+
+Phase prompts live in `docs/prompt/`.
+
+Run one phase at a time unless explicitly asked for a batch:
+
+```bash
+FROM=1 TO=1 ./scripts/run-prompt-phases.sh
+FROM=2 TO=2 ./scripts/run-prompt-phases.sh
+```
+
+Validation override:
+
+```bash
+VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d frontend ]; then cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build && cd ..; fi' FROM=1 TO=1 ./scripts/run-prompt-phases.sh
+```
+
+## Event Rules
+
+- `Event.message` must be a human-readable string.
+- Put structured event details in `Event.payload`.
+
+## Agent Rules
+
+- Any class extending `BaseAgent` must call `BaseAgent.__init__()`.
+- Any class extending `BaseAgent` must implement required abstract methods.
+
+## CI Troubleshooting
+
+If Vitest fails with duplicate `--run`, call only:
+
+```bash
+npm test
+```
+
+If TypeScript build fails on test globals, ensure build uses:
+
+```bash
+tsc -p tsconfig.build.json
+```
+
+If backend tests fail on missing packages, update both:
+
+```text
+backend/pyproject.toml
+backend/requirements.txt
+```
+
+Then run:
+
+```bash
+bash .codex/cloud/repair-backend-deps.sh
+cd backend && pytest
 ```
