@@ -8,19 +8,21 @@ from app.core.events import event_bus
 
 class EditorAgent(BaseAgent):
     id = "editor"
-    name = "Editor"
-    role = "content_editor"
+    name = "Elena Voss"
+    role = "content_specialist"
 
     def __init__(self) -> None:
-        super().__init__(agent_id=self.id, name=self.name, role=self.role)
-
-    def __init__(self) -> None:
-        super().__init__(agent_id=self.id, name=self.name, role=self.role)
+        super().__init__(
+            agent_id=self.id,
+            name=self.name,
+            role=self.role,
+            metadata={"tier": "epic", "legacy_name": "Editor"},
+        )
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
         self.emit_event(
             'agent.message.received',
-            'Editor agent received message',
+            'Elena Voss received message',
             {'from_agent': message.from_agent, 'message': message.message},
         )
         response = self.run_task(task=message.message, context=message.context)
