@@ -123,14 +123,14 @@ export default function TeamRoster() {
   } = useAgentsPagination(agents);
 
   return (
-    <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
+    <section className="mx-auto flex w-full max-w-[112rem] flex-col gap-6 px-4 py-8 text-slate-100 sm:px-6 lg:px-8">
       <div className="rounded-3xl border border-slate-700/70 bg-slate-950/60 p-6 shadow-2xl shadow-slate-950/30 backdrop-blur">
         <p className="text-xs font-bold uppercase tracking-[0.32em] text-cyan-300">zDash Command Roster</p>
         <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Team Roster</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">
-              Agent roster renamed into Legendary, Epic, and Rare operating tiers with per-page pagination for cleaner dashboard navigation.
+              Full zDash team imported into Legendary, Epic, and Rare operating tiers with a five-card desktop command layout.
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold uppercase tracking-[0.18em] text-slate-300">
@@ -152,24 +152,24 @@ export default function TeamRoster() {
         onPageChange={goToPage}
       />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {pageItems.map((agent) => (
           <article
             key={agent.id}
-            className="rounded-3xl border border-slate-700/70 bg-slate-950/55 p-5 shadow-xl shadow-slate-950/25 transition hover:-translate-y-1 hover:border-cyan-300/60"
+            className="rounded-3xl border border-slate-700/70 bg-slate-950/55 p-4 shadow-xl shadow-slate-950/25 transition hover:-translate-y-1 hover:border-cyan-300/60"
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-3xl" aria-hidden="true">{agent.accent}</p>
-                <h2 className="mt-3 text-2xl font-black text-white">{agent.name}</h2>
+                <h2 className="mt-3 text-xl font-black text-white">{agent.name}</h2>
                 <p className="mt-1 text-sm font-semibold text-cyan-200">{agent.title}</p>
               </div>
-              <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] ${tierStyle[agent.tier]}`}>
+              <span className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] ${tierStyle[agent.tier]}`}>
                 {tierLabel(agent.tier)}
               </span>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+            <div className="mt-5 rounded-2xl border border-slate-800 bg-slate-950/70 p-3">
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Primary Role</p>
               <p className="mt-2 text-sm text-slate-200">{agent.role}</p>
             </div>
