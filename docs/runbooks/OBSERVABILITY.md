@@ -9,7 +9,7 @@ Operate metrics and dashboards.
 ## Commands
 ```bash
 docker compose --profile observability up -d
-curl http://localhost:8000/metrics
+curl http://localhost:8004/metrics
 ```
 
 ## Expected output
