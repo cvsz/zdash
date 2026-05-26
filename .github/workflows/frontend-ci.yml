@@ -32,7 +32,7 @@ jobs:
       - name: TypeScript check
         run: |
           cd frontend
-          npx tsc -b --pretty false
+          npx tsc -p tsconfig.build.json --pretty false
 
       - name: Lint if configured
         run: |
@@ -42,7 +42,7 @@ jobs:
       - name: Test
         run: |
           cd frontend
-          npm test -- --run
+          npm test
 
       - name: Build
         run: |
