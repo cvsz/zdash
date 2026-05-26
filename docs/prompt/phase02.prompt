@@ -1,220 +1,477 @@
-Continue from the previous Meta Master Prompt for:
+Continue from the previous zDash implementation.
+
+Project:
 
 ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
 
 Now execute ONLY:
 
-PHASE 1 · FOUNDATION
-ตั้ง Janie Server + Agent Runtime
+PHASE 2 · TRADING CORE
+XAU Scanner + MT5 Integration + Funnel Filter 21/10/3 + Dry-Run Execution
 
-Your task is to generate the complete working source code for Phase 1 only.
+Do not rebuild Phase 1 from scratch.
+Extend the existing Phase 1 foundation cleanly.
 
-Do not implement trading, MT5, backtesting, scheduler, IoT, or dashboard yet.
-Only create the backend foundation that later phases can extend cleanly.
+Assume Phase 1 already exists:
 
-============================================================
-PHASE 1 OBJECTIVE
-============================================================
-
-Build the core backend foundation:
-
-1. Python FastAPI Janie Server
-2. Clean project structure
-3. Agent Runtime
-4. Base Agent class
-5. CEO Agent
-6. Janie Agent
-7. CEO → Janie communication flow
-8. Claude API adapter
-9. Mock AI fallback adapter
-10. Event bus
-11. Structured JSON logging
-12. Health endpoint
-13. Agent endpoints
-14. Log endpoint
-15. Pytest test suite
-16. `.env.example`
-17. README setup guide
+- FastAPI Janie Server
+- Agent Runtime
+- Base Agent class
+- CEO Agent
+- Janie Agent
+- CEO → Janie communication
+- Claude/mock AI adapter
+- Event bus
+- Standard API response wrapper
+- Health, agents, and logs endpoints
+- Pytest setup
 
 ============================================================
-REQUIRED STACK
+PHASE 2 OBJECTIVE
 ============================================================
 
-Use:
+Build the trading core foundation for zDash.
 
-- Python 3.11+
-- FastAPI
-- Pydantic v2
-- Uvicorn
-- Pytest
-- HTTPX for tests
-- python-dotenv or pydantic-settings
-- Structured JSON logging
-- Environment-based config
+Main goals:
 
-No hardcoded secrets.
+1. Add trading domain models
+2. Add MT5 adapter shell
+3. Add XAUUSD M5 scanner
+4. Add Funnel Filter 21/10/3
+5. Add Claude/mock AI analysis module for signals
+6. Add signal validation service
+7. Add dry-run execution engine
+8. Add trading API endpoints
+9. Add trading events
+10. Add tests for scanner, filters, validation, and dry-run execution
+
+IMPORTANT:
+- This phase must be simulation-safe.
+- Do not enable live trading.
+- DRY_RUN must remain true by default.
+- MT5 integration must be an adapter shell with mock fallback.
+- No broker credentials may be hardcoded.
+- No order should be sent to a real broker in Phase 2.
+- This is a technical implementation for dry-run/paper-trading only.
+- Do not provide financial advice.
 
 ============================================================
-REQUIRED FOLDER STRUCTURE
+REQUIRED FILES TO CREATE OR UPDATE
 ============================================================
 
 Create:
 
-zdash/
-  README.md
-  .env.example
-  scripts/
-    setup-dev.sh
-    setup-dev.ps1
-    run-backend.sh
-    smoke-test.sh
-  backend/
-    pyproject.toml
-    app/
-      __init__.py
-      main.py
-      core/
-        __init__.py
-        config.py
-        logging.py
-        events.py
-        responses.py
-      agents/
-        __init__.py
-        base.py
-        ceo.py
-        janie.py
-        registry.py
-      ai/
-        __init__.py
-        base.py
-        claude_adapter.py
-        mock_adapter.py
-      api/
-        __init__.py
-        health.py
-        agents.py
-        logs.py
-      tests/
-        test_health.py
-        test_agent_runtime.py
-        test_ceo_janie_flow.py
-        test_ai_mock_fallback.py
+backend/app/trading/
+  __init__.py
+  models.py
+  mt5_adapter.py
+  market_data.py
+  xau_scanner.py
+  funnel_filter.py
+  ai_analysis.py
+  signal_validation.py
+  execution_engine.py
+  trading_service.py
+
+backend/app/api/trading.py
+
+backend/app/tests/
+  test_trading_models.py
+  test_mt5_adapter_mock.py
+  test_xau_scanner.py
+  test_funnel_filter.py
+  test_signal_validation.py
+  test_dry_run_execution.py
+  test_trading_api.py
+
+Update if needed:
+
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/agents/registry.py
+.env.example
+README.md
 
 ============================================================
-ENV CONFIG
+CONFIG REQUIREMENTS
 ============================================================
 
-Create `.env.example`:
+Update `.env.example` with:
 
-APP_NAME=zDash
-APP_ENV=development
-LOG_LEVEL=INFO
-
-BACKEND_HOST=0.0.0.0
-BACKEND_PORT=8000
-
-CLAUDE_API_KEY=
-CLAUDE_MODEL=claude-sonnet-4-5
-AI_PROVIDER=mock
-
+TRADING_ENABLED=true
 DRY_RUN=true
+LIVE_TRADING_ACK=false
+
+MT5_ENABLED=false
+MT5_LOGIN=
+MT5_PASSWORD=
+MT5_SERVER=
+MT5_PATH=
+
+TRADING_DEFAULT_SYMBOL=XAUUSD
+TRADING_DEFAULT_TIMEFRAME=M5
+TRADING_DEFAULT_STRATEGY=ob_aggressive
+TRADING_MAX_SIGNAL_AGE_SECONDS=300
+
+FUNNEL_FAST_PERIOD=21
+FUNNEL_MEDIUM_PERIOD=10
+FUNNEL_SLOW_PERIOD=3
+
+AI_TRADING_ANALYSIS_ENABLED=true
+AI_TRADING_PROVIDER=mock
+
+Rules:
+- Missing config must fail safely.
+- DRY_RUN must default to true.
+- LIVE_TRADING_ACK must default to false.
+- MT5_ENABLED must default to false.
+- If MT5 is unavailable, use mock market data.
 
 ============================================================
-API RESPONSE FORMAT
+TRADING MODEL REQUIREMENTS
 ============================================================
 
-Every API must return:
+Create Pydantic models in:
 
-{
-  "ok": true,
-  "data": {},
-  "error": null,
-  "timestamp": "ISO_DATE"
-}
+backend/app/trading/models.py
 
-For errors:
+Models:
 
-{
-  "ok": false,
-  "data": null,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human readable message"
-  },
-  "timestamp": "ISO_DATE"
-}
+1. Candle
 
-Create helper functions in:
+Fields:
+- timestamp: datetime
+- open: float
+- high: float
+- low: float
+- close: float
+- volume: float = 0
 
-backend/app/core/responses.py
+Validation:
+- open/high/low/close must be positive
+- high >= open, close, low
+- low <= open, close, high
+
+2. TradingSignal
+
+Fields:
+- id: str
+- symbol: str
+- timeframe: str
+- direction: str
+- strategy: str
+- confidence: float
+- entry: float
+- stop_loss: float
+- take_profit: float
+- reason: str
+- metadata: dict
+- created_at: datetime
+
+Allowed directions:
+- buy
+- sell
+- hold
+
+3. SignalValidationResult
+
+Fields:
+- valid: bool
+- reason: str
+- warnings: list[str]
+- signal: TradingSignal | None
+- timestamp: datetime
+
+4. ExecutionRequest
+
+Fields:
+- signal: TradingSignal
+- dry_run: bool = true
+- confirmation: bool = false
+
+5. ExecutionResult
+
+Fields:
+- ok: bool
+- status: str
+- dry_run: bool
+- signal: TradingSignal
+- message: str
+- simulated_order_id: str | None
+- timestamp: datetime
+
+Statuses:
+- simulated
+- blocked_by_config
+- blocked_by_validation
+- failed
+
+6. ScannerResult
+
+Fields:
+- symbol: str
+- timeframe: str
+- candles_analyzed: int
+- latest_signal: TradingSignal | None
+- validation: SignalValidationResult | None
+- ai_summary: str
+- timestamp: datetime
 
 ============================================================
-AGENT RUNTIME REQUIREMENTS
+MT5 ADAPTER REQUIREMENTS
 ============================================================
-
-Create BaseAgent class with:
-
-- id
-- name
-- role
-- status
-- metadata
-- receive_message()
-- run_task()
-- emit_event()
-- health_check()
-
-Agent statuses:
-
-- idle
-- running
-- error
-- disabled
-
-Create these agents:
-
-1. CEO Agent
-   - role: commander
-   - can send message to Janie
-
-2. Janie Agent
-   - role: operator
-   - receives CEO messages
-   - calls AI adapter
-   - returns response
-   - emits event logs
-
-============================================================
-AI ADAPTER REQUIREMENTS
-============================================================
-
-Create interface:
-
-AIAdapter:
-  - generate_response(prompt: str, context: dict | None = None) -> AIResponse
 
 Create:
 
-1. MockAIAdapter
-   - Always works
-   - Used by default
-   - Returns deterministic mock response
+backend/app/trading/mt5_adapter.py
 
-2. ClaudeAdapter
-   - Reads CLAUDE_API_KEY and CLAUDE_MODEL from environment
-   - If key missing, fallback to MockAIAdapter
-   - Do not crash when key is missing
-   - Keep implementation replaceable
-   - If real Claude SDK is not installed, write safe placeholder structure and document where to connect it
+Implement:
+
+MT5Adapter
+
+Methods:
+- is_available() -> bool
+- connect() -> dict
+- get_candles(symbol: str, timeframe: str, limit: int = 300) -> list[Candle]
+- get_account_snapshot() -> dict
+- send_order(signal: TradingSignal) -> ExecutionResult
+
+Rules:
+- If MT5_ENABLED=false, return safe mock mode.
+- If MetaTrader5 package is missing, do not crash.
+- If credentials are missing, do not crash.
+- send_order must block real execution unless DRY_RUN=false AND LIVE_TRADING_ACK=true.
+- In Phase 2, live execution should still be blocked by default.
+- Mock candles must be deterministic enough for tests.
 
 ============================================================
-EVENT BUS REQUIREMENTS
+MARKET DATA REQUIREMENTS
 ============================================================
 
-Create simple in-memory event bus for Phase 1:
+Create:
 
-Event fields:
+backend/app/trading/market_data.py
+
+Implement deterministic mock XAUUSD M5 candles.
+
+Requirements:
+- Generate at least 300 candles.
+- Include trend and pullback patterns.
+- No external API calls.
+- Same input should produce same output.
+- Valid Candle models only.
+
+============================================================
+XAU SCANNER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/xau_scanner.py
+
+Implement:
+
+XAUScanner
+
+Methods:
+- scan(symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult
+- scan_with_candles(candles: list[Candle], symbol: str, timeframe: str) -> ScannerResult
+
+Behavior:
+- Load candles from MT5Adapter or mock data provider.
+- Run Funnel Filter 21/10/3.
+- Generate a candidate signal.
+- Run AI analysis summary.
+- Run signal validation.
+- Return ScannerResult.
+
+============================================================
+FUNNEL FILTER REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/funnel_filter.py
+
+Implement:
+
+FunnelFilter
+
+Default periods:
+- fast = 21
+- medium = 10
+- slow = 3
+
+Methods:
+- calculate_sma(values: list[float], period: int) -> list[float]
+- evaluate(candles: list[Candle]) -> dict
+- generate_signal(candles: list[Candle], symbol: str, timeframe: str) -> TradingSignal
+
+Simplified signal rules:
+- Buy bias when close > SMA21 and SMA3 > SMA10 > SMA21.
+- Sell bias when close < SMA21 and SMA3 < SMA10 < SMA21.
+- Otherwise hold.
+- Confidence should be between 0 and 1.
+- Stop loss and take profit must be valid.
+- Use recent volatility to calculate SL/TP.
+
+============================================================
+AI ANALYSIS REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/ai_analysis.py
+
+Implement:
+
+TradingAIAnalysis
+
+Methods:
+- summarize_signal(signal: TradingSignal, context: dict | None = None) -> str
+- analyze_scanner_context(candles: list[Candle], signal: TradingSignal) -> str
+
+Rules:
+- Use existing AI adapter if available.
+- Fall back to deterministic mock text.
+- Do not provide financial advice.
+- Include dry-run/simulation disclaimer in analysis.
+
+============================================================
+SIGNAL VALIDATION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/signal_validation.py
+
+Implement:
+
+SignalValidationService
+
+Methods:
+- validate(signal: TradingSignal) -> SignalValidationResult
+
+Validation rules:
+- symbol must be XAUUSD unless config allows otherwise.
+- timeframe must be M5 unless config allows otherwise.
+- confidence must be 0 <= confidence <= 1.
+- direction must be buy/sell/hold.
+- buy signal: stop_loss < entry < take_profit.
+- sell signal: take_profit < entry < stop_loss.
+- hold signal may skip SL/TP strictness but should not execute.
+- signal must not be older than TRADING_MAX_SIGNAL_AGE_SECONDS.
+
+============================================================
+DRY-RUN EXECUTION REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/execution_engine.py
+
+Implement:
+
+ExecutionEngine
+
+Methods:
+- execute(request: ExecutionRequest) -> ExecutionResult
+
+Rules:
+- Validate the signal before execution.
+- If validation fails, return blocked_by_validation.
+- If direction=hold, return blocked_by_validation.
+- If dry_run=true, simulate only.
+- If dry_run=false, require LIVE_TRADING_ACK=true.
+- If LIVE_TRADING_ACK=false, return blocked_by_config.
+- Do not send real orders in tests.
+- Emit events for simulated/blocked/failed execution.
+
+============================================================
+TRADING SERVICE REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/trading/trading_service.py
+
+Methods:
+- get_status() -> dict
+- scan_xau(symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult
+- validate_signal(signal: TradingSignal) -> SignalValidationResult
+- dry_run_execute(signal: TradingSignal) -> ExecutionResult
+
+============================================================
+API REQUIREMENTS
+============================================================
+
+Create:
+
+backend/app/api/trading.py
+
+Endpoints:
+
+1. GET /api/trading/status
+
+Returns:
+- enabled
+- dry_run
+- live_trading_ack
+- mt5_enabled
+- default symbol/timeframe
+
+2. POST /api/trading/scan
+
+Request:
+{
+  "symbol": "XAUUSD",
+  "timeframe": "M5"
+}
+
+Returns:
+- ScannerResult
+
+3. POST /api/trading/validate-signal
+
+Request:
+TradingSignal JSON
+
+Returns:
+- SignalValidationResult
+
+4. POST /api/trading/dry-run-execute
+
+Request:
+{
+  "signal": { ... TradingSignal ... },
+  "dry_run": true,
+  "confirmation": false
+}
+
+Returns:
+- ExecutionResult
+
+All endpoints must use the existing standard response shape.
+
+============================================================
+EVENT LOG REQUIREMENTS
+============================================================
+
+Add event types:
+
+- trading.scan.started
+- trading.scan.completed
+- trading.signal.generated
+- trading.signal.validated
+- trading.signal.rejected
+- trading.execution.simulated
+- trading.execution.blocked
+- trading.execution.failed
+- mt5.mock.enabled
+- mt5.connection.failed
+
+Every event must include:
 - id
 - type
 - source
@@ -222,67 +479,48 @@ Event fields:
 - payload
 - created_at
 
-Event types:
-- system.startup
-- agent.message.received
-- agent.message.sent
-- ai.response.generated
-- error
-
-Add API endpoint to retrieve recent logs/events.
-
-============================================================
-REQUIRED API ENDPOINTS
-============================================================
-
-GET /health
-
-Returns:
-- app name
-- environment
-- status
-- timestamp
-
-GET /api/agents
-
-Returns all registered agents and their health status.
-
-POST /api/agents/message
-
-Request body:
-
-{
-  "from_agent": "ceo",
-  "to_agent": "janie",
-  "message": "Hello Janie, report status.",
-  "context": {}
-}
-
-Response:
-- message id
-- from_agent
-- to_agent
-- response text
-- event ids
-- timestamp
-
-GET /api/logs
-
-Returns recent event logs.
-
 ============================================================
 TEST REQUIREMENTS
 ============================================================
 
-Write tests for:
+Create tests:
 
-1. Health endpoint works
-2. Agents are registered
-3. CEO can send message to Janie
-4. Janie returns AI-generated mock response
-5. Missing Claude key falls back to mock adapter
-6. Event logs are created
-7. API response format is consistent
+1. test_trading_models.py
+- Candle validation
+- TradingSignal direction validation
+- ExecutionRequest dry_run default
+
+2. test_mt5_adapter_mock.py
+- mock mode works when MT5 disabled
+- missing MetaTrader5 package does not crash
+- mock candles are returned
+
+3. test_xau_scanner.py
+- scan returns ScannerResult
+- result includes latest signal
+- AI summary is present
+
+4. test_funnel_filter.py
+- SMA calculation works
+- buy/sell/hold signals are valid
+- confidence is in range
+
+5. test_signal_validation.py
+- valid buy passes
+- invalid SL/TP fails
+- old signal fails
+- hold signal does not execute
+
+6. test_dry_run_execution.py
+- dry-run execution simulates
+- live execution blocked by config
+- invalid signal blocked
+
+7. test_trading_api.py
+- GET /api/trading/status
+- POST /api/trading/scan
+- POST /api/trading/validate-signal
+- POST /api/trading/dry-run-execute
 
 All tests must pass with:
 
@@ -290,30 +528,52 @@ cd backend
 pytest
 
 ============================================================
-RUN COMMANDS
+README UPDATE REQUIREMENTS
 ============================================================
 
-Backend run command:
+Update README with:
 
-cd backend
-uvicorn app.main:app --reload
+- Phase 2 overview
+- Trading architecture
+- MT5 adapter safety notes
+- XAU scanner behavior
+- Funnel Filter 21/10/3 explanation
+- Dry-run execution behavior
+- API examples
+- Test commands
+- Safety notes
 
-Smoke test:
+Add curl examples:
 
-curl http://localhost:8000/health
-curl http://localhost:8000/api/agents
-curl http://localhost:8000/api/logs
+Trading status:
 
-Message test:
+curl http://localhost:8000/api/trading/status
 
-curl -X POST http://localhost:8000/api/agents/message \
+Run scan:
+
+curl -X POST http://localhost:8000/api/trading/scan \
   -H "Content-Type: application/json" \
-  -d '{
-    "from_agent": "ceo",
-    "to_agent": "janie",
-    "message": "Hello Janie, report system status.",
-    "context": {}
-  }'
+  -d '{"symbol":"XAUUSD","timeframe":"M5"}'
+
+============================================================
+ACCEPTANCE CRITERIA
+============================================================
+
+Phase 2 is complete only when:
+
+- Trading models exist.
+- MT5 adapter shell exists and safely falls back to mock.
+- Mock market data works.
+- XAU Scanner works.
+- Funnel Filter 21/10/3 works.
+- AI analysis summary works with mock fallback.
+- Signal validation works.
+- Dry-run execution works.
+- Live trading is blocked by default.
+- Trading API endpoints work.
+- Event logs are created.
+- Tests pass.
+- README documents the Phase 2 system.
 
 ============================================================
 DELIVERABLE FORMAT
@@ -321,48 +581,16 @@ DELIVERABLE FORMAT
 
 Generate:
 
-1. Folder tree
-2. Full source code for every file
-3. Setup instructions
-4. Run instructions
-5. Test instructions
-6. Acceptance checklist
-7. Known limitations
-8. Next phase handoff notes
+1. Folder tree changes
+2. Full source code for every new file
+3. Full patched code for every updated file
+4. Test files
+5. .env.example updates
+6. README updates
+7. Run instructions
+8. Test instructions
+9. Acceptance checklist
+10. Known limitations
+11. Phase 3 handoff notes
 
-============================================================
-IMPORTANT IMPLEMENTATION RULES
-============================================================
-
-- Do not use pseudocode.
-- Do not skip files.
-- Do not hardcode secrets.
-- Keep code modular.
-- Use typed Python where reasonable.
-- Use clean imports.
-- Make tests runnable immediately.
-- Keep Phase 1 isolated but ready for Phase 2.
-- Do not implement trading logic yet.
-- Do not implement dashboard yet.
-- Do not implement live execution.
-- Default AI provider must be mock.
-- Claude integration must be optional and safe.
-
-============================================================
-ACCEPTANCE CRITERIA
-============================================================
-
-Phase 1 is complete only when:
-
-- FastAPI server starts successfully.
-- `/health` returns ok.
-- `/api/agents` shows CEO and Janie.
-- CEO can send message to Janie.
-- Janie responds using mock AI fallback.
-- Missing Claude API key does not break app.
-- Logs/events are recorded.
-- Tests pass.
-- README explains setup clearly.
-- Codebase is ready for Phase 2 Trading Core.
-
-Now generate the complete Phase 1 implementation.
+Now generate the complete Phase 2 implementation.
