@@ -14,6 +14,13 @@ class Settings(BaseSettings):
     backend_host: str = Field(default='0.0.0.0', alias='BACKEND_HOST')
     backend_port: int = Field(default=8004, alias='BACKEND_PORT')
 
+    database_url: str = Field(default='sqlite:///./zdash.db', alias='DATABASE_URL')
+    jwt_secret_key: str = Field(default='dev-only-change-before-production', alias='JWT_SECRET_KEY')
+    jwt_algorithm: str = Field(default='HS256', alias='JWT_ALGORITHM')
+    jwt_access_token_expire_minutes: int = Field(default=60, alias='JWT_ACCESS_TOKEN_EXPIRE_MINUTES')
+    bootstrap_admin_username: str = Field(default='admin', alias='BOOTSTRAP_ADMIN_USERNAME')
+    bootstrap_admin_password: str = Field(default='dev-only-change-before-production', alias='BOOTSTRAP_ADMIN_PASSWORD')
+
     claude_api_key: str = Field(default='', alias='CLAUDE_API_KEY')
     claude_model: str = Field(default='claude-sonnet-4-5', alias='CLAUDE_MODEL')
     ai_provider: str = Field(default='mock', alias='AI_PROVIDER')
@@ -112,8 +119,6 @@ class Settings(BaseSettings):
     digital_twin_max_graph_edges: int = Field(default=20000, alias='DIGITAL_TWIN_MAX_GRAPH_EDGES')
 
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
-
-    database_url: str = Field(default='sqlite:///./zdash.db', alias='DATABASE_URL')
 
     @field_validator(
         'max_daily_drawdown_percent',
