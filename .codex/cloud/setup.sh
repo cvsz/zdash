@@ -25,21 +25,25 @@ mkdir -p .codex/logs .codex/reports docs/prompt
 
 printf '\n[4/9] Backend dependencies\n'
 if [ -d "backend" ]; then
-  cd backend
-  if [ ! -d ".venv" ]; then
-    python3 -m venv .venv
-  fi
-  # shellcheck disable=SC1091
-  source .venv/bin/activate
-  python -m pip install --upgrade pip setuptools wheel
-  if [ -f "pyproject.toml" ]; then
-    pip install -e ".[dev]" || pip install -e .
-  elif [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
+  if [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+    bash .codex/cloud/repair-backend-deps.sh
   else
-    echo "No backend dependency file found. Skipping backend install."
+    cd backend
+    if [ ! -d ".venv" ]; then
+      python3 -m venv .venv
+    fi
+    # shellcheck disable=SC1091
+    source .venv/bin/activate
+    python -m pip install --upgrade pip setuptools wheel
+    if [ -f "pyproject.toml" ]; then
+      pip install -e ".[dev]" || pip install -e .
+    elif [ -f "requirements.txt" ]; then
+      pip install -r requirements.txt
+    else
+      echo "No backend dependency file found. Skipping backend install."
+    fi
+    cd "$ROOT_DIR"
   fi
-  cd "$ROOT_DIR"
 else
   echo "No backend directory found."
 fi
@@ -96,6 +100,9 @@ cd "$ROOT_DIR"
 echo "zDash healthcheck"
 git status --short || true
 if [ -d "backend" ]; then
+  if [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+    bash .codex/cloud/repair-backend-deps.sh
+  fi
   cd backend
   if [ -d ".venv" ]; then
     # shellcheck disable=SC1091
@@ -137,8 +144,12 @@ REPORT=".codex/reports/maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
   find docs/prompt -maxdepth 1 -type f | sort || true
   echo '```'
 } > "$REPORT"
+set +e
 bash .codex/healthcheck.sh | tee -a "$REPORT"
+STATUS="${PIPESTATUS[0]}"
+set -e
 echo "Maintenance report: $REPORT"
+exit "$STATUS"
 EOF
 chmod +x .codex/maintenance.sh
 
@@ -149,7 +160,7 @@ fi
 
 printf '\n[9/9] Initial validation\n'
 bash .codex/healthcheck.sh || {
-  echo "Initial healthcheck failed. Codex should repair dependency/test issues before implementation."
+  echo "Initial healthcheck failed after dependency repair. Codex should fix test/code issues next."
 }
 
 printf '\n============================================================\n'
