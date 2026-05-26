@@ -40,38 +40,65 @@ REPORT=".codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
   echo '```'
 } > "$REPORT"
 
-printf '\n[1/4] Backend tests\n'
+run_step() {
+  local name="$1"
+  shift
+  printf '\n[%s]\n' "$name"
+  set +e
+  "$@" 2>&1 | tee -a "$REPORT"
+  local status="${PIPESTATUS[0]}"
+  set -e
+  if [ "$status" -ne 0 ]; then
+    echo "FAILED: $name status=$status" | tee -a "$REPORT"
+    return "$status"
+  fi
+  echo "PASSED: $name" | tee -a "$REPORT"
+  return 0
+}
+
+status=0
+
+printf '\n[0/5] Backend dependency repair\n'
+if [ -d "backend" ] && [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+  run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
+elif [ -d "backend" ]; then
+  echo "No repair helper found; continuing to backend tests." | tee -a "$REPORT"
+else
+  echo "No backend directory found." | tee -a "$REPORT"
+fi
+
+printf '\n[1/5] Backend tests\n'
 if [ -d "backend" ]; then
   cd backend
   if [ -d ".venv" ]; then
     # shellcheck disable=SC1091
     source .venv/bin/activate
   fi
-  pytest | tee -a "$ROOT_DIR/$REPORT"
+  run_step "backend pytest" pytest || status=1
   cd "$ROOT_DIR"
 else
   echo "No backend directory found." | tee -a "$REPORT"
 fi
 
-printf '\n[2/4] Frontend tests\n'
+printf '\n[2/5] Frontend tests\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
-  npm test -- --run | tee -a "$ROOT_DIR/$REPORT"
+  run_step "frontend tests" npm test -- --run || status=1
   cd "$ROOT_DIR"
 else
   echo "No frontend package found." | tee -a "$REPORT"
 fi
 
-printf '\n[3/4] Frontend build\n'
+printf '\n[3/5] Frontend build\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
-  npm run build | tee -a "$ROOT_DIR/$REPORT"
+  run_step "frontend build" npm run build || status=1
   cd "$ROOT_DIR"
 else
   echo "No frontend package found." | tee -a "$REPORT"
 fi
 
-printf '\n[4/4] Basic secret-pattern scan\n'
+printf '\n[4/5] Basic secret-pattern scan\n'
 {
   echo
   echo "## Basic secret-pattern scan"
@@ -85,4 +112,6 @@ printf '\n[4/4] Basic secret-pattern scan\n'
   echo '```'
 } >> "$REPORT"
 
+printf '\n[5/5] Result\n'
 echo "Maintenance complete: $REPORT"
+exit "$status"
