@@ -11,7 +11,7 @@ async function request<T>(path:string, init:RequestInit={}, fallback?:T, timeout
 }
 export const apiClient = {
   get:<T>(p:string,f?:T)=>request<T>(p,{},f), post:<T>(p:string,b?:unknown,f?:T)=>request<T>(p,{method:'POST',body:JSON.stringify(b||{})},f), delete:<T>(p:string,f?:T)=>request<T>(p,{method:'DELETE'},f),
-  getHealth:()=>request('/api/health',{},mockHealth), getLogs:()=>request('/api/logs',{},mockLogs)
+  getHealth:()=>request('/health',{},mockHealth), getLogs:()=>request('/api/logs',{},mockLogs)
 };
 
 export const apiGet = apiClient.get;

@@ -99,7 +99,7 @@ LICENSE
 SECURITY.md
 CONTRIBUTING.md
 COMMUNITY.md
-CODEOFCONDUCT.md
+CODE-OF-CONDUCT.md
 .codex/cloud/README.md
 .codex/cloud/general-custom-instructions.md
 .codex/cloud/setup.sh
@@ -124,7 +124,7 @@ Read these before contributing or operating the project:
 - `SECURITY.md` — vulnerability reporting, secret handling, and safety-critical defaults
 - `CONTRIBUTING.md` — setup, validation, phase workflow, PR guidance
 - `COMMUNITY.md` — community entrypoint and support-domain boundary
-- `CODEOFCONDUCT.md` — behavior expectations and enforcement policy
+- `CODE-OF-CONDUCT.md` — behavior expectations and enforcement policy
 
 ---
 

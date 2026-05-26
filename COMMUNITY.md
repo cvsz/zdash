@@ -34,7 +34,7 @@ Read these files first:
 - `AGENTS.md` for agent/contributor operating rules
 - `CONTRIBUTING.md` for contribution workflow
 - `SECURITY.md` for vulnerability handling
-- `CODEOFCONDUCT.md` for behavior expectations
+- `CODE-OF-CONDUCT.md` for behavior expectations
 - `docs/prompt/phaseXX.prompt` for phase-specific work
 
 ## Communication Guidelines

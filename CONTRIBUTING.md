@@ -29,7 +29,7 @@ Read:
 3. `.codex/cloud/README.md`
 4. the relevant `docs/prompt/phaseXX.prompt`
 5. `SECURITY.md`
-6. `CODEOFCONDUCT.md`
+6. `CODE-OF-CONDUCT.md`
 
 ## Development Policy
 
