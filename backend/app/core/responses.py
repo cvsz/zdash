@@ -25,3 +25,12 @@ def fail(code: str, message: str) -> dict[str, Any]:
         },
         'timestamp': _timestamp(),
     }
+
+
+# Backward-compatible aliases used by some API modules
+def success_response(data: dict[str, Any]) -> dict[str, Any]:
+    return ok(data)
+
+
+def error_response(code: str, message: str) -> dict[str, Any]:
+    return fail(code, message)
