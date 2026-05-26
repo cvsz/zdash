@@ -79,7 +79,7 @@ Frontend dev:    http://localhost:5173
 ├── SECURITY.md                       # Security reporting and safety policy
 ├── CONTRIBUTING.md                   # Contribution workflow
 ├── COMMUNITY.md                      # Community and support guidance
-├── CODEOFCONDUCT.md                  # Community behavior expectations
+├── CODE-OF-CONDUCT.md                # Community behavior expectations
 ├── .env.example                      # Safe environment template
 ├── .github/workflows/                # CI, frontend CI, security CI
 ├── .codex/cloud/                     # Codex Cloud setup suite
