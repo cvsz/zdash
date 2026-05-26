@@ -1,6 +1,15 @@
 import type { Agent, BacktestResult, ContentItem, DrawdownResult, EventLog, HealthStatus, ScheduledJob, TradingSignal } from './types';
 export const mockHealth: HealthStatus = { status: 'healthy', mock: true, services: { api: 'up', agents: 'up', risk: 'guarded' } };
-export const mockAgents: Agent[] = ['CEO','Janie','Guardian','Friday','Joe','Editor','Graphic','Social'].map((n,i)=>({id:String(i+1),name:n,role:n,status:'online',health:'ok',last_event:'Heartbeat',capabilities:['mock']}));
+export const mockAgents: Agent[] = [
+  { id: 'ceo', name: 'Alexander Prime', role: 'CEO • Visionary Leader', status: 'online', health: 'ok', last_event: 'Strategic command online', capabilities: ['strategy', 'vision', 'approval'] },
+  { id: 'janie', name: 'Sophia Lane', role: 'Coordinator • Manager', status: 'online', health: 'ok', last_event: 'Coordination loop active', capabilities: ['coordination', 'routing', 'management'] },
+  { id: 'joe', name: 'Nathan Cole', role: 'Analyst • Developer', status: 'online', health: 'ok', last_event: 'Strategy lab ready', capabilities: ['analysis', 'development', 'backtesting'] },
+  { id: 'friday', name: 'Isla Grant', role: 'Scheduler • Automation', status: 'online', health: 'ok', last_event: 'Scheduler ready', capabilities: ['scheduler', 'automation', 'dry-run'] },
+  { id: 'guardian', name: 'Victor Hale', role: 'Risk Manager', status: 'online', health: 'ok', last_event: 'Guardian risk guard active', capabilities: ['risk', 'halt', 'kill-switch'] },
+  { id: 'editor', name: 'Elena Voss', role: 'Content Specialist', status: 'online', health: 'ok', last_event: 'Content pipeline ready', capabilities: ['content', 'editing', 'approval'] },
+  { id: 'social', name: 'Maya Quinn', role: 'Social Media Specialist', status: 'online', health: 'ok', last_event: 'Social workflow dry-run', capabilities: ['social', 'publishing', 'approval'] },
+  { id: 'graphic', name: 'Julian Reed', role: 'Design Specialist', status: 'online', health: 'ok', last_event: 'Design workflow ready', capabilities: ['design', 'graphics', 'visuals'] },
+];
 export const mockLogs: EventLog[] = [{id:'1',category:'system',source:'mock',message:'Mock fallback mode active',ts:new Date().toISOString(),level:'warning'}];
 export const mockSignals: TradingSignal[] = [{id:'s1',symbol:'XAUUSD',timeframe:'M5',side:'buy',confidence:0.71,validated:true,ai_summary:'Mock momentum bias',created_at:new Date().toISOString()}];
 export const mockDrawdown: DrawdownResult = {daily:1.2,total:4.6,max_daily:5,max_total:20};
