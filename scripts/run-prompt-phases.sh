@@ -8,8 +8,9 @@ set -Eeuo pipefail
 #
 # Examples:
 #   ./scripts/run-prompt-phases.sh
+#   FROM=2 TO=32 ./scripts/run-prompt-phases.sh
 #   FROM=10 TO=10 ./scripts/run-prompt-phases.sh
-#   FROM=10 TO=23 ./scripts/run-prompt-phases.sh
+#   FROM=10 TO=32 ./scripts/run-prompt-phases.sh
 #   AUTOCOMMIT=1 ./scripts/run-prompt-phases.sh
 #   VALIDATE_CMD="npm test" ./scripts/run-prompt-phases.sh
 # ============================================================
@@ -177,7 +178,7 @@ if [ "$FROM" -le 0 ]; then
   run_phase "master-phase" "$PROMPT_DIR/master-phase.prompt"
 fi
 
-for n in $(seq 2 23); do
+for n in $(seq 2 32); do
   if [ "$n" -lt "$FROM" ] || [ "$n" -gt "$TO" ]; then
     continue
   fi
