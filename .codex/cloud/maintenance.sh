@@ -46,11 +46,11 @@ run_step() {
   printf '\n[%s]\n' "$name"
   set +e
   "$@" 2>&1 | tee -a "$REPORT"
-  local status="${PIPESTATUS[0]}"
+  local step_status="${PIPESTATUS[0]}"
   set -e
-  if [ "$status" -ne 0 ]; then
-    echo "FAILED: $name status=$status" | tee -a "$REPORT"
-    return "$status"
+  if [ "$step_status" -ne 0 ]; then
+    echo "FAILED: $name status=$step_status" | tee -a "$REPORT"
+    return "$step_status"
   fi
   echo "PASSED: $name" | tee -a "$REPORT"
   return 0
@@ -59,7 +59,7 @@ run_step() {
 status=0
 
 printf '\n[0/5] Backend dependency repair\n'
-if [ -d "backend" ] && [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+if [ -d "backend" ] && [ -f ".codex/cloud/repair-backend-deps.sh" ]; then
   run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
 elif [ -d "backend" ]; then
   echo "No repair helper found; continuing to backend tests." | tee -a "$REPORT"
