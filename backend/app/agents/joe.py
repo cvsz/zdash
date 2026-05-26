@@ -6,7 +6,12 @@ from app.core.events import event_bus
 
 class JoeAgent(BaseAgent):
     def __init__(self) -> None:
-        super().__init__(agent_id="joe", name="Joe", role="strategy_lab_coordinator")
+        super().__init__(
+            agent_id="joe",
+            name="Nathan Cole",
+            role="analyst_developer",
+            metadata={"tier": "rare", "legacy_name": "Joe"},
+        )
 
     def list_strategies(self):
         event_bus.emit("joe.command.received", "joe", "list_strategies")
@@ -41,11 +46,12 @@ class JoeAgent(BaseAgent):
         return out
 
     def health_check(self):
-        return {"id": self.id, "status": "idle"}
-
+        base = super().health_check()
+        base["legacy_agent_id"] = self.id
+        return base
 
     def receive_message(self, message):
-        return {"response_text": "Joe received message", "message": message.message}
+        return {"response_text": "Nathan Cole received message", "message": message.message}
 
     def run_task(self, task, context=None):
         return {"task": task, "status": "accepted", "context": context or {}}
