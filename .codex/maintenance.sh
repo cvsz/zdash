@@ -21,5 +21,9 @@ REPORT=".codex/reports/maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
   find docs/prompt -maxdepth 1 -type f | sort || true
   echo '```'
 } > "$REPORT"
+set +e
 bash .codex/healthcheck.sh | tee -a "$REPORT"
+STATUS="${PIPESTATUS[0]}"
+set -e
 echo "Maintenance report: $REPORT"
+exit "$STATUS"

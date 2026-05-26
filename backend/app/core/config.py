@@ -113,6 +113,8 @@ class Settings(BaseSettings):
 
     cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
 
+    database_url: str = Field(default='sqlite:///./zdash.db', alias='DATABASE_URL')
+
     @field_validator(
         'max_daily_drawdown_percent',
         'max_total_drawdown_percent',
