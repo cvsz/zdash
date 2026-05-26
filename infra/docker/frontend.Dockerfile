@@ -1,7 +1,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY frontend /app
-RUN npm install && npm run build
+RUN npm install --legacy-peer-deps && npm run build
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 HEALTHCHECK CMD wget -q -O - http://localhost/ || exit 1
