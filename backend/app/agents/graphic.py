@@ -8,22 +8,27 @@ from app.core.events import event_bus
 
 class GraphicAgent(BaseAgent):
     id = 'graphic'
-    name = 'Graphic'
-    role = 'creative_designer'
+    name = 'Julian Reed'
+    role = 'design_specialist'
 
     def __init__(self) -> None:
-        super().__init__(agent_id=self.id, name=self.name, role=self.role)
+        super().__init__(
+            agent_id=self.id,
+            name=self.name,
+            role=self.role,
+            metadata={'tier': 'epic', 'legacy_name': 'Graphic'},
+        )
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
         self.emit_event(
             'agent.message.received',
-            'Graphic agent received message',
+            'Julian Reed received message',
             {'from_agent': message.from_agent, 'message': message.message},
         )
-        return {'response_text': 'Graphic agent is ready.', 'agent': self.id}
+        return {'response_text': 'Julian Reed is ready.', 'agent': self.id}
 
     def run_task(self, task: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        self.emit_event('agent.task.run', 'Graphic task requested', {'task': task, 'context': context or {}})
+        self.emit_event('agent.task.run', 'Julian Reed task requested', {'task': task, 'context': context or {}})
         return {'ok': True, 'agent': self.id, 'task': task, 'dry_run': True}
 
     def create_graphic_prompt(self, request: GraphicRequest):
