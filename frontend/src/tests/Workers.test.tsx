@@ -1,3 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { test, expect } from 'vitest';
 import Workers from '../pages/Workers';
-test('renders workers', () => { render(<Workers />); expect(screen.getByText('Workers')).toBeInTheDocument(); });
+
+test('renders workers', () => {
+  const { getByText } = render(<Workers />);
+  expect(getByText('Workers')).toBeInTheDocument();
+});
