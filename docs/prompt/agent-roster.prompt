@@ -1,0 +1,68 @@
+# zDash Canonical Agent Roster
+
+Use this roster for current and future zDash implementation phases.
+
+Compatibility rule:
+- Keep backend/API `agent_id` values stable for routing, tests, URLs, and event correlation.
+- Use the new human display names in dashboards, docs, reports, and agent metadata.
+- Treat legacy names as aliases only.
+
+## Canonical roster
+
+### Legendary
+
+| Stable agent_id | Display name | Title | Legacy alias |
+|---|---|---|---|
+| `ceo` | Alexander Prime | CEO - Visionary Leader | CEO |
+
+### Epic
+
+| Stable agent_id | Display name | Title | Legacy alias |
+|---|---|---|---|
+| `janie` | Sophia Lane | Coordinator - Manager | Janie |
+| `guardian` | Victor Hale | Risk Manager | Guardian |
+| `editor` | Elena Voss | Content Specialist | Editor |
+| `social` | Maya Quinn | Social Media Specialist | Social |
+| `graphic` | Julian Reed | Design Specialist | Graphic |
+| `trading` / strategy modules | Damien Cross | Trading Specialist | Trading Specialist |
+
+### Rare
+
+| Stable agent_id | Display name | Title | Legacy alias |
+|---|---|---|---|
+| `joe` | Nathan Cole | Analyst - Developer | Joe |
+| `friday` | Isla Grant | Scheduler - Automation | Friday |
+
+## Recommended wording
+
+Use:
+
+```text
+Alexander Prime delegates execution to Sophia Lane. Sophia Lane coordinates Victor Hale, Isla Grant, Nathan Cole, Elena Voss, Julian Reed, Maya Quinn, and Damien Cross.
+```
+
+Avoid new user-facing copy that says:
+
+```text
+CEO -> Janie -> Guardian / Friday / Joe / Editor / Graphic / Social
+```
+
+unless the context is explicitly about legacy compatibility.
+
+## Phase prompt rule
+
+When updating `docs/prompt/phase*.prompt`, keep class/module names if they are code identifiers, but update user-facing text:
+
+- `CEO agent` -> `Alexander Prime agent (stable id: ceo)`
+- `Janie agent` -> `Sophia Lane agent (stable id: janie)`
+- `Guardian agent` -> `Victor Hale agent (stable id: guardian)`
+- `Friday agent` -> `Isla Grant agent (stable id: friday)`
+- `Joe agent` -> `Nathan Cole agent (stable id: joe)`
+- `Editor Agent` -> `Elena Voss agent (stable id: editor)`
+- `Graphic Agent` -> `Julian Reed agent (stable id: graphic)`
+- `Social Agent` -> `Maya Quinn agent (stable id: social)`
+- `Trading Specialist` -> `Damien Cross agent / strategy specialist`
+
+## Safety note
+
+Renaming agents must not change safety gates or defaults. Trading, automation, and publishing paths remain dry-run, mock, read-only, or approval-gated unless explicitly enabled by guarded configuration.
