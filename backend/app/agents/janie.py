@@ -8,15 +8,20 @@ from app.ai.base import AIAdapter
 
 class JanieAgent(BaseAgent):
     def __init__(self, ai_adapter: AIAdapter) -> None:
-        super().__init__(agent_id='janie', name='Janie', role='operator')
+        super().__init__(
+            agent_id='janie',
+            name='Sophia Lane',
+            role='coordinator_manager',
+            metadata={'tier': 'epic', 'legacy_name': 'Janie'},
+        )
         self.ai_adapter = ai_adapter
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
-        self.emit_event('agent.message.received', 'Janie received message', message.model_dump())
+        self.emit_event('agent.message.received', 'Sophia Lane received message', message.model_dump())
         response = self.run_task(task=message.message, context=message.context)
         self.emit_event(
             'agent.message.sent',
-            'Janie sent response',
+            'Sophia Lane sent response',
             {'to_agent': message.from_agent, 'response': response['response_text']},
         )
         return response
