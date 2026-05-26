@@ -5,4 +5,4 @@ scrape_configs:
   - job_name: 'zdash-backend'
     metrics_path: /metrics
     static_configs:
-      - targets: ['backend:8004']
+      - targets: ['backend:8005']

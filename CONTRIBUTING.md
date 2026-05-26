@@ -114,11 +114,11 @@ Do not remove `frontend/.npmrc` unless the dependency graph and lockfile are int
 
 ## Runtime Ports
 
-Default backend port: `8004`
+Default backend port: `8005`
 
 ```bash
 cd backend
-uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
 ```
 
 Smoke test:

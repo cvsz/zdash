@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default='INFO', alias='LOG_LEVEL')
 
     backend_host: str = Field(default='0.0.0.0', alias='BACKEND_HOST')
-    backend_port: int = Field(default=8004, alias='BACKEND_PORT')
+    backend_port: int = Field(default=8005, alias='BACKEND_PORT')
 
     database_url: str = Field(default='sqlite:///./zdash.db', alias='DATABASE_URL')
     jwt_secret_key: str = Field(default='dev-only-change-before-production', alias='JWT_SECRET_KEY')

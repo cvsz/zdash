@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: infra/docker/backend.Dockerfile
     env_file: .env.example
-    ports: ["8004:8004"]
+    ports: ["8005:8005"]
     depends_on: [postgres, redis]
   frontend:
     build:

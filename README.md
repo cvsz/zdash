@@ -57,13 +57,13 @@ Trading-related modules are for **simulation, dry-run, and system testing only**
 
 ## Runtime Ports
 
-Default local backend port: **8004**
+Default local backend port: **8005**
 
 Common local endpoints:
 
 ```text
-Backend health:  http://localhost:8004/health
-Backend API:     http://localhost:8004/api
+Backend health:  http://localhost:8005/health
+Backend API:     http://localhost:8005/api
 Frontend dev:    http://localhost:5173
 ```
 
@@ -187,7 +187,7 @@ Backend:
 
 ```bash
 cd backend
-uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
 ```
 
 Frontend:
@@ -200,7 +200,7 @@ npm run dev
 Healthcheck:
 
 ```bash
-curl http://localhost:8004/health
+curl http://localhost:8005/health
 ```
 
 Smoke test:
@@ -405,23 +405,23 @@ backend/app/api/trading.py
 Phase 02 API examples:
 
 ```bash
-curl http://localhost:8004/api/trading/status
+curl http://localhost:8005/api/trading/status
 ```
 
 ```bash
-curl -X POST http://localhost:8004/api/trading/scan \
+curl -X POST http://localhost:8005/api/trading/scan \
   -H "Content-Type: application/json" \
   -d '{"symbol":"XAUUSD","timeframe":"M5"}'
 ```
 
 ```bash
-curl -X POST http://localhost:8004/api/trading/validate-signal \
+curl -X POST http://localhost:8005/api/trading/validate-signal \
   -H "Content-Type: application/json" \
   -d '{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}}'
 ```
 
 ```bash
-curl -X POST http://localhost:8004/api/trading/dry-run-execute \
+curl -X POST http://localhost:8005/api/trading/dry-run-execute \
   -H "Content-Type: application/json" \
   -d '{"signal":{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}},"dry_run":true,"confirmation":false}'
 ```
@@ -480,7 +480,7 @@ Key safety defaults:
 Risk API examples:
 
 ```bash
-curl -X POST http://localhost:8004/api/risk/check \
+curl -X POST http://localhost:8005/api/risk/check \
   -H "Content-Type: application/json" \
   -d '{
     "balance": 10000,
@@ -494,13 +494,13 @@ curl -X POST http://localhost:8004/api/risk/check \
 ```
 
 ```bash
-curl -X POST http://localhost:8004/api/risk/halt \
+curl -X POST http://localhost:8005/api/risk/halt \
   -H "Content-Type: application/json" \
   -d '{"reason": "Manual operator halt"}'
 ```
 
 ```bash
-curl -X POST http://localhost:8004/api/risk/resume \
+curl -X POST http://localhost:8005/api/risk/resume \
   -H "Content-Type: application/json" \
   -d '{"reason": "Reviewed and safe for dry-run resume", "approved": true}'
 ```
@@ -654,7 +654,7 @@ Compose:
 docker compose up --build
 ```
 
-Backend container port and host mapping default to `8004`.
+Backend container port and host mapping default to `8005`.
 
 Rules:
 
@@ -733,7 +733,7 @@ cp .env.example .env
 Safe defaults should keep real actions disabled:
 
 ```env
-BACKEND_PORT=8004
+BACKEND_PORT=8005
 CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
 CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
 DRY_RUN=true

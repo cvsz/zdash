@@ -22,8 +22,8 @@ zDash is a safety-first AI operations dashboard and agent runtime for staged aut
 
 ## Runtime Defaults
 
-- Backend default port: `8004`
-- Backend health endpoint: `http://localhost:8004/health`
+- Backend default port: `8005`
+- Backend health endpoint: `http://localhost:8005/health`
 - Frontend dev endpoint: `http://localhost:5173`
 - Support domain: `https://zdash.zeaz.dev`
 - Cloudflare operator repo: `CVSz/zeaz-platform`
