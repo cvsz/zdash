@@ -92,7 +92,7 @@ fi
 printf '\n[3/6] Frontend tests\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
-  run_step "frontend tests" npm test -- --run || status=1
+  run_step "frontend tests" npm test || status=1
   cd "$ROOT_DIR"
 else
   echo "No frontend package found." | tee -a "$REPORT"
