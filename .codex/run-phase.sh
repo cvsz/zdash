@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 PHASE="${1:-}"
 if [ -z "$PHASE" ]; then
-  echo "Usage: bash .codex/run-phase.sh 01"
+  echo "Usage: bash .codex/run-phase.sh 24"
   exit 1
 fi
 PROMPT="docs/prompt/phase${PHASE}.prompt"

@@ -37,7 +37,8 @@ pip install \
   'python-jose[cryptography]>=3.3.0' \
   'passlib>=1.7.4' \
   'prometheus-client>=0.20.0' \
-  'email-validator>=2.2.0'
+  'email-validator>=2.2.0' \
+  'apscheduler>=3.10.4'
 
 python - <<'PY'
 import importlib
@@ -50,6 +51,7 @@ mods = [
     'jose',
     'passlib',
     'prometheus_client',
+    'apscheduler',
 ]
 missing = []
 for mod in mods:
