@@ -8,15 +8,15 @@ set -Eeuo pipefail
 #
 # Examples:
 #   ./scripts/run-prompt-phases.sh
+#   FROM=1 TO=32 ./scripts/run-prompt-phases.sh
 #   FROM=2 TO=32 ./scripts/run-prompt-phases.sh
 #   FROM=10 TO=10 ./scripts/run-prompt-phases.sh
-#   FROM=10 TO=32 ./scripts/run-prompt-phases.sh
 #   AUTOCOMMIT=1 ./scripts/run-prompt-phases.sh
 #   VALIDATE_CMD="npm test" ./scripts/run-prompt-phases.sh
 # ============================================================
 
 PROMPT_DIR="${PROMPT_DIR:-docs/prompt}"
-FROM="${FROM:-0}"
+FROM="${FROM:-1}"
 TO="${TO:-32}"
 AUTOCOMMIT="${AUTOCOMMIT:-0}"
 CONTINUE_ON_ERROR="${CONTINUE_ON_ERROR:-0}"
@@ -174,11 +174,7 @@ HEADER
   echo "DONE: $phase codex_status=$codex_status validate_status=$validate_status" | tee -a "$LOG_DIR/summary.log"
 }
 
-if [ "$FROM" -le 0 ]; then
-  run_phase "master-phase" "$PROMPT_DIR/master-phase.prompt"
-fi
-
-for n in $(seq 2 32); do
+for n in $(seq 1 32); do
   if [ "$n" -lt "$FROM" ] || [ "$n" -gt "$TO" ]; then
     continue
   fi
