@@ -23,8 +23,21 @@ class EventBus:
         self._events: deque[Event] = deque(maxlen=max_events)
         self._lock = Lock()
 
-    def emit(self, event_type: str, source: str, message: str, payload: dict[str, Any] | None = None) -> Event:
-        event = Event(type=event_type, source=source, message=message, payload=payload or {})
+    def emit(
+        self,
+        event_type: str,
+        source: str,
+        message: str | dict[str, Any],
+        payload: dict[str, Any] | None = None,
+    ) -> Event:
+        if isinstance(message, dict):
+            event_message = str(message.get('message') or message.get('action') or event_type)
+            event_payload = {**message, **(payload or {})}
+        else:
+            event_message = message
+            event_payload = payload or {}
+
+        event = Event(type=event_type, source=source, message=event_message, payload=event_payload)
         with self._lock:
             self._events.append(event)
         return event
