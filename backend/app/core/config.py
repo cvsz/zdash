@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     log_level: str = Field(default='INFO', alias='LOG_LEVEL')
 
     backend_host: str = Field(default='0.0.0.0', alias='BACKEND_HOST')
-    backend_port: int = Field(default=8000, alias='BACKEND_PORT')
+    backend_port: int = Field(default=8004, alias='BACKEND_PORT')
 
     claude_api_key: str = Field(default='', alias='CLAUDE_API_KEY')
     claude_model: str = Field(default='claude-sonnet-4-5', alias='CLAUDE_MODEL')
