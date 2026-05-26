@@ -21,6 +21,13 @@ class Candle(BaseModel):
             raise ValueError("OHLC values must be positive")
         return v
 
+    @field_validator("volume")
+    @classmethod
+    def _volume_non_negative(cls, v: float) -> float:
+        if v < 0:
+            raise ValueError("volume must be non-negative")
+        return v
+
     @model_validator(mode="after")
     def _validate_ranges(self) -> "Candle":
         if self.high < max(self.open, self.close, self.low):
@@ -49,13 +56,30 @@ class StrategySignal(BaseModel):
             raise ValueError("confidence must be in [0,1]")
         return v
 
+    @field_validator("entry", "stop_loss", "take_profit")
+    @classmethod
+    def _price_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("price fields must be positive")
+        return v
+
+    @model_validator(mode="after")
+    def _validate_directional_levels(self) -> "StrategySignal":
+        if self.direction == "buy":
+            if not (self.stop_loss < self.entry < self.take_profit):
+                raise ValueError("buy signals require stop_loss < entry < take_profit")
+        elif self.direction == "sell":
+            if not (self.take_profit < self.entry < self.stop_loss):
+                raise ValueError("sell signals require take_profit < entry < stop_loss")
+        return self
+
 
 class SimulatedTrade(BaseModel):
     id: str
     symbol: str
     timeframe: str
     strategy: str
-    direction: Literal["buy", "sell"]
+    direction: Literal["buy", "sell", "hold"]
     entry_time: datetime
     exit_time: datetime | None = None
     entry_price: float
@@ -82,6 +106,27 @@ class BacktestRequest(BaseModel):
     spread_points: float = 25
     slippage_points: float = 5
     parameters: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("initial_balance")
+    @classmethod
+    def _initial_balance_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("initial_balance must be > 0")
+        return v
+
+    @field_validator("risk_per_trade_percent")
+    @classmethod
+    def _risk_percent_positive(cls, v: float) -> float:
+        if v <= 0:
+            raise ValueError("risk_per_trade_percent must be > 0")
+        return v
+
+    @field_validator("commission_per_trade", "spread_points", "slippage_points")
+    @classmethod
+    def _non_negative_costs(cls, v: float) -> float:
+        if v < 0:
+            raise ValueError("cost-related values must be >= 0")
+        return v
 
 
 class BacktestMetrics(BaseModel):
@@ -128,6 +173,13 @@ class OptimizationRequest(BaseModel):
     parameter_grid: dict[str, list[Any]]
     sort_metric: str = "profit_factor"
     max_combinations: int = 100
+
+    @field_validator("max_combinations")
+    @classmethod
+    def _max_combinations_positive(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("max_combinations must be > 0")
+        return v
 
 
 class OptimizationResult(BaseModel):

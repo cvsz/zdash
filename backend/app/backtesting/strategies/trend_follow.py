@@ -16,8 +16,30 @@ class TrendFollowStrategy(BaseStrategy):
 
     def validate_parameters(self, parameters: dict) -> dict:
         p = super().validate_parameters(parameters)
-        if p["short_window"] >= p["long_window"]:
+        short_window = int(p["short_window"])
+        long_window = int(p["long_window"])
+        risk_reward = float(p["risk_reward"])
+        confidence_threshold = float(p["confidence_threshold"])
+        atr_multiplier = float(p["atr_multiplier"])
+        if short_window >= long_window:
             raise ValueError("short_window must be less than long_window")
+        if short_window < 2 or long_window < 5:
+            raise ValueError("moving-average windows are too small")
+        if risk_reward <= 0:
+            raise ValueError("risk_reward must be > 0")
+        if not 0 <= confidence_threshold <= 1:
+            raise ValueError("confidence_threshold must be in [0,1]")
+        if atr_multiplier <= 0:
+            raise ValueError("atr_multiplier must be > 0")
+        p.update(
+            {
+                "short_window": short_window,
+                "long_window": long_window,
+                "risk_reward": risk_reward,
+                "confidence_threshold": confidence_threshold,
+                "atr_multiplier": atr_multiplier,
+            }
+        )
         return p
 
     def generate_signal(self, candles: list[Candle], index: int, parameters: dict) -> StrategySignal:
@@ -27,7 +49,12 @@ class TrendFollowStrategy(BaseStrategy):
         long_window = int(p["long_window"])
 
         if index < long_window - 1:
-            return self._hold(candle)
+            return self.hold_signal(
+                candle=candle,
+                symbol="XAUUSD",
+                timeframe="M5",
+                metadata={"reason": "insufficient_history"},
+            )
 
         closes = [item.close for item in candles]
         sma_short = sum(closes[index - short_window + 1 : index + 1]) / short_window
@@ -42,11 +69,10 @@ class TrendFollowStrategy(BaseStrategy):
             elif prev_short >= prev_long and sma_short < sma_long:
                 direction = "sell"
         else:
-            # First index with enough long-window data. If the crossover happened
-            # during warm-up, emit the first actionable trend state instead of
-            # losing the only cross available in short synthetic test datasets.
+            # First long-window index fallback for small synthetic datasets.
             previous_closes = closes[:index]
-            previous_baseline = sum(previous_closes[-long_window + 1 :]) / max(1, len(previous_closes[-long_window + 1 :]))
+            baseline_window = previous_closes[-long_window + 1 :]
+            previous_baseline = sum(baseline_window) / max(1, len(baseline_window))
             if sma_short > sma_long and closes[index - 1] <= previous_baseline:
                 direction = "buy"
             elif sma_short < sma_long and closes[index - 1] >= previous_baseline:
@@ -62,7 +88,13 @@ class TrendFollowStrategy(BaseStrategy):
             direction = "buy" if sma_short > sma_long else "sell"
 
         if direction == "hold":
-            return self._hold(candle, confidence=confidence)
+            return self.hold_signal(
+                candle=candle,
+                symbol="XAUUSD",
+                timeframe="M5",
+                confidence=confidence,
+                metadata={"reason": "no_cross_or_low_confidence", "ma_gap": round(abs(sma_short - sma_long), 6)},
+            )
 
         stop_distance = atr * float(p["atr_multiplier"])
         if direction == "sell":
@@ -72,27 +104,18 @@ class TrendFollowStrategy(BaseStrategy):
             stop_loss = candle.close - stop_distance
             take_profit = candle.close + stop_distance * float(p["risk_reward"])
 
-        return StrategySignal(
-            timestamp=candle.timestamp,
+        return self.build_signal(
+            candle=candle,
             symbol="XAUUSD",
             timeframe="M5",
-            strategy=self.name,
             direction=direction,
             entry=candle.close,
             stop_loss=stop_loss,
             take_profit=take_profit,
             confidence=confidence,
-        )
-
-    def _hold(self, candle: Candle, confidence: float = 0.0) -> StrategySignal:
-        return StrategySignal(
-            timestamp=candle.timestamp,
-            symbol="XAUUSD",
-            timeframe="M5",
-            strategy=self.name,
-            direction="hold",
-            entry=candle.close,
-            stop_loss=candle.close * 0.99,
-            take_profit=candle.close * 1.01,
-            confidence=confidence,
+            metadata={
+                "short_sma": round(sma_short, 6),
+                "long_sma": round(sma_long, 6),
+                "ma_gap": round(abs(sma_short - sma_long), 6),
+            },
         )

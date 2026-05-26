@@ -148,5 +148,6 @@ def bootstrap_agents() -> None:
         {
             'agents': ['ceo', 'janie', 'guardian', 'friday', 'joe', 'editor', 'graphic', 'social'],
             'canonical_roster': CANONICAL_AGENT_ROSTER,
+            'joe_role': joe.role,
         },
     )

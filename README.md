@@ -523,7 +523,7 @@ Phase 04 adds automation foundations around Scheduler, Friday, and IoT shells:
 - Friday automation coordinator agent (`id=friday`, `role=automation_coordinator`)
 - scheduler service with in-memory job store and run history
 - interval/cron/manual job support
-- safe predefined jobs (`health_check`, `risk_check`, `trading_scan`, placeholders for `backtest`/`content_pipeline`, and disabled-by-default `iot_power_cycle`)
+- safe predefined jobs (`health_check`, `risk_check`, `trading_scan`, `backtest`, and disabled-by-default `iot_power_cycle`)
 - Tapo adapter shell and IoT service with dry-run-first behavior
 - Windows NSSM install/uninstall guidance scripts
 
@@ -531,7 +531,7 @@ Scheduler architecture (Phase 04):
 
 ```text
 FridayAgent -> SchedulerService -> InMemoryJobStore
-                              -> Job handlers (risk/trading/iot/health/mock)
+                              -> Job handlers (risk/trading/backtest/iot/health/mock)
                               -> Event bus audit trail
 ```
 
@@ -595,6 +595,125 @@ Phase 04 validation commands:
 
 ```bash
 cd backend && pytest
+cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
+
+---
+
+## Phase 05 Backtesting
+
+Phase 05 introduces the **Strategy Lab** and **Joe Agent** for deterministic strategy research in simulation mode:
+
+- Joe agent (`id=joe`, `role=strategy_lab_coordinator`)
+- deterministic mock OHLCV dataset provider for `XAUUSD/M5`
+- safe CSV dataset loading from `backend/data/backtests/` only
+- strategy interface + variants:
+  - `ob_aggressive`
+  - `ob_conservative`
+  - `trend_follow`
+- backtest engine with non-overlapping-trade simulation
+- metrics engine (win rate, PF, drawdown, expectancy, sharpe-like score, monthly returns)
+- parameter-sweep optimizer with hard combination cap
+- strategy promotion gate with risk thresholds
+- scheduler `backtest` job integration through `BacktestService`
+
+Safety notes:
+
+- Research/simulation/paper-trading validation only
+- No financial advice
+- Backtest results are not guaranteed future performance
+- Live trading remains disabled by default
+- `DRY_RUN=true` remains default
+- Strategy promotion remains disabled by default (`ALLOW_STRATEGY_PROMOTION=false`)
+- Promotion does not enable live trading and does not disable Guardian
+
+Key config variables:
+
+```env
+BACKTESTING_ENABLED=true
+BACKTEST_DATASET_SOURCE=mock
+BACKTEST_DEFAULT_SYMBOL=XAUUSD
+BACKTEST_DEFAULT_TIMEFRAME=M5
+BACKTEST_INITIAL_BALANCE=10000
+BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT=1
+BACKTEST_COMMISSION_PER_TRADE=0
+BACKTEST_SPREAD_POINTS=25
+BACKTEST_SLIPPAGE_POINTS=5
+PRIMARY_STRATEGY=ob_aggressive
+ALLOW_STRATEGY_PROMOTION=false
+MIN_PROMOTION_TRADES=50
+MIN_PROMOTION_WIN_RATE=45
+MIN_PROMOTION_PROFIT_FACTOR=1.2
+MAX_PROMOTION_DRAWDOWN_PERCENT=20
+MAX_PROMOTION_CONSECUTIVE_LOSSES=8
+OPTIMIZER_MAX_COMBINATIONS=100
+OPTIMIZER_SORT_METRIC=profit_factor
+```
+
+Phase 05 API examples:
+
+List strategies:
+
+```bash
+curl http://localhost:8000/api/backtesting/strategies
+```
+
+Run backtest:
+
+```bash
+curl -X POST http://localhost:8000/api/backtesting/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy": "ob_aggressive",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "dataset": "mock",
+    "initial_balance": 10000,
+    "risk_per_trade_percent": 1,
+    "parameters": {}
+  }'
+```
+
+Run optimization:
+
+```bash
+curl -X POST http://localhost:8000/api/backtesting/optimize \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy": "ob_aggressive",
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "dataset": "mock",
+    "initial_balance": 10000,
+    "parameter_grid": {
+      "lookback": [8, 12, 16],
+      "risk_reward": [1.5, 2.0, 2.5],
+      "confidence_threshold": [0.5, 0.55, 0.6],
+      "atr_multiplier": [1.0, 1.2, 1.5]
+    },
+    "sort_metric": "profit_factor",
+    "max_combinations": 50
+  }'
+```
+
+Promotion check:
+
+```bash
+curl -X POST http://localhost:8000/api/backtesting/results/RESULT_ID/promotion-check
+```
+
+Get report:
+
+```bash
+curl http://localhost:8000/api/backtesting/results/RESULT_ID/report
+```
+
+Phase 05 validation commands:
+
+```bash
+cd backend && python -B -m pytest -q
 cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
 docker build -f infra/docker/backend.Dockerfile .
 docker build -f infra/docker/frontend.Dockerfile .

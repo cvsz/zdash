@@ -8,6 +8,32 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+BACKTEST_EVENT_TYPES = (
+    "backtest.started",
+    "backtest.completed",
+    "backtest.failed",
+)
+
+OPTIMIZER_EVENT_TYPES = (
+    "optimizer.started",
+    "optimizer.completed",
+    "optimizer.failed",
+)
+
+STRATEGY_EVENT_TYPES = (
+    "strategy.signal.generated",
+    "strategy.signal.skipped",
+    "strategy.promotion.evaluated",
+    "strategy.promotion.approved",
+    "strategy.promotion.rejected",
+)
+
+JOE_EVENT_TYPES = (
+    "joe.command.received",
+    "joe.command.completed",
+    "joe.command.failed",
+)
+
 
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))

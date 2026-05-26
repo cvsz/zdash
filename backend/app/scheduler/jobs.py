@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from app.backtesting.models import BacktestRequest
 from app.core.events import event_bus
 
 
@@ -153,6 +154,22 @@ def default_jobs():
             enabled=True,
         ),
         CreateJobRequest(
+            name='backtest',
+            job_type=JobType.backtest,
+            schedule_type=ScheduleType.interval,
+            interval_seconds=1800,
+            payload={
+                'strategy': 'ob_aggressive',
+                'symbol': 'XAUUSD',
+                'timeframe': 'M5',
+                'dataset': 'mock',
+                'initial_balance': 10000,
+                'risk_per_trade_percent': 1,
+                'parameters': {},
+            },
+            enabled=True,
+        ),
+        CreateJobRequest(
             name='iot_power_cycle',
             job_type=JobType.iot_power_cycle,
             schedule_type=ScheduleType.manual,
@@ -225,6 +242,44 @@ def run_scheduled_job(job):
             'timeframe': payload.get('timeframe', 'M5'),
         }
 
+    elif job_type == 'backtest':
+        from app.backtesting.backtest_service import get_backtest_service
+        from app.core.config import get_settings
+
+        settings = get_settings()
+        request_payload = {
+            'strategy': payload.get('strategy', settings.primary_strategy),
+            'symbol': payload.get('symbol', settings.backtest_default_symbol),
+            'timeframe': payload.get('timeframe', settings.backtest_default_timeframe),
+            'dataset': payload.get('dataset', settings.backtest_dataset_source),
+            'initial_balance': payload.get('initial_balance', settings.backtest_initial_balance),
+            'risk_per_trade_percent': payload.get(
+                'risk_per_trade_percent',
+                settings.backtest_default_risk_per_trade_percent,
+            ),
+            'commission_per_trade': payload.get('commission_per_trade', settings.backtest_commission_per_trade),
+            'spread_points': payload.get('spread_points', settings.backtest_spread_points),
+            'slippage_points': payload.get('slippage_points', settings.backtest_slippage_points),
+            'parameters': payload.get('parameters', {}),
+        }
+        result = get_backtest_service().run_backtest(BacktestRequest.model_validate(request_payload))
+        ok = True
+        status = 'completed'
+        message = 'backtest job completed'
+        output = {
+            'ok': True,
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'mode': 'simulation',
+            'result_id': result.id,
+            'strategy': result.strategy,
+            'total_trades': result.metrics.total_trades,
+            'net_profit_percent': result.metrics.net_profit_percent,
+            'max_drawdown_percent': result.metrics.max_drawdown_percent,
+            'promotion_enabled': settings.allow_strategy_promotion,
+            'promotion_auto_run': False,
+        }
+
     elif job_type == 'iot_power_cycle':
         ok = True
         status = 'skipped'
@@ -279,4 +334,3 @@ def run_scheduled_job(job):
     )
 
     return ok, status, message, output
-

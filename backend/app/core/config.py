@@ -97,6 +97,13 @@ class Settings(BaseSettings):
     nssm_description: str = Field(default='zDash Janie Server and Agent Runtime', alias='NSSM_DESCRIPTION')
     nssm_backend_host: str = Field(default='127.0.0.1', alias='NSSM_BACKEND_HOST')
     nssm_backend_port: int = Field(default=8005, alias='NSSM_BACKEND_PORT')
+
+    multi_tenant_enabled: bool = Field(default=True, alias='MULTI_TENANT_ENABLED')
+    default_org_name: str = Field(default='zDash Local', alias='DEFAULT_ORG_NAME')
+    default_workspace_name: str = Field(default='Main Workspace', alias='DEFAULT_WORKSPACE_NAME')
+    tenant_header_name: str = Field(default='X-ZDash-Tenant', alias='TENANT_HEADER_NAME')
+    workspace_header_name: str = Field(default='X-ZDash-Workspace', alias='WORKSPACE_HEADER_NAME')
+
     backtesting_enabled: bool = Field(default=True, alias='BACKTESTING_ENABLED')
     backtest_dataset_source: str = Field(default='mock', alias='BACKTEST_DATASET_SOURCE')
     backtest_default_symbol: str = Field(default='XAUUSD', alias='BACKTEST_DEFAULT_SYMBOL')
@@ -160,6 +167,56 @@ class Settings(BaseSettings):
             return 0.0
         return parsed
 
+    @field_validator(
+        'backtest_initial_balance',
+        'backtest_default_risk_per_trade_percent',
+        'min_promotion_win_rate',
+        'min_promotion_profit_factor',
+        'max_promotion_drawdown_percent',
+        mode='before',
+    )
+    @classmethod
+    def _safe_positive_backtesting_float(cls, value):
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return 0.0
+        if parsed < 0:
+            return 0.0
+        return parsed
+
+    @field_validator(
+        'backtest_commission_per_trade',
+        'backtest_spread_points',
+        'backtest_slippage_points',
+        mode='before',
+    )
+    @classmethod
+    def _safe_non_negative_backtesting_cost(cls, value):
+        try:
+            parsed = float(value)
+        except (TypeError, ValueError):
+            return 0.0
+        if parsed < 0:
+            return 0.0
+        return parsed
+
+    @field_validator(
+        'min_promotion_trades',
+        'max_promotion_consecutive_losses',
+        'optimizer_max_combinations',
+        mode='before',
+    )
+    @classmethod
+    def _safe_positive_backtesting_int(cls, value):
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return 0
+        if parsed < 0:
+            return 0
+        return parsed
+
 
 @lru_cache
 def get_settings() -> Settings:
@@ -179,6 +236,36 @@ def get_settings() -> Settings:
         settings.soft_halt_drawdown_level_2 = 10.0
     if settings.soft_halt_drawdown_level_3 <= 0:
         settings.soft_halt_drawdown_level_3 = 20.0
+
+    # Backtesting safe defaults and bounds.
+    if settings.backtest_initial_balance <= 0:
+        settings.backtest_initial_balance = 10000.0
+    if settings.backtest_default_risk_per_trade_percent <= 0:
+        settings.backtest_default_risk_per_trade_percent = 1.0
+    if settings.min_promotion_trades <= 0:
+        settings.min_promotion_trades = 50
+    if settings.min_promotion_win_rate <= 0:
+        settings.min_promotion_win_rate = 45.0
+    if settings.min_promotion_win_rate > 100:
+        settings.min_promotion_win_rate = 100.0
+    if settings.min_promotion_profit_factor <= 0:
+        settings.min_promotion_profit_factor = 1.2
+    if settings.max_promotion_drawdown_percent <= 0:
+        settings.max_promotion_drawdown_percent = 20.0
+    if settings.max_promotion_consecutive_losses <= 0:
+        settings.max_promotion_consecutive_losses = 8
+    if settings.optimizer_max_combinations <= 0:
+        settings.optimizer_max_combinations = 100
+    if settings.optimizer_max_combinations > 1000:
+        settings.optimizer_max_combinations = 1000
+    if settings.optimizer_sort_metric not in {
+        'profit_factor',
+        'net_profit_percent',
+        'win_rate',
+        'expectancy',
+        'sharpe_like_score',
+    }:
+        settings.optimizer_sort_metric = 'profit_factor'
 
     ordered = sorted(
         [

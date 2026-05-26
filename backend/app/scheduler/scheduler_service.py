@@ -53,13 +53,16 @@ class SchedulerService:
         return self.get_status()
 
     def get_status(self) -> dict:
+        jobs = self.store.list_jobs()
+        has_backtest_job = any(job.job_type.value == 'backtest' for job in jobs)
         return {
             'enabled': self.settings.scheduler_enabled,
             'running': self.scheduler.running,
             'timezone': self.settings.scheduler_timezone,
             'store': self.settings.scheduler_store,
-            'job_count': len(self.store.list_jobs()),
+            'job_count': len(jobs),
             'run_count': len(self.store.list_runs()),
+            'backtest_job_registered': has_backtest_job,
         }
 
     def register_default_jobs(self) -> list[ScheduledJob]:

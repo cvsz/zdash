@@ -9,7 +9,7 @@ from app.scheduler.scheduler_service import reset_scheduler_service
 
 
 @pytest.fixture(autouse=True)
-def reset_risk_runtime_state() -> None:
+def reset_runtime_state() -> None:
     get_settings.cache_clear()
     reset_backtest_service()
     reset_guardian_service()
