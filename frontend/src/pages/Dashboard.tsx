@@ -1,2 +1,19 @@
-import PageHeader from '../components/layout/PageHeader';import { mockFallbackActive } from '../api/client';
-export default function Dashboard(){return <div><PageHeader title='Dashboard'/><div className='card'>Janie Server</div><div className='card'>Agent Runtime</div><div className='card'>Guardian Risk</div><div className='card'>Content Pipeline</div>{mockFallbackActive&&<div>Mock fallback mode</div>}</div>}
+import { mockFallbackActive } from '../api/client';
+import PageHeader from '../components/layout/PageHeader';
+import TeamRoster from './TeamRoster';
+
+export default function Dashboard() {
+  return (
+    <div>
+      <PageHeader title="Dashboard" />
+
+      {mockFallbackActive && (
+        <div className="mx-auto mb-4 max-w-7xl rounded-2xl border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100">
+          Mock fallback mode
+        </div>
+      )}
+
+      <TeamRoster />
+    </div>
+  );
+}
