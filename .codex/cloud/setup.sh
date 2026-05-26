@@ -25,7 +25,7 @@ mkdir -p .codex/logs .codex/reports docs/prompt
 
 printf '\n[4/9] Backend dependencies\n'
 if [ -d "backend" ]; then
-  if [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+  if [ -f ".codex/cloud/repair-backend-deps.sh" ]; then
     bash .codex/cloud/repair-backend-deps.sh
   else
     cd backend
@@ -100,7 +100,7 @@ cd "$ROOT_DIR"
 echo "zDash healthcheck"
 git status --short || true
 if [ -d "backend" ]; then
-  if [ -x ".codex/cloud/repair-backend-deps.sh" ]; then
+  if [ -f ".codex/cloud/repair-backend-deps.sh" ]; then
     bash .codex/cloud/repair-backend-deps.sh
   fi
   cd backend
