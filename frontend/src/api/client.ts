@@ -1,6 +1,6 @@
 import { mockHealth, mockLogs } from './mockData';
 import { ApiError, type ApiResponse } from './types';
-const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8004';
 export let mockFallbackActive = false;
 async function request<T>(path:string, init:RequestInit={}, fallback?:T, timeout=6000):Promise<T>{
   const controller = new AbortController(); const t = setTimeout(()=>controller.abort(), timeout);
