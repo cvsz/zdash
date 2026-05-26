@@ -9,14 +9,19 @@ from app.scheduler.scheduler_service import get_scheduler_service
 
 class FridayAgent(BaseAgent):
     def __init__(self) -> None:
-        super().__init__(agent_id='friday', name='Friday', role='automation_coordinator')
+        super().__init__(
+            agent_id='friday',
+            name='Isla Grant',
+            role='scheduler_automation',
+            metadata={'tier': 'rare', 'legacy_name': 'Friday'},
+        )
 
     @property
     def scheduler(self):
         return get_scheduler_service()
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
-        self.emit_event('friday.command.received', 'Friday received command message', message.model_dump())
+        self.emit_event('friday.command.received', 'Isla Grant received command message', message.model_dump())
         return self.run_task(task=message.message, context=message.context)
 
     def run_task(self, task: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -38,14 +43,14 @@ class FridayAgent(BaseAgent):
             elif task == 'delete_job':
                 result = {'deleted': self.delete_job(str(context.get('job_id')))}
             else:
-                raise ValueError(f'Unsupported Friday task: {task}')
+                raise ValueError(f'Unsupported Isla Grant task: {task}')
 
             self.status = 'idle'
-            self.emit_event('friday.command.completed', 'Friday completed command', {'task': task})
+            self.emit_event('friday.command.completed', 'Isla Grant completed command', {'task': task})
             return {'task': task, 'ok': True, **result}
         except Exception as exc:
             self.status = 'error'
-            self.emit_event('friday.command.failed', 'Friday command failed', {'task': task, 'error': str(exc)})
+            self.emit_event('friday.command.failed', 'Isla Grant command failed', {'task': task, 'error': str(exc)})
             raise
 
     def list_jobs(self):
