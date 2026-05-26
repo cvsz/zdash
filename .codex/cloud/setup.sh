@@ -51,10 +51,8 @@ fi
 printf '\n[5/9] Frontend dependencies\n'
 if [ -d "frontend" ]; then
   cd frontend
-  if [ -f "package-lock.json" ]; then
-    npm ci || npm install
-  elif [ -f "package.json" ]; then
-    npm install
+  if [ -f "package.json" ]; then
+    npm install --legacy-peer-deps --no-audit --fund=false
   else
     echo "No frontend package.json found."
   fi
@@ -113,6 +111,7 @@ if [ -d "backend" ]; then
 fi
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
+  npm install --legacy-peer-deps --no-audit --fund=false
   npm test -- --run
   npm run build
   cd "$ROOT_DIR"
