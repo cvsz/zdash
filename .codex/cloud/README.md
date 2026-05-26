@@ -29,6 +29,26 @@ OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and
 The Codex Cloud suite is integrated for these phase prompt files:
 
 ```text
+docs/prompt/phase01.prompt
+docs/prompt/phase02.prompt
+docs/prompt/phase03.prompt
+docs/prompt/phase04.prompt
+docs/prompt/phase05.prompt
+docs/prompt/phase06.prompt
+docs/prompt/phase07.prompt
+docs/prompt/phase08.prompt
+docs/prompt/phase09.prompt
+docs/prompt/phase10.prompt
+docs/prompt/phase11.prompt
+docs/prompt/phase12.prompt
+docs/prompt/phase13.prompt
+docs/prompt/phase14.prompt
+docs/prompt/phase15.prompt
+docs/prompt/phase16.prompt
+docs/prompt/phase17.prompt
+docs/prompt/phase18.prompt
+docs/prompt/phase19.prompt
+docs/prompt/phase20.prompt
 docs/prompt/phase21.prompt
 docs/prompt/phase22.prompt
 docs/prompt/phase23.prompt
