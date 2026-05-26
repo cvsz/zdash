@@ -15,6 +15,11 @@ class HaltRequest(BaseModel):
     reason: str = Field(min_length=1)
 
 
+class ResumeRequest(BaseModel):
+    reason: str = Field(min_length=1)
+    approved: bool = False
+
+
 class ApproveExecutionRequest(BaseModel):
     signal: dict[str, Any]
     snapshot: AccountSnapshot
@@ -65,10 +70,10 @@ def halt(req: HaltRequest) -> dict:
 
 
 @router.post('/resume')
-def resume(req: HaltRequest) -> dict:
+def resume(req: ResumeRequest) -> dict:
     service = get_guardian_service()
     try:
-        state = service.resume(req.reason)
+        state = service.resume(reason=req.reason, approved=req.approved)
     except ValueError as exc:
         return fail('RISK_RESUME_INVALID', str(exc))
     return ok({'halt_state': state.model_dump(mode='json')})

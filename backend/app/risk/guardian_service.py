@@ -33,6 +33,7 @@ class GuardianService:
                 'soft_halt_drawdown_level_2': self.settings.soft_halt_drawdown_level_2,
                 'soft_halt_drawdown_level_3': self.settings.soft_halt_drawdown_level_3,
             },
+            'current_risk_status': self.latest_decision.risk_level if self.latest_decision else 'unknown',
             'latest_risk_decision': self.latest_decision.model_dump(mode='json') if self.latest_decision else None,
         }
 
@@ -44,7 +45,11 @@ class GuardianService:
     def halt(self, reason: str, source: str = 'manual') -> HaltState:
         return self.halt_store.halt(reason=reason, source=source)
 
-    def resume(self, reason: str) -> HaltState:
+    def resume(self, reason: str, approved: bool = False) -> HaltState:
+        if not approved:
+            raise ValueError('Explicit approval is required to resume risk halt.')
+        if not self.settings.allow_manual_resume:
+            raise ValueError('Manual resume is disabled by configuration.')
         return self.halt_store.resume(reason=reason)
 
     def approve_execution(self, signal: dict, snapshot: AccountSnapshot) -> RiskDecision:

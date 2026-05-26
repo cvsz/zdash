@@ -48,3 +48,4 @@ def test_post_dry_run_execute() -> None:
     _assert_envelope(body)
     assert body['ok'] is True
     assert body['data']['status'] == 'simulated'
+    assert body['data']['risk_decision']['approved'] is True

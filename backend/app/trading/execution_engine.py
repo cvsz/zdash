@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Any
 from uuid import uuid4
 
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.risk.guardian_service import get_guardian_service
+from app.risk.models import AccountSnapshot, RiskDecision
 from app.trading.models import ExecutionRequest, ExecutionResult, TradingSignal
 from app.trading.mt5_adapter import MT5Adapter
 from app.trading.signal_validation import SignalValidationService
@@ -95,26 +97,81 @@ class ExecutionEngine:
 
         raise ValueError('unsupported execution request')
 
+    def _resolve_snapshot(self, provided_snapshot: object | None) -> AccountSnapshot:
+        if provided_snapshot is not None:
+            return AccountSnapshot.model_validate(provided_snapshot)
+
+        raw_snapshot = self.mt5_adapter.get_account_snapshot()
+        if not isinstance(raw_snapshot, dict):
+            raise ValueError('MT5 adapter returned an invalid account snapshot payload.')
+
+        balance = float(raw_snapshot.get('balance', 10000.0))
+        equity = float(raw_snapshot.get('equity', balance))
+        peak_equity = float(raw_snapshot.get('peak_equity', max(balance, equity)))
+        daily_start_equity = float(raw_snapshot.get('daily_start_equity', balance))
+
+        open_positions_raw = raw_snapshot.get('open_positions', 0)
+        try:
+            open_positions = int(open_positions_raw)
+        except (TypeError, ValueError):
+            open_positions = 0
+
+        floating_pnl = float(raw_snapshot.get('floating_pnl', equity - balance))
+        realized_pnl_today = float(raw_snapshot.get('realized_pnl_today', 0.0))
+
+        payload: dict[str, Any] = {
+            'balance': balance,
+            'equity': equity,
+            'peak_equity': peak_equity,
+            'daily_start_equity': daily_start_equity,
+            'open_positions': open_positions,
+            'floating_pnl': floating_pnl,
+            'realized_pnl_today': realized_pnl_today,
+        }
+        if 'timestamp' in raw_snapshot:
+            payload['timestamp'] = raw_snapshot['timestamp']
+
+        return AccountSnapshot.model_validate(payload)
+
+    @staticmethod
+    def _blocked_by_risk_result(signal: TradingSignal, reason: str, decision: RiskDecision) -> ExecutionResult:
+        return ExecutionResult(
+            ok=False,
+            status='blocked_by_risk',
+            dry_run=True,
+            signal=signal,
+            message=reason,
+            risk_decision=decision,
+        )
+
     def execute(self, request: object) -> ExecutionResult:
         raw_signal, request_dry_run, snapshot = self._as_execution_request(request)
         signal = self._normalize_signal(raw_signal)
 
-        if snapshot is not None:
-            decision = get_guardian_service().approve_execution(signal=signal.model_dump(mode='json'), snapshot=snapshot)
-            if not decision.approved or decision.halt_active:
-                event_bus.emit(
-                    'trading.execution.blocked',
-                    'ExecutionEngine',
-                    'Execution blocked by risk guardian',
-                    {'signal_id': signal.id, 'reason': decision.reason},
-                )
-                return ExecutionResult(
-                    ok=False,
-                    status='blocked_by_risk',
-                    dry_run=True,
-                    signal=signal,
-                    message=decision.reason,
-                )
+        risk_decision: RiskDecision
+        try:
+            resolved_snapshot = self._resolve_snapshot(snapshot)
+            risk_decision = get_guardian_service().approve_execution(
+                signal=signal.model_dump(mode='json'),
+                snapshot=resolved_snapshot,
+            )
+        except Exception as exc:
+            risk_decision = RiskDecision(
+                approved=False,
+                reason=f'Risk evaluation failed closed: {exc}',
+                risk_level='danger',
+                halt_active=True,
+                drawdown=None,
+            )
+
+        if not risk_decision.approved or risk_decision.halt_active:
+            event_bus.emit(
+                'trading.execution.blocked_by_risk',
+                'ExecutionEngine',
+                'Execution blocked by risk guardian',
+                {'signal_id': signal.id, 'reason': risk_decision.reason},
+            )
+            return self._blocked_by_risk_result(signal=signal, reason=risk_decision.reason, decision=risk_decision)
 
         validation = self.validation_service.validate(signal)
         if not validation.valid:
@@ -130,6 +187,7 @@ class ExecutionEngine:
                 dry_run=True,
                 signal=signal,
                 message=validation.reason,
+                risk_decision=risk_decision,
             )
 
         if signal.direction == 'hold':
@@ -146,6 +204,7 @@ class ExecutionEngine:
                 dry_run=True,
                 signal=signal,
                 message=message,
+                risk_decision=risk_decision,
             )
 
         effective_dry_run = request_dry_run or self.settings.dry_run
@@ -156,6 +215,7 @@ class ExecutionEngine:
                 dry_run=True,
                 signal=signal,
                 message='Dry-run execution simulated successfully.',
+                risk_decision=risk_decision,
                 simulated_order_id=f'sim-{uuid4()}',
             )
             event_bus.emit(
@@ -180,9 +240,12 @@ class ExecutionEngine:
                 dry_run=False,
                 signal=signal,
                 message=message,
+                risk_decision=risk_decision,
             )
 
         result = self.mt5_adapter.send_order(signal)
+        if result.risk_decision is None:
+            result = result.model_copy(update={'risk_decision': risk_decision})
         if result.status == 'simulated':
             event_bus.emit(
                 'trading.execution.simulated',

@@ -1,7 +1,9 @@
 from app.core.config import get_settings
+from app.core.events import event_bus
 from app.risk.guardian_service import get_guardian_service, reset_guardian_service
 from app.risk.models import AccountSnapshot
 from app.trading.execution_engine import ExecutionEngine
+from app.trading.models import ExecutionRequest as Phase2ExecutionRequest
 from app.trading.risk_models import ExecutionRequest, Signal
 
 
@@ -44,11 +46,29 @@ def test_execution_blocked_when_halt_active() -> None:
     reset_guardian_service()
     service = get_guardian_service()
     service.halt('Manual halt', source='manual')
+    event_bus.clear()
 
     engine = ExecutionEngine()
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
 
     assert result.status == 'blocked_by_risk'
+    assert result.risk_decision is not None
+    assert result.risk_decision.halt_active is True
+    assert any(event.type == 'trading.execution.blocked_by_risk' for event in event_bus.list_events())
+
+
+def test_execution_blocked_when_halt_active_without_explicit_snapshot() -> None:
+    get_settings.cache_clear()
+    reset_guardian_service()
+    service = get_guardian_service()
+    service.halt('Manual halt', source='manual')
+
+    engine = ExecutionEngine()
+    result = engine.execute(Phase2ExecutionRequest(signal=_signal().to_trading_signal(), dry_run=True, confirmation=False))
+
+    assert result.status == 'blocked_by_risk'
+    assert result.risk_decision is not None
+    assert result.risk_decision.halt_active is True
 
 
 def test_execution_blocked_when_drawdown_breached() -> None:
@@ -58,6 +78,8 @@ def test_execution_blocked_when_drawdown_breached() -> None:
 
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_breached_snapshot()))
     assert result.status == 'blocked_by_risk'
+    assert result.risk_decision is not None
+    assert result.risk_decision.risk_level in {'danger', 'emergency'}
 
 
 def test_dry_run_execution_allowed_when_risk_normal() -> None:
@@ -68,6 +90,8 @@ def test_dry_run_execution_allowed_when_risk_normal() -> None:
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
     assert result.status == 'simulated'
     assert result.dry_run is True
+    assert result.risk_decision is not None
+    assert result.risk_decision.approved is True
 
 
 def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
@@ -83,6 +107,8 @@ def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
     )
 
     assert result.status == 'blocked_by_config'
+    assert result.risk_decision is not None
+    assert result.risk_decision.approved is True
 
     get_settings.cache_clear()
     reset_guardian_service()

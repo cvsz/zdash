@@ -6,6 +6,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from app.risk.models import RiskDecision
+
 
 class Candle(BaseModel):
     timestamp: datetime
@@ -63,6 +65,7 @@ class SignalValidationResult(BaseModel):
 
 ExecutionStatus = Literal[
     'simulated',
+    'executed',
     'blocked_by_config',
     'blocked_by_validation',
     'blocked_by_risk',
@@ -82,6 +85,7 @@ class ExecutionResult(BaseModel):
     dry_run: bool
     signal: TradingSignal
     message: str
+    risk_decision: RiskDecision | None = None
     simulated_order_id: str | None = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

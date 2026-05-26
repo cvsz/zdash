@@ -437,6 +437,85 @@ docker build -f infra/docker/frontend.Dockerfile .
 
 ---
 
+## Phase 03 Risk System
+
+Phase 03 adds the **Guardian risk layer** in front of trading execution:
+
+- `Guardian` agent (`id=guardian`, `role=risk_guardian`)
+- account snapshot-based drawdown evaluation
+- soft warning levels and hard breach thresholds
+- in-memory halt flag store (replaceable in later phases)
+- emergency kill switch at configurable threshold (default `50%`)
+- manual halt/resume controls with explicit resume approval + reason
+- risk-gated execution integration (fail-closed when risk evaluation cannot complete)
+
+Primary backend modules:
+
+```text
+backend/app/agents/guardian.py
+backend/app/risk/models.py
+backend/app/risk/drawdown_guard.py
+backend/app/risk/halt_flag.py
+backend/app/risk/kill_switch.py
+backend/app/risk/guardian_service.py
+backend/app/api/risk.py
+backend/app/trading/execution_engine.py
+```
+
+Drawdown formulas:
+
+```text
+total_drawdown_percent = ((peak_equity - current_equity) / peak_equity) * 100
+daily_drawdown_percent = ((daily_start_equity - current_equity) / daily_start_equity) * 100
+```
+
+Key safety defaults:
+
+- `DRY_RUN=true`
+- `LIVE_TRADING_ACK=false`
+- `RISK_GUARDIAN_ENABLED=true`
+- emergency kill switch default threshold: `50`
+- active halt blocks execution, including dry-run execution requests
+
+Risk API examples:
+
+```bash
+curl -X POST http://localhost:8004/api/risk/check \
+  -H "Content-Type: application/json" \
+  -d '{
+    "balance": 10000,
+    "equity": 9500,
+    "peak_equity": 10000,
+    "daily_start_equity": 10000,
+    "open_positions": 0,
+    "floating_pnl": -500,
+    "realized_pnl_today": -500
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8004/api/risk/halt \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Manual operator halt"}'
+```
+
+```bash
+curl -X POST http://localhost:8004/api/risk/resume \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "Reviewed and safe for dry-run resume", "approved": true}'
+```
+
+Phase 03 validation commands:
+
+```bash
+cd backend && pytest
+cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
+
+---
+
 ## Cloudflare Support Domain
 
 `zdash.zeaz.dev` is the supported public domain for zDash.

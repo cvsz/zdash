@@ -24,6 +24,7 @@ def test_get_risk_status() -> None:
     body = risk.status()
     assert_envelope(body)
     assert 'guardian_enabled' in body['data']
+    assert 'current_risk_status' in body['data']
 
 
 def test_post_risk_check() -> None:
@@ -36,12 +37,20 @@ def test_post_risk_check() -> None:
 def test_post_halt_and_resume() -> None:
     reset_guardian_service()
     halt_response = risk.halt(risk.HaltRequest(reason='Manual operator halt'))
-    resume_response = risk.resume(risk.HaltRequest(reason='Reviewed and safe for dry-run resume'))
+    resume_response = risk.resume(risk.ResumeRequest(reason='Reviewed and safe for dry-run resume', approved=True))
 
     assert halt_response['ok'] is True
     assert resume_response['ok'] is True
     assert halt_response['data']['halt_state']['halted'] is True
     assert resume_response['data']['halt_state']['halted'] is False
+
+
+def test_post_resume_requires_explicit_approval() -> None:
+    reset_guardian_service()
+    risk.halt(risk.HaltRequest(reason='Manual operator halt'))
+    resume_response = risk.resume(risk.ResumeRequest(reason='Reviewed and safe for dry-run resume', approved=False))
+    assert resume_response['ok'] is False
+    assert resume_response['error']['code'] == 'RISK_RESUME_INVALID'
 
 
 def test_post_approve_execution() -> None:

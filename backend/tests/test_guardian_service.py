@@ -46,6 +46,6 @@ def test_manual_halt_blocks() -> None:
 def test_resume_allows_again_if_risk_normal() -> None:
     service = GuardianService()
     service.halt('manual halt', source='manual')
-    service.resume('safe again')
+    service.resume('safe again', approved=True)
     decision = service.check(_snapshot(10000.0))
     assert decision.approved is True
