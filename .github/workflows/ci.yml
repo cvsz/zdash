@@ -53,11 +53,7 @@ jobs:
       - name: Install frontend dependencies
         run: |
           cd frontend
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          npm install --legacy-peer-deps --no-audit --fund=false
 
       - name: Run frontend tests
         run: |
