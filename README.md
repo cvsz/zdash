@@ -110,6 +110,8 @@ backend/pyproject.toml
 backend/requirements.txt
 frontend/package.json
 frontend/.npmrc
+frontend/tsconfig.json
+frontend/tsconfig.build.json
 infra/docker/backend.Dockerfile
 infra/docker/frontend.Dockerfile
 ```
@@ -169,11 +171,13 @@ pytest
 ```bash
 cd frontend
 npm install --legacy-peer-deps --no-audit --fund=false
-npm test -- --run
+npm test
 npm run build
 ```
 
 `frontend/.npmrc` intentionally sets `legacy-peer-deps=true` while the current Vite/plugin dependency graph is being stabilized. Do not remove it unless the lockfile and dependency graph are intentionally repaired.
+
+`npm test` already runs Vitest in one-shot mode through `vitest --run --passWithNoTests`; do not call `npm test -- --run` because that passes `--run` twice and fails on newer Vitest.
 
 ---
 
@@ -221,7 +225,7 @@ Frontend:
 ```bash
 cd frontend
 npm install --legacy-peer-deps --no-audit --fund=false
-npm test -- --run
+npm test
 npm run build
 ```
 
@@ -333,7 +337,7 @@ FROM=26 TO=32 ./scripts/run-prompt-phases.sh
 Full validation override:
 
 ```bash
-VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d frontend ]; then cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test -- --run && npm run build && cd ..; fi' FROM=1 TO=32 ./scripts/run-prompt-phases.sh
+VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d frontend ]; then cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build && cd ..; fi' FROM=1 TO=32 ./scripts/run-prompt-phases.sh
 ```
 
 ---
@@ -417,6 +421,7 @@ Rules:
 - Provider integrations must be optional and mock-safe.
 - Missing optional providers must not crash the app.
 - New APIs should use the standard response shape when possible.
+- Structured event details should be stored in event `payload`; event `message` must stay human-readable.
 
 Standard response shape:
 
@@ -460,9 +465,15 @@ Commands:
 ```bash
 cd frontend
 npm install --legacy-peer-deps --no-audit --fund=false
-npm test -- --run
+npm test
 npm run build
 ```
+
+Build/test split:
+
+- `npm test` runs Vitest with the `--run` flag already defined in `frontend/package.json`.
+- `npm run build` uses `frontend/tsconfig.build.json` so production builds do not compile `src/tests/**`.
+- Frontend CI should run `npx tsc -p tsconfig.build.json`, `npm test`, then `npm run build`.
 
 Rules:
 
@@ -504,6 +515,7 @@ Rules:
 - Images must build without real provider credentials.
 - Backend image should remain compatible with `backend/requirements.txt`.
 - Frontend image should follow current npm peer-dependency policy.
+- Frontend Docker build runs `npm run build`; keep `tsconfig.build.json` test exclusions intact.
 
 ---
 
@@ -526,10 +538,40 @@ CI policy:
 
 - backend installs from `backend/pyproject.toml` first, with `backend/requirements.txt` compatibility where needed
 - frontend installs with `npm install --legacy-peer-deps --no-audit --fund=false`
+- frontend tests run with `npm test`, not `npm test -- --run`
+- frontend production build uses `tsconfig.build.json` so tests are excluded from `tsc`
 - security audits may be non-blocking only when the workflow explicitly marks them non-blocking
 - secret scans must remain blocking for real secret patterns
 
 If CI fails, inspect the exact workflow/job log first. Fix source/config root cause. Do not delete tests or weaken safety gates to force green CI.
+
+### CI Troubleshooting Notes
+
+Common known failure patterns and fixes:
+
+```text
+Error: Expected a single value for option "--run"
+```
+
+Use `npm test` only. The package script already includes `vitest --run`.
+
+```text
+Cannot find name 'test' / Cannot find name 'expect'
+```
+
+Do not compile test files during production build. Use `tsconfig.build.json` for `npm run build` and keep tests under `src/tests/**` or `*.test.tsx`.
+
+```text
+Input should be a valid string for Event.message
+```
+
+Keep `Event.message` as a string and put structured data in `Event.payload`.
+
+```text
+Can't instantiate abstract class EditorAgent
+```
+
+All agents extending `BaseAgent` must implement abstract methods and call `BaseAgent.__init__()`.
 
 ---
 
@@ -613,6 +655,7 @@ Provider adapters must fail safely when:
 - `docs/prompt/` is the source of truth for phase-specific work.
 - Some blueprint phases may be prompt-only until implemented by Codex/agents.
 - The existing app should remain safe in mock/dry-run mode even when optional providers are missing.
+- Frontend tests and frontend production builds intentionally use separate TypeScript config paths.
 
 ---
 
