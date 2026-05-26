@@ -19,6 +19,18 @@ from app.core.config import get_settings
 from app.core.events import Event, event_bus
 
 
+CANONICAL_AGENT_ROSTER = [
+    {'id': 'ceo', 'display_name': 'Alexander Prime', 'title': 'CEO • Visionary Leader', 'tier': 'legendary', 'legacy_name': 'CEO'},
+    {'id': 'janie', 'display_name': 'Sophia Lane', 'title': 'Coordinator • Manager', 'tier': 'epic', 'legacy_name': 'Janie'},
+    {'id': 'guardian', 'display_name': 'Victor Hale', 'title': 'Risk Manager', 'tier': 'epic', 'legacy_name': 'Guardian'},
+    {'id': 'friday', 'display_name': 'Isla Grant', 'title': 'Scheduler • Automation', 'tier': 'rare', 'legacy_name': 'Friday'},
+    {'id': 'joe', 'display_name': 'Nathan Cole', 'title': 'Analyst • Developer', 'tier': 'rare', 'legacy_name': 'Joe'},
+    {'id': 'editor', 'display_name': 'Elena Voss', 'title': 'Content Specialist', 'tier': 'epic', 'legacy_name': 'Editor'},
+    {'id': 'graphic', 'display_name': 'Julian Reed', 'title': 'Design Specialist', 'tier': 'epic', 'legacy_name': 'Graphic'},
+    {'id': 'social', 'display_name': 'Maya Quinn', 'title': 'Social Media Specialist', 'tier': 'epic', 'legacy_name': 'Social'},
+]
+
+
 class MessageRequest(BaseModel):
     from_agent: str
     to_agent: str
@@ -129,4 +141,12 @@ def bootstrap_agents() -> None:
     registry.register(graphic)
     registry.register(social)
 
-    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'friday', 'joe', 'editor', 'graphic', 'social']})
+    event_bus.emit(
+        'system.startup',
+        'system',
+        'Sophia Lane runtime bootstrapped',
+        {
+            'agents': ['ceo', 'janie', 'guardian', 'friday', 'joe', 'editor', 'graphic', 'social'],
+            'canonical_roster': CANONICAL_AGENT_ROSTER,
+        },
+    )
