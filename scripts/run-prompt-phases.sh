@@ -56,6 +56,26 @@ run_validate() {
     return "${PIPESTATUS[0]}"
   fi
 
+  if [ -d backend ] && command -v pytest >/dev/null 2>&1; then
+    echo "VALIDATE: backend pytest"
+    (
+      cd backend
+      pytest
+    ) 2>&1 | tee "$LOG_DIR/${phase}.validate.log"
+    return "${PIPESTATUS[0]}"
+  fi
+
+  if [ -d frontend ] && [ -f frontend/package.json ] && command -v npm >/dev/null 2>&1; then
+    echo "VALIDATE: frontend npm install/test/build"
+    (
+      cd frontend
+      npm install --legacy-peer-deps --no-audit --fund=false
+      npm test -- --run
+      npm run build
+    ) 2>&1 | tee -a "$LOG_DIR/${phase}.validate.log"
+    return "${PIPESTATUS[0]}"
+  fi
+
   if [ -f package.json ]; then
     node -e '
       const p=require("./package.json");

@@ -19,3 +19,8 @@ def health() -> dict:
             'timestamp': datetime.now(timezone.utc).isoformat(),
         }
     )
+
+
+@router.get('/api/health')
+def health_api_alias() -> dict:
+    return health()
