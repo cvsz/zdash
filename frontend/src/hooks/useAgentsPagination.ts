@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 export const AGENTS_PAGE_SIZE_OPTIONS = [6, 9, 12, 24] as const;
 export type AgentsPageSize = (typeof AGENTS_PAGE_SIZE_OPTIONS)[number];
 
-const DEFAULT_PAGE_SIZE: AgentsPageSize = 6;
+const DEFAULT_PAGE_SIZE: AgentsPageSize = 9;
 const STORAGE_KEY = 'zdash-agents-per-page';
 
 export function getInitialAgentsPageSize(): AgentsPageSize {
