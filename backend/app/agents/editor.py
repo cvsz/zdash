@@ -11,7 +11,15 @@ class EditorAgent(BaseAgent):
     name = 'Editor'
     role = 'content_editor'
 
+    def __init__(self) -> None:
+        super().__init__(agent_id=self.id, name=self.name, role=self.role)
+
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+        self.emit_event(
+            'agent.message.received',
+            'Editor agent received message',
+            {'from_agent': message.from_agent, 'message': message.message},
+        )
         response = self.run_task(task=message.message, context=message.context)
         return {
             'to': message.from_agent,
