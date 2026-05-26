@@ -12,6 +12,9 @@ on:
 jobs:
   test-frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +27,11 @@ jobs:
       - name: Install dependencies
         run: |
           cd frontend
-          npm install
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: TypeScript check
         run: |
@@ -35,6 +42,11 @@ jobs:
         run: |
           cd frontend
           if npm run | grep -q " lint"; then npm run lint; else echo "lint script not configured"; fi
+
+      - name: Test
+        run: |
+          cd frontend
+          npm test -- --run
 
       - name: Build
         run: |
