@@ -58,7 +58,7 @@ run_step() {
 
 status=0
 
-printf '\n[0/5] Backend dependency repair\n'
+printf '\n[0/6] Backend dependency repair\n'
 if [ -d "backend" ] && [ -f ".codex/cloud/repair-backend-deps.sh" ]; then
   run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
 elif [ -d "backend" ]; then
@@ -67,7 +67,7 @@ else
   echo "No backend directory found." | tee -a "$REPORT"
 fi
 
-printf '\n[1/5] Backend tests\n'
+printf '\n[1/6] Backend tests\n'
 if [ -d "backend" ]; then
   cd backend
   if [ -d ".venv" ]; then
@@ -80,7 +80,16 @@ else
   echo "No backend directory found." | tee -a "$REPORT"
 fi
 
-printf '\n[2/5] Frontend tests\n'
+printf '\n[2/6] Frontend dependency install\n'
+if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+  cd frontend
+  run_step "frontend dependency install" npm install --legacy-peer-deps --no-audit --fund=false || status=1
+  cd "$ROOT_DIR"
+else
+  echo "No frontend package found." | tee -a "$REPORT"
+fi
+
+printf '\n[3/6] Frontend tests\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
   run_step "frontend tests" npm test -- --run || status=1
@@ -89,7 +98,7 @@ else
   echo "No frontend package found." | tee -a "$REPORT"
 fi
 
-printf '\n[3/5] Frontend build\n'
+printf '\n[4/6] Frontend build\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   cd frontend
   run_step "frontend build" npm run build || status=1
@@ -98,7 +107,7 @@ else
   echo "No frontend package found." | tee -a "$REPORT"
 fi
 
-printf '\n[4/5] Basic secret-pattern scan\n'
+printf '\n[5/6] Basic secret-pattern scan\n'
 {
   echo
   echo "## Basic secret-pattern scan"
@@ -112,6 +121,6 @@ printf '\n[4/5] Basic secret-pattern scan\n'
   echo '```'
 } >> "$REPORT"
 
-printf '\n[5/5] Result\n'
+printf '\n[6/6] Result\n'
 echo "Maintenance complete: $REPORT"
 exit "$status"
