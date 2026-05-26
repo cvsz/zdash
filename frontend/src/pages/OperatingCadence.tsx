@@ -1,0 +1,1 @@
+export default function OperatingCadence() { return <div className='p-4'><h1 className='text-xl font-semibold'>OperatingCadence</h1><p>Advisory-only planning surface. Human approval required for all changes.</p></div>; }
