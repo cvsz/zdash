@@ -1,13 +1,34 @@
-from pydantic import BaseModel
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field
+
+IoTActionName = Literal['status', 'turn_on', 'turn_off', 'power_cycle']
 
 
-class IoTActionRequest(BaseModel):
-    action: str
+class IoTAction(BaseModel):
+    device_alias: str = 'zdash-power-node'
+    action: IoTActionName
     confirmation: bool = False
+    payload: dict[str, Any] = Field(default_factory=dict)
 
 
 class IoTActionResult(BaseModel):
     ok: bool
-    action: str
     dry_run: bool
-    reason: str
+    device_alias: str
+    action: IoTActionName
+    message: str
+    output: dict[str, Any] = Field(default_factory=dict)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class IoTActionRequest(IoTAction):
+    """Backward-compatible alias used by earlier API layer."""
+
+
+class IoTPowerCycleRequest(BaseModel):
+    device_alias: str = 'zdash-power-node'
+    confirmation: bool = False

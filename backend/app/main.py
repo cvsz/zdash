@@ -13,6 +13,7 @@ from app.core.events import event_bus
 from app.core.logging import configure_logging
 from app.core.responses import fail
 from app.db.migrations import run_migrations
+from app.scheduler.scheduler_service import get_scheduler_service
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -23,8 +24,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(_: FastAPI):
     run_migrations()
     bootstrap_agents()
+    scheduler_service = get_scheduler_service()
+    scheduler_service.start()
     event_bus.emit('system.startup', 'app.main', 'FastAPI startup complete', {})
     yield
+    scheduler_service.stop()
 
 
 app = FastAPI(title='Janie Server', version='2.0.0-phase7', lifespan=lifespan)

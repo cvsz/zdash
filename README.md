@@ -516,6 +516,92 @@ docker build -f infra/docker/frontend.Dockerfile .
 
 ---
 
+## Phase 04 Automation
+
+Phase 04 adds automation foundations around Scheduler, Friday, and IoT shells:
+
+- Friday automation coordinator agent (`id=friday`, `role=automation_coordinator`)
+- scheduler service with in-memory job store and run history
+- interval/cron/manual job support
+- safe predefined jobs (`health_check`, `risk_check`, `trading_scan`, placeholders for `backtest`/`content_pipeline`, and disabled-by-default `iot_power_cycle`)
+- Tapo adapter shell and IoT service with dry-run-first behavior
+- Windows NSSM install/uninstall guidance scripts
+
+Scheduler architecture (Phase 04):
+
+```text
+FridayAgent -> SchedulerService -> InMemoryJobStore
+                              -> Job handlers (risk/trading/iot/health/mock)
+                              -> Event bus audit trail
+```
+
+Safety rules:
+
+- Scheduler never bypasses Guardian/halt checks for trading jobs.
+- Active risk halt causes trading jobs to return `blocked_by_risk`/skipped output.
+- `IOT_DRY_RUN=true` by default.
+- Real IoT actions require explicit confirmation when `IOT_REQUIRE_CONFIRMATION=true`.
+- Adapter shell keeps real destructive IoT actions blocked in this phase.
+
+Phase 04 API examples:
+
+```bash
+curl http://localhost:8005/api/scheduler/status
+```
+
+```bash
+curl http://localhost:8005/api/scheduler/jobs
+```
+
+```bash
+curl -X POST http://localhost:8005/api/scheduler/jobs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Manual XAU scan",
+    "job_type": "trading_scan",
+    "schedule_type": "manual",
+    "payload": {
+      "symbol": "XAUUSD",
+      "timeframe": "M5",
+      "dry_run": true
+    },
+    "enabled": true
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8005/api/scheduler/jobs/JOB_ID/run
+```
+
+```bash
+curl http://localhost:8005/api/iot/status
+```
+
+```bash
+curl -X POST http://localhost:8005/api/iot/power-cycle \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_alias": "zdash-power-node",
+    "confirmation": false
+  }'
+```
+
+Windows NSSM scripts:
+
+- `scripts/install-nssm-service.ps1`
+- `scripts/uninstall-nssm-service.ps1`
+
+Phase 04 validation commands:
+
+```bash
+cd backend && pytest
+cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
+
+---
+
 ## Cloudflare Support Domain
 
 `zdash.zeaz.dev` is the supported public domain for zDash.

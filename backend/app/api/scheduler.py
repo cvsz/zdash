@@ -1,103 +1,93 @@
-from datetime import datetime, timezone
+from __future__ import annotations
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel, Field
+from fastapi import APIRouter
 
-from app.backtesting.backtest_service import backtest_service
-from app.backtesting.models import BacktestRequest
-from app.content.models import CreateContentRequest
-from app.content.pipeline import content_pipeline
-from app.core.audit import audit
-from app.core.auth import CurrentUser, require_roles
 from app.core.observability import scheduler_job_total
 from app.core.responses import fail, ok
-from app.iot.tapo_adapter import TapoAdapter
-from app.scheduler.jobs import scheduler_service
-from app.trading.scanner_xau import XAUScanner
+from app.scheduler import CreateJobRequest
+from app.scheduler.job_store import JobNotFoundError
+from app.scheduler.scheduler_service import get_scheduler_service
 
 router = APIRouter(prefix='/api/scheduler', tags=['scheduler'])
 
-scanner = XAUScanner()
-tapo = TapoAdapter()
+
+def _service():
+    return get_scheduler_service()
 
 
-class JobCreateRequest(BaseModel):
-    name: str = Field(min_length=2)
-    interval_seconds: int = Field(ge=5)
-
-
-def _resolve_job(name: str):
-    if name == 'trading_scan':
-        return lambda: {'signal': scanner.scan().model_dump()}
-    if name == 'risk_check':
-        return lambda: {'status': 'risk_check_scheduled'}
-    if name == 'backtest':
-        return lambda: {'result': backtest_service.run_backtest(BacktestRequest(strategy='ob_aggressive', symbol='XAUUSD', timeframe='M5', dataset='mock', initial_balance=10000, risk_per_trade_percent=1, parameters={})).model_dump()}
-    if name == 'content_pipeline':
-        return lambda: {'pipeline': content_pipeline.run_full_pipeline(CreateContentRequest(topic='zDash weekly system update', content_type='announcement', brand='zDash', language='en', tone='professional', platforms=['x','linkedin'], context={'source':'scheduler','approval_required':True,'dry_run':True})).model_dump()}
-    if name == 'health_check':
-        return lambda: {'status': 'ok', 'timestamp': datetime.now(timezone.utc).isoformat()}
-    if name == 'iot_power_cycle':
-        return tapo.power_cycle
-    return None
+@router.get('/status')
+def status() -> dict:
+    return ok({'scheduler': _service().get_status()})
 
 
 @router.get('/jobs')
-def list_jobs(current_user: CurrentUser = Depends(require_roles('admin', 'operator', 'analyst', 'viewer'))):
-    return ok({'jobs': scheduler_service.list_jobs()})
+def list_jobs() -> dict:
+    jobs = [job.model_dump(mode='json') for job in _service().list_jobs()]
+    return ok({'jobs': jobs})
 
 
 @router.post('/jobs')
-def create_job(req: JobCreateRequest, current_user: CurrentUser = Depends(require_roles('admin', 'operator'))):
-    fn = _resolve_job(req.name)
-    if fn is None:
-        return fail('UNKNOWN_JOB', f'Unsupported job: {req.name}')
-    job = scheduler_service.register_job(req.name, req.interval_seconds, fn)
+def create_job(req: CreateJobRequest) -> dict:
+    try:
+        job = _service().create_job(req)
+    except ValueError as exc:
+        return fail('SCHEDULER_JOB_INVALID', str(exc))
     scheduler_job_total.labels(action='create').inc()
-    audit('scheduler_create_job', current_user.username, current_user.role, target=job.id, detail=req.model_dump())
-    return ok({'job': job.__dict__})
+    return ok({'job': job.model_dump(mode='json')})
 
 
 @router.post('/jobs/{job_id}/run')
-def run_job(job_id: str, current_user: CurrentUser = Depends(require_roles('admin', 'operator'))):
+def run_job(job_id: str) -> dict:
     try:
-        result = scheduler_service.run_job(job_id)
+        result = _service().run_job(job_id, manual=True)
+    except JobNotFoundError as exc:
+        return fail('SCHEDULER_JOB_NOT_FOUND', str(exc))
     except Exception as exc:
-        return fail('JOB_RUN_FAILED', str(exc))
+        return fail('SCHEDULER_JOB_RUN_FAILED', str(exc))
     scheduler_job_total.labels(action='run').inc()
-    audit('scheduler_run_job', current_user.username, current_user.role, target=job_id, detail={'result': result})
-    return ok({'result': result})
+    return ok({'result': result.model_dump(mode='json')})
 
 
 @router.post('/jobs/{job_id}/pause')
-def pause_job(job_id: str, current_user: CurrentUser = Depends(require_roles('admin', 'operator'))):
+def pause_job(job_id: str) -> dict:
     try:
-        job = scheduler_service.pause_job(job_id)
+        job = _service().pause_job(job_id)
+    except JobNotFoundError as exc:
+        return fail('SCHEDULER_JOB_NOT_FOUND', str(exc))
     except Exception as exc:
-        return fail('JOB_PAUSE_FAILED', str(exc))
+        return fail('SCHEDULER_JOB_PAUSE_FAILED', str(exc))
     scheduler_job_total.labels(action='pause').inc()
-    audit('scheduler_pause_job', current_user.username, current_user.role, target=job_id)
-    return ok({'job': job.__dict__})
+    return ok({'job': job.model_dump(mode='json')})
 
 
 @router.post('/jobs/{job_id}/resume')
-def resume_job(job_id: str, current_user: CurrentUser = Depends(require_roles('admin', 'operator'))):
+def resume_job(job_id: str) -> dict:
     try:
-        job = scheduler_service.resume_job(job_id)
+        job = _service().resume_job(job_id)
+    except JobNotFoundError as exc:
+        return fail('SCHEDULER_JOB_NOT_FOUND', str(exc))
     except Exception as exc:
-        return fail('JOB_RESUME_FAILED', str(exc))
+        return fail('SCHEDULER_JOB_RESUME_FAILED', str(exc))
     scheduler_job_total.labels(action='resume').inc()
-    audit('scheduler_resume_job', current_user.username, current_user.role, target=job_id)
-    return ok({'job': job.__dict__})
+    return ok({'job': job.model_dump(mode='json')})
 
 
-@router.get('/iot/connectivity')
-def iot_connectivity(current_user: CurrentUser = Depends(require_roles('admin', 'operator', 'analyst', 'viewer'))):
-    return ok({'iot': tapo.connectivity_test()})
+@router.delete('/jobs/{job_id}')
+def delete_job(job_id: str) -> dict:
+    deleted = _service().delete_job(job_id)
+    if not deleted:
+        return fail('SCHEDULER_JOB_NOT_FOUND', f'Unknown job: {job_id}')
+    scheduler_job_total.labels(action='delete').inc()
+    return ok({'deleted': True, 'job_id': job_id})
 
 
-@router.post('/iot/power-cycle')
-def iot_power_cycle(current_user: CurrentUser = Depends(require_roles('admin', 'operator'))):
-    result = tapo.power_cycle()
-    audit('iot_power_cycle', current_user.username, current_user.role, detail=result)
-    return ok({'result': result})
+@router.get('/runs')
+def list_runs() -> dict:
+    runs = [run.model_dump(mode='json') for run in _service().list_runs()]
+    return ok({'runs': runs})
+
+
+@router.get('/runs/{job_id}')
+def list_runs_for_job(job_id: str) -> dict:
+    runs = [run.model_dump(mode='json') for run in _service().list_runs(job_id=job_id)]
+    return ok({'runs': runs, 'job_id': job_id})

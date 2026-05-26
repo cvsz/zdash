@@ -104,15 +104,17 @@ registry = AgentRegistry()
 
 
 def bootstrap_agents() -> None:
-    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('joe') and registry.get('editor') and registry.get('graphic') and registry.get('social'):
+    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('friday') and registry.get('joe') and registry.get('editor') and registry.get('graphic') and registry.get('social'):
         return
 
     ceo = registry.get('ceo') or CEOAgent()
     janie = registry.get('janie') or JanieAgent(ai_adapter=build_default_ai_adapter())
 
     from app.risk.guardian_service import get_guardian_agent
+    from app.scheduler.friday_agent import get_friday_agent
 
     guardian = registry.get('guardian') or get_guardian_agent()
+    friday = registry.get('friday') or get_friday_agent()
     joe = registry.get('joe') or JoeAgent()
     editor = registry.get('editor') or EditorAgent()
     graphic = registry.get('graphic') or GraphicAgent()
@@ -121,9 +123,10 @@ def bootstrap_agents() -> None:
     registry.register(ceo)
     registry.register(janie)
     registry.register(guardian)
+    registry.register(friday)
     registry.register(joe)
     registry.register(editor)
     registry.register(graphic)
     registry.register(social)
 
-    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'joe', 'editor', 'graphic', 'social']})
+    event_bus.emit('system.startup', 'system', 'Janie runtime bootstrapped', {'agents': ['ceo', 'janie', 'guardian', 'friday', 'joe', 'editor', 'graphic', 'social']})

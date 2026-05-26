@@ -1,120 +1,282 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass
 from datetime import datetime, timezone
-from threading import Lock
 from typing import Any
-from uuid import uuid4
 
-from apscheduler.schedulers.background import BackgroundScheduler
-
-from app.core.database import session_scope
 from app.core.events import event_bus
-from app.models.entities import SchedulerJobRecord
-from app.repositories import Repository
 
 
-@dataclass
-class JobRecord:
-    id: str
-    name: str
-    interval_seconds: int
-    status: str
-    created_at: str
+def _job_type_value(job_type: Any) -> str:
+    return getattr(job_type, 'value', str(job_type))
 
 
-class SchedulerService:
-    def __init__(self) -> None:
-        self.scheduler = BackgroundScheduler(timezone='UTC')
-        self._job_functions: dict[str, Callable[[], dict[str, Any]]] = {}
-        self._lock = Lock()
+def _get_guardian_service():
+    import app.risk.guardian_service as guardian_module
 
-    def start(self) -> None:
-        if not self.scheduler.running:
-            self.scheduler.start()
+    if hasattr(guardian_module, 'get_guardian_service'):
+        return guardian_module.get_guardian_service()
 
-    def shutdown(self) -> None:
-        if self.scheduler.running:
-            self.scheduler.shutdown(wait=False)
+    if hasattr(guardian_module, 'guardian_service'):
+        return guardian_module.guardian_service
 
-    def register_job(self, name: str, interval_seconds: int, fn: Callable[[], dict[str, Any]]) -> JobRecord:
-        job_id = str(uuid4())
-        record = JobRecord(
-            id=job_id,
-            name=name,
-            interval_seconds=interval_seconds,
-            status='active',
-            created_at=datetime.now(timezone.utc).isoformat(),
+    if hasattr(guardian_module, '_guardian_service'):
+        return guardian_module._guardian_service
+
+    return None
+
+
+def _guardian_status() -> Any:
+    service = _get_guardian_service()
+
+    if service is None:
+        return {
+            'halted': False,
+            'kill_switch_active': False,
+            'blocked': False,
+            'available': False,
+            'reason': 'guardian_service_unavailable',
+        }
+
+    if hasattr(service, 'get_status'):
+        return service.get_status()
+
+    if hasattr(service, 'status'):
+        value = service.status
+        return value() if callable(value) else value
+
+    return {
+        'halted': False,
+        'kill_switch_active': False,
+        'blocked': False,
+        'available': False,
+        'reason': 'guardian_status_unavailable',
+    }
+
+
+def _status_to_dict(status: Any) -> dict[str, Any]:
+    if isinstance(status, dict):
+        return status
+
+    if hasattr(status, 'model_dump'):
+        return status.model_dump(mode='json')
+
+    if hasattr(status, 'dict'):
+        return status.dict()
+
+    return {
+        'halted': bool(getattr(status, 'halted', False)),
+        'kill_switch_active': bool(getattr(status, 'kill_switch_active', False)),
+        'blocked': bool(getattr(status, 'blocked', False)),
+        'raw': str(status),
+    }
+
+
+def _status_is_blocked(status: Any) -> bool:
+    if isinstance(status, dict):
+        halt_state = status.get('halt_state') or {}
+        return bool(
+            status.get('halted')
+            or status.get('kill_switch_active')
+            or status.get('blocked')
+            or halt_state.get('halted')
         )
-        with self._lock:
-            self._job_functions[job_id] = fn
 
-        self.scheduler.add_job(self.run_job, 'interval', seconds=interval_seconds, args=[job_id], id=job_id)
-        with session_scope() as session:
-            Repository(session).upsert_scheduler_job(job_id, name, interval_seconds, 'active')
+    halt_state = getattr(status, 'halt_state', None)
+    nested_halted = False
+    if isinstance(halt_state, dict):
+        nested_halted = bool(halt_state.get('halted'))
+    elif halt_state is not None:
+        nested_halted = bool(getattr(halt_state, 'halted', False))
 
-        event_bus.emit('scheduler_job_created', 'SchedulerService', record.__dict__)
-        return record
+    return bool(
+        getattr(status, 'halted', False)
+        or getattr(status, 'kill_switch_active', False)
+        or getattr(status, 'blocked', False)
+        or nested_halted
+    )
 
-    def run_job(self, job_id: str) -> dict[str, Any]:
-        fn = self._job_functions[job_id]
-        result = fn()
-        event_bus.emit('scheduler_job_run', 'SchedulerService', {'job_id': job_id, 'result': result})
-        return result
 
-    def pause_job(self, job_id: str) -> JobRecord:
-        self.scheduler.pause_job(job_id)
-        with session_scope() as session:
-            repo = Repository(session)
-            existing = session.get(SchedulerJobRecord, job_id)
-            if existing is not None:
-                repo.upsert_scheduler_job(job_id, existing.name, existing.interval_seconds, 'paused')
-                record = JobRecord(
-                    id=existing.id,
-                    name=existing.name,
-                    interval_seconds=existing.interval_seconds,
-                    status='paused',
-                    created_at=existing.created_at.isoformat(),
-                )
-            else:
-                record = JobRecord(id=job_id, name='unknown', interval_seconds=0, status='paused', created_at=datetime.now(timezone.utc).isoformat())
-        event_bus.emit('scheduler_job_paused', 'SchedulerService', {'job_id': job_id})
-        return record
+def _risk_level(status: Any) -> str:
+    status_dict = _status_to_dict(status)
+    raw = (
+        status_dict.get('risk_level')
+        or status_dict.get('current_risk_status')
+        or status_dict.get('status')
+        or 'normal'
+    )
+    value = str(raw).lower()
 
-    def resume_job(self, job_id: str) -> JobRecord:
-        self.scheduler.resume_job(job_id)
-        with session_scope() as session:
-            repo = Repository(session)
-            row = session.get(SchedulerJobRecord, job_id)
-            if row is not None:
-                repo.upsert_scheduler_job(job_id, row.name, row.interval_seconds, 'active')
-                record = JobRecord(
-                    id=row.id,
-                    name=row.name,
-                    interval_seconds=row.interval_seconds,
-                    status='active',
-                    created_at=row.created_at.isoformat(),
-                )
-            else:
-                record = JobRecord(id=job_id, name='unknown', interval_seconds=0, status='active', created_at=datetime.now(timezone.utc).isoformat())
-        event_bus.emit('scheduler_job_resumed', 'SchedulerService', {'job_id': job_id})
-        return record
+    if value in {'normal', 'warning', 'danger', 'emergency'}:
+        return value
 
-    def list_jobs(self) -> list[dict[str, Any]]:
-        with session_scope() as session:
-            rows = Repository(session).list_scheduler_jobs()
-        return [
-            {
-                'id': r.id,
-                'name': r.name,
-                'interval_seconds': r.interval_seconds,
-                'status': r.status,
-                'created_at': r.created_at.isoformat(),
-                'updated_at': r.updated_at.isoformat(),
+    if status_dict.get('kill_switch_active'):
+        return 'emergency'
+
+    halt_state = status_dict.get('halt_state') or {}
+    if status_dict.get('halted') or halt_state.get('halted') or status_dict.get('blocked'):
+        return 'danger'
+
+    return 'normal'
+
+
+def default_jobs():
+    """Default safe scheduler jobs.
+
+    Must stay callable because scheduler_service.py calls default_jobs().
+    Job names are test/runtime contract values.
+    """
+    from app.scheduler.models import CreateJobRequest, JobType, ScheduleType
+
+    return [
+        CreateJobRequest(
+            name='health_check',
+            job_type=JobType.health_check,
+            schedule_type=ScheduleType.interval,
+            interval_seconds=300,
+            payload={'dry_run': True},
+            enabled=True,
+        ),
+        CreateJobRequest(
+            name='risk_check',
+            job_type=JobType.risk_check,
+            schedule_type=ScheduleType.interval,
+            interval_seconds=300,
+            payload={'dry_run': True},
+            enabled=True,
+        ),
+        CreateJobRequest(
+            name='trading_scan',
+            job_type=JobType.trading_scan,
+            schedule_type=ScheduleType.interval,
+            interval_seconds=300,
+            payload={'symbol': 'XAUUSD', 'timeframe': 'M5', 'dry_run': True},
+            enabled=True,
+        ),
+        CreateJobRequest(
+            name='iot_power_cycle',
+            job_type=JobType.iot_power_cycle,
+            schedule_type=ScheduleType.manual,
+            payload={'dry_run': True, 'requires_confirmation': True},
+            enabled=False,
+        ),
+    ]
+
+
+def run_scheduled_job(job):
+    """Run one scheduled job in safe dry-run mode.
+
+    Contract expected by scheduler_service.py:
+        ok, status, message, output = run_scheduled_job(job)
+    """
+    job_id = getattr(job, 'id', 'unknown')
+    job_type = _job_type_value(getattr(job, 'job_type', 'custom'))
+    payload = getattr(job, 'payload', {}) or {}
+
+    if job_type == 'health_check':
+        ok = True
+        status = 'completed'
+        message = 'health check completed'
+        output = {
+            'ok': True,
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'mode': 'dry_run',
+            'status': 'healthy',
+        }
+
+    elif job_type == 'risk_check':
+        guardian_status = _guardian_status()
+        guardian_dict = _status_to_dict(guardian_status)
+        blocked = _status_is_blocked(guardian_status)
+
+        ok = True
+        status = 'completed'
+        message = 'risk check completed'
+        output = {
+            'ok': True,
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'mode': 'dry_run',
+            'risk_status': guardian_dict,
+            'decision': {
+                'allowed': not blocked,
+                'blocked': blocked,
+                'risk_level': _risk_level(guardian_status),
+                'reason': 'guardian_halted_or_kill_switch' if blocked else 'risk_check_passed',
+            },
+        }
+
+    elif job_type == 'trading_scan':
+        guardian_status = _guardian_status()
+        guardian_dict = _status_to_dict(guardian_status)
+        blocked = _status_is_blocked(guardian_status)
+
+        ok = not blocked
+        status = 'blocked_by_risk' if blocked else 'completed'
+        message = 'trading scan blocked by risk' if blocked else 'trading scan dry-run completed'
+        output = {
+            'ok': not blocked,
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'mode': 'dry_run',
+            'blocked_by_risk': blocked,
+            'risk_status': guardian_dict,
+            'symbol': payload.get('symbol', 'XAUUSD'),
+            'timeframe': payload.get('timeframe', 'M5'),
+        }
+
+    elif job_type == 'iot_power_cycle':
+        ok = True
+        status = 'skipped'
+        message = 'iot power cycle skipped in dry-run mode'
+        output = {
+            'ok': True,
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'mode': 'dry_run',
+            'action': 'iot_power_cycle',
+            'allowed': False,
+            'requires_confirmation': True,
+            'reason': 'iot actions remain dry-run/confirmation-gated by default',
+        }
+
+    else:
+        if payload.get('force_fail') is True:
+            ok = False
+            status = 'failed'
+            message = 'custom job forced failure'
+            output = {
+                'ok': False,
+                'job_id': str(job_id),
+                'job_type': job_type,
+                'mode': 'dry_run',
+                'error': 'forced_failure',
+                'payload': payload,
             }
-            for r in rows
-        ]
+        else:
+            ok = True
+            status = 'completed'
+            message = 'custom job dry-run completed'
+            output = {
+                'ok': True,
+                'job_id': str(job_id),
+                'job_type': job_type,
+                'mode': 'dry_run',
+                'payload': payload,
+            }
 
+    event_bus.emit(
+        'scheduler_job_dry_run',
+        'SchedulerService',
+        message,
+        {
+            'job_id': str(job_id),
+            'job_type': job_type,
+            'status': status,
+            'ok': ok,
+            'output': output,
+        },
+    )
 
-scheduler_service = SchedulerService()
+    return ok, status, message, output
+

@@ -91,6 +91,12 @@ class Settings(BaseSettings):
     tapo_password: str = Field(default='', alias='TAPO_PASSWORD')
     tapo_device_ip: str = Field(default='', alias='TAPO_DEVICE_IP')
     tapo_device_alias: str = Field(default='zdash-power-node', alias='TAPO_DEVICE_ALIAS')
+
+    nssm_service_name: str = Field(default='zdash-janie-server', alias='NSSM_SERVICE_NAME')
+    nssm_display_name: str = Field(default='zDash Janie Server', alias='NSSM_DISPLAY_NAME')
+    nssm_description: str = Field(default='zDash Janie Server and Agent Runtime', alias='NSSM_DESCRIPTION')
+    nssm_backend_host: str = Field(default='127.0.0.1', alias='NSSM_BACKEND_HOST')
+    nssm_backend_port: int = Field(default=8005, alias='NSSM_BACKEND_PORT')
     backtesting_enabled: bool = Field(default=True, alias='BACKTESTING_ENABLED')
     backtest_dataset_source: str = Field(default='mock', alias='BACKTEST_DATASET_SOURCE')
     backtest_default_symbol: str = Field(default='XAUUSD', alias='BACKTEST_DEFAULT_SYMBOL')
