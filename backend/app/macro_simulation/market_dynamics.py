@@ -1,1 +1,2 @@
-class Market_dynamics:\n    pass
+class MarketDynamics:
+    pass

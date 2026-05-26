@@ -1,1 +1,2 @@
-class Policy_scenario_service:\n    pass
+class PolicyScenarioService:
+    pass

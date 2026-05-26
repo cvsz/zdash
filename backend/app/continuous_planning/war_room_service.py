@@ -1,1 +1,2 @@
-class War_room_service:\n    pass
+class WarRoomService:
+    pass

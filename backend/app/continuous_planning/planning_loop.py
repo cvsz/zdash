@@ -1,1 +1,2 @@
-class Planning_loop:\n    pass
+class PlanningLoop:
+    pass

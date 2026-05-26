@@ -1,1 +1,2 @@
-class Decision_lineage:\n    pass
+class DecisionLineage:
+    pass

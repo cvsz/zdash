@@ -1,1 +1,2 @@
-class Strategic_tradeoff:\n    pass
+class StrategicTradeoff:
+    pass

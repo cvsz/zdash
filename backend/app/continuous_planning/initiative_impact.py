@@ -1,1 +1,2 @@
-class Initiative_impact:\n    pass
+class InitiativeImpact:
+    pass

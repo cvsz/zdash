@@ -1,1 +1,2 @@
-class Macro_scenario_service:\n    pass
+class MacroScenarioService:
+    pass
