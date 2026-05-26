@@ -39,12 +39,27 @@ Trading-related modules are for **simulation, dry-run, and system testing only**
 
 ---
 
+## Runtime Ports
+
+Default local backend port: **8004**
+
+Common local endpoints:
+
+```text
+Backend health:  http://localhost:8004/health
+Backend API:     http://localhost:8004/api
+Frontend dev:    http://localhost:5173
+```
+
+---
+
 ## Repository Layout
 
 ```text
 .
 ├── AGENTS.md                         # Canonical repo-level coding-agent guide
 ├── README.md                         # Project overview and developer entrypoint
+├── LICENSE                           # MIT License
 ├── .env.example                      # Safe environment template
 ├── .github/workflows/                # CI, frontend CI, security CI
 ├── .codex/cloud/                     # Codex Cloud setup suite
@@ -60,6 +75,7 @@ Important files:
 
 ```text
 AGENTS.md
+LICENSE
 .codex/cloud/README.md
 .codex/cloud/general-custom-instructions.md
 .codex/cloud/setup.sh
@@ -131,7 +147,7 @@ Backend:
 
 ```bash
 cd backend
-uvicorn app.main:app --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
 ```
 
 Frontend:
@@ -144,7 +160,13 @@ npm run dev
 Healthcheck:
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8004/health
+```
+
+Smoke test:
+
+```bash
+./scripts/smoke-test.sh
 ```
 
 ---
@@ -424,6 +446,14 @@ docker build -f infra/docker/backend.Dockerfile .
 docker build -f infra/docker/frontend.Dockerfile .
 ```
 
+Compose:
+
+```bash
+docker compose up --build
+```
+
+Backend container port and host mapping default to `8004`.
+
 Rules:
 
 - Do not bake secrets into images.
@@ -470,6 +500,7 @@ cp .env.example .env
 Safe defaults should keep real actions disabled:
 
 ```env
+BACKEND_PORT=8004
 DRY_RUN=true
 LIVE_TRADING_ACK=false
 RISK_GUARDIAN_ENABLED=true
@@ -541,4 +572,4 @@ Provider adapters must fail safely when:
 
 ## License
 
-No license file is currently declared in this repository. Add a `LICENSE` file before public distribution if required.
+This project is licensed under the MIT License. See `LICENSE`.
