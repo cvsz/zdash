@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -p tsconfig.build.json && vite build",
     "preview": "vite preview",
-    "test": "vitest --passWithNoTests"
+    "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
