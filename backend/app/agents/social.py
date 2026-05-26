@@ -8,22 +8,27 @@ from app.core.events import event_bus
 
 class SocialAgent(BaseAgent):
     id = 'social'
-    name = 'Social'
-    role = 'social_publisher'
+    name = 'Maya Quinn'
+    role = 'social_media_specialist'
 
     def __init__(self) -> None:
-        super().__init__(agent_id=self.id, name=self.name, role=self.role)
+        super().__init__(
+            agent_id=self.id,
+            name=self.name,
+            role=self.role,
+            metadata={'tier': 'epic', 'legacy_name': 'Social'},
+        )
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
         self.emit_event(
             'agent.message.received',
-            'Social agent received message',
+            'Maya Quinn received message',
             {'from_agent': message.from_agent, 'message': message.message},
         )
-        return {'response_text': 'Social agent is ready.', 'agent': self.id}
+        return {'response_text': 'Maya Quinn is ready.', 'agent': self.id}
 
     def run_task(self, task: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        self.emit_event('agent.task.run', 'Social task requested', {'task': task, 'context': context or {}})
+        self.emit_event('agent.task.run', 'Maya Quinn task requested', {'task': task, 'context': context or {}})
         return {'ok': True, 'agent': self.id, 'task': task, 'dry_run': True}
 
     def schedule_content(self, request: ScheduleContentRequest):
