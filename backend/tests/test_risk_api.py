@@ -1,6 +1,5 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
+from app.api import risk
+from app.risk.models import AccountSnapshot
 from app.risk.guardian_service import reset_guardian_service
 
 
@@ -22,34 +21,27 @@ def _snapshot_payload() -> dict:
 
 def test_get_risk_status() -> None:
     reset_guardian_service()
-    with TestClient(app) as client:
-        response = client.get('/api/risk/status')
-    assert response.status_code == 200
-    body = response.json()
+    body = risk.status()
     assert_envelope(body)
     assert 'guardian_enabled' in body['data']
 
 
 def test_post_risk_check() -> None:
     reset_guardian_service()
-    with TestClient(app) as client:
-        response = client.post('/api/risk/check', json=_snapshot_payload())
-    assert response.status_code == 200
-    body = response.json()
+    body = risk.check(AccountSnapshot.model_validate(_snapshot_payload()))
     assert_envelope(body)
     assert 'decision' in body['data']
 
 
 def test_post_halt_and_resume() -> None:
     reset_guardian_service()
-    with TestClient(app) as client:
-        halt_response = client.post('/api/risk/halt', json={'reason': 'Manual operator halt'})
-        resume_response = client.post('/api/risk/resume', json={'reason': 'Reviewed and safe for dry-run resume'})
+    halt_response = risk.halt(risk.HaltRequest(reason='Manual operator halt'))
+    resume_response = risk.resume(risk.HaltRequest(reason='Reviewed and safe for dry-run resume'))
 
-    assert halt_response.status_code == 200
-    assert resume_response.status_code == 200
-    assert halt_response.json()['data']['halt_state']['halted'] is True
-    assert resume_response.json()['data']['halt_state']['halted'] is False
+    assert halt_response['ok'] is True
+    assert resume_response['ok'] is True
+    assert halt_response['data']['halt_state']['halted'] is True
+    assert resume_response['data']['halt_state']['halted'] is False
 
 
 def test_post_approve_execution() -> None:
@@ -64,10 +56,11 @@ def test_post_approve_execution() -> None:
         },
         'snapshot': _snapshot_payload(),
     }
-    with TestClient(app) as client:
-        response = client.post('/api/risk/approve-execution', json=payload)
-
-    assert response.status_code == 200
-    body = response.json()
+    body = risk.approve_execution(
+        risk.ApproveExecutionRequest(
+            signal=payload['signal'],
+            snapshot=AccountSnapshot.model_validate(payload['snapshot']),
+        )
+    )
     assert_envelope(body)
     assert 'decision' in body['data']

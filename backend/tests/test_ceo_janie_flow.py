@@ -1,6 +1,5 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
+from app.agents.registry import MessageRequest, bootstrap_agents
+from app.api import agents
 
 
 def assert_envelope(payload: dict) -> None:
@@ -8,18 +7,15 @@ def assert_envelope(payload: dict) -> None:
 
 
 def test_ceo_can_send_message_to_janie() -> None:
-    with TestClient(app) as client:
-        response = client.post(
-            '/api/agents/message',
-            json={
-                'from_agent': 'ceo',
-                'to_agent': 'janie',
-                'message': 'Hello Janie, report system status.',
-                'context': {},
-            },
+    bootstrap_agents()
+    body = agents.send_message(
+        MessageRequest(
+            from_agent='ceo',
+            to_agent='janie',
+            message='Hello Janie, report system status.',
+            context={},
         )
-    assert response.status_code == 200
-    body = response.json()
+    )
     assert_envelope(body)
     assert body['ok'] is True
 

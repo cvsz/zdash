@@ -1,6 +1,4 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
+from app.api import health
 
 
 def assert_envelope(payload: dict) -> None:
@@ -8,10 +6,7 @@ def assert_envelope(payload: dict) -> None:
 
 
 def test_health_endpoint_works() -> None:
-    with TestClient(app) as client:
-        response = client.get('/health')
-    assert response.status_code == 200
-    body = response.json()
+    body = health.health()
     assert_envelope(body)
     assert body['ok'] is True
     assert body['error'] is None

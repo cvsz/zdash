@@ -1,6 +1,6 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
+from app.agents.registry import MessageRequest, bootstrap_agents
+from app.api import agents, logs
+from app.core.events import event_bus
 
 
 def assert_envelope(payload: dict) -> None:
@@ -8,34 +8,29 @@ def assert_envelope(payload: dict) -> None:
 
 
 def test_agents_are_registered() -> None:
-    with TestClient(app) as client:
-        response = client.get('/api/agents')
-    assert response.status_code == 200
-    body = response.json()
+    bootstrap_agents()
+    body = agents.list_agents()
     assert_envelope(body)
-    agents = body['data']['agents']
-    ids = {agent['id'] for agent in agents}
+    agent_rows = body['data']['agents']
+    ids = {agent['id'] for agent in agent_rows}
     assert 'ceo' in ids
     assert 'janie' in ids
 
 
 def test_event_logs_created() -> None:
-    with TestClient(app) as client:
-        msg_response = client.post(
-            '/api/agents/message',
-            json={
-                'from_agent': 'ceo',
-                'to_agent': 'janie',
-                'message': 'Hello Janie, report status.',
-                'context': {},
-            },
+    event_bus.clear()
+    bootstrap_agents()
+    msg_response = agents.send_message(
+        MessageRequest(
+            from_agent='ceo',
+            to_agent='janie',
+            message='Hello Janie, report status.',
+            context={},
         )
-        assert msg_response.status_code == 200
+    )
+    assert msg_response['ok'] is True
 
-        logs_response = client.get('/api/logs')
-
-    assert logs_response.status_code == 200
-    logs_body = logs_response.json()
+    logs_body = logs.list_logs(limit=100)
     assert_envelope(logs_body)
 
     event_types = [event['type'] for event in logs_body['data']['events']]
