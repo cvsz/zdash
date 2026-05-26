@@ -11,6 +11,7 @@ OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and
 - `general-custom-instructions.md` — paste into Codex Cloud General Custom Instructions.
 - `setup.sh` — paste into Codex Cloud Setup Script.
 - `maintenance.sh` — paste into Codex Cloud Maintenance Script.
+- `repair-backend-deps.sh` — backend dependency repair helper used by setup, healthcheck, and maintenance.
 - `AGENTS.template.md` — optional repo-level `AGENTS.md` template.
 - `phase-runner.md` — task prompts for running phase prompts.
 - `env.safe.example` — safe non-secret environment defaults.
@@ -63,6 +64,40 @@ docs/prompt/phase31.prompt
 docs/prompt/phase32.prompt
 ```
 
+## Setup repair behavior
+
+`setup.sh` calls `repair-backend-deps.sh` when the backend directory exists. This helper installs the backend package and then defensively installs runtime libraries that existing phase code imports, including:
+
+```text
+sqlmodel
+sqlalchemy
+alembic
+python-jose[cryptography]
+passlib
+prometheus-client
+email-validator
+```
+
+The helper also runs a Python import sanity check before pytest. This prevents Codex Cloud setup from failing early with import errors such as `ModuleNotFoundError: No module named 'sqlmodel'` when generated code already imports database/auth modules but package metadata was incomplete.
+
+Manual repair command:
+
+```bash
+bash .codex/cloud/repair-backend-deps.sh
+```
+
+Manual healthcheck command after setup:
+
+```bash
+bash .codex/healthcheck.sh
+```
+
+Maintenance command:
+
+```bash
+bash .codex/cloud/maintenance.sh
+```
+
 ## Suggested Codex workflow
 
 1. Configure the Codex Cloud environment using `general-custom-instructions.md`.
@@ -72,7 +107,7 @@ docs/prompt/phase32.prompt
 
 ```text
 Read docs/prompt/phase01.prompt.
-Implement Phase01 only.
+Implement Phase 1 only.
 Run backend and frontend checks.
 Return inspection summary, files changed, tests run, safety checklist, limitations, and next handoff.
 ```
