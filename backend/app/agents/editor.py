@@ -58,6 +58,3 @@ class EditorAgent(BaseAgent):
 
     def generate_variants(self, content_id: str, count: int):
         return content_pipeline.editor.generate_variants(content_id, count)
-
-    def health_check(self):
-        return {'id': self.id, 'status': 'idle'}
