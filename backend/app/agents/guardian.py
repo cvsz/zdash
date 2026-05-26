@@ -12,7 +12,12 @@ from app.risk.models import AccountSnapshot, HaltState, RiskDecision
 
 class GuardianAgent(BaseAgent):
     def __init__(self, drawdown_guard: DrawdownGuard, halt_store: HaltFlagStore, kill_switch: KillSwitch) -> None:
-        super().__init__(agent_id='guardian', name='Guardian', role='risk_guardian')
+        super().__init__(
+            agent_id='guardian',
+            name='Victor Hale',
+            role='risk_manager',
+            metadata={'tier': 'epic', 'legacy_name': 'Guardian'},
+        )
         self.drawdown_guard = drawdown_guard
         self.halt_store = halt_store
         self.kill_switch = kill_switch
@@ -27,7 +32,7 @@ class GuardianAgent(BaseAgent):
         if task == 'health':
             return self.health_check()
         if not context:
-            raise ValueError('Guardian task requires account snapshot context.')
+            raise ValueError('Victor Hale task requires account snapshot context.')
         snapshot = AccountSnapshot.model_validate(context)
         return self.evaluate_risk(snapshot).model_dump(mode='json')
 
@@ -46,7 +51,7 @@ class GuardianAgent(BaseAgent):
                     halt_active=halt_state.halted,
                     drawdown=self.drawdown_guard.evaluate(snapshot),
                 )
-                self.emit_event('risk.warning', 'Guardian disabled in dry-run mode', {'approved': True})
+                self.emit_event('risk.warning', 'Victor Hale disabled in dry-run mode', {'approved': True})
             else:
                 decision = RiskDecision(
                     approved=False,
@@ -55,7 +60,7 @@ class GuardianAgent(BaseAgent):
                     halt_active=halt_state.halted,
                     drawdown=self.drawdown_guard.evaluate(snapshot),
                 )
-                self.emit_event('risk.execution.blocked', 'Guardian disabled for live mode', {'approved': False})
+                self.emit_event('risk.execution.blocked', 'Victor Hale disabled for live mode', {'approved': False})
             self.status = 'idle'
             self.emit_event('risk.check.completed', 'Risk check completed', decision.model_dump(mode='json'))
             return decision
