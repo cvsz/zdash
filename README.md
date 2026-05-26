@@ -1,6 +1,22 @@
 # zDash · FULL SYSTEM BLUEPRINT v2.0
 
-`cvsz/zdash` is a staged AI operations dashboard and agent-runtime project. The repository is organized around a phase-by-phase blueprint from **Phase 01** through **Phase 32**, with prompt files under `docs/prompt/` and Codex Cloud tooling under `.codex/cloud/`.
+**Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
+
+`cvsz/zdash` is organized around a phase-by-phase blueprint from **Phase 01** through **Phase 32**, with prompt files under `docs/prompt/` and Codex Cloud tooling under `.codex/cloud/`.
+
+Public/support domain:
+
+```text
+https://zdash.zeaz.dev
+```
+
+Cloudflare operator source of truth:
+
+```text
+https://github.com/CVSz/zeaz-platform
+```
+
+Use this repository for application code, local config defaults, backend/frontend implementation, tests, and documentation. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout.
 
 The current repository may contain a partial implementation of the full blueprint. Treat the phase prompts as the implementation roadmap, not as proof that every module already exists. Agents and contributors should inspect the repository before coding, implement one phase at a time, preserve existing behavior, and keep all safety defaults locked.
 
@@ -60,6 +76,10 @@ Frontend dev:    http://localhost:5173
 ├── AGENTS.md                         # Canonical repo-level coding-agent guide
 ├── README.md                         # Project overview and developer entrypoint
 ├── LICENSE                           # MIT License
+├── SECURITY.md                       # Security reporting and safety policy
+├── CONTRIBUTING.md                   # Contribution workflow
+├── COMMUNITY.md                      # Community and support guidance
+├── CODEOFCONDUCT.md                  # Community behavior expectations
 ├── .env.example                      # Safe environment template
 ├── .github/workflows/                # CI, frontend CI, security CI
 ├── .codex/cloud/                     # Codex Cloud setup suite
@@ -76,6 +96,10 @@ Important files:
 ```text
 AGENTS.md
 LICENSE
+SECURITY.md
+CONTRIBUTING.md
+COMMUNITY.md
+CODEOFCONDUCT.md
 .codex/cloud/README.md
 .codex/cloud/general-custom-instructions.md
 .codex/cloud/setup.sh
@@ -89,6 +113,18 @@ frontend/.npmrc
 infra/docker/backend.Dockerfile
 infra/docker/frontend.Dockerfile
 ```
+
+---
+
+## Community and Governance Docs
+
+Read these before contributing or operating the project:
+
+- `AGENTS.md` — canonical coding-agent and contributor operating rules
+- `SECURITY.md` — vulnerability reporting, secret handling, and safety-critical defaults
+- `CONTRIBUTING.md` — setup, validation, phase workflow, PR guidance
+- `COMMUNITY.md` — community entrypoint and support-domain boundary
+- `CODEOFCONDUCT.md` — behavior expectations and enforcement policy
 
 ---
 
@@ -230,23 +266,6 @@ Recommended Codex flow:
 
 ---
 
-## Agent Guide
-
-Read `AGENTS.md` before making changes. It defines:
-
-- repo map
-- safety invariants
-- phase execution policy
-- backend/frontend conventions
-- CI/Docker rules
-- secret handling rules
-- external provider mock policy
-- ECC / Codex CLI integration notes
-
-Codex Cloud custom instructions should stay short and point to `AGENTS.md` plus the requested phase prompt.
-
----
-
 ## Phase Prompt System
 
 Phase prompts live under:
@@ -343,6 +362,31 @@ VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d
 | 30 | Endgame | Final release, board pack, acquisition/IPO dossier, launch command center. |
 | 31 | Sovereign Cloud | Air-gapped enterprise, offline update mirror, sovereign deployment patterns. |
 | 32 | Security Ops | SOC dashboard, threat detection, Zero Trust hardening. |
+
+---
+
+## Cloudflare Support Domain
+
+`zdash.zeaz.dev` is the supported public domain for zDash.
+
+Application repo responsibilities in `cvsz/zdash`:
+
+- app source code
+- backend/frontend implementation
+- local config defaults
+- Docker and CI compatibility
+- tests and docs
+
+Cloudflare operator responsibilities in `CVSz/zeaz-platform`:
+
+- DNS
+- Cloudflare Pages or Tunnel routing
+- Access policies
+- WAF and API Shield
+- edge health checks
+- production support-domain rollout
+
+Do not duplicate Cloudflare operator logic in this repo unless a task explicitly asks for local integration hooks.
 
 ---
 
@@ -501,6 +545,8 @@ Safe defaults should keep real actions disabled:
 
 ```env
 BACKEND_PORT=8004
+CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
+CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
 DRY_RUN=true
 LIVE_TRADING_ACK=false
 RISK_GUARDIAN_ENABLED=true
