@@ -1,1 +1,2 @@
-class Shock_simulator:\n    pass
+class ShockSimulator:
+    pass

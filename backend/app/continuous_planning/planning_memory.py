@@ -1,1 +1,2 @@
-class Planning_memory:\n    pass
+class PlanningMemory:
+    pass

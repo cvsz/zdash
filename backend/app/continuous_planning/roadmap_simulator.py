@@ -1,1 +1,2 @@
-class Roadmap_simulator:\n    pass
+class RoadmapSimulator:
+    pass
