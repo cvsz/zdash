@@ -2,8 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: dark;
+}
+
+html {
+  min-height: 100%;
+  background: #020617;
+}
+
 body {
+  min-height: 100vh;
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at top right, #1c3350, #0b1724 55%);
+  color: #e2e8f0;
+  background:
+    linear-gradient(135deg, rgba(2, 6, 23, 0.78), rgba(15, 23, 42, 0.62)),
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.22), transparent 32rem),
+    url('../images/zdash-bg.svg');
+  background-attachment: fixed, fixed, fixed;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-size: cover, cover, cover;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: '';
+  background:
+    radial-gradient(circle at 15% 10%, rgba(34, 211, 238, 0.12), transparent 24rem),
+    radial-gradient(circle at 85% 20%, rgba(168, 85, 247, 0.10), transparent 26rem),
+    linear-gradient(180deg, rgba(2, 6, 23, 0.08), rgba(2, 6, 23, 0.58));
+}
+
+#root {
+  min-height: 100vh;
 }
