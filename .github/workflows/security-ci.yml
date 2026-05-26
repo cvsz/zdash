@@ -49,18 +49,13 @@ jobs:
       - name: NPM audit non-blocking
         run: |
           cd frontend
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          npm install --legacy-peer-deps --no-audit --fund=false
           npm audit --audit-level=high || true
 
       - name: Secret pattern scan
         run: |
           python - <<'PY'
           from __future__ import annotations
-          import os
           import re
           import sys
           from pathlib import Path
