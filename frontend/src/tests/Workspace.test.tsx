@@ -1,3 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { test, expect } from 'vitest';
 import Workspace from '../pages/Workspace';
-test('shows workspace', () => { render(<Workspace />); expect(screen.getByText('Workspace')).toBeInTheDocument(); });
+
+test('shows workspace', () => {
+  const { getByText } = render(<Workspace />);
+  expect(getByText('Workspace')).toBeInTheDocument();
+});

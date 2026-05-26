@@ -28,5 +28,5 @@ class TapoAdapter(IoTAdapterBase):
         elif self.settings.iot_require_confirmation and not confirmation:
             payload['reason'] = 'confirmation_required'
             payload['allowed'] = False
-        event_bus.emit('iot_action', 'TapoAdapter', 'Tapo power cycle requested', payload)
+        event_bus.emit('iot_action', 'TapoAdapter', 'power_cycle_requested', payload)
         return {'ok': True, **payload}

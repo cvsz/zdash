@@ -11,20 +11,38 @@ class EditorAgent(BaseAgent):
     name = 'Editor'
     role = 'content_editor'
 
-    def __init__(self) -> None:
-        super().__init__(agent_id=self.id, name=self.name, role=self.role)
-
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
-        self.emit_event(
-            'agent.message.received',
-            'Editor agent received message',
-            {'from_agent': message.from_agent, 'message': message.message},
-        )
-        return {'response_text': 'Editor agent is ready.', 'agent': self.id}
+        response = self.run_task(task=message.message, context=message.context)
+        return {
+            'to': message.from_agent,
+            'from': self.id,
+            'response': response,
+        }
 
     def run_task(self, task: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
-        self.emit_event('agent.task.run', 'Editor task requested', {'task': task, 'context': context or {}})
-        return {'ok': True, 'agent': self.id, 'task': task, 'dry_run': True}
+        ctx = context or {}
+        task_key = task.strip().lower()
+
+        if task_key == 'health_check':
+            return self.health_check()
+
+        if task_key == 'create_draft':
+            request = CreateContentRequest(**ctx)
+            item = self.create_draft(request)
+            return {'ok': True, 'content_id': item.id, 'status': item.status}
+
+        if task_key == 'edit_content':
+            request = EditContentRequest(**ctx)
+            item = self.edit_content(request)
+            return {'ok': True, 'content_id': item.id, 'status': item.status}
+
+        if task_key == 'generate_variants':
+            content_id = str(ctx.get('content_id', '')).strip()
+            count = int(ctx.get('count', 1))
+            variants = self.generate_variants(content_id=content_id, count=count)
+            return {'ok': True, 'content_id': content_id, 'variants': variants}
+
+        return {'ok': False, 'error': f'unsupported_task:{task}'}
 
     def create_draft(self, request: CreateContentRequest):
         event_bus.emit('editor.command.received', self.id, 'create_draft', {})
