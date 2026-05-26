@@ -1,44 +1,40 @@
-from app.core.config import get_settings
-from app.trading.funnel_filter import FunnelFilter
-from app.trading.mt5_adapter import MT5Adapter
-from app.trading.risk_models import Signal
+from __future__ import annotations
+
+from app.trading.models import TradingSignal
+from app.trading.risk_models import Signal as LegacySignal
+from app.trading.xau_scanner import XAUScanner as CoreXAUScanner
 
 
 class XAUScanner:
-    def __init__(self, mt5: MT5Adapter | None = None) -> None:
-        self.settings = get_settings()
-        self.mt5 = mt5 or MT5Adapter()
-        self.filter = FunnelFilter()
+    """
+    Backward-compatible scanner wrapper.
 
-    def scan(self) -> Signal:
-        candles = self.mt5.get_candles(self.settings.trading_symbol, self.settings.trading_timeframe)
-        state = self.filter.evaluate(candles)
-        last = candles[-1].close
+    Legacy callers expect `scan()` to return a `risk_models.Signal`. Phase 02
+    core uses `xau_scanner.XAUScanner` and `TradingSignal`.
+    """
 
-        if state['direction'] == 'buy':
-            entry = (round(last - 0.3, 4), round(last - 0.1, 4))
-            sl = round(last - 1.5, 4)
-            tp = round(last + 3.0, 4)
-            confidence = 0.68
-        elif state['direction'] == 'sell':
-            entry = (round(last + 0.1, 4), round(last + 0.3, 4))
-            sl = round(last + 1.5, 4)
-            tp = round(last - 3.0, 4)
-            confidence = 0.66
-        else:
-            entry = (round(last - 0.1, 4), round(last + 0.1, 4))
-            sl = round(last - 1.0, 4)
-            tp = round(last + 1.0, 4)
-            confidence = 0.5
+    def __init__(self, mt5=None) -> None:
+        self._core = CoreXAUScanner(mt5_adapter=mt5)
 
-        return Signal(
-            symbol=self.settings.trading_symbol,
-            timeframe=self.settings.trading_timeframe,
-            direction=state['direction'],
-            entry_zone=entry,
-            stop_loss=sl,
-            take_profit=tp,
-            confidence=confidence,
-            strategy=self.settings.primary_strategy,
-            filter_state=state,
+    @staticmethod
+    def _to_legacy(signal: TradingSignal) -> LegacySignal:
+        entry_low = signal.entry - 0.1
+        entry_high = signal.entry + 0.1
+        return LegacySignal(
+            symbol=signal.symbol,
+            timeframe=signal.timeframe,
+            direction='neutral' if signal.direction == 'hold' else signal.direction,
+            entry_zone=(round(entry_low, 4), round(entry_high, 4)),
+            stop_loss=signal.stop_loss,
+            take_profit=signal.take_profit,
+            confidence=signal.confidence,
+            strategy=signal.strategy,
+            filter_state=signal.metadata.get('funnel_state', {}),
+            ai_summary=signal.reason,
         )
+
+    def scan(self) -> LegacySignal:
+        result = self._core.scan()
+        if result.latest_signal is None:
+            raise RuntimeError('scanner did not generate a signal')
+        return self._to_legacy(result.latest_signal)

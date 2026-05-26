@@ -1,23 +1,45 @@
-from app.trading.risk_models import Signal
+from __future__ import annotations
+
+from app.trading.models import TradingSignal
+from app.trading.risk_models import Signal as LegacySignal
+from app.trading.signal_validation import SignalValidationService
 
 
 class SignalValidator:
-    def validate(self, signal: Signal) -> dict:
+    """Backward-compatible validator wrapper returning legacy dict payloads."""
+
+    def __init__(self) -> None:
+        self._service = SignalValidationService()
+
+    @staticmethod
+    def _normalize(signal: LegacySignal | TradingSignal) -> TradingSignal:
+        if isinstance(signal, TradingSignal):
+            return signal
+
+        entry = (signal.entry_zone[0] + signal.entry_zone[1]) / 2 if signal.entry_zone else 2350.0
+        direction = 'hold' if signal.direction == 'neutral' else signal.direction
+        return TradingSignal(
+            symbol=signal.symbol,
+            timeframe=signal.timeframe,
+            direction=direction,
+            strategy=signal.strategy,
+            confidence=max(0.0, min(1.0, signal.confidence)),
+            entry=entry,
+            stop_loss=signal.stop_loss if signal.stop_loss > 0 else entry,
+            take_profit=signal.take_profit if signal.take_profit > 0 else entry,
+            reason=signal.ai_summary or 'Legacy validation request',
+            metadata={'legacy_filter_state': signal.filter_state},
+        )
+
+    def validate(self, signal: LegacySignal | TradingSignal) -> dict:
+        normalized = self._normalize(signal)
+        result = self._service.validate(normalized)
         issues: list[str] = []
-        if signal.direction == 'neutral':
-            issues.append('Direction is neutral.')
-        if signal.confidence < 0.55:
-            issues.append('Confidence below threshold 0.55.')
-
-        entry_mid = (signal.entry_zone[0] + signal.entry_zone[1]) / 2
-        risk = abs(entry_mid - signal.stop_loss)
-        reward = abs(signal.take_profit - entry_mid)
-        rr = reward / risk if risk > 0 else 0
-        if rr < 1.2:
-            issues.append('Risk reward below 1.2.')
-
+        if not result.valid:
+            issues.append(result.reason)
         return {
-            'valid': len(issues) == 0,
+            'valid': result.valid,
             'issues': issues,
-            'risk_reward': round(rr, 4),
+            'warnings': result.warnings,
+            'signal_id': normalized.id,
         }

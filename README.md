@@ -369,6 +369,74 @@ VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d
 
 ---
 
+## Phase 02 Trading Core
+
+Phase 02 adds a **dry-run-only** trading foundation:
+
+- deterministic XAUUSD M5 market-data generator
+- MT5 adapter shell with mock-safe fallback (no required credentials for tests)
+- Funnel Filter `21 / 10 / 3` signal generation
+- AI signal summary with mock fallback and safety disclaimer
+- signal validation service
+- dry-run execution engine with config guards
+
+Safety guarantees:
+
+- `DRY_RUN=true` by default
+- `LIVE_TRADING_ACK=false` by default
+- `MT5_ENABLED=false` by default
+- live order routing remains blocked in this phase
+
+Primary backend modules:
+
+```text
+backend/app/trading/models.py
+backend/app/trading/market_data.py
+backend/app/trading/mt5_adapter.py
+backend/app/trading/funnel_filter.py
+backend/app/trading/ai_analysis.py
+backend/app/trading/signal_validation.py
+backend/app/trading/xau_scanner.py
+backend/app/trading/execution_engine.py
+backend/app/trading/trading_service.py
+backend/app/api/trading.py
+```
+
+Phase 02 API examples:
+
+```bash
+curl http://localhost:8004/api/trading/status
+```
+
+```bash
+curl -X POST http://localhost:8004/api/trading/scan \
+  -H "Content-Type: application/json" \
+  -d '{"symbol":"XAUUSD","timeframe":"M5"}'
+```
+
+```bash
+curl -X POST http://localhost:8004/api/trading/validate-signal \
+  -H "Content-Type: application/json" \
+  -d '{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}}'
+```
+
+```bash
+curl -X POST http://localhost:8004/api/trading/dry-run-execute \
+  -H "Content-Type: application/json" \
+  -d '{"signal":{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}},"dry_run":true,"confirmation":false}'
+```
+
+Phase 02 test commands:
+
+```bash
+cd backend && pytest
+cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
+
+---
+
 ## Cloudflare Support Domain
 
 `zdash.zeaz.dev` is the supported public domain for zDash.

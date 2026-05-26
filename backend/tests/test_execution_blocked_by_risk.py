@@ -48,7 +48,7 @@ def test_execution_blocked_when_halt_active() -> None:
     engine = ExecutionEngine()
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
 
-    assert result['status'] == 'blocked_by_risk'
+    assert result.status == 'blocked_by_risk'
 
 
 def test_execution_blocked_when_drawdown_breached() -> None:
@@ -57,7 +57,7 @@ def test_execution_blocked_when_drawdown_breached() -> None:
     engine = ExecutionEngine()
 
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_breached_snapshot()))
-    assert result['status'] == 'blocked_by_risk'
+    assert result.status == 'blocked_by_risk'
 
 
 def test_dry_run_execution_allowed_when_risk_normal() -> None:
@@ -66,8 +66,8 @@ def test_dry_run_execution_allowed_when_risk_normal() -> None:
     engine = ExecutionEngine()
 
     result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
-    assert result['status'] == 'simulated'
-    assert result['dry_run'] is True
+    assert result.status == 'simulated'
+    assert result.dry_run is True
 
 
 def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
@@ -78,9 +78,11 @@ def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
     reset_guardian_service()
 
     engine = ExecutionEngine()
-    result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
+    result = engine.execute(
+        ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot(), dry_run=False, confirmation=True)
+    )
 
-    assert result['status'] == 'blocked_by_config'
+    assert result.status == 'blocked_by_config'
 
     get_settings.cache_clear()
     reset_guardian_service()
