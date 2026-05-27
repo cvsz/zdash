@@ -19,3 +19,4 @@ backups.env
 
 # Codex runtime artifacts
 .codex/reports/
+.env.swp
