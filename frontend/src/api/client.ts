@@ -12,6 +12,8 @@ const mockFallbackEnabled =
   "true";
 
 export let mockFallbackActive = false;
+let sessionToken: string | null = null;
+let unauthorizedHandler: (() => void) | null = null;
 
 export const apiClientConfig = {
   baseUrl,
@@ -22,6 +24,15 @@ type RequestOptions<T> = {
   fallback?: T;
   timeoutMs?: number;
 };
+
+function buildRequestHeaders(headers?: HeadersInit): HeadersInit {
+  const mergedHeaders = new Headers(headers);
+  mergedHeaders.set("Content-Type", "application/json");
+  if (sessionToken) {
+    mergedHeaders.set("Authorization", `Bearer ${sessionToken}`);
+  }
+  return mergedHeaders;
+}
 
 function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
   if (!value || typeof value !== "object") {
@@ -125,10 +136,7 @@ async function request<T>(
     const response = await fetch(url, {
       ...init,
       signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        ...(init.headers || {}),
-      },
+      headers: buildRequestHeaders(init.headers),
     });
 
     let payload: unknown = null;
@@ -182,6 +190,9 @@ async function request<T>(
     return payload.data;
   } catch (error) {
     const apiError = normalizeApiError(error, undefined, path);
+    if (apiError.status === 401) {
+      unauthorizedHandler?.();
+    }
     if (shouldUseMockFallback(apiError, options.fallback)) {
       mockFallbackActive = true;
       return options.fallback;
@@ -206,6 +217,21 @@ export const apiClient = {
       path,
       {
         method: "POST",
+        body: JSON.stringify(body ?? {}),
+      },
+      { ...options, fallback },
+    );
+  },
+  patch<T>(
+    path: string,
+    body?: unknown,
+    fallback?: T,
+    options?: Omit<RequestOptions<T>, "fallback">,
+  ) {
+    return request<T>(
+      path,
+      {
+        method: "PATCH",
         body: JSON.stringify(body ?? {}),
       },
       { ...options, fallback },
@@ -242,4 +268,11 @@ export function setMockFallbackState(active: boolean) {
 
 export const apiGet = apiClient.get;
 export const apiPostEnvelope = apiClient.post;
-export const setSession = (_token?: string) => {};
+
+export function setSession(token?: string) {
+  sessionToken = token ?? null;
+}
+
+export function setUnauthorizedHandler(handler?: () => void) {
+  unauthorizedHandler = handler ?? null;
+}

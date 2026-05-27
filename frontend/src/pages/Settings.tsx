@@ -1,4 +1,5 @@
 import { apiClientConfig } from "../api/client";
+import { DEFAULT_ADMIN_USERNAME } from "../api/auth";
 import {
   getBacktestingStatus,
   getContentStatus,
@@ -7,6 +8,7 @@ import {
 } from "../api/endpoints";
 import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/layout/PageHeader";
+import { useAuth } from "../hooks/useAuth";
 import { useApi } from "../hooks/useApi";
 
 type SettingRow = {
@@ -15,6 +17,7 @@ type SettingRow = {
 };
 
 export default function Settings() {
+  const { user, mode } = useAuth();
   const tradingStatus = useApi(getTradingStatus, []);
   const contentStatus = useApi(getContentStatus, []);
   const iotStatus = useApi(getIoTStatus, []);
@@ -56,6 +59,14 @@ export default function Settings() {
       key: "App version",
       value: appVersion,
     },
+    {
+      key: "Auth mode",
+      value: mode === "dev" ? "DEV_BYPASS" : mode.toUpperCase(),
+    },
+    {
+      key: "Current user",
+      value: user ? `${user.username} (${user.role})` : "anonymous",
+    },
   ];
 
   return (
@@ -70,6 +81,11 @@ export default function Settings() {
         <p className="mt-1 text-xs text-slate-400">
           This view is read-only and intentionally excludes API keys, tokens, or secret values.
         </p>
+        {user?.username === DEFAULT_ADMIN_USERNAME && (
+          <p className="mt-2 rounded-md border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+            Warning: default admin username detected. Rotate credentials before production use.
+          </p>
+        )}
         <div className="mt-3">
           <DataTable<SettingRow>
             rows={rows}

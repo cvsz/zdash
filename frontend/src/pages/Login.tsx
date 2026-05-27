@@ -1,1 +1,25 @@
-export default function Login(){return <div className='p-4'>Login disabled in local dashboard build.</div>}
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+
+import LoginForm from "../components/auth/LoginForm";
+import { useAuth } from "../hooks/useAuth";
+
+type LoginRouteState = {
+  from?: string;
+};
+
+export default function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, loading } = useAuth();
+
+  if (!loading && isAuthenticated) {
+    const from = (location.state as LoginRouteState | null)?.from ?? "/";
+    return <Navigate to={from} replace />;
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
+      <LoginForm onAuthenticated={() => navigate("/", { replace: true })} />
+    </div>
+  );
+}

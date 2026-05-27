@@ -1,25 +1,37 @@
 import { NavLink } from "react-router-dom";
 
+import { useAuth } from "../../hooks/useAuth";
+
 type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-const navItems = [
-  { to: "/", label: "Dashboard" },
-  { to: "/team", label: "Team Roster" },
-  { to: "/xau", label: "XAU Dashboard" },
-  { to: "/risk", label: "Risk Panel" },
-  { to: "/scheduler", label: "Scheduler" },
-  { to: "/backtests", label: "Backtests" },
-  { to: "/content", label: "Content Pipeline" },
-  { to: "/iot", label: "IoT Control" },
-  { to: "/org", label: "Org Map" },
-  { to: "/logs", label: "Session Logs" },
-  { to: "/settings", label: "Settings" },
+type NavItem = {
+  to: string;
+  label: string;
+  roles: string[];
+};
+
+const navItems: NavItem[] = [
+  { to: "/", label: "Dashboard", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/team", label: "Team Roster", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/xau", label: "XAU Dashboard", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/risk", label: "Risk Panel", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/scheduler", label: "Scheduler", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/backtests", label: "Backtests", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/content", label: "Content Pipeline", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/iot", label: "IoT Control", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/org", label: "Org Map", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/logs", label: "Session Logs", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/settings", label: "Settings", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/admin", label: "Admin", roles: ["admin"] },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { user } = useAuth();
+  const activeRole = user?.role ?? "viewer";
+
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-slate-800 px-4 py-4">
@@ -28,7 +40,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-auto px-3 py-4" aria-label="Primary navigation">
-        {navItems.map((item) => (
+        {navItems
+          .filter((item) => item.roles.includes(activeRole))
+          .map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -43,7 +57,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           >
             {item.label}
           </NavLink>
-        ))}
+          ))}
       </nav>
     </div>
   );

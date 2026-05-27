@@ -1,6 +1,7 @@
 import { Menu } from "lucide-react";
 
 import { useSystemStatus } from "../../hooks/useSystemStatus";
+import { useAuth } from "../../hooks/useAuth";
 import Badge from "../common/Badge";
 
 type TopbarProps = {
@@ -9,6 +10,7 @@ type TopbarProps = {
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const { data, loading } = useSystemStatus();
+  const { user, logout } = useAuth();
 
   const systemLabel =
     loading || !data?.health?.status
@@ -38,8 +40,20 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          <span className="hidden text-xs text-slate-400 md:inline">
+            {user?.username} ({user?.role})
+          </span>
           <Badge variant="success">{systemLabel}</Badge>
           <Badge variant="warning">{riskLabel}</Badge>
+          <button
+            type="button"
+            onClick={() => {
+              void logout();
+            }}
+            className="rounded-md border border-slate-700 px-3 py-1 text-xs text-slate-200 transition hover:bg-slate-800"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </header>

@@ -1,10 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
+import { AuthProvider } from "./hooks/useAuth";
+import Admin from "./pages/Admin";
 import Backtests from "./pages/Backtests";
 import ContentPipeline from "./pages/ContentPipeline";
 import Dashboard from "./pages/Dashboard";
 import IoTControl from "./pages/IoTControl";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import OrgMapPage from "./pages/OrgMapPage";
 import RiskPanel from "./pages/RiskPanel";
@@ -14,9 +18,9 @@ import Settings from "./pages/Settings";
 import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 
-export default function App() {
+function ProtectedDashboardRoutes() {
   return (
-    <BrowserRouter>
+    <ProtectedRoute>
       <AppLayout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -30,9 +34,30 @@ export default function App() {
           <Route path="/org" element={<OrgMapPage />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowRoles={["admin"]}>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AppLayout>
+    </ProtectedRoute>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<ProtectedDashboardRoutes />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

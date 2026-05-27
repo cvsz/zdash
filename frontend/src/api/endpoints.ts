@@ -12,7 +12,12 @@ import {
 } from "./mockData";
 import type {
   AccountSnapshot,
+  AdminSafetyCheck,
+  AdminUser,
+  AdminUserCreateInput,
+  AdminUserUpdateInput,
   Agent,
+  AuditLogEntry,
   BacktestReport,
   BacktestRequest,
   BacktestResult,
@@ -259,6 +264,82 @@ export const runJob = async (jobId: string) => {
   );
   return data.result;
 };
+
+export const listAdminUsers = async () => {
+  const data = await apiClient.get<{ users: AdminUser[] }>("/api/admin/users", {
+    users: [],
+  });
+  return data.users;
+};
+
+export const createAdminUser = async (payload: AdminUserCreateInput) => {
+  const data = await apiClient.post<{ user: AdminUser }>(
+    "/api/admin/users",
+    payload,
+    {
+      user: {
+        id: "mock-user",
+        email: payload.email,
+        display_name: payload.display_name,
+        role: payload.role,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    },
+  );
+  return data.user;
+};
+
+export const updateAdminUser = async (
+  userId: string,
+  payload: AdminUserUpdateInput,
+) => {
+  const data = await apiClient.patch<{ user: AdminUser }>(
+    `/api/admin/users/${userId}`,
+    payload,
+    {
+      user: {
+        id: userId,
+        email: "mock@example.com",
+        display_name: payload.display_name ?? "Mock User",
+        role: payload.role ?? "viewer",
+        is_active: payload.is_active ?? true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    },
+  );
+  return data.user;
+};
+
+export const deactivateAdminUser = async (userId: string) => {
+  const data = await apiClient.delete<{ deactivated: boolean; user_id: string }>(
+    `/api/admin/users/${userId}`,
+    { deactivated: true, user_id: userId },
+  );
+  return data;
+};
+
+export const listAuditLogs = async (limit = 100, offset = 0) => {
+  const query = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+  const data = await apiClient.get<{ items: AuditLogEntry[] }>(
+    `/api/admin/audit-logs?${query.toString()}`,
+    { items: [] },
+  );
+  return data.items;
+};
+
+export const getAdminSafetyCheck = () =>
+  apiClient.get<AdminSafetyCheck>("/api/admin/safety-check", {
+    status: "safe",
+    warnings: [],
+    blockers: [],
+    score: 100,
+  });
 
 export const pauseJob = async (jobId: string) => {
   const data = await apiClient.post<{ job: ScheduledJob }>(

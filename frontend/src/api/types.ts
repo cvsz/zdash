@@ -331,3 +331,65 @@ export type ContentReport = {
   markdown: string;
   logs: EventLog[];
 };
+
+export type AuthTokenPair = {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  role: string;
+  username: string;
+};
+
+export type AuthUser = {
+  username: string;
+  role: string;
+};
+
+export type StoredAuthSession = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  display_name: string;
+  role: string;
+  is_active: boolean;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type AdminUserCreateInput = {
+  email: string;
+  password: string;
+  role: string;
+  display_name: string;
+};
+
+export type AdminUserUpdateInput = {
+  role?: string;
+  display_name?: string;
+  is_active?: boolean;
+};
+
+export type AuditLogEntry = {
+  id: string;
+  actor_user_id: string;
+  actor_email: string;
+  action: string;
+  resource_type: string;
+  resource_id: string;
+  result: string;
+  ip_address: string;
+  user_agent: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type AdminSafetyCheck = {
+  status: "safe" | "blocked";
+  warnings: string[];
+  blockers: string[];
+  score: number;
+};
