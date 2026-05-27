@@ -5,10 +5,15 @@ Repository: `cvsz/zdash`
 This folder contains the Codex Cloud setup/maintenance suite for zDash.
 It is designed for safe phase execution with current project constraints:
 
+- current baseline: Phase 01-08 plus Phase 7.10 collaboration/federation foundation
 - backend on port `8005`
+- frontend dev on port `5173`
 - Node `20` via `nvm`
 - dry-run/safety defaults preserved
 - no secrets in repo
+- no `autopep8 --aggressive`
+- no Ubuntu `apt npm`
+- Cloudflare operator work belongs in `cvsz/zeaz-platform`
 
 ## Files
 
@@ -25,7 +30,8 @@ It is designed for safe phase execution with current project constraints:
 1. Paste `general-custom-instructions.md` into Codex Cloud General Custom Instructions.
 2. Paste `setup.sh` into Codex Cloud Setup Script.
 3. Paste `maintenance.sh` into Codex Cloud Maintenance Script.
-4. Run one requested phase at a time unless batch execution is explicitly requested.
+4. Run one requested phase or codex-run prompt at a time unless batch execution is explicitly requested.
+5. Use targeted commits only; avoid `git add .` if unrelated files exist.
 
 ## Setup command
 
@@ -44,6 +50,8 @@ bash .codex/cloud/maintenance.sh
 ```bash
 bash .codex/cloud/repair-backend-deps.sh
 ```
+
+The repair helper ensures runtime/dev dependencies are importable, including `psycopg[binary]` for `postgresql+psycopg://` production URLs.
 
 ## Validation standard
 
@@ -67,13 +75,46 @@ npm test
 npm run build
 ```
 
-Optional Docker validation (when Docker surfaces change):
+Docker validation when Docker/infra surfaces change:
 
 ```bash
 docker build -f infra/docker/backend.Dockerfile .
 docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
 docker compose config
+docker compose -f docker-compose.prod.yml config
 ```
+
+## Current hardening watchlist
+
+Before starting a new major phase, inspect or fix:
+
+- backend manifests include `psycopg[binary]` if production compose uses `postgresql+psycopg://`
+- collaboration WebSocket validates auth when `AUTH_ENABLED=true`
+- workspace federation mutation endpoints require auth/RBAC despite mock-only behavior
+- frontend collaboration WebSocket URL derives from `VITE_WS_BASE_URL` or `VITE_API_BASE_URL`, not only `window.location.origin`
+- latest `main` CI is green after any Phase 7.10 or later merge
+
+## Cloudflare operator handoff
+
+Cloudflare DNS, Pages/Tunnel, Access, WAF, rate limiting, TLS, and edge routing are managed in:
+
+```text
+cvsz/zeaz-platform
+```
+
+Support domain:
+
+```text
+zdash.zeaz.dev
+```
+
+Rules for this repo:
+
+- Do not add Cloudflare tokens, account IDs, zone IDs, tunnel tokens, or origin certs.
+- Do not move Cloudflare operator automation into `cvsz/zdash`.
+- Keep zDash configs origin-ready: `/health`, `/api/*`, frontend static/app routes.
+- Document Cloudflare handoff work for `cvsz/zeaz-platform` when needed.
 
 ## Safety invariants
 
@@ -83,6 +124,7 @@ Never enable by default:
 - real broker execution
 - real IoT power actions
 - real social posting
+- real image generation
 - secret export or secret embedding
 
 Never bypass:
