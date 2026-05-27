@@ -20,6 +20,8 @@ import Settings from "./pages/Settings";
 import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
+import EventTimeline from "./pages/EventTimeline";
+import { RealtimeProvider } from "./realtime/context";
 
 function ProtectedDashboardRoutes() {
   return (
@@ -39,6 +41,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/system/health" element={<SystemHealth />} />
+          <Route path="/events" element={<EventTimeline />} />
           <Route
             path="/admin"
             element={
@@ -63,12 +66,14 @@ export default function App() {
       }}
     >
       <ErrorBoundary>
+      <RealtimeProvider>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<ProtectedDashboardRoutes />} />
         </Routes>
       </AuthProvider>
+      </RealtimeProvider>
     </ErrorBoundary>
     </BrowserRouter>
   );

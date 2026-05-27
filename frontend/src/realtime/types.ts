@@ -1,12 +1,15 @@
 export type RealtimeChannel = "events" | "risk" | "scheduler" | "content";
-
-export type RealtimeSeverity = "info" | "warning" | "danger" | "success";
+export type RealtimeSeverity = "info" | "warning" | "critical";
 
 export type RealtimeEnvelope = {
+  id: string;
+  category: "system" | "trading" | "risk" | "scheduler" | "content" | "iot" | "admin" | "audit";
   type: string;
   timestamp: string;
   source: string;
   severity: RealtimeSeverity;
+  message: string;
+  data: Record<string, unknown>;
   payload: Record<string, unknown>;
 };
 

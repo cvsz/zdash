@@ -3,6 +3,8 @@ import { Menu } from "lucide-react";
 import { useSystemStatus } from "../../hooks/useSystemStatus";
 import { useAuth } from "../../hooks/useAuth";
 import Badge from "../common/Badge";
+import ConnectionStatus from "../system/ConnectionStatus";
+import NotificationCenter from "../system/NotificationCenter";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -45,6 +47,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           </span>
           <Badge variant="success">{systemLabel}</Badge>
           <Badge variant="warning">{riskLabel}</Badge>
+          <ConnectionStatus />
+          <NotificationCenter />
           <button
             type="button"
             onClick={() => {
