@@ -42,13 +42,13 @@ class EditorAgent(BaseAgent):
             return self.health_check()
 
         if task_key == "create_draft":
-            request = CreateContentRequest(**ctx)
-            item = self.create_draft(request)
+            create_request = CreateContentRequest(**ctx)
+            item = self.create_draft(create_request)
             return {"ok": True, "content_id": item.id, "status": item.status}
 
         if task_key == "edit_content":
-            request = EditContentRequest(**ctx)
-            item = self.edit_content(request)
+            edit_request = EditContentRequest(**ctx)
+            item = self.edit_content(edit_request)
             return {"ok": True, "content_id": item.id, "status": item.status}
 
         if task_key == "generate_variants":
