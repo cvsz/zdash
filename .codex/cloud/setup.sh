@@ -25,7 +25,7 @@ node --version || true
 npm --version || true
 
 step "3/10 Helper directories"
-mkdir -p .codex/logs .codex/reports docs/prompt
+mkdir -p .codex/logs .codex/reports docs/prompt docs/prompt/codex-runs
 
 step "4/10 Backend dependency repair"
 if [ -d "backend" ]; then
@@ -56,11 +56,11 @@ fi
 step "6/10 Safe env bootstrap"
 if [ -f ".env.example" ] && [ ! -f ".env" ]; then
   cp .env.example .env
-  echo "Created .env from .env.example (review values before runtime use)."
+  echo "Created .env from .env.example (review values before runtime use; never commit .env)."
 fi
 if [ -f "frontend/.env.example" ] && [ ! -f "frontend/.env" ]; then
   cp frontend/.env.example frontend/.env
-  echo "Created frontend/.env from frontend/.env.example."
+  echo "Created frontend/.env from frontend/.env.example (never commit frontend/.env)."
 fi
 
 step "7/10 Helper script generation"
@@ -101,16 +101,33 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+status=0
+
 echo "zDash healthcheck"
 git status --short || true
+
+echo
+if grep -RIn "localhost:8000\|BACKEND_PORT=8000" \
+  --exclude-dir=.git \
+  --exclude-dir=node_modules \
+  --exclude-dir=.venv \
+  --exclude-dir=dist \
+  --exclude="*.prompt" \
+  . >/tmp/zdash-healthcheck-port8000.txt 2>/dev/null; then
+  echo "FAILED: old backend port 8000 found outside prompt archives"
+  cat /tmp/zdash-healthcheck-port8000.txt
+  status=1
+else
+  echo "PASSED: no old backend port 8000 found outside prompt archives"
+fi
 
 if [ -d "backend" ]; then
   bash .codex/cloud/repair-backend-deps.sh
   cd backend
   # shellcheck disable=SC1091
   source .venv/bin/activate
-  python -m ruff check app tests
-  python -B -m pytest -q
+  python -m ruff check app tests || status=1
+  python -B -m pytest -q || status=1
   cd "$ROOT_DIR"
 fi
 
@@ -122,10 +139,26 @@ if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
   fi
   cd frontend
   npm install --legacy-peer-deps --no-audit --fund=false
-  npm test
-  npm run build
+  npm test || status=1
+  npm run build || status=1
   cd "$ROOT_DIR"
 fi
+
+if command -v docker >/dev/null 2>&1; then
+  docker build -f infra/docker/backend.Dockerfile . || status=1
+  docker build -f infra/docker/frontend.Dockerfile . || status=1
+  if [ -f "infra/docker/nginx.Dockerfile" ]; then
+    docker build -f infra/docker/nginx.Dockerfile . || status=1
+  fi
+  docker compose config || status=1
+  if [ -f "docker-compose.prod.yml" ]; then
+    docker compose -f docker-compose.prod.yml config || status=1
+  fi
+else
+  echo "Docker not available; skipping Docker validation."
+fi
+
+exit "$status"
 HEALTH
 chmod +x .codex/healthcheck.sh
 
