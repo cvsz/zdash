@@ -236,6 +236,10 @@ export function resetMockFallbackState() {
   mockFallbackActive = false;
 }
 
+export function setMockFallbackState(active: boolean) {
+  mockFallbackActive = active;
+}
+
 export const apiGet = apiClient.get;
 export const apiPostEnvelope = apiClient.post;
 export const setSession = (_token?: string) => {};
