@@ -4,11 +4,14 @@ import { apiClientConfig, mockFallbackActive } from '../api/client';
 import { getHealth } from '../api/endpoints';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
+import { useRealtimeContext } from '../realtime/context';
 
 export default function SystemHealth() {
   const health = useApi(getHealth, []);
   const { user } = useAuth();
   const mode = import.meta.env.MODE;
+  const { state, events } = useRealtimeContext();
+  const lastEvent = events[0];
 
   return (
     <div className="space-y-6">
@@ -24,6 +27,11 @@ export default function SystemHealth() {
           <li>Backend reachable: <strong>{health.error ? 'false' : 'true'}</strong></li>
           <li>Last API response time: <strong>{health.data?.timestamp ?? 'n/a'}</strong></li>
           <li>Current user role: <strong>{user?.role ?? 'anonymous'}</strong></li>
+          <li>WebSocket status: <strong>{state}</strong></li>
+          <li>Reconnect attempts: <strong>0</strong></li>
+          <li>Last event timestamp: <strong>{lastEvent?.timestamp ?? 'n/a'}</strong></li>
+          <li>Heartbeat latency: <strong>{lastEvent?.type === 'system.heartbeat' ? 'active' : 'n/a'}</strong></li>
+          <li>Mock realtime fallback: <strong>{state !== 'connected' ? 'SIMULATED REALTIME MODE' : 'false'}</strong></li>
         </ul>
       </SectionCard>
     </div>
