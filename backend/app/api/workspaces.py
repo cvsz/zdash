@@ -1,19 +1,41 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, Field, field_validator
+
+from app.auth.dependencies import require_authenticated
+from app.auth.models import AuthSession
 from app.core.responses import ok
 
 router = APIRouter(prefix="/api/workspaces/federation", tags=["workspaces-federation"])
 _peers: list[dict] = []
 
-@router.get('/status')
+
+class FederationRegisterRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=64)
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("name is required")
+        return normalized
+
+
+@router.get("/status")
 def status():
     return ok({"mode": "mock", "dry_run": True, "network_enabled": False})
 
-@router.get('/peers')
-def peers():
+
+@router.get("/peers")
+def peers(_: AuthSession = Depends(require_authenticated)):
     return ok({"items": _peers})
 
-@router.post('/register')
-def register(payload: dict):
-    peer = {"name": str(payload.get('name','peer')), "registered": True, "active": False}
+
+@router.post("/register")
+def register(
+    payload: FederationRegisterRequest,
+    _: AuthSession = Depends(require_authenticated),
+):
+    peer = {"name": payload.name, "registered": True, "active": False}
     _peers.append(peer)
     return ok({"item": peer, "note": "mock-only; no outbound federation traffic"})

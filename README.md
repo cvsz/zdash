@@ -342,11 +342,14 @@ Set values in `frontend/.env.example`:
 ```env
 VITE_APP_NAME=zDash
 VITE_API_BASE_URL=http://localhost:8005
+VITE_WS_BASE_URL=
 VITE_ENABLE_MOCK_FALLBACK=true
 VITE_POLL_INTERVAL_MS=5000
 VITE_DEFAULT_THEME=dark
 VITE_SHOW_SAFETY_BANNERS=true
 ```
+
+`VITE_WS_BASE_URL` is optional. If unset, collaboration and realtime WebSocket clients derive `ws://`/`wss://` from `VITE_API_BASE_URL`.
 
 ### Run Backend + Frontend Together
 
