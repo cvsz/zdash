@@ -64,7 +64,7 @@ def approve(req: ApproveContentRequest):
 def post(req: PublishContentRequest):
     try:
         return ok(
-            [r.model_dump() for r in content_pipeline.social.publish_content(req)]
+            {"items": [r.model_dump() for r in content_pipeline.social.publish_content(req)]}
         )
     except ValueError as exc:
         return fail("PUBLISH_BLOCKED", str(exc))
@@ -77,7 +77,7 @@ def run(req: CreateContentRequest):
 
 @router.get("/items")
 def items(status: ContentStatus | None = None):
-    return ok([i.model_dump() for i in content_pipeline.store.list_items(status)])
+    return ok({"items": [i.model_dump() for i in content_pipeline.store.list_items(status)]})
 
 
 @router.get("/items/{content_id}")
@@ -88,7 +88,7 @@ def item(content_id: str):
 
 @router.get("/runs")
 def runs():
-    return ok([r.model_dump() for r in content_pipeline.store.list_pipeline_runs()])
+    return ok({"runs": [r.model_dump() for r in content_pipeline.store.list_pipeline_runs()]})
 
 
 @router.get("/items/{content_id}/report")

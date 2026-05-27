@@ -1,5 +1,7 @@
 from .models import BrandingSettings
-_BRANDS={}
+from typing import Any
+
+_BRANDS: dict[tuple[str, str], dict[str, Any]] = {}
 def get_branding(organization_id,workspace_id): return _BRANDS.get((organization_id,workspace_id),BrandingSettings(organization_id,workspace_id).__dict__)
 def update_branding(organization_id,workspace_id,patch):
     b=get_branding(organization_id,workspace_id); b.update({k:v for k,v in patch.items() if '<script' not in str(v).lower()}); _BRANDS[(organization_id,workspace_id)]=b; return b

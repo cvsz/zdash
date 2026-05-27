@@ -1,6 +1,6 @@
 import hashlib
 
-_LICENSES = {}
+_LICENSES: dict[str, dict[str, str]] = {}
 
 
 def get_license_status(organization_id):

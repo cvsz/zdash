@@ -126,7 +126,7 @@ class AgentRegistry:
         response = to_agent.receive_message(envelope)
 
         related_events = _find_related_events(msg_id=msg_id, base_event=sent_event)
-        result = {
+        result: dict[str, Any] = {
             "message_id": msg_id,
             "from_agent": request.from_agent,
             "to_agent": request.to_agent,

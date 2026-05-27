@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-USAGE = defaultdict(int)
+USAGE: defaultdict[tuple[str, str, str], int] = defaultdict(int)
 
 
 def record_usage(organization_id, workspace_id, metric, quantity=1, **kwargs):

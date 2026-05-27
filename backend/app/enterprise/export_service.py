@@ -1,4 +1,6 @@
-_EXPORTS = []
+from typing import Any
+
+_EXPORTS: list[dict[str, Any]] = []
 
 
 def list_export_bundles(organization_id):

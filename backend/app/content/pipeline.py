@@ -61,7 +61,8 @@ class ContentPipeline:
             steps.append({"step": "policy_check", "ok": True})
             self.graphic.generate_graphic(GraphicRequest(content_id=item.id))
             steps.append({"step": "generate_graphic", "ok": True})
-            status = self.store.get_item(item.id).status
+            stored_item = self.store.get_item(item.id)
+            status = stored_item.status if stored_item else ContentStatus.failed
             ok = True
             msg = "pipeline completed"
             event_bus.emit(
@@ -100,8 +101,9 @@ class ContentPipeline:
         return self.run_full_pipeline(request)
 
     def generate_graphic(self, content_id: str) -> PipelineRunResult:
+        item = self.store.get_item(content_id)
         return self.run_full_pipeline(
-            CreateContentRequest(topic=self.store.get_item(content_id).topic)
+            CreateContentRequest(topic=item.topic if item else "")
         )
 
     def schedule(
@@ -161,7 +163,7 @@ class ContentPipeline:
             id=str(uuid4()),
             content_id=content_id,
             ok=True,
-            status=item.status,
+            status=item.status if item else ContentStatus.failed,
             steps=[{"step": "publish", "ok": True}],
             message="published",
             started_at=datetime.now(timezone.utc),

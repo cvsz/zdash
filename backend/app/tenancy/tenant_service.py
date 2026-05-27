@@ -6,7 +6,10 @@ class TenantService:
         if admin:
             return list(r.TENANTS.values())
         allowed = {
-            m["organization_id"] for m in r.MEMBERS.values() if m["user_id"] == user_id
+            member["organization_id"]
+            for members in r.MEMBERS.values()
+            for member in members
+            if member.get("user_id") == user_id
         }
         return [o for o in r.TENANTS.values() if o["id"] in allowed]
 

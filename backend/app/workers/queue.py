@@ -1,8 +1,8 @@
 import uuid
 from .models import WorkerTask
 
-TASKS={}
-QUEUE=[]
+TASKS: dict[str, WorkerTask] = {}
+QUEUE: list[str] = []
 
 class WorkerQueue:
     def enqueue(self,task_type,payload,tenant_context,priority=5):
