@@ -1,8 +1,8 @@
-# zDash · FULL SYSTEM BLUEPRINT v2.0
+# zDash · Safety-First AI Operations Dashboard
 
 **Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
 
-`cvsz/zdash` is organized around a phase-by-phase blueprint from **Phase 01** through **Phase 32**, with prompt files under `docs/prompt/` and Codex Cloud tooling under `.codex/cloud/`.
+Repository: `cvsz/zdash`
 
 Public/support domain:
 
@@ -16,9 +16,33 @@ Cloudflare operator source of truth:
 https://github.com/CVSz/zeaz-platform
 ```
 
-Use this repository for application code, local config defaults, backend/frontend implementation, tests, and documentation. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout.
+Use this repository for application code, local configuration defaults, backend/frontend implementation, tests, and documentation. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout.
 
-The current repository may contain a partial implementation of the full blueprint. Treat the phase prompts as the implementation roadmap, not as proof that every module already exists. Agents and contributors should inspect the repository before coding, implement one phase at a time, preserve existing behavior, and keep all safety defaults locked.
+---
+
+## Current Runtime Summary
+
+| Area | Current default |
+|---|---|
+| Backend | FastAPI on `0.0.0.0:8005` |
+| Frontend | React/Vite on `0.0.0.0:5173` |
+| Node/npm | Use `nvm`, Node 20 LTS. Do **not** install Ubuntu `apt npm`. |
+| Python | Python 3.11+ / 3.12 tested in Ubuntu VM |
+| Trading | Simulation/dry-run only by default |
+| IoT | Dry-run + confirmation-gated by default |
+| Social posting | Dry-run + approval-gated by default |
+| Strategy promotion | Disabled by default |
+| Main dashboard | Team roster is now rendered on `/` |
+| Team route | `/team` remains available |
+
+Common local endpoints:
+
+```text
+Backend health:  http://localhost:8005/health
+Backend API:     http://localhost:8005/api
+Frontend dev:    http://localhost:5173
+VM browser:      http://192.168.74.128:5173
+```
 
 ---
 
@@ -41,7 +65,7 @@ Never enable by default:
 
 Never bypass:
 
-- Guardian risk checks
+- Victor Hale / Guardian risk checks
 - drawdown guard checks
 - kill switch / halt flag checks
 - content approval checks
@@ -55,16 +79,32 @@ Trading-related modules are for **simulation, dry-run, and system testing only**
 
 ---
 
-## Runtime Ports
+## Canonical Agent Roster
 
-Default local backend port: **8005**
+Stable backend/API IDs must remain unchanged for routing, event correlation, tests, URLs, and compatibility. Use the new display names in dashboards, docs, reports, and metadata.
 
-Common local endpoints:
+| Tier | Stable ID | Display name | Title | Legacy alias |
+|---|---|---|---|---|
+| Legendary | `ceo` | Alexander Prime | CEO · Visionary Leader | CEO |
+| Epic | `janie` | Sophia Lane | Coordinator · Manager | Janie |
+| Epic | `guardian` | Victor Hale | Risk Manager | Guardian |
+| Epic | `editor` | Elena Voss | Content Specialist | Editor |
+| Epic | `social` | Maya Quinn | Social Media Specialist | Social |
+| Epic | `graphic` | Julian Reed | Design Specialist | Graphic |
+| Epic | `trading` / strategy modules | Damien Cross | Trading Specialist | Trading Specialist |
+| Rare | `joe` | Nathan Cole | Analyst · Developer | Joe |
+| Rare | `friday` | Isla Grant | Scheduler · Automation | Friday |
+
+Canonical roster prompt:
 
 ```text
-Backend health:  http://localhost:8005/health
-Backend API:     http://localhost:8005/api
-Frontend dev:    http://localhost:5173
+docs/prompt/agent-roster.prompt
+```
+
+Recommended wording:
+
+```text
+Alexander Prime delegates execution to Sophia Lane. Sophia Lane coordinates Victor Hale, Isla Grant, Nathan Cole, Elena Voss, Julian Reed, Maya Quinn, and Damien Cross.
 ```
 
 ---
@@ -84,7 +124,7 @@ Frontend dev:    http://localhost:5173
 ├── .github/workflows/                # CI, frontend CI, security CI
 ├── .codex/cloud/                     # Codex Cloud setup suite
 ├── config/ecc/                       # ECC / Codex CLI integration references
-├── docs/prompt/                      # Phase prompt files phase01.prompt → phase32.prompt
+├── docs/prompt/                      # Phase prompt files and canonical roster prompt
 ├── scripts/                          # Setup, run, and phase runner scripts
 ├── backend/                          # FastAPI backend
 ├── frontend/                         # React/Vite frontend
@@ -95,22 +135,17 @@ Important files:
 
 ```text
 AGENTS.md
-LICENSE
 SECURITY.md
 CONTRIBUTING.md
 COMMUNITY.md
 CODE-OF-CONDUCT.md
-.codex/cloud/README.md
 .codex/cloud/general-custom-instructions.md
 .codex/cloud/setup.sh
 .codex/cloud/maintenance.sh
-.codex/cloud/repair-backend-deps.sh
 scripts/run-prompt-phases.sh
 backend/pyproject.toml
-backend/requirements.txt
 frontend/package.json
 frontend/.npmrc
-frontend/tsconfig.json
 frontend/tsconfig.build.json
 infra/docker/backend.Dockerfile
 infra/docker/frontend.Dockerfile
@@ -118,66 +153,98 @@ infra/docker/frontend.Dockerfile
 
 ---
 
-## Community and Governance Docs
+## Ubuntu / VMware Full-Stack Setup
 
-Read these before contributing or operating the project:
+### Important Node rule
 
-- `AGENTS.md` — canonical coding-agent and contributor operating rules
-- `SECURITY.md` — vulnerability reporting, secret handling, and safety-critical defaults
-- `CONTRIBUTING.md` — setup, validation, phase workflow, PR guidance
-- `COMMUNITY.md` — community entrypoint and support-domain boundary
-- `CODE-OF-CONDUCT.md` — behavior expectations and enforcement policy
+Do **not** run:
+
+```bash
+sudo apt install nodejs npm
+```
+
+Ubuntu `npm` can conflict with NodeSource `nodejs`. Use `nvm` instead.
+
+### Recommended local installer
+
+Use the local `install-zdash-fullstack.sh` helper generated during repair. It should:
+
+- avoid `apt npm`
+- install Node through `nvm`
+- install backend tools such as `ruff`, `pytest`, `httpx`, and `uvicorn`
+- avoid `autopep8 --aggressive`
+- recover known formatter-corrupted files safely
+- remove stray untracked `package.json` / `package-lock.json` files outside `frontend/`
+- write helper scripts: `run-backend.sh`, `run-frontend.sh`, `healthcheck-zdash.sh`, `fix-gpg-signing.sh`, `commit-zdash-safe.sh`
+
+Typical run:
+
+```bash
+cd ~
+bash install-zdash-fullstack.sh
+```
+
+Fast mode without frontend tests:
+
+```bash
+RUN_FRONTEND_TESTS=false bash install-zdash-fullstack.sh
+```
+
+Force recovery of known formatter-damaged files:
+
+```bash
+RECOVER_CORRUPT_FILES=true bash install-zdash-fullstack.sh
+```
+
+Skip recovery:
+
+```bash
+RECOVER_CORRUPT_FILES=false bash install-zdash-fullstack.sh
+```
 
 ---
 
-## Quickstart
-
-### 1. Clone and enter repo
+## Manual Backend Setup
 
 ```bash
-git clone https://github.com/cvsz/zdash.git
-cd zdash
-```
-
-### 2. Run Codex Cloud/local setup helper
-
-```bash
-bash .codex/cloud/setup.sh
-```
-
-The setup helper repairs backend dependencies, installs frontend dependencies using the current peer-dependency policy, creates helper scripts under `.codex/`, and runs an initial healthcheck.
-
-### 3. Manual backend setup
-
-```bash
-cd backend
-python -m venv .venv
+cd ~/zdash/backend
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip setuptools wheel
-pip install -e '.[dev]'
-pytest
+python -m pip install -e '.[dev]' || python -m pip install -e .
+python -m pip install --upgrade ruff pytest pytest-cov httpx uvicorn
 ```
 
-Fallback / CI-compatible install:
+Backend validation:
 
 ```bash
-cd backend
-pip install -r requirements.txt
-pytest
+cd ~/zdash/backend
+source .venv/bin/activate
+python -m ruff check app tests --fix
+python -m ruff check app tests
+python -B -m pytest -q
 ```
 
-### 4. Manual frontend setup
+Do not use `autopep8 --aggressive` on the backend. It can corrupt compact generated files by moving `return` statements and local variables outside of functions.
+
+---
+
+## Manual Frontend Setup
 
 ```bash
-cd frontend
+source ~/.nvm/nvm.sh
+nvm install 20
+nvm use 20
+
+cd ~/zdash/frontend
 npm install --legacy-peer-deps --no-audit --fund=false
 npm test
 npm run build
 ```
 
-`frontend/.npmrc` intentionally sets `legacy-peer-deps=true` while the current Vite/plugin dependency graph is being stabilized. Do not remove it unless the lockfile and dependency graph are intentionally repaired.
+`frontend/.npmrc` intentionally sets `legacy-peer-deps=true` while the current Vite/plugin dependency graph is being stabilized.
 
-`npm test` already runs Vitest in one-shot mode through `vitest --run --passWithNoTests`; do not call `npm test -- --run` because that passes `--run` twice and fails on newer Vitest.
+`npm test` already runs Vitest in one-shot mode through `vitest --run --passWithNoTests`. Do **not** run `npm test -- --run`; that passes `--run` twice and fails on newer Vitest.
 
 ---
 
@@ -186,87 +253,73 @@ npm run build
 Backend:
 
 ```bash
-cd backend
+cd ~/zdash/backend
+source .venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
 ```
 
 Frontend:
 
 ```bash
-cd frontend
-npm run dev
+source ~/.nvm/nvm.sh
+nvm use 20
+cd ~/zdash/frontend
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-Healthcheck:
-
-```bash
-curl http://localhost:8005/health
-```
-
-Smoke test:
-
-```bash
-./scripts/smoke-test.sh
-```
-
----
-
-## Validation Commands
-
-Backend:
-
-```bash
-cd backend
-pytest
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm install --legacy-peer-deps --no-audit --fund=false
-npm test
-npm run build
-```
-
-Full helper:
-
-```bash
-bash .codex/healthcheck.sh
-```
-
-Codex Cloud maintenance:
-
-```bash
-bash .codex/cloud/maintenance.sh
-```
-
----
-
-## Codex Cloud Setup Suite
-
-Codex Cloud files live under:
+Open:
 
 ```text
-.codex/cloud/
-├── README.md
-├── general-custom-instructions.md
-├── setup.sh
-├── maintenance.sh
-├── repair-backend-deps.sh
-├── AGENTS.template.md
-├── phase-runner.md
-└── env.safe.example
+http://192.168.74.128:5173
 ```
 
-Use `general-custom-instructions.md` as a compact Codex Cloud UI prompt. Keep detailed repo behavior in `AGENTS.md` to avoid wasting context window.
+Backend health:
 
-Recommended Codex flow:
+```bash
+curl http://127.0.0.1:8005/health
+curl http://192.168.74.128:8005/health
+```
 
-1. Paste `.codex/cloud/general-custom-instructions.md` into Codex Cloud General Custom Instructions.
-2. Use `.codex/cloud/setup.sh` as the Setup Script.
-3. Use `.codex/cloud/maintenance.sh` as the Maintenance Script.
-4. Start tasks phase-by-phase using files under `docs/prompt/`.
+Check listening ports:
+
+```bash
+ss -lntp | grep -E ':5173|:8005'
+```
+
+Expected listeners:
+
+```text
+0.0.0.0:5173
+0.0.0.0:8005
+```
+
+If Windows cannot reach the VM browser URL, use an SSH tunnel:
+
+```powershell
+ssh -L 5173:127.0.0.1:5173 -L 8005:127.0.0.1:8005 zeazdev@192.168.74.128
+```
+
+Then open:
+
+```text
+http://localhost:5173
+```
+
+---
+
+## Dashboard Notes
+
+The main dashboard `/` now renders the team roster.
+
+Current UI features:
+
+- abstract zDash background image under `frontend/images/`
+- team roster moved to the main dashboard
+- `/team` route still available
+- canonical renamed agents
+- agents-per-page selector: `6 / 9 / 12 / 24`
+- default page size: `9`
+- wide layout with up to five cards per row on large displays
 
 ---
 
@@ -313,6 +366,7 @@ phase29.prompt
 phase30.prompt
 phase31.prompt
 phase32.prompt
+agent-roster.prompt
 ```
 
 Run one phase at a time unless explicitly doing a batch:
@@ -334,26 +388,20 @@ FROM=21 TO=25 ./scripts/run-prompt-phases.sh
 FROM=26 TO=32 ./scripts/run-prompt-phases.sh
 ```
 
-Full validation override:
-
-```bash
-VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d frontend ]; then cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build && cd ..; fi' FROM=1 TO=32 ./scripts/run-prompt-phases.sh
-```
-
 ---
 
 ## Blueprint Roadmap
 
 | Phase | Area | Summary |
 |---:|---|---|
-| 01 | Foundation | Janie Server, Agent Runtime, CEO/Janie agents, mock AI fallback, event bus, health APIs. |
-| 02 | Trading Core | XAU scanner, MT5 adapter shell, Funnel Filter 21/10/3, signal validation, dry-run execution. |
-| 03 | Risk System | Guardian agent, drawdown guard, kill switch, halt flag, risk-gated execution. |
-| 04 | Automation | Scheduler, IoT adapter shell, Windows service/NSSM run guidance. |
-| 05 | Backtesting | Strategy lab, backtest engine, optimization, simulation-only strategy promotion. |
-| 06 | Content Pipeline | Editor, Graphic, Social agents, mock image/social adapters, approval-gated publishing. |
-| 07 | Dashboard | React/Vite dashboard integration for agents, trading, logs, scheduler, backtests. |
-| 08–20 | Expansion | Extended SaaS, governance, operations, plugin, compliance, and system hardening phases. |
+| 01 | Foundation | Sophia Lane server/runtime, Alexander Prime/Sophia Lane agents, mock AI fallback, event bus, health APIs. |
+| 02 | Trading Core | Damien Cross trading core: XAU scanner, MT5 adapter shell, Funnel Filter 21/10/3, signal validation, dry-run execution. |
+| 03 | Risk System | Victor Hale risk layer, drawdown guard, kill switch, halt flag, risk-gated execution. |
+| 04 | Automation | Isla Grant scheduler, IoT adapter shell, Windows service/NSSM run guidance. |
+| 05 | Backtesting | Nathan Cole strategy lab, backtest engine, optimizer, simulation-only strategy promotion. |
+| 06 | Content Pipeline | Elena Voss, Julian Reed, and Maya Quinn content/design/social workflow with approval-gated publishing. |
+| 07 | Dashboard | React/Vite dashboard integration for agents, trading, logs, scheduler, backtests, and roster. |
+| 08–20 | Expansion | Extended SaaS, governance, operations, plugin, compliance, and hardening phases. |
 | 21 | Federation | Federated governance, trust network, verifiable AI OS concepts. |
 | 22 | Advanced Ops | Extended governance/enterprise controls according to phase prompt. |
 | 23 | Pre-Endgame | Final bridge prompt before customer/cloud/endgame phases. |
@@ -369,244 +417,11 @@ VALIDATE_CMD='if [ -d backend ]; then cd backend && pytest && cd ..; fi; if [ -d
 
 ---
 
-## Phase 02 Trading Core
-
-Phase 02 adds a **dry-run-only** trading foundation:
-
-- deterministic XAUUSD M5 market-data generator
-- MT5 adapter shell with mock-safe fallback (no required credentials for tests)
-- Funnel Filter `21 / 10 / 3` signal generation
-- AI signal summary with mock fallback and safety disclaimer
-- signal validation service
-- dry-run execution engine with config guards
-
-Safety guarantees:
-
-- `DRY_RUN=true` by default
-- `LIVE_TRADING_ACK=false` by default
-- `MT5_ENABLED=false` by default
-- live order routing remains blocked in this phase
-
-Primary backend modules:
-
-```text
-backend/app/trading/models.py
-backend/app/trading/market_data.py
-backend/app/trading/mt5_adapter.py
-backend/app/trading/funnel_filter.py
-backend/app/trading/ai_analysis.py
-backend/app/trading/signal_validation.py
-backend/app/trading/xau_scanner.py
-backend/app/trading/execution_engine.py
-backend/app/trading/trading_service.py
-backend/app/api/trading.py
-```
-
-Phase 02 API examples:
-
-```bash
-curl http://localhost:8005/api/trading/status
-```
-
-```bash
-curl -X POST http://localhost:8005/api/trading/scan \
-  -H "Content-Type: application/json" \
-  -d '{"symbol":"XAUUSD","timeframe":"M5"}'
-```
-
-```bash
-curl -X POST http://localhost:8005/api/trading/validate-signal \
-  -H "Content-Type: application/json" \
-  -d '{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}}'
-```
-
-```bash
-curl -X POST http://localhost:8005/api/trading/dry-run-execute \
-  -H "Content-Type: application/json" \
-  -d '{"signal":{"symbol":"XAUUSD","timeframe":"M5","direction":"buy","strategy":"ob_aggressive","confidence":0.7,"entry":2300,"stop_loss":2298,"take_profit":2304,"reason":"simulation signal","metadata":{}},"dry_run":true,"confirmation":false}'
-```
-
-Phase 02 test commands:
-
-```bash
-cd backend && pytest
-cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
-docker build -f infra/docker/backend.Dockerfile .
-docker build -f infra/docker/frontend.Dockerfile .
-```
-
----
-
-## Phase 03 Risk System
-
-Phase 03 adds the **Guardian risk layer** in front of trading execution:
-
-- `Guardian` agent (`id=guardian`, `role=risk_guardian`)
-- account snapshot-based drawdown evaluation
-- soft warning levels and hard breach thresholds
-- in-memory halt flag store (replaceable in later phases)
-- emergency kill switch at configurable threshold (default `50%`)
-- manual halt/resume controls with explicit resume approval + reason
-- risk-gated execution integration (fail-closed when risk evaluation cannot complete)
-
-Primary backend modules:
-
-```text
-backend/app/agents/guardian.py
-backend/app/risk/models.py
-backend/app/risk/drawdown_guard.py
-backend/app/risk/halt_flag.py
-backend/app/risk/kill_switch.py
-backend/app/risk/guardian_service.py
-backend/app/api/risk.py
-backend/app/trading/execution_engine.py
-```
-
-Drawdown formulas:
-
-```text
-total_drawdown_percent = ((peak_equity - current_equity) / peak_equity) * 100
-daily_drawdown_percent = ((daily_start_equity - current_equity) / daily_start_equity) * 100
-```
-
-Key safety defaults:
-
-- `DRY_RUN=true`
-- `LIVE_TRADING_ACK=false`
-- `RISK_GUARDIAN_ENABLED=true`
-- emergency kill switch default threshold: `50`
-- active halt blocks execution, including dry-run execution requests
-
-Risk API examples:
-
-```bash
-curl -X POST http://localhost:8005/api/risk/check \
-  -H "Content-Type: application/json" \
-  -d '{
-    "balance": 10000,
-    "equity": 9500,
-    "peak_equity": 10000,
-    "daily_start_equity": 10000,
-    "open_positions": 0,
-    "floating_pnl": -500,
-    "realized_pnl_today": -500
-  }'
-```
-
-```bash
-curl -X POST http://localhost:8005/api/risk/halt \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "Manual operator halt"}'
-```
-
-```bash
-curl -X POST http://localhost:8005/api/risk/resume \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "Reviewed and safe for dry-run resume", "approved": true}'
-```
-
-Phase 03 validation commands:
-
-```bash
-cd backend && pytest
-cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
-docker build -f infra/docker/backend.Dockerfile .
-docker build -f infra/docker/frontend.Dockerfile .
-```
-
----
-
-## Phase 04 Automation
-
-Phase 04 adds automation foundations around Scheduler, Friday, and IoT shells:
-
-- Friday automation coordinator agent (`id=friday`, `role=automation_coordinator`)
-- scheduler service with in-memory job store and run history
-- interval/cron/manual job support
-- safe predefined jobs (`health_check`, `risk_check`, `trading_scan`, `backtest`, and disabled-by-default `iot_power_cycle`)
-- Tapo adapter shell and IoT service with dry-run-first behavior
-- Windows NSSM install/uninstall guidance scripts
-
-Scheduler architecture (Phase 04):
-
-```text
-FridayAgent -> SchedulerService -> InMemoryJobStore
-                              -> Job handlers (risk/trading/backtest/iot/health/mock)
-                              -> Event bus audit trail
-```
-
-Safety rules:
-
-- Scheduler never bypasses Guardian/halt checks for trading jobs.
-- Active risk halt causes trading jobs to return `blocked_by_risk`/skipped output.
-- `IOT_DRY_RUN=true` by default.
-- Real IoT actions require explicit confirmation when `IOT_REQUIRE_CONFIRMATION=true`.
-- Adapter shell keeps real destructive IoT actions blocked in this phase.
-
-Phase 04 API examples:
-
-```bash
-curl http://localhost:8005/api/scheduler/status
-```
-
-```bash
-curl http://localhost:8005/api/scheduler/jobs
-```
-
-```bash
-curl -X POST http://localhost:8005/api/scheduler/jobs \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Manual XAU scan",
-    "job_type": "trading_scan",
-    "schedule_type": "manual",
-    "payload": {
-      "symbol": "XAUUSD",
-      "timeframe": "M5",
-      "dry_run": true
-    },
-    "enabled": true
-  }'
-```
-
-```bash
-curl -X POST http://localhost:8005/api/scheduler/jobs/JOB_ID/run
-```
-
-```bash
-curl http://localhost:8005/api/iot/status
-```
-
-```bash
-curl -X POST http://localhost:8005/api/iot/power-cycle \
-  -H "Content-Type: application/json" \
-  -d '{
-    "device_alias": "zdash-power-node",
-    "confirmation": false
-  }'
-```
-
-Windows NSSM scripts:
-
-- `scripts/install-nssm-service.ps1`
-- `scripts/uninstall-nssm-service.ps1`
-
-Phase 04 validation commands:
-
-```bash
-cd backend && pytest
-cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
-docker build -f infra/docker/backend.Dockerfile .
-docker build -f infra/docker/frontend.Dockerfile .
-```
-
----
-
 ## Phase 05 Backtesting
 
-Phase 05 introduces the **Strategy Lab** and **Joe Agent** for deterministic strategy research in simulation mode:
+Phase 05 introduces the **Strategy Lab** and **Nathan Cole agent** for deterministic strategy research in simulation mode:
 
-- Joe agent (`id=joe`, `role=strategy_lab_coordinator`)
+- `joe` stable ID, display name `Nathan Cole`
 - deterministic mock OHLCV dataset provider for `XAUUSD/M5`
 - safe CSV dataset loading from `backend/data/backtests/` only
 - strategy interface + variants:
@@ -614,7 +429,7 @@ Phase 05 introduces the **Strategy Lab** and **Joe Agent** for deterministic str
   - `ob_conservative`
   - `trend_follow`
 - backtest engine with non-overlapping-trade simulation
-- metrics engine (win rate, PF, drawdown, expectancy, sharpe-like score, monthly returns)
+- metrics engine
 - parameter-sweep optimizer with hard combination cap
 - strategy promotion gate with risk thresholds
 - scheduler `backtest` job integration through `BacktestService`
@@ -627,43 +442,16 @@ Safety notes:
 - Live trading remains disabled by default
 - `DRY_RUN=true` remains default
 - Strategy promotion remains disabled by default (`ALLOW_STRATEGY_PROMOTION=false`)
-- Promotion does not enable live trading and does not disable Guardian
+- Promotion does not enable live trading and does not disable Victor Hale / Guardian risk controls
 
-Key config variables:
-
-```env
-BACKTESTING_ENABLED=true
-BACKTEST_DATASET_SOURCE=mock
-BACKTEST_DEFAULT_SYMBOL=XAUUSD
-BACKTEST_DEFAULT_TIMEFRAME=M5
-BACKTEST_INITIAL_BALANCE=10000
-BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT=1
-BACKTEST_COMMISSION_PER_TRADE=0
-BACKTEST_SPREAD_POINTS=25
-BACKTEST_SLIPPAGE_POINTS=5
-PRIMARY_STRATEGY=ob_aggressive
-ALLOW_STRATEGY_PROMOTION=false
-MIN_PROMOTION_TRADES=50
-MIN_PROMOTION_WIN_RATE=45
-MIN_PROMOTION_PROFIT_FACTOR=1.2
-MAX_PROMOTION_DRAWDOWN_PERCENT=20
-MAX_PROMOTION_CONSECUTIVE_LOSSES=8
-OPTIMIZER_MAX_COMBINATIONS=100
-OPTIMIZER_SORT_METRIC=profit_factor
-```
-
-Phase 05 API examples:
-
-List strategies:
+API examples use port **8005**:
 
 ```bash
-curl http://localhost:8000/api/backtesting/strategies
+curl http://localhost:8005/api/backtesting/strategies
 ```
 
-Run backtest:
-
 ```bash
-curl -X POST http://localhost:8000/api/backtesting/run \
+curl -X POST http://localhost:8005/api/backtesting/run \
   -H "Content-Type: application/json" \
   -d '{
     "strategy": "ob_aggressive",
@@ -676,10 +464,8 @@ curl -X POST http://localhost:8000/api/backtesting/run \
   }'
 ```
 
-Run optimization:
-
 ```bash
-curl -X POST http://localhost:8000/api/backtesting/optimize \
+curl -X POST http://localhost:8005/api/backtesting/optimize \
   -H "Content-Type: application/json" \
   -d '{
     "strategy": "ob_aggressive",
@@ -698,142 +484,10 @@ curl -X POST http://localhost:8000/api/backtesting/optimize \
   }'
 ```
 
-Promotion check:
-
 ```bash
-curl -X POST http://localhost:8000/api/backtesting/results/RESULT_ID/promotion-check
+curl -X POST http://localhost:8005/api/backtesting/results/RESULT_ID/promotion-check
+curl http://localhost:8005/api/backtesting/results/RESULT_ID/report
 ```
-
-Get report:
-
-```bash
-curl http://localhost:8000/api/backtesting/results/RESULT_ID/report
-```
-
-Phase 05 validation commands:
-
-```bash
-cd backend && python -B -m pytest -q
-cd frontend && npm install --legacy-peer-deps --no-audit --fund=false && npm test && npm run build
-docker build -f infra/docker/backend.Dockerfile .
-docker build -f infra/docker/frontend.Dockerfile .
-```
-
----
-
-## Cloudflare Support Domain
-
-`zdash.zeaz.dev` is the supported public domain for zDash.
-
-Application repo responsibilities in `cvsz/zdash`:
-
-- app source code
-- backend/frontend implementation
-- local config defaults
-- Docker and CI compatibility
-- tests and docs
-
-Cloudflare operator responsibilities in `CVSz/zeaz-platform`:
-
-- DNS
-- Cloudflare Pages or Tunnel routing
-- Access policies
-- WAF and API Shield
-- edge health checks
-- production support-domain rollout
-
-Do not duplicate Cloudflare operator logic in this repo unless a task explicitly asks for local integration hooks.
-
----
-
-## Backend
-
-Backend stack:
-
-- Python 3.11+
-- FastAPI
-- Pydantic v2
-- pydantic-settings
-- SQLModel / SQLAlchemy where persistence exists
-- Alembic where migrations exist
-- pytest
-- httpx for API tests
-
-Key manifests:
-
-```text
-backend/pyproject.toml
-backend/requirements.txt
-```
-
-Rules:
-
-- Keep `backend/requirements.txt` in sync when adding runtime dependencies.
-- Keep tests deterministic and offline.
-- Provider integrations must be optional and mock-safe.
-- Missing optional providers must not crash the app.
-- New APIs should use the standard response shape when possible.
-- Structured event details should be stored in event `payload`; event `message` must stay human-readable.
-
-Standard response shape:
-
-```json
-{
-  "ok": true,
-  "data": {},
-  "error": null,
-  "timestamp": "ISO_DATE"
-}
-```
-
-Error shape:
-
-```json
-{
-  "ok": false,
-  "data": null,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human readable message"
-  },
-  "timestamp": "ISO_DATE"
-}
-```
-
----
-
-## Frontend
-
-Frontend stack:
-
-- React
-- Vite
-- TypeScript
-- Tailwind where present
-- Vitest / React Testing Library where present
-
-Commands:
-
-```bash
-cd frontend
-npm install --legacy-peer-deps --no-audit --fund=false
-npm test
-npm run build
-```
-
-Build/test split:
-
-- `npm test` runs Vitest with the `--run` flag already defined in `frontend/package.json`.
-- `npm run build` uses `frontend/tsconfig.build.json` so production builds do not compile `src/tests/**`.
-- Frontend CI should run `npx tsc -p tsconfig.build.json`, `npm test`, then `npm run build`.
-
-Rules:
-
-- Never expose secrets through frontend variables.
-- Show dry-run/read-only/approval-required state clearly.
-- Disable or hide real mutation actions unless enabled and authorized.
-- Use mock fallback when backend modules are missing or disabled.
-- Keep TypeScript types aligned with backend API responses.
 
 ---
 
@@ -865,39 +519,46 @@ Rules:
 
 - Do not bake secrets into images.
 - Images must build without real provider credentials.
-- Backend image should remain compatible with `backend/requirements.txt`.
-- Frontend image should follow current npm peer-dependency policy.
 - Frontend Docker build runs `npm run build`; keep `tsconfig.build.json` test exclusions intact.
 
 ---
 
-## CI
+## CI and Validation
 
-Workflows live under:
+Expected checks:
 
-```text
-.github/workflows/
-```
-
-Expected jobs:
-
-- backend tests
+- backend lint/tests
 - frontend tests/build
 - Docker build
 - security scan/audit
 
-CI policy:
+Backend:
 
-- backend installs from `backend/pyproject.toml` first, with `backend/requirements.txt` compatibility where needed
-- frontend installs with `npm install --legacy-peer-deps --no-audit --fund=false`
-- frontend tests run with `npm test`, not `npm test -- --run`
-- frontend production build uses `tsconfig.build.json` so tests are excluded from `tsc`
-- security audits may be non-blocking only when the workflow explicitly marks them non-blocking
-- secret scans must remain blocking for real secret patterns
+```bash
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests --fix
+python -m ruff check app tests
+python -B -m pytest -q
+```
 
-If CI fails, inspect the exact workflow/job log first. Fix source/config root cause. Do not delete tests or weaken safety gates to force green CI.
+Frontend:
 
-### CI Troubleshooting Notes
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm install --legacy-peer-deps --no-audit --fund=false
+npm test
+npm run build
+```
+
+Docker:
+
+```bash
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+```
 
 Common known failure patterns and fixes:
 
@@ -920,10 +581,84 @@ Input should be a valid string for Event.message
 Keep `Event.message` as a string and put structured data in `Event.payload`.
 
 ```text
-Can't instantiate abstract class EditorAgent
+No module named ruff
 ```
 
-All agents extending `BaseAgent` must implement abstract methods and call `BaseAgent.__init__()`.
+Install backend dev tools:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m pip install --upgrade ruff pytest pytest-cov httpx
+```
+
+```text
+nodejs : Conflicts: npm
+```
+
+Remove Ubuntu `npm` and use `nvm`:
+
+```bash
+sudo apt-get remove -y npm
+source ~/.nvm/nvm.sh
+nvm install 20
+nvm use 20
+```
+
+```text
+return statement outside of a function/method
+Undefined name o/w/body
+```
+
+Do not commit formatter-damaged files. Restore known corrupted files from `HEAD` or `origin/main`, then apply targeted Python 3.11 f-string fixes only.
+
+---
+
+## Safe Commit / GPG Notes
+
+If signed commit fails with:
+
+```text
+Couldn't load public key: No such file or directory
+```
+
+reset Git signing to GPG/OpenPGP:
+
+```bash
+export GPG_TTY=$(tty)
+git config --global --unset gpg.format || true
+git config --global gpg.program gpg
+git config --global commit.gpgsign true
+gpg --list-secret-keys --keyid-format=long
+```
+
+Set the key ID shown after `sec .../KEY_ID`:
+
+```bash
+git config --global user.signingkey KEY_ID
+echo test | gpg --clearsign
+```
+
+Commit:
+
+```bash
+git add backend frontend README.md .gitignore
+git commit -S -m "fix: update zDash"
+git push
+```
+
+Emergency unsigned commit:
+
+```bash
+git commit --no-gpg-sign -m "fix: update zDash"
+git push
+```
+
+Avoid committing local helper scripts unless intentionally adding them to the repo. Prefer storing generated helpers under:
+
+```text
+~/.local/bin/zdash-tools/
+```
 
 ---
 
@@ -935,7 +670,7 @@ Start from:
 cp .env.example .env
 ```
 
-Safe defaults should keep real actions disabled:
+Safe defaults:
 
 ```env
 BACKEND_PORT=8005
@@ -944,9 +679,12 @@ CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
 DRY_RUN=true
 LIVE_TRADING_ACK=false
 RISK_GUARDIAN_ENABLED=true
+MT5_ENABLED=false
 SOCIAL_DRY_RUN=true
 SOCIAL_AUTO_POST_ENABLED=false
 IOT_DRY_RUN=true
+IOT_REQUIRE_CONFIRMATION=true
+ALLOW_STRATEGY_PROMOTION=false
 UPDATE_DRY_RUN=true
 SUPPORT_BUNDLE_INCLUDE_SECRETS=false
 DEPLOYMENT_PACK_INCLUDE_SECRETS=false
@@ -1002,12 +740,14 @@ Provider adapters must fail safely when:
 
 ## Current Known Notes
 
-- README is the project overview; `AGENTS.md` is the detailed agent policy.
+- `README.md` is the project overview; `AGENTS.md` is the detailed agent policy.
 - Codex Cloud custom instructions are intentionally compact to preserve context window.
 - `docs/prompt/` is the source of truth for phase-specific work.
+- `docs/prompt/agent-roster.prompt` is the source of truth for display agent names.
 - Some blueprint phases may be prompt-only until implemented by Codex/agents.
 - The existing app should remain safe in mock/dry-run mode even when optional providers are missing.
 - Frontend tests and frontend production builds intentionally use separate TypeScript config paths.
+- Keep port examples on `8005`, not `8000`.
 
 ---
 
