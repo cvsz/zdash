@@ -1,7 +1,8 @@
 from sqlalchemy import text
+
 from app.db.base import Base
-from app.db.session import engine
 import app.db.models  # noqa
+from app.db.session import engine
 
 
 def create_all() -> None:
@@ -9,6 +10,7 @@ def create_all() -> None:
 
 
 def run_migrations() -> None:
+    # Lightweight compatibility migration path for Phase 08.1.
     create_all()
 
 

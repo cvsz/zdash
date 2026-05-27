@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     backend_port: int = Field(default=8005, alias="BACKEND_PORT")
 
     database_url: str = Field(default="sqlite:///./zdash.db", alias="DATABASE_URL")
+    db_echo: bool = Field(default=False, alias="DB_ECHO")
+    db_pool_size: int = Field(default=5, alias="DB_POOL_SIZE")
+    db_max_overflow: int = Field(default=10, alias="DB_MAX_OVERFLOW")
+    production_safety_lock: bool = Field(default=True, alias="PRODUCTION_SAFETY_LOCK")
     jwt_secret_key: str = Field(
         default="dev-only-change-before-production", alias="JWT_SECRET_KEY"
     )
@@ -336,10 +340,32 @@ class Settings(BaseSettings):
             return 0
         return parsed
 
+    @field_validator("db_pool_size", "db_max_overflow", mode="before")
+    @classmethod
+    def _safe_non_negative_db_pool(cls, value):
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return 0
+        if parsed < 0:
+            return 0
+        return parsed
+
+    @property
+    def is_production(self) -> bool:
+        return self.app_env.lower() == "production"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        origins = [origin.strip() for origin in self.cors_allow_origins.split(",")]
+        cleaned = [origin for origin in origins if origin]
+        return cleaned or ["http://localhost:5173"]
+
 
 @lru_cache
 def get_settings() -> Settings:
     settings = Settings()
+    default_unsafe_secret = "dev-only-change-before-production"
 
     # Fail-safe normalization to prevent unsafe threshold combinations.
     if settings.max_daily_drawdown_percent <= 0:
@@ -404,6 +430,11 @@ def get_settings() -> Settings:
     if not settings.social_default_platforms.strip():
         settings.social_default_platforms = "x,tiktok,facebook,instagram,linkedin"
 
+    if settings.db_pool_size <= 0:
+        settings.db_pool_size = 5
+    if settings.db_max_overflow < 0:
+        settings.db_max_overflow = 10
+
     ordered = sorted(
         [
             settings.soft_halt_drawdown_level_1,
@@ -416,5 +447,33 @@ def get_settings() -> Settings:
         settings.soft_halt_drawdown_level_2,
         settings.soft_halt_drawdown_level_3,
     ) = ordered
+
+    if settings.is_production:
+        database_url = settings.database_url.strip()
+        if not settings.production_safety_lock:
+            raise RuntimeError(
+                "PRODUCTION_SAFETY_LOCK must be true in production mode."
+            )
+        if not database_url:
+            raise RuntimeError("DATABASE_URL is required in production mode.")
+        if not database_url.startswith(
+            (
+                "postgres://",
+                "postgresql://",
+                "postgresql+psycopg://",
+                "postgresql+psycopg2://",
+            )
+        ):
+            raise RuntimeError(
+                "DATABASE_URL must use PostgreSQL in production mode."
+            )
+        if settings.jwt_secret_key.strip() in {"", default_unsafe_secret}:
+            raise RuntimeError(
+                "JWT_SECRET_KEY must be set to a non-default value in production mode."
+            )
+        if settings.bootstrap_admin_password.strip() in {"", default_unsafe_secret}:
+            raise RuntimeError(
+                "BOOTSTRAP_ADMIN_PASSWORD must be set to a non-default value in production mode."
+            )
 
     return settings
