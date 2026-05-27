@@ -15,4 +15,4 @@ logs/
 zdash.db
 .DS_Store
 log.txt
-backups
+backups.env
