@@ -11,11 +11,10 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from app.core.config import get_settings
-from app.core.database import get_session
 from app.repositories import Repository
 
-pwd_context = CryptContext(schemes=['pbkdf2_sha256'], deprecated='auto')
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/auth/login')
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
 class TokenData(BaseModel):
@@ -38,22 +37,28 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(username: str, role: str) -> str:
     settings = get_settings()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_access_token_expire_minutes)
-    payload = {'sub': username, 'role': role, 'exp': expire}
-    return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.jwt_access_token_expire_minutes
+    )
+    payload = {"sub": username, "role": role, "exp": expire}
+    return jwt.encode(
+        payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
+    )
 
 
 def decode_access_token(token: str) -> TokenData:
     settings = get_settings()
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        username = payload.get('sub')
-        role = payload.get('role')
+        payload = jwt.decode(
+            token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
+        )
+        username = payload.get("sub")
+        role = payload.get("role")
         if username is None or role is None:
             raise credentials_exception
         return TokenData(username=username, role=role)
@@ -67,9 +72,11 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> CurrentUs
 
 
 def require_roles(*roles: str):
-    def _dependency(user: Annotated[CurrentUser, Depends(get_current_user)]) -> CurrentUser:
+    def _dependency(
+        user: Annotated[CurrentUser, Depends(get_current_user)],
+    ) -> CurrentUser:
         if user.role not in roles:
-            raise HTTPException(status_code=403, detail='Insufficient role')
+            raise HTTPException(status_code=403, detail="Insufficient role")
         return user
 
     return _dependency
@@ -83,5 +90,5 @@ def bootstrap_admin(session: Session) -> None:
         repo.add_user(
             username=settings.bootstrap_admin_username,
             password_hash=get_password_hash(settings.bootstrap_admin_password),
-            role='admin',
+            role="admin",
         )

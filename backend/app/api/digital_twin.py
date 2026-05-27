@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.core.config import get_settings
 from app.core.responses import ok, fail
 from app.digital_twin.models import TwinEntity, TwinRelationship
@@ -18,7 +18,7 @@ def _org_ws(): return 'org-default','ws-default'
 
 @router.get('/status')
 def status():
-    s=get_settings();
+    s=get_settings()
     if not getattr(s,'digital_twin_enabled',True): return fail('DIGITAL_TWIN_DISABLED','Digital twin is disabled')
     return ok({'enabled':True,'mode':'advisory','dry_run':True})
 

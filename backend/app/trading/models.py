@@ -17,19 +17,19 @@ class Candle(BaseModel):
     close: float
     volume: float = 0.0
 
-    @field_validator('open', 'high', 'low', 'close')
+    @field_validator("open", "high", "low", "close")
     @classmethod
     def _positive_price(cls, value: float) -> float:
         if value <= 0:
-            raise ValueError('price fields must be positive')
+            raise ValueError("price fields must be positive")
         return value
 
-    @model_validator(mode='after')
-    def _bounds_are_valid(self) -> 'Candle':
+    @model_validator(mode="after")
+    def _bounds_are_valid(self) -> "Candle":
         if self.high < max(self.open, self.close, self.low):
-            raise ValueError('high must be >= open/close/low')
+            raise ValueError("high must be >= open/close/low")
         if self.low > min(self.open, self.close, self.high):
-            raise ValueError('low must be <= open/close/high')
+            raise ValueError("low must be <= open/close/high")
         return self
 
 
@@ -37,7 +37,7 @@ class TradingSignal(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     symbol: str
     timeframe: str
-    direction: Literal['buy', 'sell', 'hold']
+    direction: Literal["buy", "sell", "hold"]
     strategy: str
     confidence: float
     entry: float
@@ -47,11 +47,11 @@ class TradingSignal(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    @field_validator('confidence')
+    @field_validator("confidence")
     @classmethod
     def _confidence_range(cls, value: float) -> float:
         if value < 0 or value > 1:
-            raise ValueError('confidence must be between 0 and 1')
+            raise ValueError("confidence must be between 0 and 1")
         return value
 
 
@@ -64,12 +64,12 @@ class SignalValidationResult(BaseModel):
 
 
 ExecutionStatus = Literal[
-    'simulated',
-    'executed',
-    'blocked_by_config',
-    'blocked_by_validation',
-    'blocked_by_risk',
-    'failed',
+    "simulated",
+    "executed",
+    "blocked_by_config",
+    "blocked_by_validation",
+    "blocked_by_risk",
+    "failed",
 ]
 
 

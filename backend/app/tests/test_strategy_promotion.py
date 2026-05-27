@@ -63,7 +63,9 @@ def test_promotion_disabled_blocks_approval(monkeypatch) -> None:
 def test_insufficient_trades_blocks_approval(monkeypatch) -> None:
     monkeypatch.setenv("ALLOW_STRATEGY_PROMOTION", "true")
     get_settings.cache_clear()
-    decision = StrategyPromotionGate().evaluate(_result_with_metrics(_metrics(total_trades=20)))
+    decision = StrategyPromotionGate().evaluate(
+        _result_with_metrics(_metrics(total_trades=20))
+    )
     assert decision.approved is False
     assert decision.reason == "insufficient_trades"
 
@@ -81,6 +83,8 @@ def test_high_drawdown_blocks_approval(monkeypatch) -> None:
 def test_valid_metrics_approve_only_when_enabled(monkeypatch) -> None:
     monkeypatch.setenv("ALLOW_STRATEGY_PROMOTION", "true")
     get_settings.cache_clear()
-    decision = StrategyPromotionGate().evaluate(_result_with_metrics(_metrics(total_trades=120)))
+    decision = StrategyPromotionGate().evaluate(
+        _result_with_metrics(_metrics(total_trades=120))
+    )
     assert decision.approved is True
     assert decision.reason == "approved"

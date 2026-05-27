@@ -8,7 +8,7 @@ from app.core.responses import fail, ok
 from app.risk.guardian_service import get_guardian_service
 from app.risk.models import AccountSnapshot
 
-router = APIRouter(prefix='/api/risk', tags=['risk'])
+router = APIRouter(prefix="/api/risk", tags=["risk"])
 
 
 class HaltRequest(BaseModel):
@@ -25,20 +25,20 @@ class ApproveExecutionRequest(BaseModel):
     snapshot: AccountSnapshot
 
 
-@router.get('/status')
+@router.get("/status")
 def status() -> dict:
     service = get_guardian_service()
     return ok(service.get_status())
 
 
-@router.post('/check')
+@router.post("/check")
 def check(snapshot: AccountSnapshot) -> dict:
     service = get_guardian_service()
     decision = service.check(snapshot)
-    return ok({'decision': decision.model_dump(mode='json')})
+    return ok({"decision": decision.model_dump(mode="json")})
 
 
-@router.get('/drawdown')
+@router.get("/drawdown")
 def drawdown() -> dict:
     service = get_guardian_service()
     latest = service.latest_drawdown()
@@ -56,31 +56,31 @@ def drawdown() -> dict:
             )
         )
         latest = safe.drawdown
-    return ok({'drawdown': latest.model_dump(mode='json') if latest else None})
+    return ok({"drawdown": latest.model_dump(mode="json") if latest else None})
 
 
-@router.post('/halt')
+@router.post("/halt")
 def halt(req: HaltRequest) -> dict:
     service = get_guardian_service()
     try:
-        state = service.halt(req.reason, source='manual')
+        state = service.halt(req.reason, source="manual")
     except ValueError as exc:
-        return fail('RISK_HALT_INVALID', str(exc))
-    return ok({'halt_state': state.model_dump(mode='json')})
+        return fail("RISK_HALT_INVALID", str(exc))
+    return ok({"halt_state": state.model_dump(mode="json")})
 
 
-@router.post('/resume')
+@router.post("/resume")
 def resume(req: ResumeRequest) -> dict:
     service = get_guardian_service()
     try:
         state = service.resume(reason=req.reason, approved=req.approved)
     except ValueError as exc:
-        return fail('RISK_RESUME_INVALID', str(exc))
-    return ok({'halt_state': state.model_dump(mode='json')})
+        return fail("RISK_RESUME_INVALID", str(exc))
+    return ok({"halt_state": state.model_dump(mode="json")})
 
 
-@router.post('/approve-execution')
+@router.post("/approve-execution")
 def approve_execution(req: ApproveExecutionRequest) -> dict:
     service = get_guardian_service()
     decision = service.approve_execution(signal=req.signal, snapshot=req.snapshot)
-    return ok({'decision': decision.model_dump(mode='json')})
+    return ok({"decision": decision.model_dump(mode="json")})

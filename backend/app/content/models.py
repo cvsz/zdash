@@ -8,36 +8,36 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class ContentStatus(str, Enum):
-    draft = 'draft'
-    edited = 'edited'
-    graphic_requested = 'graphic_requested'
-    graphic_ready = 'graphic_ready'
-    scheduled = 'scheduled'
-    approved = 'approved'
-    posted = 'posted'
-    failed = 'failed'
-    rejected = 'rejected'
+    draft = "draft"
+    edited = "edited"
+    graphic_requested = "graphic_requested"
+    graphic_ready = "graphic_ready"
+    scheduled = "scheduled"
+    approved = "approved"
+    posted = "posted"
+    failed = "failed"
+    rejected = "rejected"
 
 
 class ContentPlatform(str, Enum):
-    x = 'x'
-    tiktok = 'tiktok'
-    facebook = 'facebook'
-    instagram = 'instagram'
-    linkedin = 'linkedin'
-    blog = 'blog'
-    generic = 'generic'
+    x = "x"
+    tiktok = "tiktok"
+    facebook = "facebook"
+    instagram = "instagram"
+    linkedin = "linkedin"
+    blog = "blog"
+    generic = "generic"
 
 
 class ContentType(str, Enum):
-    text_post = 'text_post'
-    image_post = 'image_post'
-    short_video_script = 'short_video_script'
-    thread = 'thread'
-    blog_outline = 'blog_outline'
-    announcement = 'announcement'
-    market_note = 'market_note'
-    educational = 'educational'
+    text_post = "text_post"
+    image_post = "image_post"
+    short_video_script = "short_video_script"
+    thread = "thread"
+    blog_outline = "blog_outline"
+    announcement = "announcement"
+    market_note = "market_note"
+    educational = "educational"
 
 
 class ContentItem(BaseModel):
@@ -53,7 +53,9 @@ class ContentItem(BaseModel):
     edited_text: str | None = None
     graphic_prompt: str | None = None
     graphic_asset_url: str | None = None
-    platforms: list[ContentPlatform] = Field(default_factory=lambda: [ContentPlatform.generic])
+    platforms: list[ContentPlatform] = Field(
+        default_factory=lambda: [ContentPlatform.generic]
+    )
     scheduled_at: datetime | None = None
     approved_at: datetime | None = None
     posted_at: datetime | None = None
@@ -70,21 +72,23 @@ class CreateContentRequest(BaseModel):
     brand: str | None = None
     language: str | None = None
     tone: str | None = None
-    platforms: list[ContentPlatform] = Field(default_factory=lambda: [ContentPlatform.generic])
+    platforms: list[ContentPlatform] = Field(
+        default_factory=lambda: [ContentPlatform.generic]
+    )
     context: dict[str, Any] = Field(default_factory=dict)
 
-    @field_validator('topic')
+    @field_validator("topic")
     @classmethod
     def topic_not_empty(cls, value: str) -> str:
         if not value or not value.strip():
-            raise ValueError('topic must not be empty')
+            raise ValueError("topic must not be empty")
         return value.strip()
 
-    @field_validator('platforms')
+    @field_validator("platforms")
     @classmethod
     def platforms_not_empty(cls, value: list[ContentPlatform]) -> list[ContentPlatform]:
         if not value:
-            raise ValueError('platforms must not be empty')
+            raise ValueError("platforms must not be empty")
         return value
 
 
@@ -97,8 +101,8 @@ class EditContentRequest(BaseModel):
 
 class GraphicRequest(BaseModel):
     content_id: str
-    style: str = 'clean professional dashboard visual'
-    aspect_ratio: str = '16:9'
+    style: str = "clean professional dashboard visual"
+    aspect_ratio: str = "16:9"
     instructions: str | None = None
 
 
@@ -110,7 +114,7 @@ class ScheduleContentRequest(BaseModel):
 
 class ApproveContentRequest(BaseModel):
     content_id: str
-    approved_by: str = 'operator'
+    approved_by: str = "operator"
     notes: str | None = None
 
 

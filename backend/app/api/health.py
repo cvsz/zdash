@@ -5,22 +5,22 @@ from fastapi import APIRouter
 from app.core.config import get_settings
 from app.core.responses import ok
 
-router = APIRouter(tags=['health'])
+router = APIRouter(tags=["health"])
 
 
-@router.get('/health')
+@router.get("/health")
 def health() -> dict:
     settings = get_settings()
     return ok(
         {
-            'app_name': settings.app_name,
-            'environment': settings.app_env,
-            'status': 'ok',
-            'timestamp': datetime.now(timezone.utc).isoformat(),
+            "app_name": settings.app_name,
+            "environment": settings.app_env,
+            "status": "ok",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     )
 
 
-@router.get('/api/health')
+@router.get("/api/health")
 def health_api_alias() -> dict:
     return health()

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class ImprovementProposal(BaseModel):
     id: str
     title: str

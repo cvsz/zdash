@@ -6,7 +6,9 @@ from app.backtesting.strategies.ob_conservative import OBConservativeStrategy
 def test_ob_conservative_returns_valid_signals() -> None:
     strategy = OBConservativeStrategy()
     candles = MockDatasetProvider().load("mock", "XAUUSD", "M5")
-    signals = [strategy.generate_signal(candles, index, {}) for index in range(len(candles))]
+    signals = [
+        strategy.generate_signal(candles, index, {}) for index in range(len(candles))
+    ]
     actionable = [signal for signal in signals if signal.direction in {"buy", "sell"}]
     for signal in actionable:
         if signal.direction == "buy":

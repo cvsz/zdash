@@ -35,3 +35,6 @@ packages = ["app"]
 [tool.pytest.ini_options]
 testpaths = ["tests", "app/tests"]
 addopts = "-q"
+
+[tool.ruff.lint]
+extend-ignore = ["E701", "E702", "F403", "E741"]

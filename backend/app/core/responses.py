@@ -8,22 +8,22 @@ def _timestamp() -> str:
 
 def ok(data: dict[str, Any]) -> dict[str, Any]:
     return {
-        'ok': True,
-        'data': data,
-        'error': None,
-        'timestamp': _timestamp(),
+        "ok": True,
+        "data": data,
+        "error": None,
+        "timestamp": _timestamp(),
     }
 
 
 def fail(code: str, message: str) -> dict[str, Any]:
     return {
-        'ok': False,
-        'data': None,
-        'error': {
-            'code': code,
-            'message': message,
+        "ok": False,
+        "data": None,
+        "error": {
+            "code": code,
+            "message": message,
         },
-        'timestamp': _timestamp(),
+        "timestamp": _timestamp(),
     }
 
 

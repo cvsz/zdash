@@ -1,1 +1,1 @@
-INSTALLS=[]
+INSTALLS = []

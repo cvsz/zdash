@@ -6,11 +6,13 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import get_settings
 
 settings = get_settings()
-database_url = getattr(settings, 'database_url', 'sqlite:///./zdash.db')
+database_url = getattr(settings, "database_url", "sqlite:///./zdash.db")
 engine = create_engine(
     database_url,
     future=True,
-    connect_args={"check_same_thread": False} if database_url.startswith("sqlite") else {},
+    connect_args={"check_same_thread": False}
+    if database_url.startswith("sqlite")
+    else {},
 )
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 

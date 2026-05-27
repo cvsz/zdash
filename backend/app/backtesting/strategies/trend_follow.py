@@ -42,7 +42,9 @@ class TrendFollowStrategy(BaseStrategy):
         )
         return p
 
-    def generate_signal(self, candles: list[Candle], index: int, parameters: dict) -> StrategySignal:
+    def generate_signal(
+        self, candles: list[Candle], index: int, parameters: dict
+    ) -> StrategySignal:
         p = self.validate_parameters(parameters)
         candle = candles[index]
         short_window = int(p["short_window"])
@@ -79,12 +81,18 @@ class TrendFollowStrategy(BaseStrategy):
                 direction = "sell"
 
         volatility_window = candles[max(0, index - 10) : index + 1]
-        atr = sum(item.high - item.low for item in volatility_window) / max(1, len(volatility_window))
+        atr = sum(item.high - item.low for item in volatility_window) / max(
+            1, len(volatility_window)
+        )
         atr = max(atr, candle.close * 0.001)
         confidence = min(1.0, max(0.0, abs(sma_short - sma_long) / max(atr, 1e-6)))
         threshold = float(p.get("confidence_threshold", 0.0))
 
-        if direction == "hold" and confidence >= threshold and abs(sma_short - sma_long) > 0:
+        if (
+            direction == "hold"
+            and confidence >= threshold
+            and abs(sma_short - sma_long) > 0
+        ):
             direction = "buy" if sma_short > sma_long else "sell"
 
         if direction == "hold":
@@ -93,7 +101,10 @@ class TrendFollowStrategy(BaseStrategy):
                 symbol="XAUUSD",
                 timeframe="M5",
                 confidence=confidence,
-                metadata={"reason": "no_cross_or_low_confidence", "ma_gap": round(abs(sma_short - sma_long), 6)},
+                metadata={
+                    "reason": "no_cross_or_low_confidence",
+                    "ma_gap": round(abs(sma_short - sma_long), 6),
+                },
             )
 
         stop_distance = atr * float(p["atr_multiplier"])

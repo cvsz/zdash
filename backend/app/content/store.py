@@ -3,7 +3,12 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from app.content.models import ContentItem, ContentStatus, CreateContentRequest, PipelineRunResult
+from app.content.models import (
+    ContentItem,
+    ContentStatus,
+    CreateContentRequest,
+    PipelineRunResult,
+)
 
 
 class ContentNotFoundError(ValueError):
@@ -22,12 +27,12 @@ class InMemoryContentStore:
             title=request.topic[:100],
             content_type=request.content_type,
             status=ContentStatus.draft,
-            brand=request.brand or 'zDash',
-            language=request.language or 'en',
-            tone=request.tone or 'professional',
+            brand=request.brand or "zDash",
+            language=request.language or "en",
+            tone=request.tone or "professional",
             topic=request.topic,
             platforms=request.platforms,
-            metadata={'context': request.context},
+            metadata={"context": request.context},
             created_at=now,
             updated_at=now,
         )
@@ -47,7 +52,7 @@ class InMemoryContentStore:
             raise ContentNotFoundError(content_id)
         data = item.model_dump()
         data.update(patch)
-        data['updated_at'] = datetime.now(timezone.utc)
+        data["updated_at"] = datetime.now(timezone.utc)
         updated = ContentItem(**data)
         self._items[content_id] = updated
         return updated
@@ -59,6 +64,8 @@ class InMemoryContentStore:
         self._runs[result.id] = result
         return result
 
-    def list_pipeline_runs(self, content_id: str | None = None) -> list[PipelineRunResult]:
+    def list_pipeline_runs(
+        self, content_id: str | None = None
+    ) -> list[PipelineRunResult]:
         runs = list(self._runs.values())
         return [r for r in runs if r.content_id == content_id] if content_id else runs

@@ -5,157 +5,263 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
-    app_name: str = Field(default='zDash', alias='APP_NAME')
-    app_env: str = Field(default='development', alias='APP_ENV')
-    log_level: str = Field(default='INFO', alias='LOG_LEVEL')
+    app_name: str = Field(default="zDash", alias="APP_NAME")
+    app_env: str = Field(default="development", alias="APP_ENV")
+    log_level: str = Field(default="INFO", alias="LOG_LEVEL")
 
-    backend_host: str = Field(default='0.0.0.0', alias='BACKEND_HOST')
-    backend_port: int = Field(default=8005, alias='BACKEND_PORT')
+    backend_host: str = Field(default="0.0.0.0", alias="BACKEND_HOST")
+    backend_port: int = Field(default=8005, alias="BACKEND_PORT")
 
-    database_url: str = Field(default='sqlite:///./zdash.db', alias='DATABASE_URL')
-    jwt_secret_key: str = Field(default='dev-only-change-before-production', alias='JWT_SECRET_KEY')
-    jwt_algorithm: str = Field(default='HS256', alias='JWT_ALGORITHM')
-    jwt_access_token_expire_minutes: int = Field(default=60, alias='JWT_ACCESS_TOKEN_EXPIRE_MINUTES')
-    bootstrap_admin_username: str = Field(default='admin', alias='BOOTSTRAP_ADMIN_USERNAME')
-    bootstrap_admin_password: str = Field(default='dev-only-change-before-production', alias='BOOTSTRAP_ADMIN_PASSWORD')
+    database_url: str = Field(default="sqlite:///./zdash.db", alias="DATABASE_URL")
+    jwt_secret_key: str = Field(
+        default="dev-only-change-before-production", alias="JWT_SECRET_KEY"
+    )
+    jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
+    jwt_access_token_expire_minutes: int = Field(
+        default=60, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
+    )
+    bootstrap_admin_username: str = Field(
+        default="admin", alias="BOOTSTRAP_ADMIN_USERNAME"
+    )
+    bootstrap_admin_password: str = Field(
+        default="dev-only-change-before-production", alias="BOOTSTRAP_ADMIN_PASSWORD"
+    )
 
-    claude_api_key: str = Field(default='', alias='CLAUDE_API_KEY')
-    claude_model: str = Field(default='claude-sonnet-4-5', alias='CLAUDE_MODEL')
-    ai_provider: str = Field(default='mock', alias='AI_PROVIDER')
+    claude_api_key: str = Field(default="", alias="CLAUDE_API_KEY")
+    claude_model: str = Field(default="claude-sonnet-4-5", alias="CLAUDE_MODEL")
+    ai_provider: str = Field(default="mock", alias="AI_PROVIDER")
 
-    trading_enabled: bool = Field(default=True, alias='TRADING_ENABLED')
-    dry_run: bool = Field(default=True, alias='DRY_RUN')
-    live_trading_ack: bool = Field(default=False, alias='LIVE_TRADING_ACK')
-    mt5_enabled: bool = Field(default=False, alias='MT5_ENABLED')
-    mt5_login: str = Field(default='', alias='MT5_LOGIN')
-    mt5_password: str = Field(default='', alias='MT5_PASSWORD')
-    mt5_server: str = Field(default='', alias='MT5_SERVER')
-    mt5_path: str = Field(default='', alias='MT5_PATH')
-    trading_symbol: str = Field(default='XAUUSD', alias='TRADING_DEFAULT_SYMBOL')
-    trading_timeframe: str = Field(default='M5', alias='TRADING_DEFAULT_TIMEFRAME')
-    trading_default_strategy: str = Field(default='ob_aggressive', alias='TRADING_DEFAULT_STRATEGY')
-    trading_max_signal_age_seconds: int = Field(default=300, alias='TRADING_MAX_SIGNAL_AGE_SECONDS')
-    funnel_fast_period: int = Field(default=21, alias='FUNNEL_FAST_PERIOD')
-    funnel_medium_period: int = Field(default=10, alias='FUNNEL_MEDIUM_PERIOD')
-    funnel_slow_period: int = Field(default=3, alias='FUNNEL_SLOW_PERIOD')
-    ai_trading_analysis_enabled: bool = Field(default=True, alias='AI_TRADING_ANALYSIS_ENABLED')
-    ai_trading_provider: str = Field(default='mock', alias='AI_TRADING_PROVIDER')
+    trading_enabled: bool = Field(default=True, alias="TRADING_ENABLED")
+    dry_run: bool = Field(default=True, alias="DRY_RUN")
+    live_trading_ack: bool = Field(default=False, alias="LIVE_TRADING_ACK")
+    mt5_enabled: bool = Field(default=False, alias="MT5_ENABLED")
+    mt5_login: str = Field(default="", alias="MT5_LOGIN")
+    mt5_password: str = Field(default="", alias="MT5_PASSWORD")
+    mt5_server: str = Field(default="", alias="MT5_SERVER")
+    mt5_path: str = Field(default="", alias="MT5_PATH")
+    trading_symbol: str = Field(default="XAUUSD", alias="TRADING_DEFAULT_SYMBOL")
+    trading_timeframe: str = Field(default="M5", alias="TRADING_DEFAULT_TIMEFRAME")
+    trading_default_strategy: str = Field(
+        default="ob_aggressive", alias="TRADING_DEFAULT_STRATEGY"
+    )
+    trading_max_signal_age_seconds: int = Field(
+        default=300, alias="TRADING_MAX_SIGNAL_AGE_SECONDS"
+    )
+    funnel_fast_period: int = Field(default=21, alias="FUNNEL_FAST_PERIOD")
+    funnel_medium_period: int = Field(default=10, alias="FUNNEL_MEDIUM_PERIOD")
+    funnel_slow_period: int = Field(default=3, alias="FUNNEL_SLOW_PERIOD")
+    ai_trading_analysis_enabled: bool = Field(
+        default=True, alias="AI_TRADING_ANALYSIS_ENABLED"
+    )
+    ai_trading_provider: str = Field(default="mock", alias="AI_TRADING_PROVIDER")
 
-    risk_guardian_enabled: bool = Field(default=True, alias='RISK_GUARDIAN_ENABLED')
-    max_daily_drawdown_percent: float = Field(default=5.0, alias='MAX_DAILY_DRAWDOWN_PERCENT')
-    max_total_drawdown_percent: float = Field(default=20.0, alias='MAX_TOTAL_DRAWDOWN_PERCENT')
-    emergency_kill_switch_drawdown_percent: float = Field(default=50.0, alias='EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT')
+    risk_guardian_enabled: bool = Field(default=True, alias="RISK_GUARDIAN_ENABLED")
+    max_daily_drawdown_percent: float = Field(
+        default=5.0, alias="MAX_DAILY_DRAWDOWN_PERCENT"
+    )
+    max_total_drawdown_percent: float = Field(
+        default=20.0, alias="MAX_TOTAL_DRAWDOWN_PERCENT"
+    )
+    emergency_kill_switch_drawdown_percent: float = Field(
+        default=50.0, alias="EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT"
+    )
 
-    soft_halt_drawdown_level_1: float = Field(default=5.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_1')
-    soft_halt_drawdown_level_2: float = Field(default=10.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_2')
-    soft_halt_drawdown_level_3: float = Field(default=20.0, alias='SOFT_HALT_DRAWDOWN_LEVEL_3')
+    soft_halt_drawdown_level_1: float = Field(
+        default=5.0, alias="SOFT_HALT_DRAWDOWN_LEVEL_1"
+    )
+    soft_halt_drawdown_level_2: float = Field(
+        default=10.0, alias="SOFT_HALT_DRAWDOWN_LEVEL_2"
+    )
+    soft_halt_drawdown_level_3: float = Field(
+        default=20.0, alias="SOFT_HALT_DRAWDOWN_LEVEL_3"
+    )
 
-    allow_manual_resume: bool = Field(default=True, alias='ALLOW_MANUAL_RESUME')
-    require_resume_reason: bool = Field(default=True, alias='REQUIRE_RESUME_REASON')
-    hard_halt_on_daily_drawdown: bool = Field(default=False, alias='HARD_HALT_ON_DAILY_DRAWDOWN')
+    allow_manual_resume: bool = Field(default=True, alias="ALLOW_MANUAL_RESUME")
+    require_resume_reason: bool = Field(default=True, alias="REQUIRE_RESUME_REASON")
+    hard_halt_on_daily_drawdown: bool = Field(
+        default=False, alias="HARD_HALT_ON_DAILY_DRAWDOWN"
+    )
 
+    scheduler_enabled: bool = Field(default=True, alias="SCHEDULER_ENABLED")
+    scheduler_timezone: str = Field(default="Asia/Bangkok", alias="SCHEDULER_TIMEZONE")
+    scheduler_default_max_runtime_seconds: int = Field(
+        default=300, alias="SCHEDULER_DEFAULT_MAX_RUNTIME_SECONDS"
+    )
+    scheduler_allow_manual_run: bool = Field(
+        default=True, alias="SCHEDULER_ALLOW_MANUAL_RUN"
+    )
+    scheduler_store: str = Field(default="in_memory", alias="SCHEDULER_STORE")
 
-    scheduler_enabled: bool = Field(default=True, alias='SCHEDULER_ENABLED')
-    scheduler_timezone: str = Field(default='Asia/Bangkok', alias='SCHEDULER_TIMEZONE')
-    scheduler_default_max_runtime_seconds: int = Field(default=300, alias='SCHEDULER_DEFAULT_MAX_RUNTIME_SECONDS')
-    scheduler_allow_manual_run: bool = Field(default=True, alias='SCHEDULER_ALLOW_MANUAL_RUN')
-    scheduler_store: str = Field(default='in_memory', alias='SCHEDULER_STORE')
+    friday_agent_enabled: bool = Field(default=True, alias="FRIDAY_AGENT_ENABLED")
 
-    friday_agent_enabled: bool = Field(default=True, alias='FRIDAY_AGENT_ENABLED')
+    content_pipeline_enabled: bool = Field(
+        default=True, alias="CONTENT_PIPELINE_ENABLED"
+    )
+    content_store: str = Field(default="in_memory", alias="CONTENT_STORE")
+    editor_agent_enabled: bool = Field(default=True, alias="EDITOR_AGENT_ENABLED")
+    graphic_agent_enabled: bool = Field(default=True, alias="GRAPHIC_AGENT_ENABLED")
+    social_agent_enabled: bool = Field(default=True, alias="SOCIAL_AGENT_ENABLED")
+    content_default_brand: str = Field(default="zDash", alias="CONTENT_DEFAULT_BRAND")
+    content_default_language: str = Field(
+        default="en", alias="CONTENT_DEFAULT_LANGUAGE"
+    )
+    content_default_tone: str = Field(
+        default="professional", alias="CONTENT_DEFAULT_TONE"
+    )
+    content_require_policy_check: bool = Field(
+        default=True, alias="CONTENT_REQUIRE_POLICY_CHECK"
+    )
+    image_generation_provider: str = Field(
+        default="mock", alias="IMAGE_GENERATION_PROVIDER"
+    )
+    image_dry_run: bool = Field(default=True, alias="IMAGE_DRY_RUN")
+    image_output_dir: str = Field(
+        default="backend/data/content/images", alias="IMAGE_OUTPUT_DIR"
+    )
+    social_provider: str = Field(default="mock", alias="SOCIAL_PROVIDER")
+    social_dry_run: bool = Field(default=True, alias="SOCIAL_DRY_RUN")
+    social_approval_required: bool = Field(
+        default=True, alias="SOCIAL_APPROVAL_REQUIRED"
+    )
+    social_auto_post_enabled: bool = Field(
+        default=False, alias="SOCIAL_AUTO_POST_ENABLED"
+    )
+    social_default_platforms: str = Field(
+        default="x,tiktok,facebook,instagram,linkedin", alias="SOCIAL_DEFAULT_PLATFORMS"
+    )
+    social_x_api_key: str = Field(default="", alias="SOCIAL_X_API_KEY")
 
-    content_pipeline_enabled: bool = Field(default=True, alias='CONTENT_PIPELINE_ENABLED')
-    content_store: str = Field(default='in_memory', alias='CONTENT_STORE')
-    editor_agent_enabled: bool = Field(default=True, alias='EDITOR_AGENT_ENABLED')
-    graphic_agent_enabled: bool = Field(default=True, alias='GRAPHIC_AGENT_ENABLED')
-    social_agent_enabled: bool = Field(default=True, alias='SOCIAL_AGENT_ENABLED')
-    content_default_brand: str = Field(default='zDash', alias='CONTENT_DEFAULT_BRAND')
-    content_default_language: str = Field(default='en', alias='CONTENT_DEFAULT_LANGUAGE')
-    content_default_tone: str = Field(default='professional', alias='CONTENT_DEFAULT_TONE')
-    content_require_policy_check: bool = Field(default=True, alias='CONTENT_REQUIRE_POLICY_CHECK')
-    image_generation_provider: str = Field(default='mock', alias='IMAGE_GENERATION_PROVIDER')
-    image_dry_run: bool = Field(default=True, alias='IMAGE_DRY_RUN')
-    image_output_dir: str = Field(default='backend/data/content/images', alias='IMAGE_OUTPUT_DIR')
-    social_provider: str = Field(default='mock', alias='SOCIAL_PROVIDER')
-    social_dry_run: bool = Field(default=True, alias='SOCIAL_DRY_RUN')
-    social_approval_required: bool = Field(default=True, alias='SOCIAL_APPROVAL_REQUIRED')
-    social_auto_post_enabled: bool = Field(default=False, alias='SOCIAL_AUTO_POST_ENABLED')
-    social_default_platforms: str = Field(default='x,tiktok,facebook,instagram,linkedin', alias='SOCIAL_DEFAULT_PLATFORMS')
-    social_x_api_key: str = Field(default='', alias='SOCIAL_X_API_KEY')
+    iot_enabled: bool = Field(default=True, alias="IOT_ENABLED")
+    iot_dry_run: bool = Field(default=True, alias="IOT_DRY_RUN")
+    iot_require_confirmation: bool = Field(
+        default=True, alias="IOT_REQUIRE_CONFIRMATION"
+    )
+    tapo_username: str = Field(default="", alias="TAPO_USERNAME")
+    tapo_password: str = Field(default="", alias="TAPO_PASSWORD")
+    tapo_device_ip: str = Field(default="", alias="TAPO_DEVICE_IP")
+    tapo_device_alias: str = Field(
+        default="zdash-power-node", alias="TAPO_DEVICE_ALIAS"
+    )
 
-    iot_enabled: bool = Field(default=True, alias='IOT_ENABLED')
-    iot_dry_run: bool = Field(default=True, alias='IOT_DRY_RUN')
-    iot_require_confirmation: bool = Field(default=True, alias='IOT_REQUIRE_CONFIRMATION')
-    tapo_username: str = Field(default='', alias='TAPO_USERNAME')
-    tapo_password: str = Field(default='', alias='TAPO_PASSWORD')
-    tapo_device_ip: str = Field(default='', alias='TAPO_DEVICE_IP')
-    tapo_device_alias: str = Field(default='zdash-power-node', alias='TAPO_DEVICE_ALIAS')
+    nssm_service_name: str = Field(
+        default="zdash-janie-server", alias="NSSM_SERVICE_NAME"
+    )
+    nssm_display_name: str = Field(
+        default="zDash Janie Server", alias="NSSM_DISPLAY_NAME"
+    )
+    nssm_description: str = Field(
+        default="zDash Janie Server and Agent Runtime", alias="NSSM_DESCRIPTION"
+    )
+    nssm_backend_host: str = Field(default="127.0.0.1", alias="NSSM_BACKEND_HOST")
+    nssm_backend_port: int = Field(default=8005, alias="NSSM_BACKEND_PORT")
 
-    nssm_service_name: str = Field(default='zdash-janie-server', alias='NSSM_SERVICE_NAME')
-    nssm_display_name: str = Field(default='zDash Janie Server', alias='NSSM_DISPLAY_NAME')
-    nssm_description: str = Field(default='zDash Janie Server and Agent Runtime', alias='NSSM_DESCRIPTION')
-    nssm_backend_host: str = Field(default='127.0.0.1', alias='NSSM_BACKEND_HOST')
-    nssm_backend_port: int = Field(default=8005, alias='NSSM_BACKEND_PORT')
+    multi_tenant_enabled: bool = Field(default=True, alias="MULTI_TENANT_ENABLED")
+    default_org_name: str = Field(default="zDash Local", alias="DEFAULT_ORG_NAME")
+    default_workspace_name: str = Field(
+        default="Main Workspace", alias="DEFAULT_WORKSPACE_NAME"
+    )
+    tenant_header_name: str = Field(
+        default="X-ZDash-Tenant", alias="TENANT_HEADER_NAME"
+    )
+    workspace_header_name: str = Field(
+        default="X-ZDash-Workspace", alias="WORKSPACE_HEADER_NAME"
+    )
 
-    multi_tenant_enabled: bool = Field(default=True, alias='MULTI_TENANT_ENABLED')
-    default_org_name: str = Field(default='zDash Local', alias='DEFAULT_ORG_NAME')
-    default_workspace_name: str = Field(default='Main Workspace', alias='DEFAULT_WORKSPACE_NAME')
-    tenant_header_name: str = Field(default='X-ZDash-Tenant', alias='TENANT_HEADER_NAME')
-    workspace_header_name: str = Field(default='X-ZDash-Workspace', alias='WORKSPACE_HEADER_NAME')
+    backtesting_enabled: bool = Field(default=True, alias="BACKTESTING_ENABLED")
+    backtest_dataset_source: str = Field(
+        default="mock", alias="BACKTEST_DATASET_SOURCE"
+    )
+    backtest_default_symbol: str = Field(
+        default="XAUUSD", alias="BACKTEST_DEFAULT_SYMBOL"
+    )
+    backtest_default_timeframe: str = Field(
+        default="M5", alias="BACKTEST_DEFAULT_TIMEFRAME"
+    )
+    backtest_initial_balance: float = Field(
+        default=10000, alias="BACKTEST_INITIAL_BALANCE"
+    )
+    backtest_default_risk_per_trade_percent: float = Field(
+        default=1, alias="BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT"
+    )
+    backtest_commission_per_trade: float = Field(
+        default=0, alias="BACKTEST_COMMISSION_PER_TRADE"
+    )
+    backtest_spread_points: float = Field(default=25, alias="BACKTEST_SPREAD_POINTS")
+    backtest_slippage_points: float = Field(default=5, alias="BACKTEST_SLIPPAGE_POINTS")
+    primary_strategy: str = Field(default="ob_aggressive", alias="PRIMARY_STRATEGY")
+    allow_strategy_promotion: bool = Field(
+        default=False, alias="ALLOW_STRATEGY_PROMOTION"
+    )
+    min_promotion_trades: int = Field(default=50, alias="MIN_PROMOTION_TRADES")
+    min_promotion_win_rate: float = Field(default=45, alias="MIN_PROMOTION_WIN_RATE")
+    min_promotion_profit_factor: float = Field(
+        default=1.2, alias="MIN_PROMOTION_PROFIT_FACTOR"
+    )
+    max_promotion_drawdown_percent: float = Field(
+        default=20, alias="MAX_PROMOTION_DRAWDOWN_PERCENT"
+    )
+    max_promotion_consecutive_losses: int = Field(
+        default=8, alias="MAX_PROMOTION_CONSECUTIVE_LOSSES"
+    )
+    optimizer_max_combinations: int = Field(
+        default=100, alias="OPTIMIZER_MAX_COMBINATIONS"
+    )
+    optimizer_sort_metric: str = Field(
+        default="profit_factor", alias="OPTIMIZER_SORT_METRIC"
+    )
 
-    backtesting_enabled: bool = Field(default=True, alias='BACKTESTING_ENABLED')
-    backtest_dataset_source: str = Field(default='mock', alias='BACKTEST_DATASET_SOURCE')
-    backtest_default_symbol: str = Field(default='XAUUSD', alias='BACKTEST_DEFAULT_SYMBOL')
-    backtest_default_timeframe: str = Field(default='M5', alias='BACKTEST_DEFAULT_TIMEFRAME')
-    backtest_initial_balance: float = Field(default=10000, alias='BACKTEST_INITIAL_BALANCE')
-    backtest_default_risk_per_trade_percent: float = Field(default=1, alias='BACKTEST_DEFAULT_RISK_PER_TRADE_PERCENT')
-    backtest_commission_per_trade: float = Field(default=0, alias='BACKTEST_COMMISSION_PER_TRADE')
-    backtest_spread_points: float = Field(default=25, alias='BACKTEST_SPREAD_POINTS')
-    backtest_slippage_points: float = Field(default=5, alias='BACKTEST_SLIPPAGE_POINTS')
-    primary_strategy: str = Field(default='ob_aggressive', alias='PRIMARY_STRATEGY')
-    allow_strategy_promotion: bool = Field(default=False, alias='ALLOW_STRATEGY_PROMOTION')
-    min_promotion_trades: int = Field(default=50, alias='MIN_PROMOTION_TRADES')
-    min_promotion_win_rate: float = Field(default=45, alias='MIN_PROMOTION_WIN_RATE')
-    min_promotion_profit_factor: float = Field(default=1.2, alias='MIN_PROMOTION_PROFIT_FACTOR')
-    max_promotion_drawdown_percent: float = Field(default=20, alias='MAX_PROMOTION_DRAWDOWN_PERCENT')
-    max_promotion_consecutive_losses: int = Field(default=8, alias='MAX_PROMOTION_CONSECUTIVE_LOSSES')
-    optimizer_max_combinations: int = Field(default=100, alias='OPTIMIZER_MAX_COMBINATIONS')
-    optimizer_sort_metric: str = Field(default='profit_factor', alias='OPTIMIZER_SORT_METRIC')
+    billing_enabled: bool = Field(default=True, alias="BILLING_ENABLED")
+    billing_provider: str = Field(default="mock", alias="BILLING_PROVIDER")
+    stripe_enabled: bool = Field(default=False, alias="STRIPE_ENABLED")
+    stripe_secret_key: str = Field(default="", alias="STRIPE_SECRET_KEY")
+    stripe_webhook_secret: str = Field(default="", alias="STRIPE_WEBHOOK_SECRET")
+    frontend_origin: str = Field(
+        default="http://localhost:5173", alias="FRONTEND_ORIGIN"
+    )
 
-    
-    billing_enabled: bool = Field(default=True, alias='BILLING_ENABLED')
-    billing_provider: str = Field(default='mock', alias='BILLING_PROVIDER')
-    stripe_enabled: bool = Field(default=False, alias='STRIPE_ENABLED')
-    stripe_secret_key: str = Field(default='', alias='STRIPE_SECRET_KEY')
-    stripe_webhook_secret: str = Field(default='', alias='STRIPE_WEBHOOK_SECRET')
-    frontend_origin: str = Field(default='http://localhost:5173', alias='FRONTEND_ORIGIN')
+    mobile_api_enabled: bool = Field(default=True, alias="MOBILE_API_ENABLED")
+    developer_platform_enabled: bool = Field(
+        default=True, alias="DEVELOPER_PLATFORM_ENABLED"
+    )
+    partner_api_enabled: bool = Field(default=True, alias="PARTNER_API_ENABLED")
+    api_key_hash_pepper: str = Field(
+        default="change-me-api-key-pepper", alias="API_KEY_HASH_PEPPER"
+    )
+    api_key_prefix: str = Field(default="zdash", alias="API_KEY_PREFIX")
+    api_key_default_expires_days: int = Field(
+        default=365, alias="API_KEY_DEFAULT_EXPIRES_DAYS"
+    )
 
-    mobile_api_enabled: bool = Field(default=True, alias='MOBILE_API_ENABLED')
-    developer_platform_enabled: bool = Field(default=True, alias='DEVELOPER_PLATFORM_ENABLED')
-    partner_api_enabled: bool = Field(default=True, alias='PARTNER_API_ENABLED')
-    api_key_hash_pepper: str = Field(default='change-me-api-key-pepper', alias='API_KEY_HASH_PEPPER')
-    api_key_prefix: str = Field(default='zdash', alias='API_KEY_PREFIX')
-    api_key_default_expires_days: int = Field(default=365, alias='API_KEY_DEFAULT_EXPIRES_DAYS')
+    digital_twin_enabled: bool = Field(default=True, alias="DIGITAL_TWIN_ENABLED")
+    digital_twin_mode: str = Field(default="advisory", alias="DIGITAL_TWIN_MODE")
+    digital_twin_dry_run: bool = Field(default=True, alias="DIGITAL_TWIN_DRY_RUN")
+    digital_twin_require_evidence: bool = Field(
+        default=True, alias="DIGITAL_TWIN_REQUIRE_EVIDENCE"
+    )
+    digital_twin_max_graph_nodes: int = Field(
+        default=5000, alias="DIGITAL_TWIN_MAX_GRAPH_NODES"
+    )
+    digital_twin_max_graph_edges: int = Field(
+        default=20000, alias="DIGITAL_TWIN_MAX_GRAPH_EDGES"
+    )
 
-
-    digital_twin_enabled: bool = Field(default=True, alias='DIGITAL_TWIN_ENABLED')
-    digital_twin_mode: str = Field(default='advisory', alias='DIGITAL_TWIN_MODE')
-    digital_twin_dry_run: bool = Field(default=True, alias='DIGITAL_TWIN_DRY_RUN')
-    digital_twin_require_evidence: bool = Field(default=True, alias='DIGITAL_TWIN_REQUIRE_EVIDENCE')
-    digital_twin_max_graph_nodes: int = Field(default=5000, alias='DIGITAL_TWIN_MAX_GRAPH_NODES')
-    digital_twin_max_graph_edges: int = Field(default=20000, alias='DIGITAL_TWIN_MAX_GRAPH_EDGES')
-
-    cors_allow_origins: str = Field(default='http://localhost:5173,http://127.0.0.1:5173', alias='CORS_ALLOW_ORIGINS')
+    cors_allow_origins: str = Field(
+        default="http://localhost:5173,http://127.0.0.1:5173",
+        alias="CORS_ALLOW_ORIGINS",
+    )
 
     @field_validator(
-        'max_daily_drawdown_percent',
-        'max_total_drawdown_percent',
-        'emergency_kill_switch_drawdown_percent',
-        'soft_halt_drawdown_level_1',
-        'soft_halt_drawdown_level_2',
-        'soft_halt_drawdown_level_3',
-        mode='before',
+        "max_daily_drawdown_percent",
+        "max_total_drawdown_percent",
+        "emergency_kill_switch_drawdown_percent",
+        "soft_halt_drawdown_level_1",
+        "soft_halt_drawdown_level_2",
+        "soft_halt_drawdown_level_3",
+        mode="before",
     )
     @classmethod
     def _safe_positive_threshold(cls, value):
@@ -168,12 +274,12 @@ class Settings(BaseSettings):
         return parsed
 
     @field_validator(
-        'backtest_initial_balance',
-        'backtest_default_risk_per_trade_percent',
-        'min_promotion_win_rate',
-        'min_promotion_profit_factor',
-        'max_promotion_drawdown_percent',
-        mode='before',
+        "backtest_initial_balance",
+        "backtest_default_risk_per_trade_percent",
+        "min_promotion_win_rate",
+        "min_promotion_profit_factor",
+        "max_promotion_drawdown_percent",
+        mode="before",
     )
     @classmethod
     def _safe_positive_backtesting_float(cls, value):
@@ -186,10 +292,10 @@ class Settings(BaseSettings):
         return parsed
 
     @field_validator(
-        'backtest_commission_per_trade',
-        'backtest_spread_points',
-        'backtest_slippage_points',
-        mode='before',
+        "backtest_commission_per_trade",
+        "backtest_spread_points",
+        "backtest_slippage_points",
+        mode="before",
     )
     @classmethod
     def _safe_non_negative_backtesting_cost(cls, value):
@@ -202,10 +308,10 @@ class Settings(BaseSettings):
         return parsed
 
     @field_validator(
-        'min_promotion_trades',
-        'max_promotion_consecutive_losses',
-        'optimizer_max_combinations',
-        mode='before',
+        "min_promotion_trades",
+        "max_promotion_consecutive_losses",
+        "optimizer_max_combinations",
+        mode="before",
     )
     @classmethod
     def _safe_positive_backtesting_int(cls, value):
@@ -259,13 +365,13 @@ def get_settings() -> Settings:
     if settings.optimizer_max_combinations > 1000:
         settings.optimizer_max_combinations = 1000
     if settings.optimizer_sort_metric not in {
-        'profit_factor',
-        'net_profit_percent',
-        'win_rate',
-        'expectancy',
-        'sharpe_like_score',
+        "profit_factor",
+        "net_profit_percent",
+        "win_rate",
+        "expectancy",
+        "sharpe_like_score",
     }:
-        settings.optimizer_sort_metric = 'profit_factor'
+        settings.optimizer_sort_metric = "profit_factor"
 
     ordered = sorted(
         [
@@ -274,6 +380,10 @@ def get_settings() -> Settings:
             settings.soft_halt_drawdown_level_3,
         ]
     )
-    settings.soft_halt_drawdown_level_1, settings.soft_halt_drawdown_level_2, settings.soft_halt_drawdown_level_3 = ordered
+    (
+        settings.soft_halt_drawdown_level_1,
+        settings.soft_halt_drawdown_level_2,
+        settings.soft_halt_drawdown_level_3,
+    ) = ordered
 
     return settings

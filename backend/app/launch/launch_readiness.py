@@ -11,4 +11,8 @@ class LaunchReadinessService:
             "social_dry_run_enabled": bool(s.social_dry_run),
         }
         blockers = [k for k, v in checks.items() if not v]
-        return {"checks": checks, "blockers": blockers, "score": (len(checks)-len(blockers))*100//len(checks)}
+        return {
+            "checks": checks,
+            "blockers": blockers,
+            "score": (len(checks) - len(blockers)) * 100 // len(checks),
+        }

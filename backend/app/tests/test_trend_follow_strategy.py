@@ -48,7 +48,10 @@ def test_trend_follow_cross_signals_are_valid() -> None:
     strategy = TrendFollowStrategy()
     candles = _build_cross_dataset()
     params = {"short_window": 3, "long_window": 7, "confidence_threshold": 0.0}
-    signals = [strategy.generate_signal(candles, index, params) for index in range(len(candles))]
+    signals = [
+        strategy.generate_signal(candles, index, params)
+        for index in range(len(candles))
+    ]
     actionable = [signal for signal in signals if signal.direction in {"buy", "sell"}]
     assert actionable
     for signal in actionable:

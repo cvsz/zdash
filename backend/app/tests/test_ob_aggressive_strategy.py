@@ -5,7 +5,9 @@ from app.backtesting.strategies.ob_aggressive import OBAggressiveStrategy
 def test_ob_aggressive_returns_valid_signals() -> None:
     strategy = OBAggressiveStrategy()
     candles = MockDatasetProvider().load("mock", "XAUUSD", "M5")
-    signals = [strategy.generate_signal(candles, index, {}) for index in range(len(candles))]
+    signals = [
+        strategy.generate_signal(candles, index, {}) for index in range(len(candles))
+    ]
     actionable = [signal for signal in signals if signal.direction in {"buy", "sell"}]
     assert actionable
     for signal in actionable:

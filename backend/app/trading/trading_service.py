@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from app.core.config import get_settings
 from app.trading.execution_engine import ExecutionEngine
-from app.trading.models import ExecutionRequest, ExecutionResult, ScannerResult, SignalValidationResult, TradingSignal
+from app.trading.models import (
+    ExecutionRequest,
+    ExecutionResult,
+    ScannerResult,
+    SignalValidationResult,
+    TradingSignal,
+)
 from app.trading.mt5_adapter import MT5Adapter
 from app.trading.signal_validation import SignalValidationService
 from app.trading.xau_scanner import XAUScanner
@@ -27,15 +33,15 @@ class TradingService:
 
     def get_status(self) -> dict:
         return {
-            'enabled': self.settings.trading_enabled,
-            'dry_run': self.settings.dry_run,
-            'live_trading_ack': self.settings.live_trading_ack,
-            'mt5_enabled': self.settings.mt5_enabled,
-            'default_symbol': self.settings.trading_symbol,
-            'default_timeframe': self.settings.trading_timeframe,
+            "enabled": self.settings.trading_enabled,
+            "dry_run": self.settings.dry_run,
+            "live_trading_ack": self.settings.live_trading_ack,
+            "mt5_enabled": self.settings.mt5_enabled,
+            "default_symbol": self.settings.trading_symbol,
+            "default_timeframe": self.settings.trading_timeframe,
         }
 
-    def scan_xau(self, symbol: str = 'XAUUSD', timeframe: str = 'M5') -> ScannerResult:
+    def scan_xau(self, symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult:
         return self.scanner.scan(symbol=symbol, timeframe=timeframe)
 
     def validate_signal(self, signal: TradingSignal) -> SignalValidationResult:

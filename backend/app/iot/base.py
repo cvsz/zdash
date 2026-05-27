@@ -19,5 +19,7 @@ class IoTAdapter(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def power_cycle(self, device_alias: str, confirmation: bool = False) -> IoTActionResult:
+    def power_cycle(
+        self, device_alias: str, confirmation: bool = False
+    ) -> IoTActionResult:
         raise NotImplementedError

@@ -5,12 +5,22 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
 
-from app.backtesting.models import BacktestRequest, OptimizationRequest, OptimizationResult
+from app.backtesting.models import (
+    BacktestRequest,
+    OptimizationRequest,
+    OptimizationResult,
+)
 from app.backtesting.strategy_lab import StrategyLab
 
 
 class ParameterOptimizer:
-    SORT_METRICS = {"profit_factor", "net_profit_percent", "win_rate", "expectancy", "sharpe_like_score"}
+    SORT_METRICS = {
+        "profit_factor",
+        "net_profit_percent",
+        "win_rate",
+        "expectancy",
+        "sharpe_like_score",
+    }
 
     def __init__(self, strategy_lab: StrategyLab | None = None) -> None:
         self.lab = strategy_lab or StrategyLab()
@@ -38,9 +48,15 @@ class ParameterOptimizer:
         warnings: list[str] = []
         total = len(combos)
         if total > request.max_combinations:
-            warnings.append(f"Combinations truncated from {total} to {request.max_combinations}")
+            warnings.append(
+                f"Combinations truncated from {total} to {request.max_combinations}"
+            )
             combos = combos[: request.max_combinations]
-        sort_metric = request.sort_metric if request.sort_metric in self.SORT_METRICS else "profit_factor"
+        sort_metric = (
+            request.sort_metric
+            if request.sort_metric in self.SORT_METRICS
+            else "profit_factor"
+        )
         if sort_metric != request.sort_metric:
             warnings.append("Unsupported sort metric, defaulted to profit_factor")
 

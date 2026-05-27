@@ -5,11 +5,11 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-IoTActionName = Literal['status', 'turn_on', 'turn_off', 'power_cycle']
+IoTActionName = Literal["status", "turn_on", "turn_off", "power_cycle"]
 
 
 class IoTAction(BaseModel):
-    device_alias: str = 'zdash-power-node'
+    device_alias: str = "zdash-power-node"
     action: IoTActionName
     confirmation: bool = False
     payload: dict[str, Any] = Field(default_factory=dict)
@@ -30,5 +30,5 @@ class IoTActionRequest(IoTAction):
 
 
 class IoTPowerCycleRequest(BaseModel):
-    device_alias: str = 'zdash-power-node'
+    device_alias: str = "zdash-power-node"
     confirmation: bool = False

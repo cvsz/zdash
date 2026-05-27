@@ -4,6 +4,7 @@ from app.governance_refinement.governance_refinement_report import governance_re
 
 router = APIRouter(prefix="/api/governance-refinement", tags=["governance-refinement"])
 
+
 @router.get("/report")
 def report():
     return ok(governance_report())

@@ -63,7 +63,9 @@ class BacktestMetricsCalculator:
             gross_profit=round(gross_profit, 4),
             gross_loss=round(gross_loss, 4),
             net_profit=round(net, 4),
-            net_profit_percent=round((net / initial_balance * 100.0) if initial_balance else 0.0, 4),
+            net_profit_percent=round(
+                (net / initial_balance * 100.0) if initial_balance else 0.0, 4
+            ),
             profit_factor=round(profit_factor, 4),
             max_drawdown_percent=round(max_dd, 4),
             average_rr=round(sum(t.rr for t in closed) / total if total else 0.0, 4),

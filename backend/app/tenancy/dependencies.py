@@ -9,10 +9,12 @@ def get_tenant_context(
     x_zdash_workspace: str | None = Header(default=None),
 ):
     settings = get_settings()
-    org = x_zdash_tenant or getattr(settings, 'default_tenant_id', 'default-org')
-    workspace = x_zdash_workspace or getattr(settings, 'default_workspace_id', 'default-workspace')
+    org = x_zdash_tenant or getattr(settings, "default_tenant_id", "default-org")
+    workspace = x_zdash_workspace or getattr(
+        settings, "default_workspace_id", "default-workspace"
+    )
 
-    if getattr(settings, 'multi_tenant_enabled', False) and (not org or not workspace):
-        raise HTTPException(status_code=400, detail='Missing tenant context')
+    if getattr(settings, "multi_tenant_enabled", False) and (not org or not workspace):
+        raise HTTPException(status_code=400, detail="Missing tenant context")
 
     return TenantContext(organization_id=org, workspace_id=workspace)

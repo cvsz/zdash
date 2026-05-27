@@ -6,8 +6,17 @@ from uuid import uuid4
 
 from app.backtesting.datasets import DatasetProvider
 from app.backtesting.metrics import BacktestMetricsCalculator
-from app.backtesting.models import BacktestRequest, BacktestResult, SimulatedTrade, StrategySignal
-from app.backtesting.strategies import OBAggressiveStrategy, OBConservativeStrategy, TrendFollowStrategy
+from app.backtesting.models import (
+    BacktestRequest,
+    BacktestResult,
+    SimulatedTrade,
+    StrategySignal,
+)
+from app.backtesting.strategies import (
+    OBAggressiveStrategy,
+    OBConservativeStrategy,
+    TrendFollowStrategy,
+)
 from app.core.events import event_bus
 
 
@@ -38,7 +47,9 @@ class StrategyLab:
 
     def run_backtest(self, request: BacktestRequest) -> BacktestResult:
         started = datetime.now(timezone.utc)
-        candles = self._datasets.load(request.dataset, request.symbol, request.timeframe)
+        candles = self._datasets.load(
+            request.dataset, request.symbol, request.timeframe
+        )
         if not candles:
             raise ValueError("Dataset returned no candles")
 
@@ -100,7 +111,11 @@ class StrategyLab:
                     "strategy.signal.skipped",
                     "strategy_lab",
                     "Strategy signal skipped",
-                    {"strategy": request.strategy, "index": index, "reason": "invalid_signal"},
+                    {
+                        "strategy": request.strategy,
+                        "index": index,
+                        "reason": "invalid_signal",
+                    },
                 )
                 index += 1
                 continue
@@ -112,12 +127,20 @@ class StrategyLab:
                     "strategy.signal.skipped",
                     "strategy_lab",
                     "Strategy signal skipped",
-                    {"strategy": request.strategy, "index": index, "reason": "invalid_risk_setup"},
+                    {
+                        "strategy": request.strategy,
+                        "index": index,
+                        "reason": "invalid_risk_setup",
+                    },
                 )
                 index += 1
                 continue
 
-            entry_price = signal.entry + spread + slippage if signal.direction == "buy" else signal.entry - spread - slippage
+            entry_price = (
+                signal.entry + spread + slippage
+                if signal.direction == "buy"
+                else signal.entry - spread - slippage
+            )
             position_size = risk_amount / stop_distance
 
             trade = SimulatedTrade(
@@ -156,18 +179,25 @@ class StrategyLab:
                 else (trade.entry_price - trade.exit_price)
             ) * trade.size
             trade.pnl = raw_pnl - request.commission_per_trade
-            trade.pnl_percent = (trade.pnl / request.initial_balance * 100.0) if request.initial_balance else 0.0
+            trade.pnl_percent = (
+                (trade.pnl / request.initial_balance * 100.0)
+                if request.initial_balance
+                else 0.0
+            )
             trade.rr = (trade.pnl / risk_amount) if risk_amount > 0 else 0.0
 
             balance += trade.pnl
             equity_curve.append((trade.exit_time, balance))
             trades.append(trade)
 
-            # Phase 05 rule: do not allow overlapping trades unless explicitly configured.
+            # Phase 05 rule: do not allow overlapping trades unless explicitly
+            # configured.
             index = exit_index + 1
 
         finished = datetime.now(timezone.utc)
-        metrics = self._metrics.calculate(trades, request.initial_balance, balance, equity_curve)
+        metrics = self._metrics.calculate(
+            trades, request.initial_balance, balance, equity_curve
+        )
         return BacktestResult(
             id=str(uuid4()),
             request=request,
@@ -206,20 +236,44 @@ class StrategyLab:
                 tp_hit = candle.high >= signal.take_profit
                 sl_hit = candle.low <= signal.stop_loss
                 if tp_hit and sl_hit:
-                    return index, max(signal.stop_loss - spread - slippage, 1e-6), "stop_loss"
+                    return (
+                        index,
+                        max(signal.stop_loss - spread - slippage, 1e-6),
+                        "stop_loss",
+                    )
                 if sl_hit:
-                    return index, max(signal.stop_loss - spread - slippage, 1e-6), "stop_loss"
+                    return (
+                        index,
+                        max(signal.stop_loss - spread - slippage, 1e-6),
+                        "stop_loss",
+                    )
                 if tp_hit:
-                    return index, max(signal.take_profit - spread - slippage, 1e-6), "take_profit"
+                    return (
+                        index,
+                        max(signal.take_profit - spread - slippage, 1e-6),
+                        "take_profit",
+                    )
             elif signal.direction == "sell":
                 tp_hit = candle.low <= signal.take_profit
                 sl_hit = candle.high >= signal.stop_loss
                 if tp_hit and sl_hit:
-                    return index, max(signal.stop_loss + spread + slippage, 1e-6), "stop_loss"
+                    return (
+                        index,
+                        max(signal.stop_loss + spread + slippage, 1e-6),
+                        "stop_loss",
+                    )
                 if sl_hit:
-                    return index, max(signal.stop_loss + spread + slippage, 1e-6), "stop_loss"
+                    return (
+                        index,
+                        max(signal.stop_loss + spread + slippage, 1e-6),
+                        "stop_loss",
+                    )
                 if tp_hit:
-                    return index, max(signal.take_profit + spread + slippage, 1e-6), "take_profit"
+                    return (
+                        index,
+                        max(signal.take_profit + spread + slippage, 1e-6),
+                        "take_profit",
+                    )
 
         return len(candles) - 1, max(fallback_exit, 1e-6), "end_of_data"
 
@@ -227,7 +281,11 @@ class StrategyLab:
 def _is_valid_signal(signal: StrategySignal) -> bool:
     if signal.direction not in {"buy", "sell"}:
         return False
-    if not isfinite(signal.entry) or not isfinite(signal.stop_loss) or not isfinite(signal.take_profit):
+    if (
+        not isfinite(signal.entry)
+        or not isfinite(signal.stop_loss)
+        or not isfinite(signal.take_profit)
+    ):
         return False
     if signal.entry <= 0 or signal.stop_loss <= 0 or signal.take_profit <= 0:
         return False

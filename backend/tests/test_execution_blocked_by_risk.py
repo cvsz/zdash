@@ -33,10 +33,10 @@ def _breached_snapshot() -> AccountSnapshot:
 
 def _signal() -> Signal:
     return Signal(
-        symbol='XAUUSD',
-        timeframe='M5',
-        direction='buy',
-        strategy='ob_aggressive',
+        symbol="XAUUSD",
+        timeframe="M5",
+        direction="buy",
+        strategy="ob_aggressive",
         confidence=0.72,
     )
 
@@ -45,28 +45,37 @@ def test_execution_blocked_when_halt_active() -> None:
     get_settings.cache_clear()
     reset_guardian_service()
     service = get_guardian_service()
-    service.halt('Manual halt', source='manual')
+    service.halt("Manual halt", source="manual")
     event_bus.clear()
 
     engine = ExecutionEngine()
-    result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
+    result = engine.execute(
+        ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot())
+    )
 
-    assert result.status == 'blocked_by_risk'
+    assert result.status == "blocked_by_risk"
     assert result.risk_decision is not None
     assert result.risk_decision.halt_active is True
-    assert any(event.type == 'trading.execution.blocked_by_risk' for event in event_bus.list_events())
+    assert any(
+        event.type == "trading.execution.blocked_by_risk"
+        for event in event_bus.list_events()
+    )
 
 
 def test_execution_blocked_when_halt_active_without_explicit_snapshot() -> None:
     get_settings.cache_clear()
     reset_guardian_service()
     service = get_guardian_service()
-    service.halt('Manual halt', source='manual')
+    service.halt("Manual halt", source="manual")
 
     engine = ExecutionEngine()
-    result = engine.execute(Phase2ExecutionRequest(signal=_signal().to_trading_signal(), dry_run=True, confirmation=False))
+    result = engine.execute(
+        Phase2ExecutionRequest(
+            signal=_signal().to_trading_signal(), dry_run=True, confirmation=False
+        )
+    )
 
-    assert result.status == 'blocked_by_risk'
+    assert result.status == "blocked_by_risk"
     assert result.risk_decision is not None
     assert result.risk_decision.halt_active is True
 
@@ -76,10 +85,12 @@ def test_execution_blocked_when_drawdown_breached() -> None:
     reset_guardian_service()
     engine = ExecutionEngine()
 
-    result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_breached_snapshot()))
-    assert result.status == 'blocked_by_risk'
+    result = engine.execute(
+        ExecutionRequest(signal=_signal(), snapshot=_breached_snapshot())
+    )
+    assert result.status == "blocked_by_risk"
     assert result.risk_decision is not None
-    assert result.risk_decision.risk_level in {'danger', 'emergency'}
+    assert result.risk_decision.risk_level in {"danger", "emergency"}
 
 
 def test_dry_run_execution_allowed_when_risk_normal() -> None:
@@ -87,26 +98,33 @@ def test_dry_run_execution_allowed_when_risk_normal() -> None:
     reset_guardian_service()
     engine = ExecutionEngine()
 
-    result = engine.execute(ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot()))
-    assert result.status == 'simulated'
+    result = engine.execute(
+        ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot())
+    )
+    assert result.status == "simulated"
     assert result.dry_run is True
     assert result.risk_decision is not None
     assert result.risk_decision.approved is True
 
 
 def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
-    monkeypatch.setenv('DRY_RUN', 'false')
-    monkeypatch.setenv('LIVE_TRADING_ACK', 'false')
-    monkeypatch.setenv('RISK_GUARDIAN_ENABLED', 'true')
+    monkeypatch.setenv("DRY_RUN", "false")
+    monkeypatch.setenv("LIVE_TRADING_ACK", "false")
+    monkeypatch.setenv("RISK_GUARDIAN_ENABLED", "true")
     get_settings.cache_clear()
     reset_guardian_service()
 
     engine = ExecutionEngine()
     result = engine.execute(
-        ExecutionRequest(signal=_signal(), snapshot=_safe_snapshot(), dry_run=False, confirmation=True)
+        ExecutionRequest(
+            signal=_signal(),
+            snapshot=_safe_snapshot(),
+            dry_run=False,
+            confirmation=True,
+        )
     )
 
-    assert result.status == 'blocked_by_config'
+    assert result.status == "blocked_by_config"
     assert result.risk_decision is not None
     assert result.risk_decision.approved is True
 

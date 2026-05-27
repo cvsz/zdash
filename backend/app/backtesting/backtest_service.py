@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from app.backtesting.models import BacktestRequest, BacktestResult, OptimizationRequest, OptimizationResult
+from app.backtesting.models import (
+    BacktestRequest,
+    BacktestResult,
+    OptimizationRequest,
+    OptimizationResult,
+)
 from app.backtesting.optimizer import ParameterOptimizer
 from app.backtesting.promotion import StrategyPromotionGate
 from app.backtesting.strategy_lab import StrategyLab
@@ -35,7 +40,12 @@ class BacktestService:
         if not settings.backtesting_enabled:
             raise ValueError("Backtesting is disabled by configuration")
 
-        event_bus.emit("backtest.started", "backtest_service", "Backtest started", {"strategy": request.strategy})
+        event_bus.emit(
+            "backtest.started",
+            "backtest_service",
+            "Backtest started",
+            {"strategy": request.strategy},
+        )
         try:
             result = self.lab.run_backtest(request)
             self.results.insert(0, result)
@@ -53,7 +63,12 @@ class BacktestService:
             )
             return result
         except Exception as exc:
-            event_bus.emit("backtest.failed", "backtest_service", "Backtest failed", {"error": str(exc)})
+            event_bus.emit(
+                "backtest.failed",
+                "backtest_service",
+                "Backtest failed",
+                {"error": str(exc)},
+            )
             raise
 
     def get_results(self):
@@ -67,13 +82,23 @@ class BacktestService:
         if not settings.backtesting_enabled:
             raise ValueError("Backtesting is disabled by configuration")
 
-        effective_max = min(request.max_combinations, settings.optimizer_max_combinations)
+        effective_max = min(
+            request.max_combinations, settings.optimizer_max_combinations
+        )
         effective_sort_metric = request.sort_metric or settings.optimizer_sort_metric
         normalized_request = request.model_copy(
-            update={"max_combinations": effective_max, "sort_metric": effective_sort_metric}
+            update={
+                "max_combinations": effective_max,
+                "sort_metric": effective_sort_metric,
+            }
         )
 
-        event_bus.emit("optimizer.started", "backtest_service", "Optimization started", {"strategy": request.strategy})
+        event_bus.emit(
+            "optimizer.started",
+            "backtest_service",
+            "Optimization started",
+            {"strategy": request.strategy},
+        )
         try:
             result = self.optimizer.optimize(normalized_request)
             self.optimization_results.insert(0, result)
@@ -90,7 +115,12 @@ class BacktestService:
             )
             return result
         except Exception as exc:
-            event_bus.emit("optimizer.failed", "backtest_service", "Optimization failed", {"error": str(exc)})
+            event_bus.emit(
+                "optimizer.failed",
+                "backtest_service",
+                "Optimization failed",
+                {"error": str(exc)},
+            )
             raise
 
     def get_optimization_results(self):
@@ -106,13 +136,24 @@ class BacktestService:
             "strategy.promotion.evaluated",
             "backtest_service",
             "Promotion evaluated",
-            {"result_id": result_id, "approved": decision.approved, "reason": decision.reason, "gates": decision.gates},
+            {
+                "result_id": result_id,
+                "approved": decision.approved,
+                "reason": decision.reason,
+                "gates": decision.gates,
+            },
         )
         event_bus.emit(
-            "strategy.promotion.approved" if decision.approved else "strategy.promotion.rejected",
+            "strategy.promotion.approved"
+            if decision.approved
+            else "strategy.promotion.rejected",
             "backtest_service",
             "Promotion decision",
-            {"result_id": result_id, "strategy": result.strategy, "reason": decision.reason},
+            {
+                "result_id": result_id,
+                "strategy": result.strategy,
+                "reason": decision.reason,
+            },
         )
         return decision
 

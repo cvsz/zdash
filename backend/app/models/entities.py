@@ -12,17 +12,17 @@ def utc_now() -> datetime:
 
 
 class AgentRecord(SQLModel, table=True):
-    __tablename__ = 'agents'
+    __tablename__ = "agents"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     name: str = Field(index=True, unique=True)
     role: str
-    status: str = 'idle'
+    status: str = "idle"
     updated_at: datetime = Field(default_factory=utc_now)
 
 
 class MessageRecord(SQLModel, table=True):
-    __tablename__ = 'messages'
+    __tablename__ = "messages"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     sender: str
@@ -33,7 +33,7 @@ class MessageRecord(SQLModel, table=True):
 
 
 class EventRecord(SQLModel, table=True):
-    __tablename__ = 'events'
+    __tablename__ = "events"
 
     id: int | None = Field(default=None, primary_key=True)
     event_type: str = Field(index=True)
@@ -43,7 +43,7 @@ class EventRecord(SQLModel, table=True):
 
 
 class TradingSignalRecord(SQLModel, table=True):
-    __tablename__ = 'trading_signals'
+    __tablename__ = "trading_signals"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     symbol: str = Field(index=True)
@@ -56,18 +56,18 @@ class TradingSignalRecord(SQLModel, table=True):
 
 
 class ExecutionAttemptRecord(SQLModel, table=True):
-    __tablename__ = 'execution_attempts'
+    __tablename__ = "execution_attempts"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     mode: str
     executed: bool
-    reason: str = ''
+    reason: str = ""
     payload: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=utc_now, index=True)
 
 
 class RiskDecisionRecord(SQLModel, table=True):
-    __tablename__ = 'risk_decisions'
+    __tablename__ = "risk_decisions"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     decision_type: str = Field(index=True)
@@ -78,29 +78,29 @@ class RiskDecisionRecord(SQLModel, table=True):
 
 
 class HaltFlagRecord(SQLModel, table=True):
-    __tablename__ = 'halt_flags'
+    __tablename__ = "halt_flags"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     halted: bool = False
-    reason: str = ''
+    reason: str = ""
     locked: bool = False
-    actor: str = 'system'
+    actor: str = "system"
     created_at: datetime = Field(default_factory=utc_now, index=True)
 
 
 class SchedulerJobRecord(SQLModel, table=True):
-    __tablename__ = 'scheduler_jobs'
+    __tablename__ = "scheduler_jobs"
 
     id: str = Field(primary_key=True)
     name: str = Field(index=True)
     interval_seconds: int
-    status: str = 'active'
+    status: str = "active"
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
 
 
 class BacktestRunRecord(SQLModel, table=True):
-    __tablename__ = 'backtest_runs'
+    __tablename__ = "backtest_runs"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     strategy: str = Field(index=True)
@@ -110,7 +110,7 @@ class BacktestRunRecord(SQLModel, table=True):
 
 
 class BacktestResultRecord(SQLModel, table=True):
-    __tablename__ = 'backtest_results'
+    __tablename__ = "backtest_results"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     run_id: str = Field(index=True)
@@ -119,7 +119,7 @@ class BacktestResultRecord(SQLModel, table=True):
 
 
 class ContentItemRecord(SQLModel, table=True):
-    __tablename__ = 'content_items'
+    __tablename__ = "content_items"
 
     id: str = Field(primary_key=True)
     topic: str
@@ -132,19 +132,19 @@ class ContentItemRecord(SQLModel, table=True):
 
 
 class AuditLogRecord(SQLModel, table=True):
-    __tablename__ = 'audit_logs'
+    __tablename__ = "audit_logs"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     action: str = Field(index=True)
     actor: str = Field(index=True)
     role: str = Field(index=True)
-    target: str = ''
+    target: str = ""
     detail: dict = Field(default_factory=dict, sa_column=Column(JSON))
     created_at: datetime = Field(default_factory=utc_now, index=True)
 
 
 class UserRecord(SQLModel, table=True):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     username: str = Field(index=True, unique=True)
@@ -155,7 +155,7 @@ class UserRecord(SQLModel, table=True):
 
 
 class LiveModeApprovalRecord(SQLModel, table=True):
-    __tablename__ = 'live_mode_approvals'
+    __tablename__ = "live_mode_approvals"
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     approved: bool = False

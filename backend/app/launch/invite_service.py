@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from hashlib import sha256
 from uuid import uuid4
-from .models import InviteCode, InviteStatus
+from .models import InviteCode
 
 
 class InviteService:

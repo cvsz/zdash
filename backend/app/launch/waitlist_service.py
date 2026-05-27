@@ -13,7 +13,9 @@ class WaitlistService:
             if e.email == request["email"]:
                 return e
         now = datetime.now(timezone.utc)
-        entry = WaitlistEntry(id=str(uuid4()), created_at=now, updated_at=now, **request)
+        entry = WaitlistEntry(
+            id=str(uuid4()), created_at=now, updated_at=now, **request
+        )
         self._entries[entry.id] = entry
         return entry
 

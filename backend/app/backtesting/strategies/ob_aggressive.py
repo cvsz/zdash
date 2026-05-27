@@ -37,7 +37,9 @@ class OBAggressiveStrategy(BaseStrategy):
         )
         return merged
 
-    def generate_signal(self, candles: list[Candle], index: int, parameters: dict) -> StrategySignal:
+    def generate_signal(
+        self, candles: list[Candle], index: int, parameters: dict
+    ) -> StrategySignal:
         p = self.validate_parameters(parameters)
         candle = candles[index]
         symbol = "XAUUSD"
@@ -61,7 +63,9 @@ class OBAggressiveStrategy(BaseStrategy):
             abs(candle.close - window_high),
             abs(candle.close - window_low),
         )
-        confidence = min(1.0, 0.45 + (impulse * 0.2) + (breakout_distance / volatility * 0.15))
+        confidence = min(
+            1.0, 0.45 + (impulse * 0.2) + (breakout_distance / volatility * 0.15)
+        )
 
         direction = "hold"
         if candle.close > window_high and confidence >= p["confidence_threshold"]:

@@ -3,11 +3,13 @@ from datetime import datetime
 from enum import StrEnum
 from pydantic import BaseModel, Field
 
+
 class ApiKeyStatus(StrEnum):
     ACTIVE = "active"
     DISABLED = "disabled"
     EXPIRED = "expired"
     REVOKED = "revoked"
+
 
 class ApiKeyScope(StrEnum):
     READ_HEALTH = "read:health"
@@ -27,6 +29,7 @@ class ApiKeyScope(StrEnum):
     WRITE_WEBHOOKS = "write:webhooks"
     SANDBOX_ALL = "sandbox:all"
 
+
 class DeveloperApiKey(BaseModel):
     id: str
     organization_id: str
@@ -43,11 +46,13 @@ class DeveloperApiKey(BaseModel):
     updated_at: datetime
     sandbox_only: bool = True
 
+
 class ApiKeyCreateRequest(BaseModel):
     name: str
     scopes: list[ApiKeyScope]
     expires_at: datetime | None = None
     sandbox_only: bool = True
+
 
 class ApiKeyCreatedResponse(BaseModel):
     id: str

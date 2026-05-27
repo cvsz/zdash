@@ -3,7 +3,12 @@ from datetime import datetime, timezone
 import pytest
 from pydantic import ValidationError
 
-from app.backtesting.models import BacktestRequest, Candle, OptimizationRequest, StrategySignal
+from app.backtesting.models import (
+    BacktestRequest,
+    Candle,
+    OptimizationRequest,
+    StrategySignal,
+)
 
 
 def test_candle_validation_accepts_valid_ohlc() -> None:

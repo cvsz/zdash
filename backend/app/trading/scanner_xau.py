@@ -23,18 +23,18 @@ class XAUScanner:
         return LegacySignal(
             symbol=signal.symbol,
             timeframe=signal.timeframe,
-            direction='neutral' if signal.direction == 'hold' else signal.direction,
+            direction="neutral" if signal.direction == "hold" else signal.direction,
             entry_zone=(round(entry_low, 4), round(entry_high, 4)),
             stop_loss=signal.stop_loss,
             take_profit=signal.take_profit,
             confidence=signal.confidence,
             strategy=signal.strategy,
-            filter_state=signal.metadata.get('funnel_state', {}),
+            filter_state=signal.metadata.get("funnel_state", {}),
             ai_summary=signal.reason,
         )
 
     def scan(self) -> LegacySignal:
         result = self._core.scan()
         if result.latest_signal is None:
-            raise RuntimeError('scanner did not generate a signal')
+            raise RuntimeError("scanner did not generate a signal")
         return self._to_legacy(result.latest_signal)

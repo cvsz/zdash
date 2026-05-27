@@ -1,2 +1,3 @@
 class MockKMSAdapter:
-    def test(self): return {'ok':True,'provider':'mock'}
+    def test(self):
+        return {"ok": True, "provider": "mock"}

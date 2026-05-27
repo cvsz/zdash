@@ -41,7 +41,9 @@ class JoeAgent(BaseAgent):
         try:
             result = self.service.run_backtest(request)
             self.status = "idle"
-            self._emit_completed("run_backtest", {"result_id": result.id, "strategy": result.strategy})
+            self._emit_completed(
+                "run_backtest", {"result_id": result.id, "strategy": result.strategy}
+            )
             return result
         except Exception as exc:
             self.status = "error"
@@ -76,7 +78,11 @@ class JoeAgent(BaseAgent):
             self.status = "idle"
             self._emit_completed(
                 "evaluate_promotion",
-                {"result_id": result_id, "approved": decision.approved, "reason": decision.reason},
+                {
+                    "result_id": result_id,
+                    "approved": decision.approved,
+                    "reason": decision.reason,
+                },
             )
             return decision
         except Exception as exc:
@@ -94,7 +100,9 @@ class JoeAgent(BaseAgent):
         self._emit_received("receive_message", {"message": message.message})
         return self.run_task(task=message.message, context=message.context)
 
-    def run_task(self, task: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
+    def run_task(
+        self, task: str, context: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
         context = context or {}
         if task == "health":
             result = self.health_check()
@@ -104,23 +112,46 @@ class JoeAgent(BaseAgent):
             request = BacktestRequest.model_validate(context.get("request", context))
             result = {"result": self.run_backtest(request).model_dump(mode="json")}
         elif task == "optimize":
-            request = OptimizationRequest.model_validate(context.get("request", context))
+            request = OptimizationRequest.model_validate(
+                context.get("request", context)
+            )
             result = {"result": self.optimize(request).model_dump(mode="json")}
         elif task == "evaluate_promotion":
             result_id = str(context.get("result_id", "")).strip()
             if not result_id:
                 raise ValueError("result_id is required")
-            result = {"decision": self.evaluate_promotion(result_id).model_dump(mode="json")}
+            result = {
+                "decision": self.evaluate_promotion(result_id).model_dump(mode="json")
+            }
         else:
             raise ValueError(f"Unsupported Joe task: {task}")
 
         return {"task": task, "ok": True, **result}
 
-    def _emit_received(self, command: str, payload: dict[str, Any] | None = None) -> None:
-        event_bus.emit("joe.command.received", self.id, "Joe command received", {"command": command, **(payload or {})})
+    def _emit_received(
+        self, command: str, payload: dict[str, Any] | None = None
+    ) -> None:
+        event_bus.emit(
+            "joe.command.received",
+            self.id,
+            "Joe command received",
+            {"command": command, **(payload or {})},
+        )
 
-    def _emit_completed(self, command: str, payload: dict[str, Any] | None = None) -> None:
-        event_bus.emit("joe.command.completed", self.id, "Joe command completed", {"command": command, **(payload or {})})
+    def _emit_completed(
+        self, command: str, payload: dict[str, Any] | None = None
+    ) -> None:
+        event_bus.emit(
+            "joe.command.completed",
+            self.id,
+            "Joe command completed",
+            {"command": command, **(payload or {})},
+        )
 
     def _emit_failed(self, command: str, exc: Exception) -> None:
-        event_bus.emit("joe.command.failed", self.id, "Joe command failed", {"command": command, "error": str(exc)})
+        event_bus.emit(
+            "joe.command.failed",
+            self.id,
+            "Joe command failed",
+            {"command": command, "error": str(exc)},
+        )

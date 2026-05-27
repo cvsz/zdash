@@ -3,7 +3,7 @@ from app.risk.kill_switch import KillSwitch
 from app.risk.models import DrawdownResult
 
 
-def _drawdown(total: float, daily: float, risk_level: str = 'danger') -> DrawdownResult:
+def _drawdown(total: float, daily: float, risk_level: str = "danger") -> DrawdownResult:
     return DrawdownResult(
         current_equity=10000.0 - total,
         peak_equity=10000.0,
@@ -24,13 +24,18 @@ def test_does_not_trigger_below_threshold() -> None:
 
 def test_triggers_at_emergency_threshold() -> None:
     switch = KillSwitch()
-    assert switch.should_trigger(_drawdown(total=50.0, daily=5.0, risk_level='emergency')) is True
+    assert (
+        switch.should_trigger(_drawdown(total=50.0, daily=5.0, risk_level="emergency"))
+        is True
+    )
 
 
 def test_activates_halt_state_and_reason_includes_drawdown() -> None:
     switch = KillSwitch()
     store = HaltFlagStore()
-    state = switch.trigger(_drawdown(total=50.0, daily=5.0, risk_level='emergency'), store)
+    state = switch.trigger(
+        _drawdown(total=50.0, daily=5.0, risk_level="emergency"), store
+    )
     assert state.halted is True
     assert state.reason is not None
-    assert 'total_drawdown=50.0%' in state.reason
+    assert "total_drawdown=50.0%" in state.reason

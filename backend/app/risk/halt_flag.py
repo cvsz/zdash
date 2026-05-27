@@ -22,12 +22,12 @@ class HaltFlagStore:
         return self.get_state().halted
 
     def halt(self, reason: str, source: str) -> HaltState:
-        clean_reason = (reason or '').strip()
-        clean_source = (source or '').strip()
+        clean_reason = (reason or "").strip()
+        clean_source = (source or "").strip()
         if not clean_reason:
-            raise ValueError('Halt reason is required.')
+            raise ValueError("Halt reason is required.")
         if not clean_source:
-            raise ValueError('Halt source is required.')
+            raise ValueError("Halt source is required.")
 
         now = datetime.now(timezone.utc)
         with self._lock:
@@ -42,17 +42,17 @@ class HaltFlagStore:
             state = self._state.model_copy(deep=True)
 
         event_bus.emit(
-            'risk.halt.activated',
-            'HaltFlagStore',
-            'Risk halt activated',
-            {'reason': clean_reason, 'source': clean_source},
+            "risk.halt.activated",
+            "HaltFlagStore",
+            "Risk halt activated",
+            {"reason": clean_reason, "source": clean_source},
         )
         return state
 
     def resume(self, reason: str) -> HaltState:
-        clean_reason = (reason or '').strip()
+        clean_reason = (reason or "").strip()
         if self._settings.require_resume_reason and not clean_reason:
-            raise ValueError('Resume reason is required.')
+            raise ValueError("Resume reason is required.")
 
         now = datetime.now(timezone.utc)
         with self._lock:
@@ -68,10 +68,10 @@ class HaltFlagStore:
             state = self._state.model_copy(deep=True)
 
         event_bus.emit(
-            'risk.halt.resumed',
-            'HaltFlagStore',
-            'Risk halt resumed',
-            {'reason': clean_reason},
+            "risk.halt.resumed",
+            "HaltFlagStore",
+            "Risk halt resumed",
+            {"reason": clean_reason},
         )
         return state
 

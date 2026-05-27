@@ -7,28 +7,28 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class JobStatus(str, Enum):
-    pending = 'pending'
-    running = 'running'
-    paused = 'paused'
-    completed = 'completed'
-    failed = 'failed'
-    disabled = 'disabled'
+    pending = "pending"
+    running = "running"
+    paused = "paused"
+    completed = "completed"
+    failed = "failed"
+    disabled = "disabled"
 
 
 class JobType(str, Enum):
-    trading_scan = 'trading_scan'
-    risk_check = 'risk_check'
-    backtest = 'backtest'
-    content_pipeline = 'content_pipeline'
-    health_check = 'health_check'
-    iot_power_cycle = 'iot_power_cycle'
-    custom = 'custom'
+    trading_scan = "trading_scan"
+    risk_check = "risk_check"
+    backtest = "backtest"
+    content_pipeline = "content_pipeline"
+    health_check = "health_check"
+    iot_power_cycle = "iot_power_cycle"
+    custom = "custom"
 
 
 class ScheduleType(str, Enum):
-    interval = 'interval'
-    cron = 'cron'
-    manual = 'manual'
+    interval = "interval"
+    cron = "cron"
+    manual = "manual"
 
 
 class ScheduledJob(BaseModel):
@@ -72,12 +72,12 @@ class CreateJobRequest(BaseModel):
     enabled: bool = True
     max_runtime_seconds: int = Field(default=300, ge=1)
 
-    @model_validator(mode='after')
-    def _validate_schedule_fields(self) -> 'CreateJobRequest':
+    @model_validator(mode="after")
+    def _validate_schedule_fields(self) -> "CreateJobRequest":
         if self.schedule_type == ScheduleType.interval:
             if self.interval_seconds is None or self.interval_seconds <= 0:
-                raise ValueError('interval jobs require interval_seconds > 0')
+                raise ValueError("interval jobs require interval_seconds > 0")
         elif self.schedule_type == ScheduleType.cron:
             if not self.cron or not self.cron.strip():
-                raise ValueError('cron jobs require cron string')
+                raise ValueError("cron jobs require cron string")
         return self

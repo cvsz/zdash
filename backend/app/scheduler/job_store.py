@@ -4,7 +4,13 @@ from datetime import datetime, timedelta, timezone
 from threading import Lock
 from uuid import uuid4
 
-from app.scheduler.models import CreateJobRequest, JobRunResult, JobStatus, ScheduleType, ScheduledJob
+from app.scheduler.models import (
+    CreateJobRequest,
+    JobRunResult,
+    JobStatus,
+    ScheduleType,
+    ScheduledJob,
+)
 
 
 class JobStoreError(ValueError):
@@ -22,7 +28,9 @@ class InMemoryJobStore:
         self._lock = Lock()
 
     @staticmethod
-    def _next_run_at(schedule_type: ScheduleType, interval_seconds: int | None) -> datetime | None:
+    def _next_run_at(
+        schedule_type: ScheduleType, interval_seconds: int | None
+    ) -> datetime | None:
         if schedule_type == ScheduleType.interval and interval_seconds:
             return datetime.now(timezone.utc) + timedelta(seconds=interval_seconds)
         return None
@@ -51,7 +59,9 @@ class InMemoryJobStore:
             max_runtime_seconds=request.max_runtime_seconds,
             created_at=now,
             updated_at=now,
-            next_run_at=self._next_run_at(request.schedule_type, request.interval_seconds),
+            next_run_at=self._next_run_at(
+                request.schedule_type, request.interval_seconds
+            ),
         )
         with self._lock:
             self._jobs[job.id] = job
@@ -61,11 +71,11 @@ class InMemoryJobStore:
         with self._lock:
             current = self._jobs.get(job_id)
             if current is None:
-                raise JobNotFoundError(f'Unknown job: {job_id}')
+                raise JobNotFoundError(f"Unknown job: {job_id}")
 
             merged = current.model_dump()
             merged.update(patch)
-            merged['updated_at'] = datetime.now(timezone.utc)
+            merged["updated_at"] = datetime.now(timezone.utc)
             updated = ScheduledJob.model_validate(merged)
             self._jobs[job_id] = updated
             return updated.model_copy(deep=True)
@@ -78,16 +88,18 @@ class InMemoryJobStore:
             return existed
 
     def pause_job(self, job_id: str) -> ScheduledJob:
-        return self.update_job(job_id, {'status': JobStatus.paused})
+        return self.update_job(job_id, {"status": JobStatus.paused})
 
     def resume_job(self, job_id: str) -> ScheduledJob:
         current = self.get_job(job_id)
         if current is None:
-            raise JobNotFoundError(f'Unknown job: {job_id}')
+            raise JobNotFoundError(f"Unknown job: {job_id}")
         status = JobStatus.pending if current.enabled else JobStatus.disabled
         patch = {
-            'status': status,
-            'next_run_at': self._next_run_at(current.schedule_type, current.interval_seconds),
+            "status": status,
+            "next_run_at": self._next_run_at(
+                current.schedule_type, current.interval_seconds
+            ),
         }
         return self.update_job(job_id, patch)
 
@@ -95,7 +107,7 @@ class InMemoryJobStore:
         with self._lock:
             current = self._jobs.get(job_id)
             if current is None:
-                raise JobNotFoundError(f'Unknown job: {job_id}')
+                raise JobNotFoundError(f"Unknown job: {job_id}")
 
             self._runs.append(result.model_copy(deep=True))
 
@@ -105,7 +117,7 @@ class InMemoryJobStore:
                 status = JobStatus.paused
             elif not current.enabled:
                 status = JobStatus.disabled
-            elif result.status == 'failed':
+            elif result.status == "failed":
                 status = JobStatus.failed
             elif current.schedule_type in {ScheduleType.interval, ScheduleType.cron}:
                 status = JobStatus.pending
@@ -114,12 +126,14 @@ class InMemoryJobStore:
 
             updated = current.model_copy(
                 update={
-                    'status': status,
-                    'last_run_at': result.finished_at,
-                    'run_count': run_count,
-                    'fail_count': fail_count,
-                    'updated_at': datetime.now(timezone.utc),
-                    'next_run_at': self._next_run_at(current.schedule_type, current.interval_seconds),
+                    "status": status,
+                    "last_run_at": result.finished_at,
+                    "run_count": run_count,
+                    "fail_count": fail_count,
+                    "updated_at": datetime.now(timezone.utc),
+                    "next_run_at": self._next_run_at(
+                        current.schedule_type, current.interval_seconds
+                    ),
                 }
             )
             self._jobs[job_id] = updated

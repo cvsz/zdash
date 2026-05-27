@@ -32,7 +32,14 @@ def run(req: BacktestRequest):
 
 @router.get("/results")
 def results():
-    return ok({"results": [item.model_dump(mode="json") for item in get_backtest_service().get_results()]})
+    return ok(
+        {
+            "results": [
+                item.model_dump(mode="json")
+                for item in get_backtest_service().get_results()
+            ]
+        }
+    )
 
 
 @router.get("/results/{result_id}")
@@ -57,7 +64,8 @@ def optimizations():
     return ok(
         {
             "optimizations": [
-                item.model_dump(mode="json") for item in get_backtest_service().get_optimization_results()
+                item.model_dump(mode="json")
+                for item in get_backtest_service().get_optimization_results()
             ]
         }
     )
@@ -77,4 +85,9 @@ def report(result_id: str):
     item = get_backtest_service().get_result(result_id)
     if not item:
         return fail("RESULT_NOT_FOUND", "Backtest result not found")
-    return ok({"markdown_report": reports.build_markdown_report(item), "summary": reports.build_summary(item)})
+    return ok(
+        {
+            "markdown_report": reports.build_markdown_report(item),
+            "summary": reports.build_summary(item),
+        }
+    )

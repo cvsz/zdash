@@ -50,7 +50,11 @@ class BacktestReportBuilder:
             "total_combinations": result.total_combinations,
             "best_result_id": best_result.id if best_result else None,
             "best_strategy": best_result.strategy if best_result else None,
-            "best_net_profit_percent": best_result.metrics.net_profit_percent if best_result else None,
-            "best_profit_factor": best_result.metrics.profit_factor if best_result else None,
+            "best_net_profit_percent": best_result.metrics.net_profit_percent
+            if best_result
+            else None,
+            "best_profit_factor": best_result.metrics.profit_factor
+            if best_result
+            else None,
             "warnings": result.warnings,
         }

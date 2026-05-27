@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from app.backtesting.datasets import CsvDatasetProvider, DatasetProvider, MockDatasetProvider
+from app.backtesting.datasets import (
+    CsvDatasetProvider,
+    DatasetProvider,
+    MockDatasetProvider,
+)
 
 
 def test_mock_dataset_returns_valid_candles() -> None:
@@ -15,7 +19,9 @@ def test_mock_dataset_returns_valid_candles() -> None:
 def test_mock_dataset_is_deterministic() -> None:
     first_run = MockDatasetProvider().load("mock", "XAUUSD", "M5")
     second_run = MockDatasetProvider().load("mock", "XAUUSD", "M5")
-    assert [item.close for item in first_run[:20]] == [item.close for item in second_run[:20]]
+    assert [item.close for item in first_run[:20]] == [
+        item.close for item in second_run[:20]
+    ]
 
 
 def test_csv_path_traversal_is_rejected() -> None:

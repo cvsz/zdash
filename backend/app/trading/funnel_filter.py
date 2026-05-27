@@ -8,7 +8,12 @@ from app.trading.models import Candle, TradingSignal
 
 
 class FunnelFilter:
-    def __init__(self, fast: int | None = None, medium: int | None = None, slow: int | None = None) -> None:
+    def __init__(
+        self,
+        fast: int | None = None,
+        medium: int | None = None,
+        slow: int | None = None,
+    ) -> None:
         settings = get_settings()
         self.fast = fast or settings.funnel_fast_period
         self.medium = medium or settings.funnel_medium_period
@@ -17,7 +22,7 @@ class FunnelFilter:
     @staticmethod
     def calculate_sma(values: list[float], period: int) -> list[float]:
         if period <= 0:
-            raise ValueError('period must be positive')
+            raise ValueError("period must be positive")
         if not values:
             return []
 
@@ -34,7 +39,7 @@ class FunnelFilter:
 
     def evaluate(self, candles: list[Candle]) -> dict:
         if len(candles) < self.fast:
-            raise ValueError(f'need at least {self.fast} candles for funnel evaluation')
+            raise ValueError(f"need at least {self.fast} candles for funnel evaluation")
 
         closes = [candle.close for candle in candles]
         sma_fast_series = self.calculate_sma(closes, self.fast)
@@ -46,26 +51,28 @@ class FunnelFilter:
         sma_slow = sma_slow_series[-1]
         latest_close = closes[-1]
 
-        direction = 'hold'
+        direction = "hold"
         if latest_close > sma_fast and sma_slow > sma_medium > sma_fast:
-            direction = 'buy'
+            direction = "buy"
         elif latest_close < sma_fast and sma_slow < sma_medium < sma_fast:
-            direction = 'sell'
+            direction = "sell"
 
         return {
-            'direction': direction,
-            'close': round(latest_close, 4),
-            'sma_fast': round(sma_fast, 4),
-            'sma_medium': round(sma_medium, 4),
-            'sma_slow': round(sma_slow, 4),
-            'periods': {
-                'fast': self.fast,
-                'medium': self.medium,
-                'slow': self.slow,
+            "direction": direction,
+            "close": round(latest_close, 4),
+            "sma_fast": round(sma_fast, 4),
+            "sma_medium": round(sma_medium, 4),
+            "sma_slow": round(sma_slow, 4),
+            "periods": {
+                "fast": self.fast,
+                "medium": self.medium,
+                "slow": self.slow,
             },
         }
 
-    def generate_signal(self, candles: list[Candle], symbol: str, timeframe: str) -> TradingSignal:
+    def generate_signal(
+        self, candles: list[Candle], symbol: str, timeframe: str
+    ) -> TradingSignal:
         state = self.evaluate(candles)
         latest = candles[-1]
 
@@ -73,25 +80,35 @@ class FunnelFilter:
         avg_range = sum(c.high - c.low for c in recent) / len(recent)
         volatility = max(avg_range, 0.2)
 
-        direction = state['direction']
+        direction = state["direction"]
         confidence = 0.5
-        if direction == 'buy':
-            confidence = min(0.9, 0.55 + ((state['sma_slow'] - state['sma_fast']) / max(volatility, 0.001)) * 0.03)
+        if direction == "buy":
+            confidence = min(
+                0.9,
+                0.55
+                + ((state["sma_slow"] - state["sma_fast"]) / max(volatility, 0.001))
+                * 0.03,
+            )
             entry = latest.close
             stop_loss = entry - (volatility * 1.5)
             take_profit = entry + (volatility * 3.0)
-            reason = 'Funnel filter buy bias in simulation mode.'
-        elif direction == 'sell':
-            confidence = min(0.9, 0.55 + ((state['sma_fast'] - state['sma_slow']) / max(volatility, 0.001)) * 0.03)
+            reason = "Funnel filter buy bias in simulation mode."
+        elif direction == "sell":
+            confidence = min(
+                0.9,
+                0.55
+                + ((state["sma_fast"] - state["sma_slow"]) / max(volatility, 0.001))
+                * 0.03,
+            )
             entry = latest.close
             stop_loss = entry + (volatility * 1.5)
             take_profit = entry - (volatility * 3.0)
-            reason = 'Funnel filter sell bias in simulation mode.'
+            reason = "Funnel filter sell bias in simulation mode."
         else:
             entry = latest.close
             stop_loss = entry
             take_profit = entry
-            reason = 'Funnel filter hold state in simulation mode.'
+            reason = "Funnel filter hold state in simulation mode."
 
         return TradingSignal(
             id=str(uuid4()),
@@ -105,8 +122,8 @@ class FunnelFilter:
             take_profit=round(take_profit, 4),
             reason=reason,
             metadata={
-                'funnel_state': state,
-                'volatility': round(volatility, 4),
-                'generated_at': datetime.now(timezone.utc).isoformat(),
+                "funnel_state": state,
+                "volatility": round(volatility, 4),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             },
         )

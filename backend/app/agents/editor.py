@@ -21,9 +21,9 @@ class EditorAgent(BaseAgent):
 
     def receive_message(self, message: AgentMessage) -> dict[str, Any]:
         self.emit_event(
-            'agent.message.received',
-            'Elena Voss received message',
-            {'from_agent': message.from_agent, 'message': message.message},
+            "agent.message.received",
+            "Elena Voss received message",
+            {"from_agent": message.from_agent, "message": message.message},
         )
         response = self.run_task(task=message.message, context=message.context)
         return {

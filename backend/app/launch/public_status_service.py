@@ -10,7 +10,14 @@ class PublicStatusService:
         return {
             "components": [c.model_dump() for c in self.components.values()],
             "incidents": [
-                {"id": i.id, "title": i.title, "summary": i.summary, "status": i.status, "severity": i.severity}
-                for i in self.incidents.values() if i.public
+                {
+                    "id": i.id,
+                    "title": i.title,
+                    "summary": i.summary,
+                    "status": i.status,
+                    "severity": i.severity,
+                }
+                for i in self.incidents.values()
+                if i.public
             ],
         }

@@ -11,7 +11,9 @@ class BaseStrategy(ABC):
     default_parameters: dict = {}
 
     @abstractmethod
-    def generate_signal(self, candles: list[Candle], index: int, parameters: dict) -> StrategySignal:
+    def generate_signal(
+        self, candles: list[Candle], index: int, parameters: dict
+    ) -> StrategySignal:
         raise NotImplementedError
 
     def validate_parameters(self, parameters: dict) -> dict:

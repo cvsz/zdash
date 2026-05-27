@@ -16,8 +16,12 @@ class SignalValidator:
         if isinstance(signal, TradingSignal):
             return signal
 
-        entry = (signal.entry_zone[0] + signal.entry_zone[1]) / 2 if signal.entry_zone else 2350.0
-        direction = 'hold' if signal.direction == 'neutral' else signal.direction
+        entry = (
+            (signal.entry_zone[0] + signal.entry_zone[1]) / 2
+            if signal.entry_zone
+            else 2350.0
+        )
+        direction = "hold" if signal.direction == "neutral" else signal.direction
         return TradingSignal(
             symbol=signal.symbol,
             timeframe=signal.timeframe,
@@ -27,8 +31,8 @@ class SignalValidator:
             entry=entry,
             stop_loss=signal.stop_loss if signal.stop_loss > 0 else entry,
             take_profit=signal.take_profit if signal.take_profit > 0 else entry,
-            reason=signal.ai_summary or 'Legacy validation request',
-            metadata={'legacy_filter_state': signal.filter_state},
+            reason=signal.ai_summary or "Legacy validation request",
+            metadata={"legacy_filter_state": signal.filter_state},
         )
 
     def validate(self, signal: LegacySignal | TradingSignal) -> dict:
@@ -38,8 +42,8 @@ class SignalValidator:
         if not result.valid:
             issues.append(result.reason)
         return {
-            'valid': result.valid,
-            'issues': issues,
-            'warnings': result.warnings,
-            'signal_id': normalized.id,
+            "valid": result.valid,
+            "issues": issues,
+            "warnings": result.warnings,
+            "signal_id": normalized.id,
         }

@@ -37,7 +37,9 @@ class OBConservativeStrategy(BaseStrategy):
         )
         return merged
 
-    def generate_signal(self, candles: list[Candle], index: int, parameters: dict) -> StrategySignal:
+    def generate_signal(
+        self, candles: list[Candle], index: int, parameters: dict
+    ) -> StrategySignal:
         p = self.validate_parameters(parameters)
         candle = candles[index]
         symbol = "XAUUSD"
@@ -56,14 +58,26 @@ class OBConservativeStrategy(BaseStrategy):
         window_low = min(item.low for item in window)
         start_close = window[0].close
         end_close = window[-1].close
-        trend_strength = abs(end_close - start_close) / max(self.volatility(window), 1e-6)
-        breakout_strength = abs(candle.close - end_close) / max(self.volatility(window) * 1.8, 1e-6)
+        trend_strength = abs(end_close - start_close) / max(
+            self.volatility(window), 1e-6
+        )
+        breakout_strength = abs(candle.close - end_close) / max(
+            self.volatility(window) * 1.8, 1e-6
+        )
         conf = min(1.0, 0.45 + (trend_strength * 0.15) + breakout_strength)
         direction = "hold"
 
-        if candle.close > window_high * 1.0005 and end_close > start_close and conf >= p["confidence_threshold"]:
+        if (
+            candle.close > window_high * 1.0005
+            and end_close > start_close
+            and conf >= p["confidence_threshold"]
+        ):
             direction = "buy"
-        elif candle.close < window_low * 0.9995 and end_close < start_close and conf >= p["confidence_threshold"]:
+        elif (
+            candle.close < window_low * 0.9995
+            and end_close < start_close
+            and conf >= p["confidence_threshold"]
+        ):
             direction = "sell"
 
         stop_distance = self.volatility(window) * p["atr_multiplier"]
@@ -91,5 +105,8 @@ class OBConservativeStrategy(BaseStrategy):
             stop_loss=stop_loss,
             take_profit=take_profit,
             confidence=conf,
-            metadata={"lookback": p["lookback"], "trend_strength": round(trend_strength, 6)},
+            metadata={
+                "lookback": p["lookback"],
+                "trend_strength": round(trend_strength, 6),
+            },
         )

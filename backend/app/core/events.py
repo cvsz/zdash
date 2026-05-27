@@ -41,7 +41,9 @@ class Event(BaseModel):
     source: str
     message: str
     payload: dict[str, Any] = Field(default_factory=dict)
-    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
 
 class EventBus:
@@ -57,13 +59,17 @@ class EventBus:
         payload: dict[str, Any] | None = None,
     ) -> Event:
         if isinstance(message, dict):
-            event_message = str(message.get('message') or message.get('action') or event_type)
+            event_message = str(
+                message.get("message") or message.get("action") or event_type
+            )
             event_payload = {**message, **(payload or {})}
         else:
             event_message = message
             event_payload = payload or {}
 
-        event = Event(type=event_type, source=source, message=event_message, payload=event_payload)
+        event = Event(
+            type=event_type, source=source, message=event_message, payload=event_payload
+        )
         with self._lock:
             self._events.append(event)
         return event

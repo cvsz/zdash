@@ -91,7 +91,12 @@ class SimulatedTrade(BaseModel):
     pnl_percent: float = 0
     rr: float = 0
     status: Literal["open", "closed", "skipped"]
-    exit_reason: Literal["take_profit", "stop_loss", "signal_exit", "end_of_data", "invalid_signal"] | None = None
+    exit_reason: (
+        Literal[
+            "take_profit", "stop_loss", "signal_exit", "end_of_data", "invalid_signal"
+        ]
+        | None
+    ) = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

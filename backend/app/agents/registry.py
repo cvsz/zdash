@@ -20,14 +20,62 @@ from app.core.events import Event, event_bus
 
 
 CANONICAL_AGENT_ROSTER = [
-    {'id': 'ceo', 'display_name': 'Alexander Prime', 'title': 'CEO • Visionary Leader', 'tier': 'legendary', 'legacy_name': 'CEO'},
-    {'id': 'janie', 'display_name': 'Sophia Lane', 'title': 'Coordinator • Manager', 'tier': 'epic', 'legacy_name': 'Janie'},
-    {'id': 'guardian', 'display_name': 'Victor Hale', 'title': 'Risk Manager', 'tier': 'epic', 'legacy_name': 'Guardian'},
-    {'id': 'friday', 'display_name': 'Isla Grant', 'title': 'Scheduler • Automation', 'tier': 'rare', 'legacy_name': 'Friday'},
-    {'id': 'joe', 'display_name': 'Nathan Cole', 'title': 'Analyst • Developer', 'tier': 'rare', 'legacy_name': 'Joe'},
-    {'id': 'editor', 'display_name': 'Elena Voss', 'title': 'Content Specialist', 'tier': 'epic', 'legacy_name': 'Editor'},
-    {'id': 'graphic', 'display_name': 'Julian Reed', 'title': 'Design Specialist', 'tier': 'epic', 'legacy_name': 'Graphic'},
-    {'id': 'social', 'display_name': 'Maya Quinn', 'title': 'Social Media Specialist', 'tier': 'epic', 'legacy_name': 'Social'},
+    {
+        "id": "ceo",
+        "display_name": "Alexander Prime",
+        "title": "CEO • Visionary Leader",
+        "tier": "legendary",
+        "legacy_name": "CEO",
+    },
+    {
+        "id": "janie",
+        "display_name": "Sophia Lane",
+        "title": "Coordinator • Manager",
+        "tier": "epic",
+        "legacy_name": "Janie",
+    },
+    {
+        "id": "guardian",
+        "display_name": "Victor Hale",
+        "title": "Risk Manager",
+        "tier": "epic",
+        "legacy_name": "Guardian",
+    },
+    {
+        "id": "friday",
+        "display_name": "Isla Grant",
+        "title": "Scheduler • Automation",
+        "tier": "rare",
+        "legacy_name": "Friday",
+    },
+    {
+        "id": "joe",
+        "display_name": "Nathan Cole",
+        "title": "Analyst • Developer",
+        "tier": "rare",
+        "legacy_name": "Joe",
+    },
+    {
+        "id": "editor",
+        "display_name": "Elena Voss",
+        "title": "Content Specialist",
+        "tier": "epic",
+        "legacy_name": "Editor",
+    },
+    {
+        "id": "graphic",
+        "display_name": "Julian Reed",
+        "title": "Design Specialist",
+        "tier": "epic",
+        "legacy_name": "Graphic",
+    },
+    {
+        "id": "social",
+        "display_name": "Maya Quinn",
+        "title": "Social Media Specialist",
+        "tier": "epic",
+        "legacy_name": "Social",
+    },
 ]
 
 
@@ -56,9 +104,9 @@ class AgentRegistry:
         to_agent = self.get(request.to_agent)
 
         if from_agent is None:
-            raise ValueError(f'Unknown source agent: {request.from_agent}')
+            raise ValueError(f"Unknown source agent: {request.from_agent}")
         if to_agent is None:
-            raise ValueError(f'Unknown target agent: {request.to_agent}')
+            raise ValueError(f"Unknown target agent: {request.to_agent}")
 
         msg_id = str(uuid4())
         envelope = AgentMessage(
@@ -69,27 +117,27 @@ class AgentRegistry:
         )
 
         sent_event = event_bus.emit(
-            event_type='agent.message.sent',
+            event_type="agent.message.sent",
             source=request.from_agent,
-            message='Message dispatched',
-            payload={'message_id': msg_id, **envelope.model_dump()},
+            message="Message dispatched",
+            payload={"message_id": msg_id, **envelope.model_dump()},
         )
 
         response = to_agent.receive_message(envelope)
 
         related_events = _find_related_events(msg_id=msg_id, base_event=sent_event)
         result = {
-            'message_id': msg_id,
-            'from_agent': request.from_agent,
-            'to_agent': request.to_agent,
-            'event_ids': [event.id for event in related_events],
-            'timestamp': datetime.now(timezone.utc).isoformat(),
+            "message_id": msg_id,
+            "from_agent": request.from_agent,
+            "to_agent": request.to_agent,
+            "event_ids": [event.id for event in related_events],
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        if isinstance(response, dict) and 'response_text' in response:
-            result['response_text'] = response['response_text']
+        if isinstance(response, dict) and "response_text" in response:
+            result["response_text"] = response["response_text"]
         else:
-            result['response'] = response
+            result["response"] = response
 
         return result
 
@@ -99,7 +147,7 @@ def _find_related_events(msg_id: str, base_event: Event) -> list[Event]:
     related: list[Event] = [base_event]
     for event in events:
         payload = event.payload if isinstance(event.payload, dict) else {}
-        if payload.get('message_id') == msg_id:
+        if payload.get("message_id") == msg_id:
             related.append(event)
     unique: dict[str, Event] = {event.id: event for event in related}
     return list(unique.values())
@@ -107,7 +155,7 @@ def _find_related_events(msg_id: str, base_event: Event) -> list[Event]:
 
 def build_default_ai_adapter():
     settings = get_settings()
-    if settings.ai_provider.lower() == 'claude':
+    if settings.ai_provider.lower() == "claude":
         return ClaudeAdapter()
     return MockAIAdapter()
 
@@ -116,21 +164,30 @@ registry = AgentRegistry()
 
 
 def bootstrap_agents() -> None:
-    if registry.get('ceo') and registry.get('janie') and registry.get('guardian') and registry.get('friday') and registry.get('joe') and registry.get('editor') and registry.get('graphic') and registry.get('social'):
+    if (
+        registry.get("ceo")
+        and registry.get("janie")
+        and registry.get("guardian")
+        and registry.get("friday")
+        and registry.get("joe")
+        and registry.get("editor")
+        and registry.get("graphic")
+        and registry.get("social")
+    ):
         return
 
-    ceo = registry.get('ceo') or CEOAgent()
-    janie = registry.get('janie') or JanieAgent(ai_adapter=build_default_ai_adapter())
+    ceo = registry.get("ceo") or CEOAgent()
+    janie = registry.get("janie") or JanieAgent(ai_adapter=build_default_ai_adapter())
 
     from app.risk.guardian_service import get_guardian_agent
     from app.scheduler.friday_agent import get_friday_agent
 
-    guardian = registry.get('guardian') or get_guardian_agent()
-    friday = registry.get('friday') or get_friday_agent()
-    joe = registry.get('joe') or JoeAgent()
-    editor = registry.get('editor') or EditorAgent()
-    graphic = registry.get('graphic') or GraphicAgent()
-    social = registry.get('social') or SocialAgent()
+    guardian = registry.get("guardian") or get_guardian_agent()
+    friday = registry.get("friday") or get_friday_agent()
+    joe = registry.get("joe") or JoeAgent()
+    editor = registry.get("editor") or EditorAgent()
+    graphic = registry.get("graphic") or GraphicAgent()
+    social = registry.get("social") or SocialAgent()
 
     registry.register(ceo)
     registry.register(janie)
@@ -142,12 +199,21 @@ def bootstrap_agents() -> None:
     registry.register(social)
 
     event_bus.emit(
-        'system.startup',
-        'system',
-        'Sophia Lane runtime bootstrapped',
+        "system.startup",
+        "system",
+        "Sophia Lane runtime bootstrapped",
         {
-            'agents': ['ceo', 'janie', 'guardian', 'friday', 'joe', 'editor', 'graphic', 'social'],
-            'canonical_roster': CANONICAL_AGENT_ROSTER,
-            'joe_role': joe.role,
+            "agents": [
+                "ceo",
+                "janie",
+                "guardian",
+                "friday",
+                "joe",
+                "editor",
+                "graphic",
+                "social",
+            ],
+            "canonical_roster": CANONICAL_AGENT_ROSTER,
+            "joe_role": joe.role,
         },
     )

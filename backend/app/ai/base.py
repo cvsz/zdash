@@ -15,5 +15,7 @@ class AIResponse(BaseModel):
 
 class AIAdapter(ABC):
     @abstractmethod
-    def generate_response(self, prompt: str, context: dict[str, Any] | None = None) -> AIResponse:
+    def generate_response(
+        self, prompt: str, context: dict[str, Any] | None = None
+    ) -> AIResponse:
         raise NotImplementedError

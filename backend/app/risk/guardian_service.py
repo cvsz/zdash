@@ -23,18 +23,22 @@ class GuardianService:
 
     def get_status(self) -> dict:
         return {
-            'guardian_enabled': self.settings.risk_guardian_enabled,
-            'halt_state': self.halt_store.get_state().model_dump(mode='json'),
-            'thresholds': {
-                'max_daily_drawdown_percent': self.settings.max_daily_drawdown_percent,
-                'max_total_drawdown_percent': self.settings.max_total_drawdown_percent,
-                'emergency_kill_switch_drawdown_percent': self.settings.emergency_kill_switch_drawdown_percent,
-                'soft_halt_drawdown_level_1': self.settings.soft_halt_drawdown_level_1,
-                'soft_halt_drawdown_level_2': self.settings.soft_halt_drawdown_level_2,
-                'soft_halt_drawdown_level_3': self.settings.soft_halt_drawdown_level_3,
+            "guardian_enabled": self.settings.risk_guardian_enabled,
+            "halt_state": self.halt_store.get_state().model_dump(mode="json"),
+            "thresholds": {
+                "max_daily_drawdown_percent": self.settings.max_daily_drawdown_percent,
+                "max_total_drawdown_percent": self.settings.max_total_drawdown_percent,
+                "emergency_kill_switch_drawdown_percent": self.settings.emergency_kill_switch_drawdown_percent,
+                "soft_halt_drawdown_level_1": self.settings.soft_halt_drawdown_level_1,
+                "soft_halt_drawdown_level_2": self.settings.soft_halt_drawdown_level_2,
+                "soft_halt_drawdown_level_3": self.settings.soft_halt_drawdown_level_3,
             },
-            'current_risk_status': self.latest_decision.risk_level if self.latest_decision else 'unknown',
-            'latest_risk_decision': self.latest_decision.model_dump(mode='json') if self.latest_decision else None,
+            "current_risk_status": self.latest_decision.risk_level
+            if self.latest_decision
+            else "unknown",
+            "latest_risk_decision": self.latest_decision.model_dump(mode="json")
+            if self.latest_decision
+            else None,
         }
 
     def check(self, snapshot: AccountSnapshot) -> RiskDecision:
@@ -42,17 +46,19 @@ class GuardianService:
         self.latest_decision = decision
         return decision
 
-    def halt(self, reason: str, source: str = 'manual') -> HaltState:
+    def halt(self, reason: str, source: str = "manual") -> HaltState:
         return self.halt_store.halt(reason=reason, source=source)
 
     def resume(self, reason: str, approved: bool = False) -> HaltState:
         if not approved:
-            raise ValueError('Explicit approval is required to resume risk halt.')
+            raise ValueError("Explicit approval is required to resume risk halt.")
         if not self.settings.allow_manual_resume:
-            raise ValueError('Manual resume is disabled by configuration.')
+            raise ValueError("Manual resume is disabled by configuration.")
         return self.halt_store.resume(reason=reason)
 
-    def approve_execution(self, signal: dict, snapshot: AccountSnapshot) -> RiskDecision:
+    def approve_execution(
+        self, signal: dict, snapshot: AccountSnapshot
+    ) -> RiskDecision:
         decision = self.guardian.approve_execution(signal=signal, snapshot=snapshot)
         self.latest_decision = decision
         return decision

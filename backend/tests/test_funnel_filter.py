@@ -37,18 +37,24 @@ def test_generate_signal_buy_sell_hold() -> None:
     down_candles = _build_candles(start=2360.0, step=-0.6)
     flat_candles = _build_candles(start=2330.0, step=0.0)
 
-    buy_signal = filter_engine.generate_signal(up_candles, symbol='XAUUSD', timeframe='M5')
-    sell_signal = filter_engine.generate_signal(down_candles, symbol='XAUUSD', timeframe='M5')
-    hold_signal = filter_engine.generate_signal(flat_candles, symbol='XAUUSD', timeframe='M5')
+    buy_signal = filter_engine.generate_signal(
+        up_candles, symbol="XAUUSD", timeframe="M5"
+    )
+    sell_signal = filter_engine.generate_signal(
+        down_candles, symbol="XAUUSD", timeframe="M5"
+    )
+    hold_signal = filter_engine.generate_signal(
+        flat_candles, symbol="XAUUSD", timeframe="M5"
+    )
 
-    assert buy_signal.direction in {'buy', 'hold'}
-    assert sell_signal.direction in {'sell', 'hold'}
-    assert hold_signal.direction in {'hold', 'buy', 'sell'}
+    assert buy_signal.direction in {"buy", "hold"}
+    assert sell_signal.direction in {"sell", "hold"}
+    assert hold_signal.direction in {"hold", "buy", "sell"}
 
 
 def test_confidence_in_range() -> None:
     filter_engine = FunnelFilter()
     candles = _build_candles(start=2300.0, step=0.2)
-    signal = filter_engine.generate_signal(candles, symbol='XAUUSD', timeframe='M5')
+    signal = filter_engine.generate_signal(candles, symbol="XAUUSD", timeframe="M5")
 
     assert 0 <= signal.confidence <= 1

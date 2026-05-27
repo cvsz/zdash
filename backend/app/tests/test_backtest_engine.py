@@ -16,7 +16,9 @@ def test_backtest_generates_trades_and_final_balance() -> None:
     result = lab.run_backtest(BacktestRequest(strategy="ob_aggressive"))
     closed_trades = [trade for trade in result.trades if trade.status == "closed"]
     assert closed_trades
-    assert result.final_balance == pytest.approx(result.initial_balance + sum(trade.pnl for trade in closed_trades), rel=1e-4)
+    assert result.final_balance == pytest.approx(
+        result.initial_balance + sum(trade.pnl for trade in closed_trades), rel=1e-4
+    )
 
 
 def test_backtest_has_no_overlapping_trades() -> None:

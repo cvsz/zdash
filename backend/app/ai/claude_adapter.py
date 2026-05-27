@@ -31,16 +31,21 @@ class ClaudeAdapter(AIAdapter):
             return True
         return False
 
-    def generate_response(self, prompt: str, context: dict[str, Any] | None = None) -> AIResponse:
+    def generate_response(
+        self, prompt: str, context: dict[str, Any] | None = None
+    ) -> AIResponse:
         if self._should_fallback():
-            logger.info('claude_fallback_to_mock', extra={'context': {'reason': 'missing_key_or_sdk'}})
+            logger.info(
+                "claude_fallback_to_mock",
+                extra={"context": {"reason": "missing_key_or_sdk"}},
+            )
             return self._fallback.generate_response(prompt=prompt, context=context)
 
         # Placeholder for real Claude integration.
         # Keep safe fallback if SDK path is not wired yet.
         return AIResponse(
-            provider='claude',
+            provider="claude",
             model=self.settings.claude_model,
             text=f"[CLAUDE_PLACEHOLDER] {prompt.strip()}",
-            metadata={'mode': 'placeholder', 'fallback_available': True},
+            metadata={"mode": "placeholder", "fallback_available": True},
         )

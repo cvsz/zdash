@@ -14,9 +14,12 @@ class StrategyPromotionGate:
             "allow_promotion": settings.allow_strategy_promotion,
             "min_trades": metrics.total_trades >= settings.min_promotion_trades,
             "min_win_rate": metrics.win_rate >= settings.min_promotion_win_rate,
-            "min_profit_factor": metrics.profit_factor >= settings.min_promotion_profit_factor,
-            "max_drawdown": metrics.max_drawdown_percent <= settings.max_promotion_drawdown_percent,
-            "max_consecutive_losses": metrics.consecutive_losses <= settings.max_promotion_consecutive_losses,
+            "min_profit_factor": metrics.profit_factor
+            >= settings.min_promotion_profit_factor,
+            "max_drawdown": metrics.max_drawdown_percent
+            <= settings.max_promotion_drawdown_percent,
+            "max_consecutive_losses": metrics.consecutive_losses
+            <= settings.max_promotion_consecutive_losses,
         }
         approved = all(gates.values())
         reason = "approved"

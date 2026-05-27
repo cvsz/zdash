@@ -33,7 +33,9 @@ def _trade(
 
 
 def test_zero_trades_safe() -> None:
-    metrics = BacktestMetricsCalculator().calculate([], 10000, 10000, [(datetime.now(timezone.utc), 10000)])
+    metrics = BacktestMetricsCalculator().calculate(
+        [], 10000, 10000, [(datetime.now(timezone.utc), 10000)]
+    )
     assert metrics.total_trades == 0
     assert metrics.win_rate == 0
     assert metrics.profit_factor == 0
@@ -42,8 +44,15 @@ def test_zero_trades_safe() -> None:
 def test_win_rate_and_profit_factor_calculation() -> None:
     start = datetime(2026, 1, 1, tzinfo=timezone.utc)
     trades = [
-        _trade(pnl=100.0, entry_time=start, exit_time=start + timedelta(minutes=5), rr=2.0),
-        _trade(pnl=-50.0, entry_time=start + timedelta(minutes=10), exit_time=start + timedelta(minutes=15), rr=-1.0),
+        _trade(
+            pnl=100.0, entry_time=start, exit_time=start + timedelta(minutes=5), rr=2.0
+        ),
+        _trade(
+            pnl=-50.0,
+            entry_time=start + timedelta(minutes=10),
+            exit_time=start + timedelta(minutes=15),
+            rr=-1.0,
+        ),
     ]
     metrics = BacktestMetricsCalculator().calculate(
         trades,
@@ -63,9 +72,21 @@ def test_drawdown_and_consecutive_losses_calculation() -> None:
     start = datetime(2026, 1, 1, tzinfo=timezone.utc)
     trades = [
         _trade(pnl=100, entry_time=start, exit_time=start + timedelta(minutes=5)),
-        _trade(pnl=-40, entry_time=start + timedelta(minutes=10), exit_time=start + timedelta(minutes=15)),
-        _trade(pnl=-30, entry_time=start + timedelta(minutes=20), exit_time=start + timedelta(minutes=25)),
-        _trade(pnl=20, entry_time=start + timedelta(minutes=30), exit_time=start + timedelta(minutes=35)),
+        _trade(
+            pnl=-40,
+            entry_time=start + timedelta(minutes=10),
+            exit_time=start + timedelta(minutes=15),
+        ),
+        _trade(
+            pnl=-30,
+            entry_time=start + timedelta(minutes=20),
+            exit_time=start + timedelta(minutes=25),
+        ),
+        _trade(
+            pnl=20,
+            entry_time=start + timedelta(minutes=30),
+            exit_time=start + timedelta(minutes=35),
+        ),
     ]
     metrics = BacktestMetricsCalculator().calculate(
         trades,
