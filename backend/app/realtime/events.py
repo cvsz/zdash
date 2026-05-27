@@ -2,80 +2,59 @@ from __future__ import annotations
 
 from typing import Any
 
-from app.realtime.schemas import (
-    RealtimeChannel,
-    RealtimeEventEnvelope,
-    RealtimeSeverity,
-    utc_now_iso,
-)
+from app.realtime.schemas import RealtimeCategory, RealtimeChannel, RealtimeEventEnvelope, RealtimeSeverity, utc_now_iso
 
 CHANNELS: tuple[RealtimeChannel, ...] = ("events", "risk", "scheduler", "content")
-
-_EVENT_ALIASES: dict[str, str] = {
+_EVENT_ALIASES = {
     "risk.warning": "risk.alert",
     "risk.execution.blocked": "risk.alert",
-    "risk.execution.approved": "risk.resume",
     "scheduler.job.started": "scheduler.started",
     "scheduler.job.completed": "scheduler.completed",
-    "scheduler.job.failed": "scheduler.failed",
     "content.draft.created": "content.created",
-    "content.publish.simulated": "content.published",
 }
 
 
 def normalize_event_type(event_type: str, payload: dict[str, Any] | None = None) -> str:
-    normalized = _EVENT_ALIASES.get(event_type, event_type)
-    if normalized == "risk.check.completed" and payload:
-        risk_level = str(payload.get("risk_level", "")).lower()
-        if risk_level in {"warning", "danger", "emergency"}:
-            return "risk.alert"
-    return normalized
+    return _EVENT_ALIASES.get(event_type, event_type)
+
+
+def _category_for_event(event_type: str) -> RealtimeCategory:
+    prefix = normalize_event_type(event_type).split(".", 1)[0].lower()
+    if prefix in {"system", "trading", "risk", "scheduler", "content", "iot", "admin", "audit"}:
+        return prefix  # type: ignore[return-value]
+    return "system"
 
 
 def severity_for_event(event_type: str, payload: dict[str, Any] | None = None) -> RealtimeSeverity:
-    normalized = normalize_event_type(event_type, payload)
-    lowered = normalized.lower()
-
-    if any(keyword in lowered for keyword in ("failed", "danger", "halt", "blocked")):
-        return "danger"
-    if "warning" in lowered or normalized == "risk.alert":
+    lowered = normalize_event_type(event_type).lower()
+    if "critical" in lowered or "halt" in lowered or "blocked" in lowered:
+        return "critical"
+    if "warning" in lowered or lowered.startswith("risk."):
         return "warning"
-    if any(keyword in lowered for keyword in ("connected", "resumed", "resume", "completed", "approved")):
-        return "success"
     return "info"
 
 
 def channels_for_event(event_type: str) -> set[RealtimeChannel]:
-    normalized = normalize_event_type(event_type)
+    category = _category_for_event(event_type)
     channels: set[RealtimeChannel] = {"events"}
-    lowered = normalized.lower()
-
-    if lowered.startswith("risk.") or lowered.startswith("guardian."):
-        channels.add("risk")
-    if lowered.startswith("scheduler."):
-        channels.add("scheduler")
-    if lowered.startswith("content.") or lowered.startswith("editor.") or lowered.startswith("social."):
-        channels.add("content")
-
+    if category == "risk": channels.add("risk")
+    if category == "scheduler": channels.add("scheduler")
+    if category == "content": channels.add("content")
     return channels
 
 
-def build_event_envelope(
-    *,
-    event_type: str,
-    source: str,
-    payload: dict[str, Any] | None = None,
-    severity: RealtimeSeverity | None = None,
-    timestamp: str | None = None,
-) -> RealtimeEventEnvelope:
+def build_event_envelope(*, event_type: str, source: str, payload: dict[str, Any] | None = None, severity: RealtimeSeverity | None = None, message: str | None = None, timestamp: str | None = None) -> RealtimeEventEnvelope:
     safe_payload = dict(payload or {})
-    normalized_type = normalize_event_type(event_type, safe_payload)
+    normalized = normalize_event_type(event_type, safe_payload)
     return RealtimeEventEnvelope(
-        type=normalized_type,
-        source=source,
-        severity=severity or severity_for_event(normalized_type, safe_payload),
-        payload=safe_payload,
         timestamp=timestamp or utc_now_iso(),
+        category=_category_for_event(normalized),
+        type=normalized,
+        severity=severity or severity_for_event(normalized, safe_payload),
+        source=source,
+        message=message or str(safe_payload.get("message", "")).strip(),
+        data=safe_payload,
+        payload=safe_payload,
     )
 
 
@@ -84,13 +63,9 @@ def envelope_from_core_event(event: Any) -> RealtimeEventEnvelope:
     message = str(getattr(event, "message", "")).strip()
     if message and "message" not in payload:
         payload["message"] = message
-
-    raw_timestamp = getattr(event, "created_at", None)
-    parsed_timestamp = str(raw_timestamp).strip() if raw_timestamp is not None else None
-
     return build_event_envelope(
-        event_type=str(getattr(event, "type", "system.warning")),
+        event_type=str(getattr(event, "type", "system.event")),
         source=str(getattr(event, "source", "system")),
         payload=payload,
-        timestamp=parsed_timestamp if parsed_timestamp else None,
+        message=message,
     )

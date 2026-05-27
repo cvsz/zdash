@@ -976,3 +976,15 @@ Provider adapters must fail safely when:
 ## License
 
 This project is licensed under the MIT License. See `LICENSE`.
+
+## Realtime Operations (Phase 7.7)
+
+- WebSocket endpoint: `GET /api/realtime/ws` (compat: `/api/realtime/ws/events`).
+- REST endpoints:
+  - `GET /api/realtime/status`
+  - `GET /api/realtime/events?limit=100`
+  - `POST /api/realtime/mock-event`
+- Event categories: `system`, `trading`, `risk`, `scheduler`, `content`, `iot`, `admin`, `audit`.
+- Polling fallback remains available through existing API fetch cycles if websocket is unavailable.
+- Offline-safe UI behavior: dashboard and notification/event timeline continue to render even when disconnected.
+- Mock stream can be enabled via `ENABLE_MOCK_REALTIME=true` and is automatically suppressed during pytest unless explicitly enabled.

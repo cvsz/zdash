@@ -389,20 +389,26 @@ export class RealtimeClientManager {
         return null;
       }
 
+      const payload =
+        candidate.payload && typeof candidate.payload === "object"
+          ? (candidate.payload as Record<string, unknown>)
+          : {};
+
       return {
+        id: typeof candidate.id === "string" ? candidate.id : `local-${Date.now()}`,
+        category: typeof candidate.category === "string" ? (candidate.category as RealtimeEnvelope["category"]) : "system",
         type: candidate.type,
         source: typeof candidate.source === "string" ? candidate.source : "system",
         timestamp: typeof candidate.timestamp === "string" ? candidate.timestamp : nowIso(),
         severity:
-          candidate.severity === "warning" ||
-          candidate.severity === "danger" ||
-          candidate.severity === "success"
-            ? candidate.severity
-            : "info",
-        payload:
-          candidate.payload && typeof candidate.payload === "object"
-            ? (candidate.payload as Record<string, unknown>)
-            : {},
+          candidate.severity === "critical"
+            ? "critical"
+            : candidate.severity === "warning"
+              ? "warning"
+              : "info",
+        message: typeof candidate.message === "string" ? candidate.message : String(payload.message ?? ""),
+        data: candidate.data && typeof candidate.data === "object" ? (candidate.data as Record<string, unknown>) : payload,
+        payload,
       };
     } catch {
       return null;
