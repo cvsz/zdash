@@ -4,13 +4,30 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
+from app.audit.audit_service import AuditService
+from app.audit.models import AuditLogCreate
+from app.auth.models import AuthSession
 from app.auth.dependencies import require_authenticated, require_permission
 from app.auth.rbac import Permission
 from app.core.responses import fail, ok
+from app.db.session import get_db_session
+from app.observability.metrics import metrics_store
 from app.risk.guardian_service import get_guardian_service
 from app.risk.models import AccountSnapshot
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/risk", tags=["risk"])
+
+
+def _actor_email(current_user: object) -> str:
+    if isinstance(current_user, AuthSession):
+        return current_user.username
+    return "system"
+
+
+def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+    if isinstance(session, Session):
+        AuditService(session).log(entry)
 
 
 class HaltRequest(BaseModel):
@@ -67,26 +84,54 @@ def drawdown(_: object = Depends(require_authenticated)) -> dict:
 @router.post("/halt")
 def halt(
     req: HaltRequest,
-    _: object = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    current_user: AuthSession = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    session: Session = Depends(get_db_session),
 ) -> dict:
     service = get_guardian_service()
     try:
         state = service.halt(req.reason, source="manual")
     except ValueError as exc:
         return fail("RISK_HALT_INVALID", str(exc))
+    metrics_store.set_risk_halt_active(True)
+    _maybe_audit(
+        session,
+        AuditLogCreate(
+            actor_user_id="",
+            actor_email=_actor_email(current_user),
+            action="risk.halt",
+            resource_type="risk",
+            resource_id="halt_state",
+            result="success",
+            metadata={"reason": req.reason, "source": "manual"},
+        ),
+    )
     return ok({"halt_state": state.model_dump(mode="json")})
 
 
 @router.post("/resume")
 def resume(
     req: ResumeRequest,
-    _: object = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    current_user: AuthSession = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    session: Session = Depends(get_db_session),
 ) -> dict:
     service = get_guardian_service()
     try:
         state = service.resume(reason=req.reason, approved=req.approved)
     except ValueError as exc:
         return fail("RISK_RESUME_INVALID", str(exc))
+    metrics_store.set_risk_halt_active(False)
+    _maybe_audit(
+        session,
+        AuditLogCreate(
+            actor_user_id="",
+            actor_email=_actor_email(current_user),
+            action="risk.resume",
+            resource_type="risk",
+            resource_id="halt_state",
+            result="success",
+            metadata={"reason": req.reason, "approved": req.approved},
+        ),
+    )
     return ok({"halt_state": state.model_dump(mode="json")})
 
 

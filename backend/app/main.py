@@ -45,6 +45,7 @@ from app.core.events import event_bus
 from app.core.logging import configure_logging
 from app.core.responses import fail
 from app.db.migrations import run_migrations
+from app.observability.middleware import install_observability_middleware
 from app.scheduler.scheduler_service import get_scheduler_service
 
 settings = get_settings()
@@ -75,16 +76,17 @@ async def lifespan(_: FastAPI):
     scheduler_service.stop()
 
 
-app = FastAPI(title="Janie Server", version="2.0.0-phase8.2", lifespan=lifespan)
+app = FastAPI(title="Janie Server", version="2.0.0-phase8.3", lifespan=lifespan)
 
 origins = [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=False,
+    allow_credentials=settings.cors_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+install_observability_middleware(app)
 
 
 @app.exception_handler(RequestValidationError)
@@ -94,16 +96,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         extra={"context": {"path": request.url.path, "error": str(exc)}},
     )
     return JSONResponse(status_code=422, content=fail("VALIDATION_ERROR", str(exc)))
-
-
-@app.middleware("http")
-async def request_log_middleware(request: Request, call_next):
-    logger.info(
-        "request",
-        extra={"context": {"method": request.method, "path": request.url.path}},
-    )
-    response = await call_next(request)
-    return response
 
 
 app.include_router(health.router)

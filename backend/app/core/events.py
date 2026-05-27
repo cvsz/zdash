@@ -117,6 +117,12 @@ class EventBus:
         )
         with self._lock:
             self._events.append(event)
+        try:
+            from app.observability.metrics import metrics_store
+
+            metrics_store.increment_events()
+        except Exception:  # pragma: no cover
+            pass
         return event
 
     def list_events(self, limit: int = 100) -> list[Event]:

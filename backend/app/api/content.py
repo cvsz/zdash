@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
+from app.audit.audit_service import AuditService
+from app.audit.models import AuditLogCreate
 from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.models import AuthSession
 from app.auth.rbac import Permission
 from app.content.models import (
     ApproveContentRequest,
@@ -16,6 +20,8 @@ from app.content.models import (
 from app.content.pipeline import get_content_pipeline
 from app.content.reports import ContentReportBuilder
 from app.core.responses import fail, ok
+from app.db.session import get_db_session
+from app.observability.metrics import metrics_store
 
 router = APIRouter(prefix="/api/content", tags=["content"])
 reports = ContentReportBuilder()
@@ -23,6 +29,17 @@ reports = ContentReportBuilder()
 
 def _pipeline():
     return get_content_pipeline()
+
+
+def _actor_email(current_user: object) -> str:
+    if isinstance(current_user, AuthSession):
+        return current_user.username
+    return "system"
+
+
+def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+    if isinstance(session, Session):
+        AuditService(session).log(entry)
 
 
 @router.get("/status")
@@ -33,10 +50,24 @@ def status(_: object = Depends(require_authenticated)):
 @router.post("/create")
 def create(
     req: CreateContentRequest,
-    _: object = Depends(require_authenticated),
+    current_user: AuthSession = Depends(require_authenticated),
+    session: Session = Depends(get_db_session),
 ):
     try:
-        return ok({"item": _pipeline().editor.create_draft(req).model_dump(mode="json")})
+        item = _pipeline().editor.create_draft(req)
+        metrics_store.increment_content_items()
+        _maybe_audit(
+            session,
+            AuditLogCreate(
+                actor_user_id="",
+                actor_email=_actor_email(current_user),
+                action="content.item.create",
+                resource_type="content_item",
+                resource_id=item.id,
+                metadata={"topic": item.topic},
+            ),
+        )
+        return ok({"item": item.model_dump(mode="json")})
     except Exception as exc:
         return fail("CONTENT_CREATE_FAILED", str(exc))
 
@@ -79,10 +110,22 @@ def schedule(
 @router.post("/approve")
 def approve(
     req: ApproveContentRequest,
-    _: object = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    session: Session = Depends(get_db_session),
 ):
     try:
         item = _pipeline().social.approve_content(req)
+        _maybe_audit(
+            session,
+            AuditLogCreate(
+                actor_user_id="",
+                actor_email=_actor_email(current_user),
+                action="content.approval",
+                resource_type="content_item",
+                resource_id=req.content_id,
+                metadata={"approved": bool(getattr(item, "is_approved", True))},
+            ),
+        )
         return ok({"item": item.model_dump(mode="json")})
     except Exception as exc:
         return fail("CONTENT_APPROVAL_FAILED", str(exc))
@@ -91,10 +134,22 @@ def approve(
 @router.post("/post")
 def post(
     req: PublishContentRequest,
-    _: object = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    session: Session = Depends(get_db_session),
 ):
     try:
         results = _pipeline().social.publish_content(req)
+        _maybe_audit(
+            session,
+            AuditLogCreate(
+                actor_user_id="",
+                actor_email=_actor_email(current_user),
+                action="content.publish.request",
+                resource_type="content_item",
+                resource_id=req.content_id,
+                metadata={"result_count": len(results)},
+            ),
+        )
         return ok({"results": [result.model_dump(mode="json") for result in results]})
     except Exception as exc:
         return fail("CONTENT_PUBLISH_FAILED", str(exc))

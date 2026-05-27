@@ -21,9 +21,16 @@ class Settings(BaseSettings):
     db_pool_size: int = Field(default=5, alias="DB_POOL_SIZE")
     db_max_overflow: int = Field(default=10, alias="DB_MAX_OVERFLOW")
     production_safety_lock: bool = Field(default=True, alias="PRODUCTION_SAFETY_LOCK")
+    production_allow_live_actions: bool = Field(
+        default=False, alias="PRODUCTION_ALLOW_LIVE_ACTIONS"
+    )
     auth_enabled: bool = Field(default=False, alias="AUTH_ENABLED")
     auth_allow_bootstrap_in_production: bool = Field(
         default=False, alias="AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION"
+    )
+    metrics_auth_required: bool = Field(default=False, alias="METRICS_AUTH_REQUIRED")
+    metrics_allow_unauthenticated_dev: bool = Field(
+        default=False, alias="METRICS_ALLOW_UNAUTHENTICATED_DEV"
     )
     jwt_secret_key: str = Field(
         default="dev-only-change-before-production", alias="JWT_SECRET_KEY"
@@ -40,6 +47,9 @@ class Settings(BaseSettings):
     )
     bootstrap_admin_password: str = Field(
         default="dev-only-change-before-production", alias="BOOTSTRAP_ADMIN_PASSWORD"
+    )
+    default_admin_password: str = Field(
+        default="dev-only-change-before-production", alias="DEFAULT_ADMIN_PASSWORD"
     )
 
     claude_api_key: str = Field(default="", alias="CLAUDE_API_KEY")
@@ -141,6 +151,9 @@ class Settings(BaseSettings):
     social_auto_post_enabled: bool = Field(
         default=False, alias="SOCIAL_AUTO_POST_ENABLED"
     )
+    social_real_posting_approved: bool = Field(
+        default=False, alias="SOCIAL_REAL_POSTING_APPROVED"
+    )
     social_default_platforms: str = Field(
         default="x,tiktok,facebook,instagram,linkedin", alias="SOCIAL_DEFAULT_PLATFORMS"
     )
@@ -163,6 +176,9 @@ class Settings(BaseSettings):
     iot_dry_run: bool = Field(default=True, alias="IOT_DRY_RUN")
     iot_require_confirmation: bool = Field(
         default=True, alias="IOT_REQUIRE_CONFIRMATION"
+    )
+    iot_real_actions_approved: bool = Field(
+        default=False, alias="IOT_REAL_ACTIONS_APPROVED"
     )
     tapo_username: str = Field(default="", alias="TAPO_USERNAME")
     tapo_password: str = Field(default="", alias="TAPO_PASSWORD")
@@ -277,6 +293,7 @@ class Settings(BaseSettings):
         default="http://localhost:5173,http://127.0.0.1:5173",
         alias="CORS_ALLOW_ORIGINS",
     )
+    cors_allow_credentials: bool = Field(default=False, alias="CORS_ALLOW_CREDENTIALS")
 
     @field_validator(
         "max_daily_drawdown_percent",
@@ -477,9 +494,10 @@ def get_settings() -> Settings:
     if settings.is_production:
         database_url = settings.database_url.strip()
         if not settings.production_safety_lock:
-            raise RuntimeError(
-                "PRODUCTION_SAFETY_LOCK must be true in production mode."
-            )
+            if not settings.production_allow_live_actions:
+                raise RuntimeError(
+                    "PRODUCTION_SAFETY_LOCK can be disabled only with explicit PRODUCTION_ALLOW_LIVE_ACTIONS=true."
+                )
         if not database_url:
             raise RuntimeError("DATABASE_URL is required in production mode.")
         if not database_url.startswith(
@@ -501,5 +519,8 @@ def get_settings() -> Settings:
             raise RuntimeError(
                 "BOOTSTRAP_ADMIN_PASSWORD must be set to a non-default value in production mode."
             )
-
+        if settings.default_admin_password.strip() in {"", default_unsafe_secret}:
+            raise RuntimeError(
+                "DEFAULT_ADMIN_PASSWORD must be set to a non-default value in production mode."
+            )
     return settings

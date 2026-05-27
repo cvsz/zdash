@@ -6,6 +6,8 @@ from collections import defaultdict, deque
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.audit.audit_service import AuditService
+from app.audit.models import AuditLogCreate
 from app.auth.auth_service import AuthService
 from app.auth.dependencies import get_current_user
 from app.auth.models import (
@@ -45,11 +47,33 @@ def login(req: LoginRequest, session: Session = Depends(get_db_session)):
     if token_pair is None:
         bucket.append(now)
         auth_login_total.labels(status="failure").inc()
+        AuditService(session).log(
+            AuditLogCreate(
+                actor_user_id="",
+                actor_email=req.username,
+                action="auth.login.failure",
+                resource_type="auth",
+                resource_id=req.username,
+                result="failure",
+                metadata={"reason": "invalid_credentials"},
+            )
+        )
         return fail("AUTH_FAILED", "Invalid username or password")
 
     if req.username in _login_attempts:
         _login_attempts[req.username].clear()
     auth_login_total.labels(status="success").inc()
+    AuditService(session).log(
+        AuditLogCreate(
+            actor_user_id="",
+            actor_email=token_pair.username,
+            action="auth.login.success",
+            resource_type="auth",
+            resource_id=token_pair.username,
+            result="success",
+            metadata={"role": token_pair.role},
+        )
+    )
     return ok(token_pair.model_dump())
 
 
@@ -57,13 +81,46 @@ def login(req: LoginRequest, session: Session = Depends(get_db_session)):
 def refresh(req: RefreshRequest, session: Session = Depends(get_db_session)):
     token_pair = _auth_service(session).refresh(req.refresh_token)
     if token_pair is None:
+        AuditService(session).log(
+            AuditLogCreate(
+                actor_user_id="",
+                actor_email="",
+                action="auth.token.refresh",
+                resource_type="auth",
+                resource_id="",
+                result="failure",
+                metadata={"reason": "invalid_refresh_token"},
+            )
+        )
         return fail("AUTH_REFRESH_FAILED", "Invalid refresh token")
+    AuditService(session).log(
+        AuditLogCreate(
+            actor_user_id="",
+            actor_email=token_pair.username,
+            action="auth.token.refresh",
+            resource_type="auth",
+            resource_id=token_pair.username,
+            result="success",
+            metadata={"role": token_pair.role},
+        )
+    )
     return ok(token_pair.model_dump())
 
 
 @router.post("/logout")
 def logout(req: LogoutRequest, session: Session = Depends(get_db_session)):
     revoked = _auth_service(session).logout(req.refresh_token)
+    AuditService(session).log(
+        AuditLogCreate(
+            actor_user_id="",
+            actor_email="",
+            action="auth.logout",
+            resource_type="auth",
+            resource_id="",
+            result="success" if revoked else "failure",
+            metadata={"revoked": revoked},
+        )
+    )
     return ok({"revoked": revoked})
 
 
