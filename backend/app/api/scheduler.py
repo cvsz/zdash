@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.rbac import Permission
 from app.core.observability import scheduler_job_total
 from app.core.responses import fail, ok
 from app.scheduler import CreateJobRequest
@@ -16,18 +18,21 @@ def _service():
 
 
 @router.get("/status")
-def status() -> dict:
+def status(_: object = Depends(require_authenticated)) -> dict:
     return ok({"scheduler": _service().get_status()})
 
 
 @router.get("/jobs")
-def list_jobs() -> dict:
+def list_jobs(_: object = Depends(require_authenticated)) -> dict:
     jobs = [job.model_dump(mode="json") for job in _service().list_jobs()]
     return ok({"jobs": jobs})
 
 
 @router.post("/jobs")
-def create_job(req: CreateJobRequest) -> dict:
+def create_job(
+    req: CreateJobRequest,
+    _: object = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+) -> dict:
     try:
         job = _service().create_job(req)
     except ValueError as exc:
@@ -37,7 +42,10 @@ def create_job(req: CreateJobRequest) -> dict:
 
 
 @router.post("/jobs/{job_id}/run")
-def run_job(job_id: str) -> dict:
+def run_job(
+    job_id: str,
+    _: object = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+) -> dict:
     try:
         result = _service().run_job(job_id, manual=True)
     except JobNotFoundError as exc:
@@ -49,7 +57,10 @@ def run_job(job_id: str) -> dict:
 
 
 @router.post("/jobs/{job_id}/pause")
-def pause_job(job_id: str) -> dict:
+def pause_job(
+    job_id: str,
+    _: object = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+) -> dict:
     try:
         job = _service().pause_job(job_id)
     except JobNotFoundError as exc:
@@ -61,7 +72,10 @@ def pause_job(job_id: str) -> dict:
 
 
 @router.post("/jobs/{job_id}/resume")
-def resume_job(job_id: str) -> dict:
+def resume_job(
+    job_id: str,
+    _: object = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+) -> dict:
     try:
         job = _service().resume_job(job_id)
     except JobNotFoundError as exc:
@@ -73,7 +87,10 @@ def resume_job(job_id: str) -> dict:
 
 
 @router.delete("/jobs/{job_id}")
-def delete_job(job_id: str) -> dict:
+def delete_job(
+    job_id: str,
+    _: object = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+) -> dict:
     deleted = _service().delete_job(job_id)
     if not deleted:
         return fail("SCHEDULER_JOB_NOT_FOUND", f"Unknown job: {job_id}")
@@ -82,12 +99,15 @@ def delete_job(job_id: str) -> dict:
 
 
 @router.get("/runs")
-def list_runs() -> dict:
+def list_runs(_: object = Depends(require_authenticated)) -> dict:
     runs = [run.model_dump(mode="json") for run in _service().list_runs()]
     return ok({"runs": runs})
 
 
 @router.get("/runs/{job_id}")
-def list_runs_for_job(job_id: str) -> dict:
+def list_runs_for_job(
+    job_id: str,
+    _: object = Depends(require_authenticated),
+) -> dict:
     runs = [run.model_dump(mode="json") for run in _service().list_runs(job_id=job_id)]
     return ok({"runs": runs, "job_id": job_id})

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.rbac import Permission
 from app.core.responses import ok
 from app.trading.models import ExecutionRequest, TradingSignal
 from app.trading.trading_service import TradingService
@@ -18,24 +20,33 @@ class ScanRequest(BaseModel):
 
 
 @router.get("/status")
-def trading_status() -> dict:
+def trading_status(_: object = Depends(require_authenticated)) -> dict:
     return ok(service.get_status())
 
 
 @router.post("/scan")
-def scan(req: ScanRequest) -> dict:
+def scan(
+    req: ScanRequest,
+    _: object = Depends(require_permission(Permission.READ_TRADING_SIGNALS)),
+) -> dict:
     result = service.scan_xau(symbol=req.symbol, timeframe=req.timeframe)
     return ok(result.model_dump(mode="json"))
 
 
 @router.post("/validate-signal")
-def validate_signal(signal: TradingSignal) -> dict:
+def validate_signal(
+    signal: TradingSignal,
+    _: object = Depends(require_permission(Permission.READ_TRADING_SIGNALS)),
+) -> dict:
     validation = service.validate_signal(signal)
     return ok(validation.model_dump(mode="json"))
 
 
 @router.post("/dry-run-execute")
-def dry_run_execute(req: ExecutionRequest) -> dict:
+def dry_run_execute(
+    req: ExecutionRequest,
+    _: object = Depends(require_permission(Permission.RUN_DRY_RUN_TRADING)),
+) -> dict:
     dry_run_request = req.model_copy(update={"dry_run": True, "confirmation": False})
     result = service.execution_engine.execute(dry_run_request)
     return ok(result.model_dump(mode="json"))

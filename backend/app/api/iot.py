@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.rbac import Permission
 from app.core.config import get_settings
 from app.core.responses import ok
 from app.iot.iot_service import IoTService
@@ -15,19 +17,28 @@ def _service() -> IoTService:
 
 
 @router.get("/status")
-def status(device_alias: str | None = None) -> dict:
+def status(
+    device_alias: str | None = None,
+    _: object = Depends(require_authenticated),
+) -> dict:
     result = _service().get_status(device_alias=device_alias)
     return ok({"result": result.model_dump(mode="json")})
 
 
 @router.post("/action")
-def action(req: IoTAction) -> dict:
+def action(
+    req: IoTAction,
+    _: object = Depends(require_permission(Permission.CONTROL_DRY_RUN_IOT)),
+) -> dict:
     result = _service().execute(req)
     return ok({"result": result.model_dump(mode="json")})
 
 
 @router.post("/power-cycle")
-def power_cycle(req: IoTPowerCycleRequest | None = None) -> dict:
+def power_cycle(
+    req: IoTPowerCycleRequest | None = None,
+    _: object = Depends(require_permission(Permission.CONTROL_DRY_RUN_IOT)),
+) -> dict:
     settings = get_settings()
     request = req or IoTPowerCycleRequest(
         device_alias=settings.tapo_device_alias, confirmation=False

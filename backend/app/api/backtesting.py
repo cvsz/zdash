@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.rbac import Permission
 from app.backtesting.backtest_service import get_backtest_service
 from app.backtesting.models import BacktestRequest, OptimizationRequest
 from app.backtesting.reports import BacktestReportBuilder
@@ -12,17 +14,20 @@ reports = BacktestReportBuilder()
 
 
 @router.get("/status")
-def status():
+def status(_: object = Depends(require_authenticated)):
     return ok(get_backtest_service().get_status())
 
 
 @router.get("/strategies")
-def strategies():
+def strategies(_: object = Depends(require_authenticated)):
     return ok({"strategies": get_backtest_service().list_strategies()})
 
 
 @router.post("/run")
-def run(req: BacktestRequest):
+def run(
+    req: BacktestRequest,
+    _: object = Depends(require_permission(Permission.RUN_BACKTESTS)),
+):
     try:
         result = get_backtest_service().run_backtest(req)
         return ok({"result": result.model_dump(mode="json")})
@@ -31,7 +36,7 @@ def run(req: BacktestRequest):
 
 
 @router.get("/results")
-def results():
+def results(_: object = Depends(require_authenticated)):
     return ok(
         {
             "results": [
@@ -43,7 +48,10 @@ def results():
 
 
 @router.get("/results/{result_id}")
-def result(result_id: str):
+def result(
+    result_id: str,
+    _: object = Depends(require_authenticated),
+):
     item = get_backtest_service().get_result(result_id)
     if not item:
         return fail("RESULT_NOT_FOUND", "Backtest result not found")
@@ -51,7 +59,10 @@ def result(result_id: str):
 
 
 @router.post("/optimize")
-def optimize(req: OptimizationRequest):
+def optimize(
+    req: OptimizationRequest,
+    _: object = Depends(require_permission(Permission.RUN_BACKTESTS)),
+):
     try:
         optimization = get_backtest_service().optimize(req)
         return ok({"optimization": optimization.model_dump(mode="json")})
@@ -60,7 +71,7 @@ def optimize(req: OptimizationRequest):
 
 
 @router.get("/optimizations")
-def optimizations():
+def optimizations(_: object = Depends(require_authenticated)):
     return ok(
         {
             "optimizations": [
@@ -72,7 +83,10 @@ def optimizations():
 
 
 @router.post("/results/{result_id}/promotion-check")
-def promotion(result_id: str):
+def promotion(
+    result_id: str,
+    _: object = Depends(require_permission(Permission.RUN_BACKTESTS)),
+):
     try:
         decision = get_backtest_service().evaluate_promotion(result_id)
         return ok({"decision": decision.model_dump(mode="json")})
@@ -81,7 +95,10 @@ def promotion(result_id: str):
 
 
 @router.get("/results/{result_id}/report")
-def report(result_id: str):
+def report(
+    result_id: str,
+    _: object = Depends(require_authenticated),
+):
     item = get_backtest_service().get_result(result_id)
     if not item:
         return fail("RESULT_NOT_FOUND", "Backtest result not found")

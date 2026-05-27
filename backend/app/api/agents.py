@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.agents.registry import MessageRequest, bootstrap_agents, registry
+from app.auth.dependencies import require_authenticated
 from app.core.config import get_settings
 from app.core.responses import fail, ok
 
@@ -25,7 +26,7 @@ def _trading_specialist_health() -> dict:
 
 
 @router.get("")
-def list_agents() -> dict:
+def list_agents(_: object = Depends(require_authenticated)) -> dict:
     bootstrap_agents()
     agents = [agent.health_check() for agent in registry.list()]
     if not any(agent.get("id") == "trading" for agent in agents):
@@ -34,7 +35,10 @@ def list_agents() -> dict:
 
 
 @router.post("/message")
-def send_message(payload: MessageRequest) -> dict:
+def send_message(
+    payload: MessageRequest,
+    _: object = Depends(require_authenticated),
+) -> dict:
     try:
         result = registry.send_message(payload)
     except ValueError as exc:

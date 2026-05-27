@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
+from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.rbac import Permission
 from app.core.responses import fail, ok
 from app.risk.guardian_service import get_guardian_service
 from app.risk.models import AccountSnapshot
@@ -26,20 +28,23 @@ class ApproveExecutionRequest(BaseModel):
 
 
 @router.get("/status")
-def status() -> dict:
+def status(_: object = Depends(require_authenticated)) -> dict:
     service = get_guardian_service()
     return ok(service.get_status())
 
 
 @router.post("/check")
-def check(snapshot: AccountSnapshot) -> dict:
+def check(
+    snapshot: AccountSnapshot,
+    _: object = Depends(require_authenticated),
+) -> dict:
     service = get_guardian_service()
     decision = service.check(snapshot)
     return ok({"decision": decision.model_dump(mode="json")})
 
 
 @router.get("/drawdown")
-def drawdown() -> dict:
+def drawdown(_: object = Depends(require_authenticated)) -> dict:
     service = get_guardian_service()
     latest = service.latest_drawdown()
     if latest is None:
@@ -60,7 +65,10 @@ def drawdown() -> dict:
 
 
 @router.post("/halt")
-def halt(req: HaltRequest) -> dict:
+def halt(
+    req: HaltRequest,
+    _: object = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+) -> dict:
     service = get_guardian_service()
     try:
         state = service.halt(req.reason, source="manual")
@@ -70,7 +78,10 @@ def halt(req: HaltRequest) -> dict:
 
 
 @router.post("/resume")
-def resume(req: ResumeRequest) -> dict:
+def resume(
+    req: ResumeRequest,
+    _: object = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+) -> dict:
     service = get_guardian_service()
     try:
         state = service.resume(reason=req.reason, approved=req.approved)
@@ -80,7 +91,10 @@ def resume(req: ResumeRequest) -> dict:
 
 
 @router.post("/approve-execution")
-def approve_execution(req: ApproveExecutionRequest) -> dict:
+def approve_execution(
+    req: ApproveExecutionRequest,
+    _: object = Depends(require_authenticated),
+) -> dict:
     service = get_guardian_service()
     decision = service.approve_execution(signal=req.signal, snapshot=req.snapshot)
     return ok({"decision": decision.model_dump(mode="json")})

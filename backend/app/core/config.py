@@ -21,12 +21,19 @@ class Settings(BaseSettings):
     db_pool_size: int = Field(default=5, alias="DB_POOL_SIZE")
     db_max_overflow: int = Field(default=10, alias="DB_MAX_OVERFLOW")
     production_safety_lock: bool = Field(default=True, alias="PRODUCTION_SAFETY_LOCK")
+    auth_enabled: bool = Field(default=False, alias="AUTH_ENABLED")
+    auth_allow_bootstrap_in_production: bool = Field(
+        default=False, alias="AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION"
+    )
     jwt_secret_key: str = Field(
         default="dev-only-change-before-production", alias="JWT_SECRET_KEY"
     )
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
     jwt_access_token_expire_minutes: int = Field(
         default=60, alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES"
+    )
+    jwt_refresh_token_expire_days: int = Field(
+        default=7, alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS"
     )
     bootstrap_admin_username: str = Field(
         default="admin", alias="BOOTSTRAP_ADMIN_USERNAME"
@@ -351,6 +358,21 @@ class Settings(BaseSettings):
             return 0
         return parsed
 
+    @field_validator(
+        "jwt_access_token_expire_minutes",
+        "jwt_refresh_token_expire_days",
+        mode="before",
+    )
+    @classmethod
+    def _safe_positive_auth_ttl(cls, value):
+        try:
+            parsed = int(value)
+        except (TypeError, ValueError):
+            return 1
+        if parsed <= 0:
+            return 1
+        return parsed
+
     @property
     def is_production(self) -> bool:
         return self.app_env.lower() == "production"
@@ -434,6 +456,10 @@ def get_settings() -> Settings:
         settings.db_pool_size = 5
     if settings.db_max_overflow < 0:
         settings.db_max_overflow = 10
+    if settings.jwt_access_token_expire_minutes <= 0:
+        settings.jwt_access_token_expire_minutes = 60
+    if settings.jwt_refresh_token_expire_days <= 0:
+        settings.jwt_refresh_token_expire_days = 7
 
     ordered = sorted(
         [

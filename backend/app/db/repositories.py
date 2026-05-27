@@ -14,6 +14,7 @@ from app.db.models import (
     HaltState,
     IoTActionLog,
     OptimizationResult,
+    RefreshToken,
     SchedulerJob,
     SchedulerRun,
     User,
@@ -30,6 +31,7 @@ class UserRepositoryProtocol(Protocol):
         display_name: str = "",
     ) -> User: ...
     def count(self) -> int: ...
+    def get_by_id(self, user_id: str) -> User | None: ...
 
 
 class AuditRepositoryProtocol(Protocol):
@@ -69,6 +71,12 @@ class IoTActionLogRepositoryProtocol(Protocol):
     def create(self, **kwargs) -> IoTActionLog: ...
 
 
+class RefreshTokenRepositoryProtocol(Protocol):
+    def create(self, user_id: str, token_hash: str) -> RefreshToken: ...
+    def get(self, token_hash: str) -> RefreshToken | None: ...
+    def revoke(self, token_hash: str) -> bool: ...
+
+
 class UserRepository(UserRepositoryProtocol):
     def __init__(self, db: Session):
         self.db = db
@@ -98,6 +106,9 @@ class UserRepository(UserRepositoryProtocol):
 
     def count(self) -> int:
         return len(self.db.execute(select(User.id)).scalars().all())
+
+    def get_by_id(self, user_id: str) -> User | None:
+        return self.db.get(User, user_id)
 
 
 class AuditRepository(AuditRepositoryProtocol):
@@ -243,3 +254,28 @@ class IoTActionLogRepository(IoTActionLogRepositoryProtocol):
         self.db.commit()
         self.db.refresh(row)
         return row
+
+
+class RefreshTokenRepository(RefreshTokenRepositoryProtocol):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(self, user_id: str, token_hash: str) -> RefreshToken:
+        row = RefreshToken(user_id=user_id, token_hash=token_hash, is_revoked=False)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def get(self, token_hash: str) -> RefreshToken | None:
+        return self.db.execute(
+            select(RefreshToken).where(RefreshToken.token_hash == token_hash)
+        ).scalar_one_or_none()
+
+    def revoke(self, token_hash: str) -> bool:
+        row = self.get(token_hash)
+        if row is None:
+            return False
+        row.is_revoked = True
+        self.db.commit()
+        return True

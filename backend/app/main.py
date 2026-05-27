@@ -75,7 +75,7 @@ async def lifespan(_: FastAPI):
     scheduler_service.stop()
 
 
-app = FastAPI(title="Janie Server", version="2.0.0-phase7", lifespan=lifespan)
+app = FastAPI(title="Janie Server", version="2.0.0-phase8.2", lifespan=lifespan)
 
 origins = [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
 app.add_middleware(
