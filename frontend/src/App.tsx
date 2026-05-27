@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ErrorBoundary from "./components/system/ErrorBoundary";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
@@ -18,6 +19,7 @@ import SessionLogs from "./pages/SessionLogs";
 import Settings from "./pages/Settings";
 import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
+import SystemHealth from "./pages/SystemHealth";
 
 function ProtectedDashboardRoutes() {
   return (
@@ -36,6 +38,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/org" element={<OrgMapPage />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/system/health" element={<SystemHealth />} />
           <Route
             path="/admin"
             element={
@@ -59,12 +62,14 @@ export default function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      <ErrorBoundary>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<ProtectedDashboardRoutes />} />
         </Routes>
       </AuthProvider>
+    </ErrorBoundary>
     </BrowserRouter>
   );
 }
