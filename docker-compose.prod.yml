@@ -12,7 +12,7 @@ services:
       - "80:80"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -27,7 +27,7 @@ services:
       APP_ENV: ${APP_ENV:-production}
       BACKEND_HOST: 0.0.0.0
       BACKEND_PORT: 8005
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://zdash:change-me@postgres:5432/zdash}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://zdash:zdash_dev_password@postgres:5432/zdash}
       DB_ECHO: ${DB_ECHO:-false}
       DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
       DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-10}
@@ -57,7 +57,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8005/health')"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -73,7 +73,7 @@ services:
       - "80"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -84,10 +84,10 @@ services:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-zdash}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zdash_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-zdash}
     ports:
-      - "5432:5432"
+      - "5436:5436"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
@@ -104,7 +104,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "16379:16379"
     volumes:
       - redisdata_prod:/data
     restart: unless-stopped
