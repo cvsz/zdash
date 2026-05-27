@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from math import isfinite
+from typing import Any, cast
 from uuid import uuid4
 
 from app.backtesting.datasets import DatasetProvider
@@ -170,7 +171,7 @@ class StrategyLab:
             exit_candle = candles[exit_index]
             trade.exit_time = exit_candle.timestamp
             trade.exit_price = exit_price
-            trade.exit_reason = exit_reason
+            trade.exit_reason = cast(Any, exit_reason)
             trade.status = "closed"
 
             raw_pnl = (

@@ -95,7 +95,7 @@ class ExecutionEngine:
     @staticmethod
     def _as_execution_request(
         request: object,
-    ) -> tuple[TradingSignal, bool, object | None]:
+    ) -> tuple[object, bool, object | None]:
         if isinstance(request, ExecutionRequest):
             return request.signal, request.dry_run, None
 

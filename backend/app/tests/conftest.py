@@ -1,4 +1,5 @@
 import pytest
+from collections.abc import Generator
 
 from app.backtesting.backtest_service import reset_backtest_service
 from app.core.config import get_settings
@@ -9,7 +10,7 @@ from app.scheduler.scheduler_service import reset_scheduler_service
 
 
 @pytest.fixture(autouse=True)
-def reset_runtime_state() -> None:
+def reset_runtime_state() -> Generator[None, None, None]:
     get_settings.cache_clear()
     reset_backtest_service()
     reset_guardian_service()

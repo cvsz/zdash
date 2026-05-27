@@ -2,7 +2,7 @@ from .models import EntitlementDecision
 from .plan_catalog import get_plan
 
 ORDER = ["free", "starter", "pro", "enterprise"]
-ORG_PLAN = {}
+ORG_PLAN: dict[str, str] = {}
 
 
 def get_plan_for_org(organization_id):

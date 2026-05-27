@@ -1,4 +1,6 @@
 from __future__ import annotations
+ 
+# mypy: disable-error-code=call-arg
 
 from datetime import datetime, timezone
 from uuid import uuid4

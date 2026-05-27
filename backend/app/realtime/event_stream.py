@@ -1,4 +1,6 @@
-BUFFER = []
+from typing import Any
+
+BUFFER: list[Any] = []
 
 
 def push(e):

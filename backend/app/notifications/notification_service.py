@@ -1,6 +1,8 @@
 from .channels import sanitize_payload
 
-EVENTS = []
+from typing import Any
+
+EVENTS: list[dict[str, Any]] = []
 
 
 def send_notification(title, message, payload, dry_run=True):

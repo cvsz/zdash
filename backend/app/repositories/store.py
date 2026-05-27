@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlmodel import Session, select
+from sqlmodel import Session, col, select
 
 from app.models.entities import (
     AgentRecord,
@@ -65,7 +65,7 @@ class Repository:
     def list_events(self, limit: int = 100, offset: int = 0) -> list[EventRecord]:
         stmt = (
             select(EventRecord)
-            .order_by(EventRecord.id.desc())
+            .order_by(col(EventRecord.id).desc())
             .offset(offset)
             .limit(limit)
         )
@@ -118,7 +118,7 @@ class Repository:
         stmt = select(RiskDecisionRecord)
         if decision_type is not None:
             stmt = stmt.where(RiskDecisionRecord.decision_type == decision_type)
-        stmt = stmt.order_by(RiskDecisionRecord.created_at.desc())
+        stmt = stmt.order_by(col(RiskDecisionRecord.created_at).desc())
         return self.session.exec(stmt).first()
 
     def set_halt_flag(
@@ -130,7 +130,7 @@ class Repository:
         return row
 
     def latest_halt_flag(self) -> HaltFlagRecord | None:
-        stmt = select(HaltFlagRecord).order_by(HaltFlagRecord.created_at.desc())
+        stmt = select(HaltFlagRecord).order_by(col(HaltFlagRecord.created_at).desc())
         return self.session.exec(stmt).first()
 
     def upsert_scheduler_job(
@@ -160,7 +160,7 @@ class Repository:
         return list(
             self.session.exec(
                 select(SchedulerJobRecord).order_by(
-                    SchedulerJobRecord.created_at.desc()
+                    col(SchedulerJobRecord.created_at).desc()
                 )
             )
         )
@@ -189,7 +189,7 @@ class Repository:
         return list(
             self.session.exec(
                 select(BacktestResultRecord).order_by(
-                    BacktestResultRecord.created_at.desc()
+                    col(BacktestResultRecord.created_at).desc()
                 )
             )
         )
@@ -233,7 +233,7 @@ class Repository:
     def list_content_items(self) -> list[ContentItemRecord]:
         return list(
             self.session.exec(
-                select(ContentItemRecord).order_by(ContentItemRecord.created_at.desc())
+                select(ContentItemRecord).order_by(col(ContentItemRecord.created_at).desc())
             )
         )
 
@@ -257,7 +257,7 @@ class Repository:
     ) -> list[AuditLogRecord]:
         stmt = (
             select(AuditLogRecord)
-            .order_by(AuditLogRecord.created_at.desc())
+            .order_by(col(AuditLogRecord.created_at).desc())
             .offset(offset)
             .limit(limit)
         )
@@ -284,6 +284,6 @@ class Repository:
 
     def latest_live_mode_approval(self) -> LiveModeApprovalRecord | None:
         stmt = select(LiveModeApprovalRecord).order_by(
-            LiveModeApprovalRecord.created_at.desc()
+            col(LiveModeApprovalRecord.created_at).desc()
         )
         return self.session.exec(stmt).first()
