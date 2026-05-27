@@ -42,6 +42,8 @@ from app.api import (
     long_horizon,
     lessons,
 )
+from app.api.routes import incidents
+
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
@@ -109,6 +111,7 @@ app.include_router(health.router)
 app.include_router(agents.router)
 app.include_router(logs.router)
 app.include_router(realtime.router)
+app.include_router(incidents.router)
 app.include_router(risk.router)
 app.include_router(trading.router)
 

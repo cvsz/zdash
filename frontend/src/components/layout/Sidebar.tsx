@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
   { to: "/xau", label: "XAU Dashboard", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/risk", label: "Risk Panel", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/alerts", label: "Alerts", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/incidents", label: "Incident Ops", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/scheduler", label: "Scheduler", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/backtests", label: "Backtests", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/content", label: "Content Pipeline", roles: ["admin", "operator", "analyst", "viewer"] },

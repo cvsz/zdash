@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Any, Literal
-from uuid import uuid4
-
 from pydantic import BaseModel, Field
 
-RealtimeSeverity = Literal["info", "warning", "critical"]
 
-
-class RealtimeEvent(BaseModel):
-    event_id: str = Field(default_factory=lambda: str(uuid4()))
+class RealtimeEnvelope(BaseModel):
+    id: str = Field(pattern=r"^evt_")
     type: str
+    timestamp: str
     source: str
-    severity: RealtimeSeverity = "info"
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    payload: dict[str, Any] = Field(default_factory=dict)
+    severity: str = "info"
+    payload: dict = Field(default_factory=dict)
+
+
+class PresenceRecord(BaseModel):
+    operator: str
+    role: str
+    connected_at: str
+    status: str = "online"
