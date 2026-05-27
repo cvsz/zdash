@@ -109,13 +109,13 @@ class JoeAgent(BaseAgent):
         elif task == "list_strategies":
             result = {"strategies": self.list_strategies()}
         elif task == "run_backtest":
-            request = BacktestRequest.model_validate(context.get("request", context))
-            result = {"result": self.run_backtest(request).model_dump(mode="json")}
+            backtest_request: BacktestRequest = BacktestRequest.model_validate(context.get("request", context))
+            result = {"result": self.run_backtest(backtest_request).model_dump(mode="json")}
         elif task == "optimize":
-            request = OptimizationRequest.model_validate(
+            optimization_request: OptimizationRequest = OptimizationRequest.model_validate(
                 context.get("request", context)
             )
-            result = {"result": self.optimize(request).model_dump(mode="json")}
+            result = {"result": self.optimize(optimization_request).model_dump(mode="json")}
         elif task == "evaluate_promotion":
             result_id = str(context.get("result_id", "")).strip()
             if not result_id:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from app.backtesting.models import Candle, StrategySignal
 from app.backtesting.strategy_base import BaseStrategy
 
@@ -65,7 +67,7 @@ class OBConservativeStrategy(BaseStrategy):
             self.volatility(window) * 1.8, 1e-6
         )
         conf = min(1.0, 0.45 + (trend_strength * 0.15) + breakout_strength)
-        direction = "hold"
+        direction: Literal["buy", "sell", "hold"] = "hold"
 
         if (
             candle.close > window_high * 1.0005

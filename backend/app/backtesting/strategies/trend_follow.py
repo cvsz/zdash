@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from app.backtesting.models import Candle, StrategySignal
 from app.backtesting.strategy_base import BaseStrategy
 
@@ -62,7 +64,7 @@ class TrendFollowStrategy(BaseStrategy):
         sma_short = sum(closes[index - short_window + 1 : index + 1]) / short_window
         sma_long = sum(closes[index - long_window + 1 : index + 1]) / long_window
 
-        direction = "hold"
+        direction: Literal["buy", "sell", "hold"] = "hold"
         if index >= long_window:
             prev_short = sum(closes[index - short_window : index]) / short_window
             prev_long = sum(closes[index - long_window : index]) / long_window

@@ -38,16 +38,18 @@ def test_candle_validation_rejects_invalid_ohlc() -> None:
 
 def test_strategy_signal_direction_validation() -> None:
     with pytest.raises(ValidationError):
-        StrategySignal(
-            timestamp=datetime.now(timezone.utc),
-            symbol="XAUUSD",
-            timeframe="M5",
-            strategy="ob_aggressive",
-            direction="invalid",
-            entry=2300.0,
-            stop_loss=2299.0,
-            take_profit=2301.0,
-            confidence=0.7,
+        StrategySignal.model_validate(
+            {
+                "timestamp": datetime.now(timezone.utc),
+                "symbol": "XAUUSD",
+                "timeframe": "M5",
+                "strategy": "ob_aggressive",
+                "direction": "invalid",
+                "entry": 2300.0,
+                "stop_loss": 2299.0,
+                "take_profit": 2301.0,
+                "confidence": 0.7,
+            }
         )
 
 

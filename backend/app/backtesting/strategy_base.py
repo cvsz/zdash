@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from statistics import mean
+from typing import Literal
 
 from app.backtesting.models import Candle, StrategySignal
 
@@ -52,7 +53,7 @@ class BaseStrategy(ABC):
         candle: Candle,
         symbol: str,
         timeframe: str,
-        direction: str,
+        direction: Literal["buy", "sell", "hold"],
         entry: float,
         stop_loss: float,
         take_profit: float,

@@ -68,7 +68,7 @@ class Signal(BaseModel):
                 "validation_status": self.validation_status,
                 "risk_status": self.risk_status,
             },
-            created_at=self.created_at,
+            created_at=datetime.fromisoformat(self.created_at.replace("Z", "+00:00")),
         )
 
 

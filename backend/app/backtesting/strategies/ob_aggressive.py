@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from app.backtesting.models import Candle, StrategySignal
 from app.backtesting.strategy_base import BaseStrategy
 
@@ -67,7 +69,7 @@ class OBAggressiveStrategy(BaseStrategy):
             1.0, 0.45 + (impulse * 0.2) + (breakout_distance / volatility * 0.15)
         )
 
-        direction = "hold"
+        direction: Literal["buy", "sell", "hold"] = "hold"
         if candle.close > window_high and confidence >= p["confidence_threshold"]:
             direction = "buy"
         elif candle.close < window_low and confidence >= p["confidence_threshold"]:
