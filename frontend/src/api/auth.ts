@@ -1,24 +1,13 @@
 import { apiClient, setSession } from "./client";
 import type { AuthTokenPair, AuthUser, StoredAuthSession } from "./types";
+import { safeLocalStorage } from "../utils/storage";
 
-const AUTH_STORAGE_KEY = "zdash.auth.session";
+const STORAGE_KEY = "zdash.session";
 export const DEFAULT_ADMIN_USERNAME = "admin";
 export const DEFAULT_ADMIN_PASSWORD = "dev-only-change-before-production";
 
-function getStorage(): Storage | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return window.localStorage;
-}
-
 export function readStoredSession(): StoredAuthSession | null {
-  const storage = getStorage();
-  if (!storage) {
-    return null;
-  }
-
-  const raw = storage.getItem(AUTH_STORAGE_KEY);
+  const raw = safeLocalStorage().getItem(STORAGE_KEY);
   if (!raw) {
     return null;
   }
@@ -44,39 +33,22 @@ export function readStoredSession(): StoredAuthSession | null {
 }
 
 export function writeStoredSession(session: StoredAuthSession): void {
-  const storage = getStorage();
-  if (!storage) {
-    return;
-  }
-  storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  safeLocalStorage().setItem(STORAGE_KEY, JSON.stringify(session));
 }
 
 export function clearStoredSession(): void {
-  const storage = getStorage();
-  if (!storage) {
-    return;
-  }
-  storage.removeItem(AUTH_STORAGE_KEY);
+  safeLocalStorage().removeItem(STORAGE_KEY);
 }
 
 export function applyStoredSession(session: StoredAuthSession | null): void {
   setSession(session?.accessToken);
 }
 
-export function isDefaultAdminCredentials(
-  username: string,
-  password: string,
-): boolean {
-  return (
-    username.trim() === DEFAULT_ADMIN_USERNAME &&
-    password === DEFAULT_ADMIN_PASSWORD
-  );
+export function isDefaultAdminCredentials(username: string, password: string): boolean {
+  return username.trim() === DEFAULT_ADMIN_USERNAME && password === DEFAULT_ADMIN_PASSWORD;
 }
 
-export async function loginWithPassword(
-  username: string,
-  password: string,
-): Promise<AuthTokenPair> {
+export async function loginWithPassword(username: string, password: string): Promise<AuthTokenPair> {
   const tokenPair = await apiClient.post<AuthTokenPair>("/api/auth/login", {
     username,
     password,
@@ -91,9 +63,7 @@ export async function loginWithPassword(
   return tokenPair;
 }
 
-export async function refreshSession(
-  refreshToken: string,
-): Promise<AuthTokenPair> {
+export async function refreshSession(refreshToken: string): Promise<AuthTokenPair> {
   const tokenPair = await apiClient.post<AuthTokenPair>("/api/auth/refresh", {
     refresh_token: refreshToken,
   });

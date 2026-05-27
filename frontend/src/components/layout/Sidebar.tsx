@@ -26,6 +26,7 @@ const navItems: NavItem[] = [
   { to: "/org", label: "Org Map", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/logs", label: "Session Logs", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/settings", label: "Settings", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/system/health", label: "System Health", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/admin", label: "Admin", roles: ["admin"] },
 ];
 
