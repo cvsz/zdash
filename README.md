@@ -988,3 +988,10 @@ This project is licensed under the MIT License. See `LICENSE`.
 - Polling fallback remains available through existing API fetch cycles if websocket is unavailable.
 - Offline-safe UI behavior: dashboard and notification/event timeline continue to render even when disconnected.
 - Mock stream can be enabled via `ENABLE_MOCK_REALTIME=true` and is automatically suppressed during pytest unless explicitly enabled.
+
+## Realtime Layer
+- WebSocket endpoint: `/api/realtime/ws` (JSON events only).
+- Notification center surfaces severity-tagged realtime events.
+- Frontend falls back to simulated realtime mode when socket unavailable.
+- System Health includes realtime diagnostics (status, last event, fallback state).
+- Safety defaults preserved: dry-run/mock-safe, no secret/token exposure.

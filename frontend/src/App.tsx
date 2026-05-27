@@ -44,6 +44,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/system/health" element={<SystemHealth />} />
           <Route path="/events" element={<EventTimeline />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route
             path="/admin"
             element={

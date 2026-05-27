@@ -28,6 +28,7 @@ const navItems: NavItem[] = [
   { to: "/logs", label: "Session Logs", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/settings", label: "Settings", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/system/health", label: "System Health", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/notifications", label: "Notifications", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/admin", label: "Admin", roles: ["admin"] },
 ];
 
