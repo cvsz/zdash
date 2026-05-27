@@ -1,2 +1,17 @@
-import { render, screen } from '@testing-library/react';import Scheduler from '../pages/Scheduler';import { describe,it,expect } from 'vitest';
-describe('Scheduler',()=>{it('renders',()=>{render(<Scheduler/>);expect(screen.getByText('Job table')).toBeTruthy();expect(screen.getByText('Run job')).toBeTruthy();expect(screen.getByText(/iot_power_cycle/)).toBeTruthy();});});
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+
+import Scheduler from "../pages/Scheduler";
+
+describe("Scheduler", () => {
+  it("renders scheduler controls and safety labels", () => {
+    render(<Scheduler />);
+
+    expect(screen.getByRole("heading", { name: "Scheduler", level: 2 })).toBeTruthy();
+    expect(screen.getByText("Default Jobs")).toBeTruthy();
+    expect(screen.getByText("Job Table")).toBeTruthy();
+    expect(screen.getByText("Create Job")).toBeTruthy();
+    expect(screen.getAllByText("iot_power_cycle").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("trading_scan").length).toBeGreaterThan(0);
+  });
+});

@@ -1,2 +1,25 @@
-import { render, screen } from '@testing-library/react';import ContentPipeline from '../pages/ContentPipeline';import { describe,it,expect } from 'vitest';
-describe('ContentPipeline',()=>{it('renders',()=>{render(<ContentPipeline/>);expect(screen.getByText(/policy notes/i)).toBeTruthy();expect(screen.getByText(/SOCIAL_DRY_RUN/)).toBeTruthy();expect(screen.getByText('Publish')).toHaveProperty("disabled", true);});});
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+
+import ContentPipeline from "../pages/ContentPipeline";
+
+describe("ContentPipeline", () => {
+  it("renders policy and dry-run safety indicators", () => {
+    render(<ContentPipeline />);
+
+    expect(screen.getByRole("heading", { name: "Content Pipeline", level: 2 })).toBeTruthy();
+    expect(screen.getByText("SOCIAL_DRY_RUN")).toBeTruthy();
+    expect(screen.getByText("Approval Required")).toBeTruthy();
+    expect(screen.getByText("Content Board")).toBeTruthy();
+  });
+
+  it("keeps publish action disabled until approved", async () => {
+    render(<ContentPipeline />);
+
+    const publishButtons = (await screen.findAllByText(
+      "Dry-run publish",
+    )) as HTMLButtonElement[];
+    expect(publishButtons.length).toBeGreaterThan(0);
+    expect(publishButtons[0].disabled).toBe(true);
+  });
+});

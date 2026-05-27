@@ -9,20 +9,20 @@ describe("Dashboard", () => {
     resetMockFallbackState();
   });
 
-  it("renders team roster on the main dashboard", () => {
+  it("renders module summary sections", () => {
     render(<Dashboard />);
 
+    expect(screen.getByText("System Health")).toBeTruthy();
+    expect(screen.getByText("Backend Connection")).toBeTruthy();
+    expect(screen.getByText("Agent Status Summary")).toBeTruthy();
+    expect(screen.getByText("Recent Session Logs")).toBeTruthy();
     expect(screen.getByText("Team Roster")).toBeTruthy();
-    expect(screen.getByText("Alexander Prime")).toBeTruthy();
-    expect(screen.getByText("Sophia Lane")).toBeTruthy();
-    expect(screen.getByText("Agents per page")).toBeTruthy();
-    expect(screen.getByText("Guardian Risk")).toBeTruthy();
-    expect(screen.getByText("Content Pipeline")).toBeTruthy();
   });
 
   it("renders mock fallback banner when fallback is active", () => {
     setMockFallbackState(true);
     render(<Dashboard />);
+
     expect(screen.getByText(/Mock fallback mode active/i)).toBeTruthy();
   });
 });
