@@ -1,22 +1,333 @@
-export type ApiResponse<T> = { ok: boolean; data: T; error: string | null; timestamp: string };
-export class ApiError extends Error { constructor(message: string, public status?: number) { super(message); } }
-export type HealthStatus = { status: string; services: Record<string,string>; mock?: boolean };
-export type Agent = { id: string; name: string; role: string; status: string; health: string; last_event: string; capabilities: string[] };
-export type EventLog = { id: string; category: string; source: string; message: string; payload?: unknown; ts: string; level?: string };
-export type TradingSignal = { id:string; symbol:string; timeframe:string; side:string; confidence:number; validated:boolean; ai_summary:string; created_at:string };
-export type ExecutionResult = { status:string; detail:string; dry_run:boolean };
-export type AccountSnapshot = { balance:number; equity:number; daily_drawdown_percent:number; total_drawdown_percent:number };
-export type DrawdownResult = { daily:number; total:number; max_daily:number; max_total:number };
-export type HaltState = { halted:boolean; reason?:string; kill_switch:boolean };
-export type RiskDecision = { approved:boolean; reason:string; level:string };
-export type ScheduledJob = { id:string; name:string; job_type:string; cron:string; enabled:boolean; risk_guarded?:boolean };
-export type JobRunResult = { id:string; job_id:string; status:string; started_at:string; duration_ms:number };
-export type BacktestRequest = { strategy:string; symbol:string; timeframe:string };
-export type BacktestMetrics = { total_trades:number; win_rate:number; profit_factor:number; max_drawdown:number; net_profit_percent:number; consecutive_losses:number };
-export type BacktestResult = { id:string; strategy:string; metrics:BacktestMetrics; equity_curve:{x:string;y:number}[]; monthly_returns:{month:string;value:number}[] };
-export type OptimizationResult = { id:string; rank:number; strategy:string; score:number; params:Record<string,unknown> };
-export type StrategyPromotionDecision = { promote:boolean; reason:string };
-export type ContentItem = { id:string; title:string; status:string; approval_required:boolean; approved:boolean; policy_notes?:string; social_dry_run:boolean };
-export type PipelineRunResult = { id:string; status:string; message:string };
-export type SocialPostResult = { id:string; status:string; dry_run:boolean };
-export type IoTActionResult = { status:string; action:string; dry_run:boolean; message:string };
+export type ApiErrorPayload = {
+  code: string;
+  message: string;
+};
+
+export type ApiResponse<T> = {
+  ok: boolean;
+  data: T | null;
+  error: ApiErrorPayload | null;
+  timestamp: string;
+};
+
+export class ApiError extends Error {
+  code: string;
+  status?: number;
+  path?: string;
+  details?: unknown;
+
+  constructor(
+    message: string,
+    options: {
+      code?: string;
+      status?: number;
+      path?: string;
+      details?: unknown;
+      cause?: unknown;
+    } = {},
+  ) {
+    super(message);
+    this.name = "ApiError";
+    this.code = options.code ?? "API_ERROR";
+    this.status = options.status;
+    this.path = options.path;
+    this.details = options.details;
+    if (options.cause !== undefined) {
+      (this as Error & { cause?: unknown }).cause = options.cause;
+    }
+  }
+}
+
+export type HealthStatus = {
+  app_name?: string;
+  environment?: string;
+  status: string;
+  timestamp?: string;
+  services?: Record<string, string>;
+  mock?: boolean;
+};
+
+export type Agent = {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  metadata?: Record<string, unknown>;
+  health?: string;
+  last_event?: string;
+  capabilities?: string[];
+  mock?: boolean;
+};
+
+export type EventLog = {
+  id: string;
+  type?: string;
+  category?: string;
+  source: string;
+  message: string;
+  payload?: unknown;
+  created_at?: string;
+  ts?: string;
+  level?: string;
+};
+
+export type TradingSignal = {
+  id?: string;
+  symbol: string;
+  timeframe: string;
+  strategy?: string;
+  direction?: "buy" | "sell" | "hold";
+  side?: "buy" | "sell" | "hold";
+  confidence: number;
+  entry?: number;
+  stop_loss?: number;
+  take_profit?: number;
+  reason?: string;
+  metadata?: Record<string, unknown>;
+  validated?: boolean;
+  ai_summary?: string;
+  created_at?: string;
+};
+
+export type ExecutionResult = {
+  ok: boolean;
+  status: string;
+  dry_run: boolean;
+  signal: TradingSignal;
+  message: string;
+  simulated_order_id?: string | null;
+  risk_decision?: RiskDecision | null;
+  timestamp?: string;
+};
+
+export type AccountSnapshot = {
+  balance: number;
+  equity: number;
+  peak_equity: number;
+  daily_start_equity: number;
+  open_positions?: number;
+  floating_pnl?: number;
+  realized_pnl_today?: number;
+  timestamp?: string;
+};
+
+export type DrawdownResult = {
+  current_equity: number;
+  peak_equity: number;
+  daily_start_equity: number;
+  total_drawdown_percent: number;
+  daily_drawdown_percent: number;
+  floating_pnl: number;
+  risk_level: "normal" | "warning" | "danger" | "emergency";
+  breached: boolean;
+  breach_reason?: string | null;
+};
+
+export type HaltState = {
+  halted: boolean;
+  reason?: string | null;
+  source?: string | null;
+  created_at?: string | null;
+  resumed_at?: string | null;
+  resume_reason?: string | null;
+};
+
+export type RiskDecision = {
+  approved: boolean;
+  reason: string;
+  risk_level: "normal" | "warning" | "danger" | "emergency";
+  halt_active: boolean;
+  drawdown?: DrawdownResult | null;
+  timestamp?: string;
+};
+
+export type ScheduledJob = {
+  id: string;
+  name: string;
+  job_type: string;
+  schedule_type: string;
+  status: string;
+  enabled: boolean;
+  cron?: string | null;
+  interval_seconds?: number | null;
+  payload?: Record<string, unknown>;
+  max_runtime_seconds?: number;
+  created_at?: string;
+  updated_at?: string;
+  last_run_at?: string | null;
+  next_run_at?: string | null;
+  run_count?: number;
+  fail_count?: number;
+  risk_guarded?: boolean;
+};
+
+export type JobRunResult = {
+  job_id: string;
+  job_type: string;
+  status: string;
+  ok: boolean;
+  message: string;
+  output: Record<string, unknown>;
+  started_at: string;
+  finished_at: string;
+  duration_ms: number;
+};
+
+export type BacktestRequest = {
+  strategy: string;
+  symbol?: string;
+  timeframe?: string;
+  dataset?: string;
+  initial_balance?: number;
+  risk_per_trade_percent?: number;
+  commission_per_trade?: number;
+  spread_points?: number;
+  slippage_points?: number;
+  parameters?: Record<string, unknown>;
+};
+
+export type BacktestMetrics = {
+  total_trades: number;
+  winning_trades?: number;
+  losing_trades?: number;
+  win_rate: number;
+  gross_profit?: number;
+  gross_loss?: number;
+  net_profit?: number;
+  net_profit_percent: number;
+  profit_factor: number;
+  max_drawdown_percent: number;
+  average_rr?: number;
+  expectancy?: number;
+  sharpe_like_score?: number;
+  consecutive_losses: number;
+  monthly_return_table?: Record<string, number>;
+};
+
+export type BacktestResult = {
+  id: string;
+  request?: BacktestRequest;
+  strategy: string;
+  symbol: string;
+  timeframe: string;
+  initial_balance?: number;
+  final_balance?: number;
+  metrics: BacktestMetrics;
+  trades?: Array<Record<string, unknown>>;
+  parameters?: Record<string, unknown>;
+  started_at?: string;
+  finished_at?: string;
+  duration_ms?: number;
+  warnings?: string[];
+  equity_curve?: Array<{ x: string; y: number }>;
+  monthly_returns?: Array<{ month: string; value: number }>;
+};
+
+export type OptimizationResult = {
+  id: string;
+  request?: Record<string, unknown>;
+  ranked_results: BacktestResult[];
+  best_result?: BacktestResult | null;
+  sort_metric: string;
+  total_combinations: number;
+  executed_combinations: number;
+  started_at: string;
+  finished_at: string;
+  duration_ms: number;
+  warnings?: string[];
+};
+
+export type StrategyPromotionDecision = {
+  strategy?: string;
+  approved: boolean;
+  reason: string;
+  metrics?: BacktestMetrics | null;
+  gates?: Record<string, boolean>;
+  timestamp?: string;
+};
+
+export type ContentItem = {
+  id: string;
+  title: string;
+  topic?: string;
+  content_type?: string;
+  status: string;
+  brand?: string;
+  language?: string;
+  tone?: string;
+  draft_text?: string | null;
+  edited_text?: string | null;
+  graphic_prompt?: string | null;
+  graphic_asset_url?: string | null;
+  platforms?: string[];
+  scheduled_at?: string | null;
+  approved_at?: string | null;
+  posted_at?: string | null;
+  policy_passed?: boolean;
+  policy_notes?: string[];
+  metadata?: Record<string, unknown>;
+  created_at?: string;
+  updated_at?: string;
+  approval_required?: boolean;
+  approved?: boolean;
+  social_dry_run?: boolean;
+};
+
+export type PipelineRunResult = {
+  id: string;
+  content_id: string;
+  ok: boolean;
+  status: string;
+  steps: Array<Record<string, unknown>>;
+  message: string;
+  started_at: string;
+  finished_at: string;
+  duration_ms: number;
+};
+
+export type SocialPostResult = {
+  platform: string;
+  ok: boolean;
+  dry_run: boolean;
+  external_id?: string | null;
+  message: string;
+  output?: Record<string, unknown>;
+  timestamp?: string;
+};
+
+export type IoTActionResult = {
+  ok: boolean;
+  dry_run: boolean;
+  device_alias: string;
+  action: "status" | "turn_on" | "turn_off" | "power_cycle";
+  message: string;
+  output?: Record<string, unknown>;
+  timestamp?: string;
+};
+
+export type TradingScanResult = {
+  symbol: string;
+  timeframe: string;
+  candles_analyzed: number;
+  latest_signal: TradingSignal | null;
+  validation: {
+    valid: boolean;
+    reason: string;
+    warnings: string[];
+    signal?: TradingSignal | null;
+    timestamp?: string;
+  } | null;
+  ai_summary: string;
+  timestamp: string;
+};
+
+export type BacktestReport = {
+  markdown_report: string;
+  summary: Record<string, unknown>;
+};
+
+export type ContentReport = {
+  summary: Record<string, unknown>;
+  markdown: string;
+  logs: EventLog[];
+};

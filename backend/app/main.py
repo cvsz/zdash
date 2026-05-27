@@ -22,6 +22,7 @@ from app.api import (
     metrics,
     risk,
     scheduler,
+    trading,
     ops,
     integrations,
     managed,
@@ -109,6 +110,7 @@ app.include_router(health.router)
 app.include_router(agents.router)
 app.include_router(logs.router)
 app.include_router(risk.router)
+app.include_router(trading.router)
 
 app.include_router(scheduler.router)
 app.include_router(iot.router)
