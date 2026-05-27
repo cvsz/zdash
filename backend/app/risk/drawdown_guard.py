@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from app.core.config import get_settings
 from app.risk.models import AccountSnapshot, DrawdownResult
 
@@ -52,7 +54,7 @@ class DrawdownGuard:
         max_total = self.settings.max_total_drawdown_percent
         emergency = self.settings.emergency_kill_switch_drawdown_percent
 
-        risk_level = "normal"
+        risk_level: Literal["normal", "warning", "danger", "emergency"] = "normal"
         breached = False
         breach_reason: str | None = None
 
