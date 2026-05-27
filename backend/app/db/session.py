@@ -15,7 +15,7 @@ def _is_sqlite_url(url: str) -> bool:
 
 
 def _build_engine() -> Engine:
-    engine_kwargs = {
+    engine_kwargs: dict[str, object] = {
         "future": True,
         "echo": settings.db_echo,
     }

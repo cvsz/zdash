@@ -1,6 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
-from app.content.models import ContentStatus, CreateContentRequest
+from app.content.models import (
+    ContentPlatform,
+    ContentStatus,
+    ContentType,
+    CreateContentRequest,
+)
 from app.content.pipeline import ContentPipeline
 from app.content.store import InMemoryContentStore
 
@@ -9,8 +14,8 @@ def test_full_pipeline_runs_editor_and_graphic_without_auto_publish() -> None:
     pipeline = ContentPipeline(InMemoryContentStore())
     request = CreateContentRequest(
         topic="Backtesting educational simulation weekly report",
-        content_type="educational",
-        platforms=["x", "linkedin"],
+        content_type=ContentType.educational,
+        platforms=[ContentPlatform.x, ContentPlatform.linkedin],
     )
     result = pipeline.run_full_pipeline(request)
     assert result.ok is True
