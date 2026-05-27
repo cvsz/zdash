@@ -30,12 +30,14 @@ class EditorAgent(BaseAgent):
         if task == "health_check":
             result: dict[str, Any] = self.health_check()
         elif task == "create_draft":
-            request = CreateContentRequest.model_validate(ctx.get("request", ctx))
-            item = self.create_draft(request)
+            create_request = CreateContentRequest.model_validate(
+                ctx.get("request", ctx)
+            )
+            item = self.create_draft(create_request)
             result = {"item": item.model_dump(mode="json")}
         elif task == "edit_content":
-            request = EditContentRequest.model_validate(ctx.get("request", ctx))
-            item = self.edit_content(request)
+            edit_request = EditContentRequest.model_validate(ctx.get("request", ctx))
+            item = self.edit_content(edit_request)
             result = {"item": item.model_dump(mode="json")}
         elif task == "generate_variants":
             content_id = str(ctx.get("content_id", "")).strip()

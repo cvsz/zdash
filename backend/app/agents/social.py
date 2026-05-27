@@ -34,16 +34,22 @@ class SocialAgent(BaseAgent):
         if task == "health_check":
             result: dict[str, Any] = self.health_check()
         elif task == "schedule_content":
-            request = ScheduleContentRequest.model_validate(ctx.get("request", ctx))
-            item = self.schedule_content(request)
+            schedule_request = ScheduleContentRequest.model_validate(
+                ctx.get("request", ctx)
+            )
+            item = self.schedule_content(schedule_request)
             result = {"item": item.model_dump(mode="json")}
         elif task == "approve_content":
-            request = ApproveContentRequest.model_validate(ctx.get("request", ctx))
-            item = self.approve_content(request)
+            approve_request = ApproveContentRequest.model_validate(
+                ctx.get("request", ctx)
+            )
+            item = self.approve_content(approve_request)
             result = {"item": item.model_dump(mode="json")}
         elif task == "publish_content":
-            request = PublishContentRequest.model_validate(ctx.get("request", ctx))
-            post_results = self.publish_content(request)
+            publish_request = PublishContentRequest.model_validate(
+                ctx.get("request", ctx)
+            )
+            post_results = self.publish_content(publish_request)
             result = {"results": [entry.model_dump(mode="json") for entry in post_results]}
         else:
             raise ValueError(f"Unsupported social task: {task}")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Any, Callable, cast
 
 from app.content.models import ContentItem, CreateContentRequest, EditContentRequest
 from app.content.policy import ContentPolicyChecker
@@ -44,7 +44,7 @@ class EditorService:
         item = self.store.get_item(request.content_id)
         if item is None:
             raise ValueError("content not found")
-        src = item.draft_text or item.topic
+        src = str(item.draft_text or item.topic)
         edited = f"{src} Refined for clarity and readability."
         if request.instructions:
             edited += f" Instructions: {request.instructions}."
@@ -66,7 +66,7 @@ class EditorService:
         if item is None:
             raise ValueError("content not found")
         safe_count = max(1, min(count, 10))
-        base = item.edited_text or item.draft_text or item.topic
+        base = str(item.edited_text or item.draft_text or item.topic)
         variants = [
             self._ensure_trading_disclaimer(f"{base} (variant {index + 1})")
             for index in range(safe_count)
@@ -82,14 +82,16 @@ class EditorService:
 
     def _check_policy(self, content_id: str, text: str):
         if not self.settings.content_require_policy_check:
-            result = {
+            result: dict[str, Any] = {
                 "passed": True,
                 "notes": ["policy_check_disabled"],
                 "blocked_terms": [],
                 "warnings": [],
             }
         else:
-            result = self.policy.check_text(text, {"content_id": content_id})
+            result = cast(dict[str, Any], self.policy.check_text(text, {"content_id": content_id}))
+        notes = cast(list[str], result["notes"])
+        warnings = cast(list[str], result["warnings"])
         self._emit_content_event(
             "content.policy.checked",
             "EditorService",
@@ -107,7 +109,7 @@ class EditorService:
             content_id,
             {
                 "policy_passed": result["passed"],
-                "policy_notes": result["notes"] + result["warnings"],
+                "policy_notes": notes + warnings,
             },
         )
 
