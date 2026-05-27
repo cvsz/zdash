@@ -1,37 +1,72 @@
-import { useCallback, useEffect, useState } from "react";
+import {
+  DependencyList,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
-type UseApiResult<T> = {
+export interface ApiState<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-};
+}
 
 export function useApi<T>(
-  fn: () => Promise<T>,
-  deps: ReadonlyArray<unknown> = [],
-): UseApiResult<T> {
+  fetcher: () => Promise<T>,
+  deps: DependencyList = [],
+): ApiState<T> {
+  const mountedRef = useRef(true);
+
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const run = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
-      const result = await fn();
+      if (mountedRef.current) {
+        setLoading(true);
+      }
+
+      const result = await fetcher();
+
+      if (!mountedRef.current) {
+        return;
+      }
+
       setData(result);
-    } catch (caught) {
-      const message = caught instanceof Error ? caught.message : String(caught);
+      setError(null);
+    } catch (err) {
+      if (!mountedRef.current) {
+        return;
+      }
+
+      const message =
+        err instanceof Error ? err.message : 'Unknown API error';
+
       setError(message);
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   }, deps);
 
   useEffect(() => {
+    mountedRef.current = true;
+
     void run();
+
+    return () => {
+      mountedRef.current = false;
+    };
   }, [run]);
 
-  return { data, loading, error, refetch: run };
+  return {
+    data,
+    loading,
+    error,
+    refetch: run,
+  };
 }

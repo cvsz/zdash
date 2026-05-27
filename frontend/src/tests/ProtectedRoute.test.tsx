@@ -26,7 +26,13 @@ describe("ProtectedRoute", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/secure"]}>
+      <MemoryRouter
+        initialEntries={["/secure"]}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route
             path="/secure"
@@ -57,7 +63,13 @@ describe("ProtectedRoute", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/secure"]}>
+      <MemoryRouter
+        initialEntries={["/secure"]}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route
             path="/secure"
@@ -89,7 +101,13 @@ describe("ProtectedRoute", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/admin"]}>
+      <MemoryRouter
+        initialEntries={["/admin"]}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route path="/" element={<div>Home</div>} />
           <Route
