@@ -4,11 +4,14 @@ import { describe, expect, it } from "vitest";
 import RiskPanel from "../pages/RiskPanel";
 
 describe("RiskPanel", () => {
-  it("renders core risk controls", () => {
+  it("renders kill-switch, halt, and drawdown risk status", () => {
     render(<RiskPanel />);
 
     expect(screen.getByText("Risk Panel")).toBeTruthy();
+    expect(screen.getByText("Kill Switch")).toBeTruthy();
+    expect(screen.getByText("Total Drawdown")).toBeTruthy();
     expect(screen.getByText("Manual Halt")).toBeTruthy();
+    expect(screen.getByText("Manual halt")).toBeTruthy();
     expect(screen.getByText("Manual Resume")).toBeTruthy();
     expect(screen.getByPlaceholderText("Resume reason")).toBeTruthy();
   });

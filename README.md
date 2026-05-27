@@ -309,17 +309,111 @@ http://localhost:5173
 
 ## Dashboard Notes
 
-The main dashboard `/` now renders the team roster.
+### Phase 07 Overview
 
-Current UI features:
+Phase 07 delivers the full React/Vite operations dashboard with all module pages wired to backend APIs and mock-safe fallback behavior.
 
-- abstract zDash background image under `frontend/images/`
-- team roster moved to the main dashboard
-- `/team` route still available
-- canonical renamed agents
-- agents-per-page selector: `6 / 9 / 12 / 24`
-- default page size: `9`
-- wide layout with up to five cards per row on large displays
+### Dashboard Architecture
+
+- app shell: `Sidebar` + `Topbar` + `PageHeader` under `frontend/src/components/layout/`
+- page modules: `frontend/src/pages/*` for Dashboard, Team Roster, Trading, Risk, Scheduler, Backtests, Content, IoT, Org Map, Logs, and Settings
+- API layer: `frontend/src/api/client.ts` with canonical backend envelope parsing
+- mock fallback: `frontend/src/api/mockData.ts` + endpoint-level fallbacks in `frontend/src/api/endpoints.ts`
+- safety-first UI state: badges, banners, and confirmation dialogs across trading, risk, scheduler, content, and IoT actions
+
+### Canonical Roster Reference
+
+Use `docs/prompt/agent-roster.prompt` as the source of truth for stable IDs and display names:
+
+- Alexander Prime (`ceo`)
+- Sophia Lane (`janie`)
+- Victor Hale (`guardian`)
+- Isla Grant (`friday`)
+- Nathan Cole (`joe`)
+- Elena Voss (`editor`)
+- Julian Reed (`graphic`)
+- Maya Quinn (`social`)
+- Damien Cross (`trading`)
+
+### Frontend Environment Variables
+
+Set values in `frontend/.env.example`:
+
+```env
+VITE_APP_NAME=zDash
+VITE_API_BASE_URL=http://localhost:8005
+VITE_ENABLE_MOCK_FALLBACK=true
+VITE_POLL_INTERVAL_MS=5000
+VITE_DEFAULT_THEME=dark
+VITE_SHOW_SAFETY_BANNERS=true
+```
+
+### Run Backend + Frontend Together
+
+Backend:
+
+```bash
+cd ~/zdash/backend
+source .venv/bin/activate
+uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
+```
+
+Frontend:
+
+```bash
+source ~/.nvm/nvm.sh
+nvm use 20
+cd ~/zdash/frontend
+npm run dev -- --host 0.0.0.0 --port 5173
+```
+
+### Mock Fallback Behavior
+
+- if backend fetch fails or times out, the frontend API client can serve safe mock data
+- mock fallback keeps dashboard pages renderable offline
+- UI surfaces show simulated mode banners and dry-run status
+
+### Page List
+
+- `/` Dashboard
+- `/team` Team Roster
+- `/xau` XAU Dashboard
+- `/risk` Risk Panel
+- `/scheduler` Scheduler
+- `/backtests` Backtests
+- `/content` Content Pipeline
+- `/iot` IoT Control
+- `/org` Org Map
+- `/logs` Session Logs
+- `/settings` Settings
+
+### Safety Banners and Guardrails
+
+- trading actions default to dry-run controls and explicit risk approval checks
+- risk panel highlights halt/kill-switch and drawdown state
+- content publishing remains approval-gated and social dry-run by default
+- IoT power-cycle requires confirmation and typed confirmation in real mode
+- app-level safety banner is controlled via `VITE_SHOW_SAFETY_BANNERS`
+
+### Frontend Validation Commands
+
+```bash
+source ~/.nvm/nvm.sh
+nvm use 20
+cd ~/zdash/frontend
+npm install --legacy-peer-deps --no-audit --fund=false
+npm test
+npm run build
+```
+
+### Backend Validation Commands
+
+```bash
+cd ~/zdash/backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+```
 
 ---
 

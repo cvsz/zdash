@@ -9,7 +9,18 @@ function renderAt(path: string) {
 }
 
 describe("App routing", () => {
-  it("renders dashboard route", () => {
+  it("app renders", () => {
+    renderAt("/");
+    expect(screen.getByText("zDash")).toBeTruthy();
+  });
+
+  it("sidebar navigation exists", () => {
+    renderAt("/");
+    expect(screen.getAllByText("Team Roster").length).toBeGreaterThan(0);
+    expect(screen.getByText("Session Logs")).toBeTruthy();
+  });
+
+  it("dashboard route works", () => {
     renderAt("/");
     expect(screen.getByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Team Roster", level: 1 })).toBeTruthy();
