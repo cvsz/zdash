@@ -6,44 +6,42 @@ Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
 
 ## Mission
 
-Implement the requested zDash phase safely, incrementally, and completely.
+Implement requested zDash scope safely and incrementally without breaking existing behavior.
 
 ## Required behavior
 
-1. Inspect the repository before coding.
-2. Identify existing modules and missing dependencies.
-3. Do not rebuild previous phases.
-4. Do not remove existing behavior.
-5. Create safe compatibility shims for missing earlier modules.
-6. Keep backend and frontend tests passing.
-7. Add tests for new behavior.
-8. Update README, docs, and `.env.example`.
-9. Use the standard API response shape.
-10. Keep all new data tenant-scoped when tenancy exists.
+1. Inspect repository before coding.
+2. Implement only requested phase/task scope.
+3. Keep backward compatibility unless explicitly approved.
+4. Do not rebuild earlier phases from scratch.
+5. Add minimal shims for missing dependencies when needed.
+6. Keep tests and build checks green.
+7. Update docs and env examples when behavior changes.
+8. Never commit `.env` or secrets.
+
+## Hard constraints
+
+- Backend port must remain `8005`.
+- Never introduce `localhost:8000`.
+- Use Node `20` via `nvm`.
+- Never expose secrets in frontend, logs, metrics, or reports.
 
 ## Safety invariants
 
-Never:
+Never enable by default:
 
-- commit secrets
-- expose secrets in frontend
-- log secrets
-- export secrets by default
-- include secrets in deployment packs or support bundles by default
-- enable live trading by default
-- enable real IoT power actions by default
-- enable real social posting by default
-- bypass Guardian risk checks
-- bypass content approval
-- bypass RBAC
-- bypass tenant isolation
+- live trading
+- real broker execution
+- real IoT power actions
+- real social posting
+- secret export
 
-All external or customer-impacting workflows must default to:
+Never bypass:
 
-- dry-run
-- read-only
-- mock mode
-- approval-gated mode
+- Guardian risk controls
+- content approvals
+- RBAC / tenant isolation
+- audit logging and policy controls
 
 ## Required checks
 
@@ -51,40 +49,39 @@ Backend:
 
 ```bash
 cd backend
-pytest
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
 ```
 
 Frontend:
 
 ```bash
 cd frontend
-npm test -- --run
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
 npm run build
 ```
 
-## Prompt files
-
-Use:
+Docker (when infra changes):
 
 ```bash
-bash .codex/run-phase.sh 24
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker compose config
 ```
 
-Prompt files live in:
+## Prompt helpers
 
-```text
-docs/prompt/
+Print a phase prompt:
+
+```bash
+bash .codex/run-phase.sh 08
 ```
 
-## Codex Cloud setup files
+Print a codex-run prompt file:
 
-```text
-.codex/cloud/
-├── README.md
-├── general-custom-instructions.md
-├── setup.sh
-├── maintenance.sh
-├── AGENTS.template.md
-├── phase-runner.md
-└── env.safe.example
+```bash
+bash .codex/run-phase.sh docs/prompt/codex-runs/phase08.5.prompt
 ```

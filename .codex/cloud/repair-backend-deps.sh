@@ -25,12 +25,12 @@ if [ -f "pyproject.toml" ]; then
 elif [ -f "requirements.txt" ]; then
   pip install -r requirements.txt
 else
-  echo "No backend dependency manifest found. Installing Codex fallback runtime set."
+  echo "No backend dependency manifest found. Installing fallback runtime set."
 fi
 
-# Defensive fallback for historical phase files that import these packages before
-# pyproject metadata was updated. This keeps Codex Cloud setup repairable.
 pip install \
+  'ruff>=0.5.0' \
+  'pytest>=8.1.1' \
   'sqlmodel>=0.0.22' \
   'sqlalchemy>=2.0.30' \
   'alembic>=1.13.2' \
@@ -38,10 +38,12 @@ pip install \
   'passlib>=1.7.4' \
   'prometheus-client>=0.20.0' \
   'email-validator>=2.2.0' \
-  'apscheduler>=3.10.4'
+  'apscheduler>=3.10.4' \
+  'psycopg[binary]>=3.2.0'
 
 python - <<'PY'
 import importlib
+
 mods = [
     'fastapi',
     'pydantic',
@@ -51,7 +53,9 @@ mods = [
     'jose',
     'passlib',
     'prometheus_client',
+    'email_validator',
     'apscheduler',
+    'psycopg',
 ]
 missing = []
 for mod in mods:
@@ -66,3 +70,6 @@ if missing:
     raise SystemExit(1)
 print('Backend dependency sanity check passed.')
 PY
+
+python -m ruff --version
+python -m pytest --version

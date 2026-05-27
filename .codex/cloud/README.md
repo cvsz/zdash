@@ -2,131 +2,110 @@
 
 Repository: `cvsz/zdash`
 
-This folder contains copy/paste-ready Codex Cloud setup materials for running zDash phase implementation safely.
+This folder contains the Codex Cloud setup/maintenance suite for zDash.
+It is designed for safe phase execution with current project constraints:
 
-OpenAI's Codex help states that Codex is an AI agent for writing, reviewing, and shipping code, and that Codex web requires connecting ChatGPT to GitHub. Business/Enterprise controls include workspace app/plugin controls and RBAC permissions for Codex Cloud access.
+- backend on port `8005`
+- Node `20` via `nvm`
+- dry-run/safety defaults preserved
+- no secrets in repo
 
 ## Files
 
-- `general-custom-instructions.md` — paste into Codex Cloud General Custom Instructions.
-- `setup.sh` — paste into Codex Cloud Setup Script.
-- `maintenance.sh` — paste into Codex Cloud Maintenance Script.
-- `repair-backend-deps.sh` — backend dependency repair helper used by setup, healthcheck, and maintenance.
-- `AGENTS.template.md` — optional repo-level `AGENTS.md` template.
-- `phase-runner.md` — task prompts for running phase prompts.
-- `env.safe.example` — safe non-secret environment defaults.
+- `general-custom-instructions.md` - compact text for Codex Cloud General Custom Instructions
+- `setup.sh` - one-time environment setup script
+- `maintenance.sh` - periodic validation + report script
+- `repair-backend-deps.sh` - backend dependency repair/sanity helper
+- `phase-runner.md` - prompt templates for one-phase and multi-phase runs
+- `env.safe.example` - non-secret safety-focused env defaults
+- `AGENTS.template.md` - optional bootstrap template for repo agent instructions
 
-## zDash safety defaults
+## Primary workflow
 
-- Live trading disabled by default.
-- Real IoT power actions disabled by default.
-- Real social posting disabled by default.
-- Secret export disabled by default.
-- External/customer-impacting workflows must default to dry-run, read-only, mock, or approval-gated mode.
-- Guardian risk checks, content approval, RBAC, tenant isolation, and audit logging must not be bypassed.
+1. Paste `general-custom-instructions.md` into Codex Cloud General Custom Instructions.
+2. Paste `setup.sh` into Codex Cloud Setup Script.
+3. Paste `maintenance.sh` into Codex Cloud Maintenance Script.
+4. Run one requested phase at a time unless batch execution is explicitly requested.
 
-## Integrated prompt set
-
-The Codex Cloud suite is integrated for these phase prompt files:
-
-```text
-docs/prompt/phase01.prompt
-docs/prompt/phase02.prompt
-docs/prompt/phase03.prompt
-docs/prompt/phase04.prompt
-docs/prompt/phase05.prompt
-docs/prompt/phase06.prompt
-docs/prompt/phase07.prompt
-docs/prompt/phase08.prompt
-docs/prompt/phase09.prompt
-docs/prompt/phase10.prompt
-docs/prompt/phase11.prompt
-docs/prompt/phase12.prompt
-docs/prompt/phase13.prompt
-docs/prompt/phase14.prompt
-docs/prompt/phase15.prompt
-docs/prompt/phase16.prompt
-docs/prompt/phase17.prompt
-docs/prompt/phase18.prompt
-docs/prompt/phase19.prompt
-docs/prompt/phase20.prompt
-docs/prompt/phase21.prompt
-docs/prompt/phase22.prompt
-docs/prompt/phase23.prompt
-docs/prompt/phase24.prompt
-docs/prompt/phase25.prompt
-docs/prompt/phase26.prompt
-docs/prompt/phase27.prompt
-docs/prompt/phase28.prompt
-docs/prompt/phase29.prompt
-docs/prompt/phase30.prompt
-docs/prompt/phase31.prompt
-docs/prompt/phase32.prompt
-```
-
-## Setup repair behavior
-
-`setup.sh` calls `repair-backend-deps.sh` when the backend directory exists. This helper installs the backend package and then defensively installs runtime libraries that existing phase code imports, including:
-
-```text
-sqlmodel
-sqlalchemy
-alembic
-python-jose[cryptography]
-passlib
-prometheus-client
-email-validator
-```
-
-The helper also runs a Python import sanity check before pytest. This prevents Codex Cloud setup from failing early with import errors such as `ModuleNotFoundError: No module named 'sqlmodel'` when generated code already imports database/auth modules but package metadata was incomplete.
-
-Manual repair command:
+## Setup command
 
 ```bash
-bash .codex/cloud/repair-backend-deps.sh
+bash .codex/cloud/setup.sh
 ```
 
-Manual healthcheck command after setup:
-
-```bash
-bash .codex/healthcheck.sh
-```
-
-Maintenance command:
+## Maintenance command
 
 ```bash
 bash .codex/cloud/maintenance.sh
 ```
 
-## Suggested Codex workflow
+## Backend dependency repair
 
-1. Configure the Codex Cloud environment using `general-custom-instructions.md`.
-2. Paste `setup.sh` into the Setup Script.
-3. Paste `maintenance.sh` into the Maintenance Script.
-4. Start a Codex task with one phase only, for example:
-
-```text
-Read docs/prompt/phase01.prompt.
-Implement Phase 1 only.
-Run backend and frontend checks.
-Return inspection summary, files changed, tests run, safety checklist, limitations, and next handoff.
+```bash
+bash .codex/cloud/repair-backend-deps.sh
 ```
 
-For batch execution, use `.codex/cloud/phase-runner.md` section **Run all integrated phases sequentially** to process phases 01→32 with per-phase checks/commits and an optional push only when explicitly approved by the user.
-
-## Verification commands
+## Validation standard
 
 Backend:
 
 ```bash
 cd backend
-pytest
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
 ```
 
 Frontend:
 
 ```bash
 cd frontend
-npm test -- --run
+source ~/.nvm/nvm.sh
+nvm use 20
+npm install --legacy-peer-deps --no-audit --fund=false
+npm test
 npm run build
 ```
+
+Optional Docker validation (when Docker surfaces change):
+
+```bash
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker compose config
+```
+
+## Safety invariants
+
+Never enable by default:
+
+- live trading
+- real broker execution
+- real IoT power actions
+- real social posting
+- secret export or secret embedding
+
+Never bypass:
+
+- risk guardian / kill switch / halt controls
+- content approval controls
+- RBAC and tenant boundaries
+- audit and policy gates
+
+Any external-impacting action must default to dry-run, read-only, mock, simulation, or explicit approval-gated mode.
+
+## Prompt locations
+
+Primary phase prompts:
+
+```text
+docs/prompt/phase01.prompt ... docs/prompt/phase32.prompt
+```
+
+Codex run prompts used in this repo:
+
+```text
+docs/prompt/codex-runs/*.prompt
+```
+
+Use `phase-runner.md` templates for both formats.

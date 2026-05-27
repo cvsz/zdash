@@ -23,21 +23,6 @@ REPORT=".codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
   echo '```'
   git status --short || true
   echo '```'
-  echo
-  echo "## Prompt inventory"
-  echo '```'
-  find docs/prompt -maxdepth 1 -type f | sort || true
-  echo '```'
-  echo
-  echo "## Backend inventory"
-  echo '```'
-  find backend/app -maxdepth 2 -type d | sort 2>/dev/null || true
-  echo '```'
-  echo
-  echo "## Frontend inventory"
-  echo '```'
-  find frontend/src -maxdepth 2 -type d | sort 2>/dev/null || true
-  echo '```'
 } > "$REPORT"
 
 run_step() {
@@ -58,56 +43,41 @@ run_step() {
 
 status=0
 
-printf '\n[0/6] Backend dependency repair\n'
-if [ -d "backend" ] && [ -f ".codex/cloud/repair-backend-deps.sh" ]; then
-  run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
-elif [ -d "backend" ]; then
-  echo "No repair helper found; continuing to backend tests." | tee -a "$REPORT"
-else
-  echo "No backend directory found." | tee -a "$REPORT"
-fi
-
-printf '\n[1/6] Backend tests\n'
 if [ -d "backend" ]; then
+  run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
   cd backend
-  if [ -d ".venv" ]; then
-    # shellcheck disable=SC1091
-    source .venv/bin/activate
-  fi
-  run_step "backend pytest" pytest || status=1
+  # shellcheck disable=SC1091
+  source .venv/bin/activate
+  run_step "backend lint" python -m ruff check app tests || status=1
+  run_step "backend tests" python -B -m pytest -q || status=1
   cd "$ROOT_DIR"
 else
   echo "No backend directory found." | tee -a "$REPORT"
 fi
 
-printf '\n[2/6] Frontend dependency install\n'
 if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
+  if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    # shellcheck disable=SC1091
+    source "$HOME/.nvm/nvm.sh"
+    run_step "node version switch" nvm use 20 || status=1
+  fi
   cd frontend
   run_step "frontend dependency install" npm install --legacy-peer-deps --no-audit --fund=false || status=1
-  cd "$ROOT_DIR"
-else
-  echo "No frontend package found." | tee -a "$REPORT"
-fi
-
-printf '\n[3/6] Frontend tests\n'
-if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
-  cd frontend
   run_step "frontend tests" npm test || status=1
-  cd "$ROOT_DIR"
-else
-  echo "No frontend package found." | tee -a "$REPORT"
-fi
-
-printf '\n[4/6] Frontend build\n'
-if [ -d "frontend" ] && [ -f "frontend/package.json" ]; then
-  cd frontend
   run_step "frontend build" npm run build || status=1
   cd "$ROOT_DIR"
 else
   echo "No frontend package found." | tee -a "$REPORT"
 fi
 
-printf '\n[5/6] Basic secret-pattern scan\n'
+if command -v docker >/dev/null 2>&1; then
+  run_step "docker backend build" docker build -f infra/docker/backend.Dockerfile . || status=1
+  run_step "docker frontend build" docker build -f infra/docker/frontend.Dockerfile . || status=1
+  run_step "docker compose config" docker compose config || status=1
+else
+  echo "Docker not available; skipping Docker validation." | tee -a "$REPORT"
+fi
+
 {
   echo
   echo "## Basic secret-pattern scan"
@@ -121,6 +91,5 @@ printf '\n[5/6] Basic secret-pattern scan\n'
   echo '```'
 } >> "$REPORT"
 
-printf '\n[6/6] Result\n'
-echo "Maintenance complete: $REPORT"
+printf '\nMaintenance complete: %s\n' "$REPORT"
 exit "$status"
