@@ -1,0 +1,235 @@
+You are continuing work on repository:
+
+  cvsz/zdash
+  Local path: ~/zdash
+  Branch: main
+
+Current baseline:
+- Phase 01–07 completed successfully.
+- Phase 07 validation passed:
+  Backend:
+    python -m ruff check app tests
+    python -B -m pytest -q
+  Frontend:
+    nvm use 20
+    npm test
+    npm run build
+- Frontend Phase 07 result:
+  23/23 tests passed
+  Vite + TypeScript production build passed
+- Docker validation was optional and not executed in Phase 07.
+
+Starting point:
+- Continue from commit:
+    69f2697 phase07: implement full dashboard integration
+
+Current ports (DO NOT CHANGE):
+- Backend FastAPI: 8005
+- Frontend Vite: 5173
+- Frontend preview: 4173
+- PostgreSQL: 5432
+- Redis: 6379
+- NGINX HTTP: 80
+
+Critical invariants:
+- NEVER change backend port from 8005.
+- NEVER use localhost:8000 anywhere.
+- Do not install Ubuntu apt npm.
+- Use nvm Node 20 only.
+- Do not commit .env or secrets.
+- Do not expose secrets to frontend.
+- Do not log:
+  - passwords
+  - JWTs
+  - API keys
+  - refresh tokens
+  - provider tokens
+- Do not weaken Guardian/Victor Hale risk controls.
+- Keep:
+  DRY_RUN=true
+  LIVE_TRADING_ACK=false
+  RISK_GUARDIAN_ENABLED=true
+  MT5_ENABLED=false
+  SOCIAL_DRY_RUN=true
+  SOCIAL_APPROVAL_REQUIRED=true
+  SOCIAL_AUTO_POST_ENABLED=false
+  IOT_DRY_RUN=true
+  IOT_REQUIRE_CONFIRMATION=true
+  ALLOW_STRATEGY_PROMOTION=false
+- PRODUCTION_SAFETY_LOCK=true must prevent unsafe production toggles.
+- Missing secrets must fail safely in production.
+- SQLite allowed for local/dev.
+- PostgreSQL required for production mode.
+- Admin APIs must never expose password hashes.
+- Metrics must never expose secrets/tokens/prompts.
+
+Canonical roster source:
+- docs/prompt/agent-roster.prompt
+
+Stable agent IDs and display names:
+- ceo      -> Alexander Prime | CEO / Visionary Leader
+- janie    -> Sophia Lane     | Coordinator / Manager
+- guardian -> Victor Hale     | Risk Manager
+- friday   -> Isla Grant      | Scheduler / Automation
+- joe      -> Nathan Cole     | Analyst / Developer
+- editor   -> Elena Voss      | Content Specialist
+- graphic  -> Julian Reed     | Design Specialist
+- social   -> Maya Quinn      | Social Media Specialist
+- trading  -> Damien Cross    | Trading Specialist
+
+Read before editing:
+1. AGENTS.md
+2. docs/prompt/agent-roster.prompt
+3. docs/prompt/phase08.prompt
+4. README.md
+5. backend/app/main.py
+6. backend/app/core/config.py
+7. backend/app/core/events.py
+8. backend/app/core/responses.py
+9. backend/app/api/*
+10. backend/app/tests/*
+11. frontend/src/App.tsx
+12. frontend/src/api/client.ts
+13. frontend/src/api/endpoints.ts
+14. frontend/src/api/types.ts
+15. frontend/src/pages/*
+16. frontend/src/tests/*
+17. docker-compose.yml
+18. infra/docker/*
+19. infra/nginx/*
+20. .github/workflows/*
+
+GOAL:
+Implement PHASE 08.1 ONLY:
+Database foundation + migrations + repository compatibility layer.
+
+DO NOT IMPLEMENT:
+- frontend auth UI
+- JWT enforcement
+- login pages
+- protected routes
+- RBAC enforcement
+- Prometheus
+- production metrics
+- Docker hardening
+- NGINX changes
+- backup scripts
+- CI expansion
+- global auth middleware
+
+PHASE 08.1 OBJECTIVES:
+1. Introduce SQLAlchemy 2.x foundation
+2. Add database session lifecycle
+3. Add SQLite local/dev support
+4. Add PostgreSQL production support
+5. Add Alembic migrations
+6. Add initial migration
+7. Add ORM models scaffold
+8. Add repository abstraction layer
+9. Preserve existing Phase 01–07 APIs and behavior
+10. Keep all tests/builds green
+
+STRICT COMPATIBILITY REQUIREMENTS:
+- Existing API routes must continue working unchanged.
+- Existing frontend dashboard must continue working unchanged.
+- Existing tests must continue passing unchanged.
+- Existing agent IDs must remain unchanged.
+- Existing response shapes must remain unchanged.
+- Existing in-memory behavior may remain temporarily behind repositories.
+- Use additive changes only.
+- No breaking API changes.
+
+IMPLEMENTATION STRATEGY:
+- Add database layer without forcing immediate ORM migration.
+- Create repository adapters/shims that preserve current service behavior.
+- Use dependency-injected DB session pattern.
+- SQLite default for dev/tests.
+- PostgreSQL configurable via env.
+- Alembic must support future migrations cleanly.
+- Models should include at minimum:
+  - users
+  - roles
+  - audit_logs
+  - sessions (optional scaffold)
+- Audit persistence may be scaffold-only in 08.1.
+- Do not yet enforce auth.
+
+RECOMMENDED BACKEND STRUCTURE:
+backend/app/db/
+  base.py
+  session.py
+  models/
+  repositories/
+  migrations/
+
+EXPECTED CONFIG ADDITIONS:
+- DATABASE_URL
+- DB_ECHO
+- DB_POOL_SIZE
+- DB_MAX_OVERFLOW
+
+SAFE DEFAULTS:
+- local/dev:
+    sqlite:///./zdash.db
+- production:
+    require explicit PostgreSQL DATABASE_URL
+
+PRODUCTION SAFETY:
+- Reject default JWT secrets in production mode.
+- Reject default admin passwords in production mode.
+- Fail safely when production secrets missing.
+
+DO NOT:
+- globally require database before compatibility layer exists
+- rewrite all services directly to ORM
+- force PostgreSQL locally
+- break tests
+- rename routes
+- rename API response fields
+- change frontend API assumptions
+
+VALIDATION REQUIRED AFTER IMPLEMENTATION:
+
+Backend:
+cd ~/zdash/backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Frontend:
+cd ~/zdash/frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+If Docker files change:
+cd ~/zdash
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker compose config
+
+GIT HYGIENE:
+- NEVER use git add .
+- Use targeted git adds only.
+- Do not include unrelated local changes.
+- Do not commit .env.
+- If GPG signing fails due to pinentry, report it and continue.
+
+EXPECTED DELIVERABLES:
+1. SQLAlchemy integration
+2. Alembic setup
+3. Initial migration
+4. DB session management
+5. Base ORM models scaffold
+6. Repository abstraction layer
+7. Config integration
+8. Minimal DB tests
+9. Zero regression in existing tests/builds
+
+At the end provide:
+- concise architecture summary
+- migration summary
+- files added/changed
+- validation results
+- remaining Phase 08.2 recommendations

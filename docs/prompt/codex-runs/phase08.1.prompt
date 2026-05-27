@@ -1,0 +1,58 @@
+Execute only PHASE 08.1.
+
+Goal:
+Add database foundation, SQLAlchemy models, sessions, repositories, and lightweight migrations while preserving all in-memory fallbacks.
+
+Create or update:
+backend/app/db/__init__.py
+backend/app/db/base.py
+backend/app/db/session.py
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/db/migrations.py
+backend/app/core/config.py
+.env.example
+backend/app/tests/test_database_models.py
+
+Requirements:
+- Use SQLAlchemy 2.x style.
+- Use UUID string primary keys.
+- Use created_at and updated_at timestamps.
+- Store JSON payloads using JSON-compatible columns.
+- Keep SQLite compatibility for local development.
+- Keep PostgreSQL compatibility for production.
+- Development may use sqlite:///./zdash.db.
+- Production should use PostgreSQL.
+- In-memory stores from previous phases may remain as fallback.
+- Database persistence should be preferred when enabled.
+- No destructive migration behavior.
+
+Models:
+- users
+- refresh_tokens
+- audit_logs
+- event_logs
+- scheduler_jobs
+- scheduler_runs
+- halt_state
+- backtest_results
+- optimization_results
+- content_items
+- content_pipeline_runs
+- iot_action_logs
+
+Migration functions:
+- run_migrations()
+- create_all()
+- check_database_connection()
+
+Do not require Alembic unless full config is added cleanly.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase08.1: add database foundation and migrations

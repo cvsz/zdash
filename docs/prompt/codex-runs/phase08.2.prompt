@@ -1,0 +1,96 @@
+Execute only PHASE 08.2.
+
+Goal:
+Add JWT authentication, refresh tokens, password hashing, RBAC, auth dependencies, and route protection without breaking dev-mode usability.
+
+Create or update:
+backend/app/auth/__init__.py
+backend/app/auth/models.py
+backend/app/auth/password.py
+backend/app/auth/jwt.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/auth/auth_service.py
+backend/app/api/auth.py
+backend/app/main.py
+backend/app/core/config.py
+backend/app/api/*.py where protection is needed
+backend/app/tests/test_auth_service.py
+backend/app/tests/test_auth_api.py
+backend/app/tests/test_rbac.py
+
+Auth endpoints:
+POST /api/auth/login
+POST /api/auth/refresh
+POST /api/auth/logout
+GET  /api/auth/me
+POST /api/auth/bootstrap-admin
+
+Roles:
+- admin
+- operator
+- analyst
+- viewer
+
+Permissions:
+admin:
+- all permissions
+
+operator:
+- read dashboard
+- run dry-run trading
+- manage scheduler
+- manage content approval
+- run backtests
+- control dry-run IoT
+- halt/resume risk system
+
+analyst:
+- read dashboard
+- run backtests
+- read logs
+- read risk
+- read trading signals
+
+viewer:
+- read dashboard only
+
+Public:
+- GET /health
+- POST /api/auth/login
+- POST /api/auth/refresh
+
+Authenticated:
+- GET /api/agents
+- GET /api/logs
+- dashboard read APIs
+
+Permission protected:
+- POST /api/risk/halt
+- POST /api/risk/resume
+- POST /api/scheduler/jobs
+- POST /api/scheduler/jobs/{id}/run
+- DELETE /api/scheduler/jobs/{id}
+- POST /api/iot/action
+- POST /api/iot/power-cycle
+- POST /api/content/approve
+- POST /api/content/post
+- POST /api/backtesting/results/{id}/promotion-check
+
+Rules:
+- Never return password hashes.
+- Never log passwords or tokens.
+- Bootstrap admin only if no users exist.
+- Bootstrap admin disabled in production unless explicitly allowed.
+- Dev mode may allow dashboard without auth if AUTH_ENABLED=false.
+- Production must reject default JWT_SECRET_KEY.
+- Production must reject default admin password.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase08.2: add auth jwt and rbac
