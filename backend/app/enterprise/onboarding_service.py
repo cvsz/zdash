@@ -1,5 +1,3 @@
-from typing import Any
-
 STEPS=['create organization','create workspace','invite team','verify risk guardian','run first dry-run scan','run first backtest','create first content item','review scheduler jobs','configure billing','review production safety check']
 _STATE: dict[tuple[str, str], list[str]] = {}
 def get_checklist(organization_id,workspace_id):
