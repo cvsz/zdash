@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 from typing import Any
 
-BUFFER: list[Any] = []
+from app.realtime.broadcaster import get_realtime_broadcaster
+from app.realtime.schemas import RealtimeEventEnvelope
 
 
-def push(e):
-    BUFFER.append(e)
-    del BUFFER[:-500]
+def push(event: dict[str, Any]) -> None:
+    envelope = RealtimeEventEnvelope.model_validate(event)
+    get_realtime_broadcaster().publish(envelope)
 
 
-def recent():
-    return BUFFER
+def recent(limit: int = 100) -> list[dict[str, Any]]:
+    return get_realtime_broadcaster().recent_events("events", limit=limit)

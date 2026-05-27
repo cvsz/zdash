@@ -7,6 +7,10 @@ from app.content.pipeline import reset_content_pipeline
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.risk.guardian_service import reset_guardian_service
+from app.realtime import (
+    reset_realtime_broadcaster,
+    reset_realtime_connection_manager,
+)
 from app.scheduler.friday_agent import reset_friday_agent
 from app.scheduler.scheduler_service import reset_scheduler_service
 
@@ -19,6 +23,8 @@ def reset_runtime_state() -> Generator[None, None, None]:
     reset_friday_agent()
     reset_scheduler_service()
     reset_content_pipeline()
+    reset_realtime_broadcaster()
+    reset_realtime_connection_manager()
     reset_registry()
     event_bus.clear()
     yield
@@ -29,4 +35,6 @@ def reset_runtime_state() -> Generator[None, None, None]:
     reset_friday_agent()
     reset_scheduler_service()
     reset_guardian_service()
+    reset_realtime_broadcaster()
+    reset_realtime_connection_manager()
     get_settings.cache_clear()

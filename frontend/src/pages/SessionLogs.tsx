@@ -5,8 +5,12 @@ import Badge from "../components/common/Badge";
 import Button from "../components/common/Button";
 import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/layout/PageHeader";
+import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
+import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
+import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { useLogs } from "../hooks/useLogs";
 import { usePolling } from "../hooks/usePolling";
+import { useRealtime } from "../realtime/useRealtime";
 import { formatDateTime } from "../utils/format";
 
 const categories = ["all", "system", "agent", "trading", "risk", "scheduler", "iot", "backtest", "content"];
@@ -21,6 +25,7 @@ function matchesCategory(log: EventLog, category: string): boolean {
 }
 
 export default function SessionLogs() {
+  const realtime = useRealtime({ maxEvents: 24 });
   const logsState = useLogs();
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedLog, setSelectedLog] = useState<EventLog | null>(null);
@@ -84,7 +89,21 @@ export default function SessionLogs() {
       <PageHeader
         title="Session Logs"
         subtitle="Event logs with category/source/type filters, payload inspection, and auto-refresh control."
-        actions={<Badge variant={autoRefresh ? "success" : "muted"}>{autoRefresh ? "AUTO REFRESH ON" : "AUTO REFRESH OFF"}</Badge>}
+        actions={
+          <>
+            <RealtimeStatusBadge connection={realtime.connection} compact />
+            <Badge variant={autoRefresh ? "success" : "muted"}>{autoRefresh ? "AUTO REFRESH ON" : "AUTO REFRESH OFF"}</Badge>
+          </>
+        }
+      />
+
+      <RealtimeConnectionBanner connection={realtime.connection} />
+
+      <RealtimeEventFeed
+        title="Live Websocket Feed"
+        events={realtime.events}
+        maxItems={10}
+        emptyMessage="No websocket activity yet."
       />
 
       <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">

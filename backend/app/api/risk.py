@@ -10,6 +10,7 @@ from app.auth.models import AuthSession
 from app.auth.dependencies import require_authenticated, require_permission
 from app.auth.rbac import Permission
 from app.core.responses import fail, ok
+from app.core.events import event_bus
 from app.db.session import get_db_session
 from app.observability.metrics import metrics_store
 from app.risk.guardian_service import get_guardian_service
@@ -93,6 +94,12 @@ def halt(
     except ValueError as exc:
         return fail("RISK_HALT_INVALID", str(exc))
     metrics_store.set_risk_halt_active(True)
+    event_bus.emit(
+        "risk.halt",
+        "RiskAPI",
+        "Manual risk halt activated",
+        {"reason": req.reason, "source": "manual"},
+    )
     _maybe_audit(
         session,
         AuditLogCreate(
@@ -120,6 +127,12 @@ def resume(
     except ValueError as exc:
         return fail("RISK_RESUME_INVALID", str(exc))
     metrics_store.set_risk_halt_active(False)
+    event_bus.emit(
+        "risk.resume",
+        "RiskAPI",
+        "Manual risk halt resumed",
+        {"reason": req.reason, "approved": req.approved},
+    )
     _maybe_audit(
         session,
         AuditLogCreate(

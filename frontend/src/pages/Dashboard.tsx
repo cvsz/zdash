@@ -4,8 +4,18 @@ import StatusCard from "../components/common/StatusCard";
 import SectionCard from "../components/common/SectionCard";
 import Badge from "../components/common/Badge";
 import PageHeader from "../components/layout/PageHeader";
+import LiveIndicator from "../components/realtime/LiveIndicator";
+import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
+import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
+import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import {
+  useContentRealtime,
+  useRealtime,
+  useRiskRealtime,
+  useSchedulerRealtime,
+} from "../realtime/useRealtime";
 import { useSystemStatus } from "../hooks/useSystemStatus";
 import { formatDateTime, formatPercent } from "../utils/format";
 import { getSeverityFromStatus } from "../utils/status";
@@ -25,6 +35,10 @@ function readNumber(value: unknown, fallback = 0): number {
 
 export default function Dashboard() {
   const { data } = useSystemStatus();
+  const realtime = useRealtime({ maxEvents: 20 });
+  const riskRealtime = useRiskRealtime({ maxEvents: 6 });
+  const schedulerRealtime = useSchedulerRealtime({ maxEvents: 6 });
+  const contentRealtime = useContentRealtime({ maxEvents: 6 });
   const backtestingStatus = useApi(getBacktestingStatus, []);
   const backtestResults = useApi(listBacktestResults, []);
   const logsState = useApi(getLogs, []);
@@ -64,7 +78,15 @@ export default function Dashboard() {
       <PageHeader
         title="Dashboard"
         subtitle="Live session overview with dry-run-safe defaults and guardrails enabled."
+        actions={
+          <>
+            <RealtimeStatusBadge connection={realtime.connection} compact />
+            <LiveIndicator connection={realtime.connection} label="Stream" />
+          </>
+        }
       />
+
+      <RealtimeConnectionBanner connection={realtime.connection} />
 
       {mockFallbackActive ? (
         <div className="rounded-2xl border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100">
@@ -148,6 +170,12 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
+        <RealtimeEventFeed
+          title="Realtime Activity Feed"
+          events={realtime.events}
+          emptyMessage="Waiting for live dashboard events."
+        />
+
         <SectionCard title="Recent Session Logs" subtitle="Latest events from system, agents, and module workflows.">
           {latestLogs.length === 0 ? (
             <p className="text-sm text-slate-400">No session logs available.</p>
@@ -169,6 +197,27 @@ export default function Dashboard() {
             </ul>
           )}
         </SectionCard>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        <RealtimeEventFeed
+          title="Risk Stream"
+          events={riskRealtime.events}
+          maxItems={4}
+          emptyMessage="No live risk alerts."
+        />
+        <RealtimeEventFeed
+          title="Scheduler Stream"
+          events={schedulerRealtime.events}
+          maxItems={4}
+          emptyMessage="No live scheduler activity."
+        />
+        <RealtimeEventFeed
+          title="Content Stream"
+          events={contentRealtime.events}
+          maxItems={4}
+          emptyMessage="No live content pipeline activity."
+        />
 
         <SectionCard title="Runtime Chain" subtitle="Canonical leadership and module ownership map.">
           <p className="text-sm text-slate-300">

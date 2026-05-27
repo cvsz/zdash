@@ -8,8 +8,13 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import DataTable from "../components/common/DataTable";
 import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
+import LiveIndicator from "../components/realtime/LiveIndicator";
+import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
+import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
+import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useRiskRealtime } from "../realtime/useRealtime";
 import { formatDateTime, formatPercent } from "../utils/format";
 
 function readBoolean(value: unknown, fallback = false): boolean {
@@ -25,6 +30,7 @@ function readNumber(value: unknown, fallback = 0): number {
 }
 
 export default function RiskPanel() {
+  const realtime = useRiskRealtime({ maxEvents: 14 });
   const riskStatus = useApi(getRiskStatus, []);
   const drawdownState = useApi(getDrawdown, []);
   const logsState = useApi(getLogs, []);
@@ -119,8 +125,16 @@ export default function RiskPanel() {
       <PageHeader
         title="Risk Panel"
         subtitle={`${AGENT_NAME_BY_ID.guardian} Guardian risk oversight, halt controls, and drawdown monitoring.`}
-        actions={<Badge variant={emergencyState ? "danger" : "success"}>{emergencyState ? "EMERGENCY" : "NORMAL"}</Badge>}
+        actions={
+          <>
+            <RealtimeStatusBadge connection={realtime.connection} compact />
+            <LiveIndicator connection={realtime.connection} label="Risk WS" />
+            <Badge variant={emergencyState ? "danger" : "success"}>{emergencyState ? "EMERGENCY" : "NORMAL"}</Badge>
+          </>
+        }
       />
+
+      <RealtimeConnectionBanner connection={realtime.connection} />
 
       {emergencyState ? (
         <div className="rounded-lg border border-rose-500/60 bg-rose-500/20 px-4 py-3 text-sm font-semibold text-rose-100">
@@ -228,6 +242,13 @@ export default function RiskPanel() {
           />
         </div>
       </section>
+
+      <RealtimeEventFeed
+        title="Live Risk Stream"
+        events={realtime.events}
+        maxItems={10}
+        emptyMessage="No live risk websocket events yet."
+      />
 
       <ConfirmDialog
         open={resumeConfirmOpen}

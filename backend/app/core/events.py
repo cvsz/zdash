@@ -123,6 +123,12 @@ class EventBus:
             metrics_store.increment_events()
         except Exception:  # pragma: no cover
             pass
+        try:
+            from app.realtime import publish_event
+
+            publish_event(event)
+        except Exception:  # pragma: no cover
+            pass
         return event
 
     def list_events(self, limit: int = 100) -> list[Event]:

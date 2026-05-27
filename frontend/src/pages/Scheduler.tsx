@@ -16,8 +16,13 @@ import Button from "../components/common/Button";
 import DataTable from "../components/common/DataTable";
 import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
+import LiveIndicator from "../components/realtime/LiveIndicator";
+import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
+import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
+import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useSchedulerRealtime } from "../realtime/useRealtime";
 import { formatDateTime, formatDurationMs } from "../utils/format";
 
 const jobTypes = [
@@ -31,6 +36,7 @@ const jobTypes = [
 ] as const;
 
 export default function Scheduler() {
+  const realtime = useSchedulerRealtime({ maxEvents: 16 });
   const schedulerStatus = useApi(getSchedulerStatus, []);
 
   const [jobs, setJobs] = useState<ScheduledJob[]>([]);
@@ -137,11 +143,17 @@ export default function Scheduler() {
         title="Scheduler"
         subtitle={`${AGENT_NAME_BY_ID.friday} scheduler management, job safety labels, and run controls.`}
         actions={
-          <Badge variant={schedulerRunning ? "success" : "warning"}>
-            {schedulerRunning ? "RUNNING" : "IDLE"}
-          </Badge>
+          <>
+            <RealtimeStatusBadge connection={realtime.connection} compact />
+            <LiveIndicator connection={realtime.connection} label="Scheduler WS" />
+            <Badge variant={schedulerRunning ? "success" : "warning"}>
+              {schedulerRunning ? "RUNNING" : "IDLE"}
+            </Badge>
+          </>
         }
       />
+
+      <RealtimeConnectionBanner connection={realtime.connection} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Scheduler Enabled" value={schedulerEnabled ? "YES" : "NO"} />
@@ -380,6 +392,13 @@ export default function Scheduler() {
           />
         </div>
       </section>
+
+      <RealtimeEventFeed
+        title="Live Scheduler Stream"
+        events={realtime.events}
+        maxItems={10}
+        emptyMessage="No live scheduler websocket events yet."
+      />
     </div>
   );
 }

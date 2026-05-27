@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -30,6 +31,7 @@ from app.api import (
     partner,
     mobile,
     launch,
+    realtime,
     predictive_sre,
     digital_twin,
     macro_simulation,
@@ -46,6 +48,7 @@ from app.core.logging import configure_logging
 from app.core.responses import fail
 from app.db.migrations import run_migrations
 from app.observability.middleware import install_observability_middleware
+from app.realtime import bind_realtime_loop, get_realtime_heartbeat, stop_realtime_heartbeat
 from app.scheduler.scheduler_service import get_scheduler_service
 
 settings = get_settings()
@@ -55,6 +58,9 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    bind_realtime_loop(asyncio.get_running_loop())
+    heartbeat = get_realtime_heartbeat()
+    heartbeat.start()
     run_migrations()
     bootstrap_agents()
     scheduler_service = get_scheduler_service()
@@ -74,6 +80,7 @@ async def lifespan(_: FastAPI):
     )
     yield
     scheduler_service.stop()
+    await stop_realtime_heartbeat()
 
 
 app = FastAPI(title="Janie Server", version="2.0.0-phase8.3", lifespan=lifespan)
@@ -101,6 +108,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 app.include_router(health.router)
 app.include_router(agents.router)
 app.include_router(logs.router)
+app.include_router(realtime.router)
 app.include_router(risk.router)
 app.include_router(trading.router)
 

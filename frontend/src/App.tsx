@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AppLayout from "./components/layout/AppLayout";
 import { AuthProvider } from "./hooks/useAuth";
 import Admin from "./pages/Admin";
+import Alerts from "./pages/Alerts";
 import Backtests from "./pages/Backtests";
 import ContentPipeline from "./pages/ContentPipeline";
 import Dashboard from "./pages/Dashboard";
@@ -27,6 +28,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/team" element={<TeamRoster />} />
           <Route path="/xau" element={<XauDashboard />} />
           <Route path="/risk" element={<RiskPanel />} />
+          <Route path="/alerts" element={<Alerts />} />
           <Route path="/scheduler" element={<Scheduler />} />
           <Route path="/backtests" element={<Backtests />} />
           <Route path="/content" element={<ContentPipeline />} />

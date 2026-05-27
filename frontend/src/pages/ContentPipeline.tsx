@@ -16,8 +16,13 @@ import Badge from "../components/common/Badge";
 import Button from "../components/common/Button";
 import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
+import LiveIndicator from "../components/realtime/LiveIndicator";
+import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
+import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
+import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useContentRealtime } from "../realtime/useRealtime";
 import { canPublishContent } from "../utils/safety";
 
 const boardStatuses = [
@@ -32,6 +37,7 @@ const boardStatuses = [
 ] as const;
 
 export default function ContentPipeline() {
+  const realtime = useContentRealtime({ maxEvents: 18 });
   const contentStatus = useApi(getContentStatus, []);
   const itemsState = useApi(listContentItems, []);
 
@@ -131,8 +137,16 @@ export default function ContentPipeline() {
       <PageHeader
         title="Content Pipeline"
         subtitle={`${AGENT_NAME_BY_ID.editor}, ${AGENT_NAME_BY_ID.graphic}, and ${AGENT_NAME_BY_ID.social} workflow control.`}
-        actions={<Badge variant="warning">APPROVAL GATED</Badge>}
+        actions={
+          <>
+            <RealtimeStatusBadge connection={realtime.connection} compact />
+            <LiveIndicator connection={realtime.connection} label="Content WS" />
+            <Badge variant="warning">APPROVAL GATED</Badge>
+          </>
+        }
       />
+
+      <RealtimeConnectionBanner connection={realtime.connection} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Pipeline Enabled" value={contentStatus.data?.enabled ? "YES" : "NO"} />
@@ -322,6 +336,13 @@ export default function ContentPipeline() {
 
       {message ? <p className="text-sm text-emerald-200">{message}</p> : null}
       {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+
+      <RealtimeEventFeed
+        title="Live Content Stream"
+        events={realtime.events}
+        maxItems={10}
+        emptyMessage="No live content websocket events yet."
+      />
 
       <div className="rounded-lg border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
         Publishing remains approval-required and dry-run by default. Mock publishing does not create real social posts.
