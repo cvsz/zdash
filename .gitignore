@@ -16,3 +16,6 @@ zdash.db
 .DS_Store
 log.txt
 backups.env
+
+# Codex runtime artifacts
+.codex/reports/
