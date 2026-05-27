@@ -141,3 +141,6 @@ volumes:
   pgdata_prod:
   redisdata_prod:
   prometheus_data:
+
+# Phase 7.10 collaboration default
+# REDIS_COLLAB_ENABLED=false
