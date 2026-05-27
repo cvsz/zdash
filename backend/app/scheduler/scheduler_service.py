@@ -68,6 +68,9 @@ class SchedulerService:
     def get_status(self) -> dict:
         jobs = self.store.list_jobs()
         has_backtest_job = any(job.job_type.value == "backtest" for job in jobs)
+        has_content_pipeline_job = any(
+            job.job_type.value == "content_pipeline" for job in jobs
+        )
         return {
             "enabled": self.settings.scheduler_enabled,
             "running": self.scheduler.running,
@@ -76,6 +79,7 @@ class SchedulerService:
             "job_count": len(jobs),
             "run_count": len(self.store.list_runs()),
             "backtest_job_registered": has_backtest_job,
+            "content_pipeline_job_registered": has_content_pipeline_job,
         }
 
     def register_default_jobs(self) -> list[ScheduledJob]:

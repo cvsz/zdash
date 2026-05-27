@@ -491,6 +491,106 @@ curl http://localhost:8005/api/backtesting/results/RESULT_ID/report
 
 ---
 
+## Phase 06 Content Pipeline
+
+Phase 06 adds the approval-gated content workflow coordinated by:
+
+- `editor` (`Elena Voss`) for draft/edit/policy checks
+- `graphic` (`Julian Reed`) for graphic prompts and mock image generation
+- `social` (`Maya Quinn`) for scheduling/approval/dry-run publishing
+- `friday` (`Isla Grant`) scheduler job `content_pipeline` integration via `ContentPipeline.run_full_pipeline()`
+
+Pipeline flow:
+
+1. create draft
+2. edit content
+3. policy check
+4. graphic prompt
+5. mock graphic generation
+6. stop and wait for manual approval/publish
+
+Safety controls:
+
+- `SOCIAL_DRY_RUN=true` by default
+- `SOCIAL_APPROVAL_REQUIRED=true` by default
+- `SOCIAL_AUTO_POST_ENABLED=false` by default
+- policy failure blocks approval/publish
+- mock adapters are used by default (no real social/image API calls)
+- trading/strategy/backtesting posts must include educational/simulation disclaimers
+
+API examples (port **8005**):
+
+```bash
+curl http://localhost:8005/api/content/status
+```
+
+```bash
+curl -X POST http://localhost:8005/api/content/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "zDash Strategy Lab backtesting summary",
+    "content_type": "educational",
+    "brand": "zDash",
+    "language": "en",
+    "tone": "professional",
+    "platforms": ["x", "linkedin"],
+    "context": {
+      "disclaimer": "Backtest results are not guaranteed future performance."
+    }
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8005/api/content/generate-graphic \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "style": "clean futuristic dashboard visual",
+    "aspect_ratio": "16:9",
+    "instructions": "Use zDash product style"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8005/api/content/approve \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "approved_by": "operator",
+    "notes": "Reviewed and approved"
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8005/api/content/post \
+  -H "Content-Type: application/json" \
+  -d '{
+    "content_id": "CONTENT_ID",
+    "platforms": ["x", "linkedin"],
+    "confirmation": false
+  }'
+```
+
+```bash
+curl -X POST http://localhost:8005/api/content/pipeline/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "zDash weekly system update",
+    "content_type": "announcement",
+    "brand": "zDash",
+    "language": "en",
+    "tone": "professional",
+    "platforms": ["x", "linkedin"],
+    "context": {
+      "source": "manual",
+      "approval_required": true,
+      "dry_run": true
+    }
+  }'
+```
+
+---
+
 ## Docker
 
 Dockerfiles:
@@ -681,7 +781,10 @@ LIVE_TRADING_ACK=false
 RISK_GUARDIAN_ENABLED=true
 MT5_ENABLED=false
 SOCIAL_DRY_RUN=true
+SOCIAL_APPROVAL_REQUIRED=true
 SOCIAL_AUTO_POST_ENABLED=false
+CONTENT_PIPELINE_ENABLED=true
+IMAGE_GENERATION_PROVIDER=mock
 IOT_DRY_RUN=true
 IOT_REQUIRE_CONFIRMATION=true
 ALLOW_STRATEGY_PROMOTION=false

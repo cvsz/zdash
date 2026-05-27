@@ -134,6 +134,19 @@ class Settings(BaseSettings):
         default="x,tiktok,facebook,instagram,linkedin", alias="SOCIAL_DEFAULT_PLATFORMS"
     )
     social_x_api_key: str = Field(default="", alias="SOCIAL_X_API_KEY")
+    social_x_api_secret: str = Field(default="", alias="SOCIAL_X_API_SECRET")
+    social_tiktok_access_token: str = Field(
+        default="", alias="SOCIAL_TIKTOK_ACCESS_TOKEN"
+    )
+    social_facebook_access_token: str = Field(
+        default="", alias="SOCIAL_FACEBOOK_ACCESS_TOKEN"
+    )
+    social_instagram_access_token: str = Field(
+        default="", alias="SOCIAL_INSTAGRAM_ACCESS_TOKEN"
+    )
+    social_linkedin_access_token: str = Field(
+        default="", alias="SOCIAL_LINKEDIN_ACCESS_TOKEN"
+    )
 
     iot_enabled: bool = Field(default=True, alias="IOT_ENABLED")
     iot_dry_run: bool = Field(default=True, alias="IOT_DRY_RUN")
@@ -372,6 +385,24 @@ def get_settings() -> Settings:
         "sharpe_like_score",
     }:
         settings.optimizer_sort_metric = "profit_factor"
+
+    # Content pipeline safety defaults.
+    if not settings.content_store.strip():
+        settings.content_store = "in_memory"
+    if settings.content_store not in {"in_memory"}:
+        settings.content_store = "in_memory"
+    if not settings.content_default_brand.strip():
+        settings.content_default_brand = "zDash"
+    if not settings.content_default_language.strip():
+        settings.content_default_language = "en"
+    if not settings.content_default_tone.strip():
+        settings.content_default_tone = "professional"
+    if not settings.image_generation_provider.strip():
+        settings.image_generation_provider = "mock"
+    if not settings.social_provider.strip():
+        settings.social_provider = "mock"
+    if not settings.social_default_platforms.strip():
+        settings.social_default_platforms = "x,tiktok,facebook,instagram,linkedin"
 
     ordered = sorted(
         [

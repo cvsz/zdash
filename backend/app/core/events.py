@@ -34,6 +34,51 @@ JOE_EVENT_TYPES = (
     "joe.command.failed",
 )
 
+CONTENT_EVENT_TYPES = (
+    "content.draft.created",
+    "content.edited",
+    "content.variant.generated",
+    "content.policy.checked",
+    "content.policy.failed",
+    "content.graphic.requested",
+    "content.graphic.prompt.created",
+    "content.graphic.generated",
+    "content.graphic.failed",
+    "content.scheduled",
+    "content.approved",
+    "content.rejected",
+    "content.publish.requested",
+    "content.publish.simulated",
+    "content.published",
+    "content.publish.blocked",
+    "content.publish.failed",
+)
+
+CONTENT_PIPELINE_EVENT_TYPES = (
+    "content.pipeline.started",
+    "content.pipeline.step.completed",
+    "content.pipeline.completed",
+    "content.pipeline.failed",
+)
+
+EDITOR_EVENT_TYPES = (
+    "editor.command.received",
+    "editor.command.completed",
+    "editor.command.failed",
+)
+
+GRAPHIC_EVENT_TYPES = (
+    "graphic.command.received",
+    "graphic.command.completed",
+    "graphic.command.failed",
+)
+
+SOCIAL_EVENT_TYPES = (
+    "social.command.received",
+    "social.command.completed",
+    "social.command.failed",
+)
+
 
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))

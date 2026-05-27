@@ -99,6 +99,9 @@ class AgentRegistry:
     def list(self) -> list[BaseAgent]:
         return list(self._agents.values())
 
+    def clear(self) -> None:
+        self._agents.clear()
+
     def send_message(self, request: MessageRequest) -> dict[str, Any]:
         from_agent = self.get(request.from_agent)
         to_agent = self.get(request.to_agent)
@@ -176,6 +179,7 @@ def bootstrap_agents() -> None:
     ):
         return
 
+    settings = get_settings()
     ceo = registry.get("ceo") or CEOAgent()
     janie = registry.get("janie") or JanieAgent(ai_adapter=build_default_ai_adapter())
 
@@ -188,6 +192,13 @@ def bootstrap_agents() -> None:
     editor = registry.get("editor") or EditorAgent()
     graphic = registry.get("graphic") or GraphicAgent()
     social = registry.get("social") or SocialAgent()
+
+    if not settings.editor_agent_enabled:
+        editor.status = "disabled"
+    if not settings.graphic_agent_enabled:
+        graphic.status = "disabled"
+    if not settings.social_agent_enabled:
+        social.status = "disabled"
 
     registry.register(ceo)
     registry.register(janie)
@@ -215,5 +226,13 @@ def bootstrap_agents() -> None:
             ],
             "canonical_roster": CANONICAL_AGENT_ROSTER,
             "joe_role": joe.role,
+            "content_pipeline_enabled": settings.content_pipeline_enabled,
+            "editor_agent_enabled": settings.editor_agent_enabled,
+            "graphic_agent_enabled": settings.graphic_agent_enabled,
+            "social_agent_enabled": settings.social_agent_enabled,
         },
     )
+
+
+def reset_registry() -> None:
+    registry.clear()

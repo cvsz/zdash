@@ -65,6 +65,13 @@ class ContentItem(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+    @field_validator("title", "brand", "language", "tone", "topic")
+    @classmethod
+    def _required_string_fields(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("content string fields must not be empty")
+        return value.strip()
+
 
 class CreateContentRequest(BaseModel):
     topic: str
@@ -98,6 +105,13 @@ class EditContentRequest(BaseModel):
     tone: str | None = None
     language: str | None = None
 
+    @field_validator("content_id")
+    @classmethod
+    def _content_id_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("content_id must not be empty")
+        return value.strip()
+
 
 class GraphicRequest(BaseModel):
     content_id: str
@@ -105,11 +119,25 @@ class GraphicRequest(BaseModel):
     aspect_ratio: str = "16:9"
     instructions: str | None = None
 
+    @field_validator("content_id")
+    @classmethod
+    def _graphic_content_id_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("content_id must not be empty")
+        return value.strip()
+
 
 class ScheduleContentRequest(BaseModel):
     content_id: str
     scheduled_at: datetime
     platforms: list[ContentPlatform] | None = None
+
+    @field_validator("content_id")
+    @classmethod
+    def _schedule_content_id_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("content_id must not be empty")
+        return value.strip()
 
 
 class ApproveContentRequest(BaseModel):
@@ -117,11 +145,25 @@ class ApproveContentRequest(BaseModel):
     approved_by: str = "operator"
     notes: str | None = None
 
+    @field_validator("content_id", "approved_by")
+    @classmethod
+    def _approve_required_fields(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("approval fields must not be empty")
+        return value.strip()
+
 
 class PublishContentRequest(BaseModel):
     content_id: str
     platforms: list[ContentPlatform] | None = None
     confirmation: bool = False
+
+    @field_validator("content_id")
+    @classmethod
+    def _publish_content_id_not_empty(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("content_id must not be empty")
+        return value.strip()
 
 
 class SocialPostResult(BaseModel):
@@ -144,3 +186,13 @@ class PipelineRunResult(BaseModel):
     started_at: datetime
     finished_at: datetime
     duration_ms: int
+
+
+class ContentLogEntry(BaseModel):
+    id: str
+    content_id: str
+    event_type: str
+    source: str
+    message: str
+    payload: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

@@ -173,6 +173,26 @@ def default_jobs():
             enabled=True,
         ),
         CreateJobRequest(
+            name="content_pipeline",
+            job_type=JobType.content_pipeline,
+            schedule_type=ScheduleType.interval,
+            interval_seconds=3600,
+            payload={
+                "topic": "zDash weekly system update",
+                "content_type": "announcement",
+                "brand": "zDash",
+                "language": "en",
+                "tone": "professional",
+                "platforms": ["x", "linkedin"],
+                "context": {
+                    "source": "scheduler",
+                    "approval_required": True,
+                    "dry_run": True,
+                },
+            },
+            enabled=True,
+        ),
+        CreateJobRequest(
             name="iot_power_cycle",
             job_type=JobType.iot_power_cycle,
             schedule_type=ScheduleType.manual,
@@ -297,6 +317,53 @@ def run_scheduled_job(job):
             "max_drawdown_percent": result.metrics.max_drawdown_percent,
             "promotion_enabled": settings.allow_strategy_promotion,
             "promotion_auto_run": False,
+        }
+
+    elif job_type == "content_pipeline":
+        from app.content.models import CreateContentRequest
+        from app.content.pipeline import get_content_pipeline
+        from app.core.config import get_settings
+
+        settings = get_settings()
+        request_payload = {
+            "topic": payload.get("topic", "zDash weekly system update"),
+            "content_type": payload.get("content_type", "announcement"),
+            "brand": payload.get("brand", settings.content_default_brand),
+            "language": payload.get("language", settings.content_default_language),
+            "tone": payload.get("tone", settings.content_default_tone),
+            "platforms": payload.get("platforms", ["x", "linkedin"]),
+            "context": payload.get(
+                "context",
+                {
+                    "source": "scheduler",
+                    "approval_required": settings.social_approval_required,
+                    "dry_run": settings.social_dry_run,
+                },
+            ),
+        }
+        pipeline_result = get_content_pipeline().run_full_pipeline(
+            CreateContentRequest.model_validate(request_payload)
+        )
+        ok = pipeline_result.ok
+        status = "completed" if ok else "failed"
+        message = (
+            "content pipeline job completed"
+            if ok
+            else f"content pipeline job failed: {pipeline_result.message}"
+        )
+        output = {
+            "ok": pipeline_result.ok,
+            "job_id": str(job_id),
+            "job_type": job_type,
+            "mode": "dry_run" if settings.social_dry_run else "manual_publish_required",
+            "pipeline_run_id": pipeline_result.id,
+            "content_id": pipeline_result.content_id,
+            "content_status": pipeline_result.status.value,
+            "steps": pipeline_result.steps,
+            "duration_ms": pipeline_result.duration_ms,
+            "auto_approved": False,
+            "auto_published": False,
+            "approval_required": settings.social_approval_required,
         }
 
     elif job_type == "iot_power_cycle":

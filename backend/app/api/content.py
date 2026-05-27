@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from fastapi import APIRouter
 
 from app.content.models import (
@@ -9,94 +11,116 @@ from app.content.models import (
     PublishContentRequest,
     ScheduleContentRequest,
 )
-from app.content.pipeline import content_pipeline
+from app.content.pipeline import get_content_pipeline
 from app.content.reports import ContentReportBuilder
 from app.core.responses import fail, ok
 
 router = APIRouter(prefix="/api/content", tags=["content"])
+reports = ContentReportBuilder()
+
+
+def _pipeline():
+    return get_content_pipeline()
 
 
 @router.get("/status")
 def status():
-    s = content_pipeline.social.settings
-    return ok(
-        {
-            "enabled": True,
-            "store_type": "in_memory",
-            "social_dry_run": s.social_dry_run,
-            "approval_required": s.social_approval_required,
-            "auto_post_enabled": s.social_auto_post_enabled,
-            "item_count": len(content_pipeline.store.list_items()),
-            "pipeline_run_count": len(content_pipeline.store.list_pipeline_runs()),
-        }
-    )
+    return ok(_pipeline().get_status())
 
 
 @router.post("/create")
 def create(req: CreateContentRequest):
-    return ok(content_pipeline.editor.create_draft(req).model_dump())
+    try:
+        return ok({"item": _pipeline().editor.create_draft(req).model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_CREATE_FAILED", str(exc))
 
 
 @router.post("/edit")
 def edit(req: EditContentRequest):
-    return ok(content_pipeline.editor.edit_content(req).model_dump())
+    try:
+        return ok({"item": _pipeline().editor.edit_content(req).model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_EDIT_FAILED", str(exc))
 
 
 @router.post("/generate-graphic")
-def gen(req: GraphicRequest):
-    return ok(content_pipeline.graphic.generate_graphic(req).model_dump())
+def generate_graphic(req: GraphicRequest):
+    try:
+        item = _pipeline().graphic.generate_graphic(req)
+        return ok({"item": item.model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_GRAPHIC_FAILED", str(exc))
 
 
 @router.post("/schedule")
 def schedule(req: ScheduleContentRequest):
-    return ok(content_pipeline.social.schedule_content(req).model_dump())
+    try:
+        item = _pipeline().social.schedule_content(req)
+        return ok({"item": item.model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_SCHEDULE_FAILED", str(exc))
 
 
 @router.post("/approve")
 def approve(req: ApproveContentRequest):
     try:
-        return ok(content_pipeline.social.approve_content(req).model_dump())
-    except ValueError as exc:
-        return fail("APPROVAL_BLOCKED", str(exc))
+        item = _pipeline().social.approve_content(req)
+        return ok({"item": item.model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_APPROVAL_FAILED", str(exc))
 
 
 @router.post("/post")
 def post(req: PublishContentRequest):
     try:
-        return ok(
-            {"items": [r.model_dump() for r in content_pipeline.social.publish_content(req)]}
-        )
-    except ValueError as exc:
-        return fail("PUBLISH_BLOCKED", str(exc))
+        results = _pipeline().social.publish_content(req)
+        return ok({"results": [result.model_dump(mode="json") for result in results]})
+    except Exception as exc:
+        return fail("CONTENT_PUBLISH_FAILED", str(exc))
 
 
 @router.post("/pipeline/run")
 def run(req: CreateContentRequest):
-    return ok(content_pipeline.run_full_pipeline(req).model_dump())
+    try:
+        result = _pipeline().run_full_pipeline(req)
+        return ok({"run": result.model_dump(mode="json")})
+    except Exception as exc:
+        return fail("CONTENT_PIPELINE_FAILED", str(exc))
 
 
 @router.get("/items")
 def items(status: ContentStatus | None = None):
-    return ok({"items": [i.model_dump() for i in content_pipeline.store.list_items(status)]})
+    items_payload = [i.model_dump(mode="json") for i in _pipeline().store.list_items(status)]
+    return ok({"items": items_payload})
 
 
 @router.get("/items/{content_id}")
 def item(content_id: str):
-    i = content_pipeline.store.get_item(content_id)
-    return ok(i.model_dump()) if i else fail("ITEM_NOT_FOUND", "Content item not found")
+    found_item = _pipeline().store.get_item(content_id)
+    if found_item is None:
+        return fail("ITEM_NOT_FOUND", "Content item not found")
+    return ok({"item": found_item.model_dump(mode="json")})
 
 
 @router.get("/runs")
 def runs():
-    return ok({"runs": [r.model_dump() for r in content_pipeline.store.list_pipeline_runs()]})
+    run_items = [r.model_dump(mode="json") for r in _pipeline().store.list_pipeline_runs()]
+    return ok({"runs": run_items})
 
 
 @router.get("/items/{content_id}/report")
 def report(content_id: str):
-    i = content_pipeline.store.get_item(content_id)
-    if not i:
+    found_item = _pipeline().store.get_item(content_id)
+    if found_item is None:
         return fail("ITEM_NOT_FOUND", "Content item not found")
-    rb = ContentReportBuilder()
     return ok(
-        {"markdown": rb.build_markdown_report(i), "summary": rb.build_item_summary(i)}
+        {
+            "summary": reports.build_item_summary(found_item),
+            "markdown": reports.build_markdown_report(found_item),
+            "logs": [
+                entry.model_dump(mode="json")
+                for entry in _pipeline().store.list_logs(content_id=content_id)
+            ],
+        }
     )

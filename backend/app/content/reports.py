@@ -10,6 +10,7 @@ class ContentReportBuilder:
             "platforms": [platform.value for platform in item.platforms],
             "status": item.status.value,
             "policy_passed": item.policy_passed,
+            "policy_notes": item.policy_notes,
         }
 
     def build_pipeline_summary(self, result: PipelineRunResult) -> dict:
@@ -41,6 +42,7 @@ class ContentReportBuilder:
                 f"- Graphic Prompt: {item.graphic_prompt}",
                 f"- Graphic Asset URL: {item.graphic_asset_url}",
                 f"- Scheduled At: {item.scheduled_at}",
+                f"- Approved At: {item.approved_at}",
                 f"- Posted At: {item.posted_at}",
                 f"- Safety Notes: {item.policy_notes}",
                 "",

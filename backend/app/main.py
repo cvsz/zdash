@@ -65,6 +65,9 @@ async def lifespan(_: FastAPI):
             "backtesting_enabled": settings.backtesting_enabled,
             "primary_strategy_candidate": settings.primary_strategy,
             "strategy_promotion_enabled": settings.allow_strategy_promotion,
+            "content_pipeline_enabled": settings.content_pipeline_enabled,
+            "social_dry_run": settings.social_dry_run,
+            "social_approval_required": settings.social_approval_required,
         },
     )
     yield
