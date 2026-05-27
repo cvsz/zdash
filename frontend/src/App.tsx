@@ -21,6 +21,7 @@ import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
 import EventTimeline from "./pages/EventTimeline";
+import IncidentCenter from "./pages/IncidentCenter";
 import { RealtimeProvider } from "./realtime/context";
 
 function ProtectedDashboardRoutes() {
@@ -33,6 +34,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/xau" element={<XauDashboard />} />
           <Route path="/risk" element={<RiskPanel />} />
           <Route path="/alerts" element={<Alerts />} />
+          <Route path="/incidents" element={<IncidentCenter />} />
           <Route path="/scheduler" element={<Scheduler />} />
           <Route path="/backtests" element={<Backtests />} />
           <Route path="/content" element={<ContentPipeline />} />
