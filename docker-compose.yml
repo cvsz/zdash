@@ -1,25 +1,85 @@
 services:
-  # Local development only. Do not use these credentials or public port mappings in production.
   backend:
     build:
       context: .
       dockerfile: infra/docker/backend.Dockerfile
-    env_file: .env.example
-    ports: ["8005:8005"]
-    depends_on: [postgres, redis]
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      BACKEND_HOST: 0.0.0.0
+      BACKEND_PORT: 8005
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./zdash.db}
+      DB_ECHO: ${DB_ECHO:-false}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-10}
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      DRY_RUN: ${DRY_RUN:-true}
+      LIVE_TRADING_ACK: ${LIVE_TRADING_ACK:-false}
+      MT5_ENABLED: ${MT5_ENABLED:-false}
+      RISK_GUARDIAN_ENABLED: ${RISK_GUARDIAN_ENABLED:-true}
+      SOCIAL_DRY_RUN: ${SOCIAL_DRY_RUN:-true}
+      SOCIAL_APPROVAL_REQUIRED: ${SOCIAL_APPROVAL_REQUIRED:-true}
+      SOCIAL_AUTO_POST_ENABLED: ${SOCIAL_AUTO_POST_ENABLED:-false}
+      IOT_DRY_RUN: ${IOT_DRY_RUN:-true}
+      IOT_REQUIRE_CONFIRMATION: ${IOT_REQUIRE_CONFIRMATION:-true}
+      ALLOW_STRATEGY_PROMOTION: ${ALLOW_STRATEGY_PROMOTION:-false}
+      PRODUCTION_SAFETY_LOCK: ${PRODUCTION_SAFETY_LOCK:-true}
+    ports:
+      - "8005:8005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+
   frontend:
     build:
       context: .
       dockerfile: infra/docker/frontend.Dockerfile
-    ports: ["5173:80"]
-  postgres:
-    image: postgres:16
     environment:
-      POSTGRES_USER: zdash
-      # Local development only; replace with secrets-managed credentials outside local use.
-      POSTGRES_PASSWORD: change-me
-      POSTGRES_DB: zdash
-    ports: ["5432:5432"]
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8005}
+      VITE_ENABLE_MOCK_FALLBACK: ${VITE_ENABLE_MOCK_FALLBACK:-true}
+      VITE_AUTH_ENABLED: ${VITE_AUTH_ENABLED:-false}
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-zdash}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-zdash}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zdash} -d ${POSTGRES_DB:-zdash}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   redis:
-    image: redis:7
-    ports: ["6379:6379"]
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:

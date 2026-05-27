@@ -1,16 +1,143 @@
 services:
   nginx:
-    build: { context: ., dockerfile: infra/docker/nginx.Dockerfile }
-    ports: ["80:80"]
-    depends_on: [backend, frontend]
+    build:
+      context: .
+      dockerfile: infra/docker/nginx.Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - zdash_net
+
   backend:
-    build: { context: ., dockerfile: infra/docker/backend.Dockerfile }
+    build:
+      context: .
+      dockerfile: infra/docker/backend.Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      BACKEND_HOST: 0.0.0.0
+      BACKEND_PORT: 8005
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://zdash:change-me@postgres:5432/zdash}
+      DB_ECHO: ${DB_ECHO:-false}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-5}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-10}
+      AUTH_ENABLED: ${AUTH_ENABLED:-true}
+      PRODUCTION_SAFETY_LOCK: ${PRODUCTION_SAFETY_LOCK:-true}
+      PRODUCTION_ALLOW_LIVE_ACTIONS: ${PRODUCTION_ALLOW_LIVE_ACTIONS:-false}
+      DRY_RUN: ${DRY_RUN:-true}
+      LIVE_TRADING_ACK: ${LIVE_TRADING_ACK:-false}
+      RISK_GUARDIAN_ENABLED: ${RISK_GUARDIAN_ENABLED:-true}
+      MT5_ENABLED: ${MT5_ENABLED:-false}
+      SOCIAL_DRY_RUN: ${SOCIAL_DRY_RUN:-true}
+      SOCIAL_APPROVAL_REQUIRED: ${SOCIAL_APPROVAL_REQUIRED:-true}
+      SOCIAL_AUTO_POST_ENABLED: ${SOCIAL_AUTO_POST_ENABLED:-false}
+      SOCIAL_REAL_POSTING_APPROVED: ${SOCIAL_REAL_POSTING_APPROVED:-false}
+      IOT_DRY_RUN: ${IOT_DRY_RUN:-true}
+      IOT_REQUIRE_CONFIRMATION: ${IOT_REQUIRE_CONFIRMATION:-true}
+      IOT_REAL_ACTIONS_APPROVED: ${IOT_REAL_ACTIONS_APPROVED:-false}
+      ALLOW_STRATEGY_PROMOTION: ${ALLOW_STRATEGY_PROMOTION:-false}
+      METRICS_AUTH_REQUIRED: ${METRICS_AUTH_REQUIRED:-true}
+      METRICS_ALLOW_UNAUTHENTICATED_DEV: ${METRICS_ALLOW_UNAUTHENTICATED_DEV:-false}
+    expose:
+      - "8005"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8005/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+    networks:
+      - zdash_net
+
   frontend:
-    build: { context: ., dockerfile: infra/docker/frontend.Dockerfile }
+    build:
+      context: .
+      dockerfile: infra/docker/frontend.Dockerfile
+    expose:
+      - "80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - zdash_net
+
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-zdash}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-zdash}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+      - ./backups:/var/backups/zdash
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zdash} -d ${POSTGRES_DB:-zdash}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - zdash_net
+
   redis:
-    image: redis:7
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata_prod:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - zdash_net
+
   prometheus:
     image: prom/prometheus:v2.53.0
-    volumes: ["./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - zdash_net
+
+networks:
+  zdash_net:
+    driver: bridge
+
+volumes:
+  pgdata_prod:
+  redisdata_prod:
+  prometheus_data:

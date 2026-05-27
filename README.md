@@ -685,53 +685,129 @@ curl -X POST http://localhost:8005/api/content/pipeline/run \
 
 ---
 
-## Docker
+## Phase 08 (8.0-8.5)
 
-Dockerfiles:
+Phase 08 delivers the production-hardening layer while preserving safety defaults.
 
-```text
-infra/docker/backend.Dockerfile
-infra/docker/frontend.Dockerfile
-```
+Sub-phase summary:
 
-Build:
+- 8.0: planning and integration baseline for persistence, auth, and operations hardening
+- 8.1: SQLAlchemy foundation, session lifecycle, Alembic migrations, repository compatibility layer
+- 8.2: JWT auth + RBAC backend controls
+- 8.3: audit logging, observability metrics, admin safety-check APIs
+- 8.4: frontend login/session handling, protected routes, role-aware navigation, admin dashboard
+- 8.5: Docker/NGINX/prod-compose, backup/restore scripts, CI hardening, documentation updates
+
+Production architecture:
+
+- NGINX edge (`infra/docker/nginx.Dockerfile`) serving frontend and reverse-proxying `/api/*` to backend on `8005`
+- FastAPI backend (`infra/docker/backend.Dockerfile`) on `8005` with healthcheck and non-root runtime
+- Frontend static build (`infra/docker/frontend.Dockerfile`) served via NGINX
+- PostgreSQL persistence with init script (`infra/postgres/init.sql`)
+- Redis for queue/cache/runtime support
+- Prometheus scraping `/api/metrics`
+
+Database persistence:
+
+- local/dev default: SQLite (`sqlite:///./zdash.db`)
+- production mode: PostgreSQL `DATABASE_URL` required and safety-gated
+- migrations managed via Alembic from backend startup/migration flow
+
+Auth and RBAC:
+
+- JWT-based auth endpoints under `/api/auth/*`
+- role-aware admin APIs under `/api/admin/*`
+- frontend protected routes and admin-only navigation
+
+Audit and metrics:
+
+- admin audit logs endpoint: `/api/admin/audit-logs`
+- safety-check endpoint: `/api/admin/safety-check`
+- Prometheus-compatible metrics endpoint: `/api/metrics`
+
+API examples (always port `8005`, never `8000`):
 
 ```bash
-docker build -f infra/docker/backend.Dockerfile .
-docker build -f infra/docker/frontend.Dockerfile .
+curl -X POST http://localhost:8005/api/auth/bootstrap-admin
+curl -X POST http://localhost:8005/api/auth/login
+curl http://localhost:8005/api/admin/safety-check -H "Authorization: Bearer TOKEN"
 ```
 
-Compose:
+### Docker Local Dev
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.yml up --build
 ```
 
-Backend container port and host mapping default to `8005`.
+Default local services:
 
-Rules:
+- backend: `8005`
+- frontend: `5173`
+- postgres: `5432`
+- redis: `6379`
 
-- Do not bake secrets into images.
-- Images must build without real provider credentials.
-- Frontend Docker build runs `npm run build`; keep `tsconfig.build.json` test exclusions intact.
+### Docker Production Deploy
 
----
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
 
-## CI and Validation
+Production-like services:
 
-Expected checks:
+- nginx: `80`
+- backend: internal `8005`
+- frontend: internal `80`
+- postgres: `5432`
+- redis: `6379`
+- prometheus: `9090`
 
-- backend lint/tests
-- frontend tests/build
-- Docker build
-- security scan/audit
+### Backup and Restore
+
+Create backup:
+
+```bash
+POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash POSTGRES_DB=zdash \
+POSTGRES_PASSWORD=change-me RETENTION_DAYS=7 ./infra/scripts/backup-postgres.sh
+```
+
+Restore backup (requires explicit confirmation):
+
+```bash
+RESTORE_CONFIRM=yes POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash \
+POSTGRES_DB=zdash POSTGRES_PASSWORD=change-me ./infra/scripts/restore-postgres.sh ./backups/FILE.sql.gz
+```
+
+### CI Workflow
+
+`.github/workflows/ci.yml` runs:
+
+- `backend-tests` (ruff + pytest)
+- `frontend-tests` (vitest + build)
+- `docker-build` (backend/frontend/nginx images + compose config validation)
+
+### Safety Checklist
+
+- keep `DRY_RUN=true` unless all production gates are explicitly approved
+- keep `LIVE_TRADING_ACK=false` unless formal go-live authorization exists
+- keep `PRODUCTION_SAFETY_LOCK=true` for fail-closed behavior
+- keep `RISK_GUARDIAN_ENABLED=true`, `MT5_ENABLED=false` by default
+- keep content and IoT in dry-run/approval-required modes by default
+- never expose secrets/tokens/JWT keys in logs, metrics, or frontend bundles
+
+### Default Credential and Secret Rotation Warning
+
+- `JWT_SECRET_KEY`, `BOOTSTRAP_ADMIN_PASSWORD`, and `DEFAULT_ADMIN_PASSWORD` defaults are for local/dev only
+- rotate JWT/admin secrets before any production deployment
+- set `AUTH_ENABLED=true` in production and keep `AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION=false` after initial secure bootstrap
+- disable or rotate default admin credentials immediately after first secure admin creation
+
+### Validation Commands
 
 Backend:
 
 ```bash
 cd backend
 source .venv/bin/activate
-python -m ruff check app tests --fix
 python -m ruff check app tests
 python -B -m pytest -q
 ```
@@ -752,59 +828,8 @@ Docker:
 ```bash
 docker build -f infra/docker/backend.Dockerfile .
 docker build -f infra/docker/frontend.Dockerfile .
+docker compose config
 ```
-
-Common known failure patterns and fixes:
-
-```text
-Error: Expected a single value for option "--run"
-```
-
-Use `npm test` only. The package script already includes `vitest --run`.
-
-```text
-Cannot find name 'test' / Cannot find name 'expect'
-```
-
-Do not compile test files during production build. Use `tsconfig.build.json` for `npm run build` and keep tests under `src/tests/**` or `*.test.tsx`.
-
-```text
-Input should be a valid string for Event.message
-```
-
-Keep `Event.message` as a string and put structured data in `Event.payload`.
-
-```text
-No module named ruff
-```
-
-Install backend dev tools:
-
-```bash
-cd backend
-source .venv/bin/activate
-python -m pip install --upgrade ruff pytest pytest-cov httpx
-```
-
-```text
-nodejs : Conflicts: npm
-```
-
-Remove Ubuntu `npm` and use `nvm`:
-
-```bash
-sudo apt-get remove -y npm
-source ~/.nvm/nvm.sh
-nvm install 20
-nvm use 20
-```
-
-```text
-return statement outside of a function/method
-Undefined name o/w/body
-```
-
-Do not commit formatter-damaged files. Restore known corrupted files from `HEAD` or `origin/main`, then apply targeted Python 3.11 f-string fixes only.
 
 ---
 
