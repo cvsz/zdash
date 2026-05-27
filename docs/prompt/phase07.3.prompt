@@ -1,0 +1,233 @@
+Execute only PHASE 07.3.
+
+Goal:
+Implement or harden every dashboard module page using the Phase 01–06 backend APIs and mock fallback.
+
+Read:
+- docs/prompt/phase07.prompt
+- docs/prompt/agent-roster.prompt
+- frontend/src/pages/*
+- frontend/src/components/*
+- frontend/src/api/endpoints.ts
+- frontend/src/api/types.ts
+- frontend/src/api/mockData.ts
+- frontend/src/tests/*
+- README.md
+
+Pages to implement/harden:
+
+1. Dashboard.tsx
+Must show:
+- system health
+- backend connection state
+- mock fallback banner if active
+- agent status summary
+- trading dry-run status
+- risk status
+- kill switch/halt status
+- scheduler status
+- backtest summary
+- content pipeline summary
+- IoT dry-run status
+- recent session logs
+- keep Team Roster visible or linked as currently designed
+
+Cards must use canonical display names where agent-specific:
+- Alexander Prime
+- Sophia Lane
+- Victor Hale
+- Isla Grant
+- Nathan Cole
+- Elena Voss
+- Julian Reed
+- Maya Quinn
+- Damien Cross
+
+2. TeamRoster.tsx
+Must show all canonical agents:
+- Alexander Prime
+- Sophia Lane
+- Victor Hale
+- Isla Grant
+- Nathan Cole
+- Elena Voss
+- Julian Reed
+- Maya Quinn
+- Damien Cross
+
+Keep stable agent IDs in data.
+Keep agents-per-page control.
+Keep wide layout with up to five cards per row.
+Add or preserve message panel for ceo -> janie if existing endpoint supports it, but display as Alexander Prime -> Sophia Lane.
+
+3. XauDashboard.tsx
+Must show:
+- XAUUSD M5 scanner status
+- DRY_RUN banner
+- Funnel Filter 21/10/3 state
+- latest signals table
+- signal validation status
+- AI summary
+- dry-run execution button
+- risk approval status
+- disclaimer: dashboard is not financial advice
+- Damien Cross as trading specialist where useful
+
+Safety:
+- Button must say “Dry-run execute”
+- No live execution exposed by default
+
+4. RiskPanel.tsx
+Must show:
+- Victor Hale / Guardian enabled state
+- halt state
+- kill switch state
+- total drawdown
+- daily drawdown
+- risk level
+- thresholds
+- manual halt button
+- manual resume form requiring reason
+- confirmation dialog for resume
+- risk event log subset
+- prominent red emergency state
+
+5. Scheduler.tsx
+Must show:
+- Isla Grant / scheduler enabled state
+- default jobs
+- job table
+- job run history
+- create job form
+- run/pause/resume/delete controls
+
+Job types:
+- trading_scan
+- risk_check
+- backtest
+- content_pipeline
+- health_check
+- iot_power_cycle
+- custom
+
+Safety:
+- iot_power_cycle shows confirmation warning
+- trading_scan shows risk-guarded label
+- content_pipeline shows approval/no-auto-publish label
+
+6. Backtests.tsx
+Must show:
+- Nathan Cole / Strategy Lab
+- strategy list
+- run backtest form
+- backtest results
+- metrics cards
+- equity curve chart using Recharts if available
+- monthly return table
+- optimization form
+- ranked optimization results
+- promotion check panel
+
+Safety:
+- show disclaimer: “Backtest results are not guaranteed future performance.”
+- show that promotion does not enable live trading
+
+7. ContentPipeline.tsx
+Must show:
+- Elena Voss / Julian Reed / Maya Quinn workflow
+- content status summary
+- create content form
+- board grouped by status:
+  draft, edited, graphic_ready, scheduled, approved, posted, failed, rejected
+- edit action
+- generate graphic action
+- schedule action
+- approve action
+- dry-run publish action
+- full pipeline run button
+- policy notes
+
+Safety:
+- publish button disabled unless approved
+- show SOCIAL_DRY_RUN state
+- show approval-required state
+- show policy failure notes clearly
+- do not represent mock publishing as real posting
+
+8. IoTControl.tsx
+Must show:
+- IoT enabled state
+- IOT_DRY_RUN state
+- confirmation required state
+- device alias
+- device mock/real status
+- actions:
+  status, turn_on, turn_off, power_cycle
+
+Safety:
+- power cycle requires confirmation dialog
+- dry-run result clearly simulated
+- real mode requires typed confirmation text:
+  CONFIRM_POWER_ACTION
+
+9. OrgMapPage.tsx
+Must show visual org map using canonical names:
+Alexander Prime
+└── Sophia Lane
+    ├── Victor Hale
+    ├── Isla Grant
+    ├── Nathan Cole
+    ├── Elena Voss
+    ├── Julian Reed
+    ├── Maya Quinn
+    └── Damien Cross
+
+Module ownership:
+- Victor Hale -> Risk
+- Isla Grant -> Scheduler + IoT
+- Nathan Cole -> Backtesting
+- Elena Voss / Julian Reed / Maya Quinn -> Content Pipeline
+- Sophia Lane -> Runtime Orchestration
+- Damien Cross -> Trading
+
+10. SessionLogs.tsx
+Must show:
+- event logs table
+- filter by event type
+- filter by source
+- search box
+- auto-refresh toggle
+- JSON payload viewer
+- recent errors panel
+
+Categories:
+system, agent, trading, risk, scheduler, iot, backtest, content
+
+11. Settings.tsx
+Must show read-only config summary:
+- API base URL
+- mock fallback enabled
+- poll interval
+- dry-run state
+- social approval required
+- IoT dry-run state
+- primary strategy
+- app version placeholder
+
+Never display API keys, tokens, secrets, or .env content.
+
+Tests:
+Update or add tests for:
+- Dashboard
+- RiskPanel
+- Scheduler
+- ContentPipeline
+- App routing
+- API mock fallback
+
+Validation:
+cd backend && source .venv/bin/activate && python -m ruff check app tests && python -B -m pytest -q
+cd ../frontend && source ~/.nvm/nvm.sh && nvm use 20 && npm test && npm run build
+
+Commit:
+phase07.3: implement dashboard module pages

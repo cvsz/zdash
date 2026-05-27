@@ -1,0 +1,120 @@
+Execute only PHASE 07.2.
+
+Goal:
+Complete the zDash dashboard shell, reusable UI components, routing, safety banners, and responsive layout.
+
+Read:
+- docs/prompt/phase07.prompt
+- docs/prompt/agent-roster.prompt
+- frontend/src/App.tsx
+- frontend/src/components/layout/*
+- frontend/src/components/common/*
+- frontend/src/hooks/*
+- frontend/src/utils/*
+- frontend/src/tests/App.test.tsx
+- frontend/src/tests/Dashboard.test.tsx
+
+Tasks:
+1. App layout:
+   - Sidebar navigation
+   - Topbar with system status
+   - Main content area
+   - PageHeader
+   - Responsive mobile-friendly behavior
+
+2. Routes:
+   /
+   /team
+   /xau
+   /risk
+   /scheduler
+   /backtests
+   /content
+   /iot
+   /org
+   /logs
+   /settings
+   *
+
+3. Navigation labels:
+   - Dashboard
+   - Team Roster
+   - XAU Dashboard
+   - Risk Panel
+   - Scheduler
+   - Backtests
+   - Content Pipeline
+   - IoT Control
+   - Org Map
+   - Session Logs
+   - Settings
+
+4. Reusable components:
+   components/common/StatusCard.tsx
+   components/common/MetricCard.tsx
+   components/common/DataTable.tsx
+   components/common/EmptyState.tsx
+   components/common/ErrorState.tsx
+   components/common/LoadingState.tsx
+   components/common/Badge.tsx
+   components/common/Button.tsx
+   components/common/SectionCard.tsx
+   components/common/ConfirmDialog.tsx
+
+5. Hooks:
+   hooks/useApi.ts
+   hooks/usePolling.ts
+   hooks/useSystemStatus.ts
+   hooks/useAgents.ts
+   hooks/useLogs.ts
+
+6. Utils:
+   utils/format.ts:
+   - formatDateTime()
+   - formatPercent()
+   - formatCurrency()
+   - formatDurationMs()
+   - truncateText()
+
+   utils/status.ts:
+   - getSeverityFromStatus()
+   - getBadgeVariant()
+   - isDangerStatus()
+
+   utils/safety.ts:
+   - isLiveTradingBlocked()
+   - requiresApproval()
+   - canPublishContent()
+   - canRunIoTAction()
+   - getSafetyBannerText()
+
+7. Design:
+   - dark-mode-first operational dashboard
+   - clean SaaS/admin aesthetic
+   - high-contrast status indicators
+   - rounded cards/panels
+   - safety banners
+   - no clutter
+   - responsive layouts
+
+8. Preserve existing:
+   - zDash background image
+   - main dashboard route
+   - TeamRoster component
+   - agents-per-page pagination
+   - default roster page size 9
+   - five-card wide layout where available
+
+Tests:
+- App renders.
+- Sidebar navigation exists.
+- Unknown route shows NotFound.
+- Dashboard route works.
+- Mock fallback banner renders when mock fallback is active.
+
+Validation:
+cd backend && source .venv/bin/activate && python -m ruff check app tests && python -B -m pytest -q
+cd ../frontend && source ~/.nvm/nvm.sh && nvm use 20 && npm test && npm run build
+
+Commit:
+phase07.2: implement dashboard layout and safety components
