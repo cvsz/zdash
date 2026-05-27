@@ -8,7 +8,7 @@ type RealtimeContextValue = {
   clearUnread: () => void;
 };
 
-const RealtimeContext = createContext<RealtimeContextValue | null>(null);
+export const RealtimeContext = createContext<RealtimeContextValue | null>(null);
 
 export function RealtimeProvider({ children }: { children: ReactNode }) {
   const realtime = useRealtime({ maxEvents: 200, enabled: true });

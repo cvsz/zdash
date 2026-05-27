@@ -644,3 +644,10 @@ Treat networked tools as read-only unless explicit user approval is provided for
 ## 16. Final Rule
 
 For every task: inspect, implement, test, document, preserve safety, and report clearly.
+
+### Realtime Layer
+- Endpoint: `/api/realtime/ws` with structured/sanitized event envelopes only.
+- Notification center and live feeds consume websocket events safely.
+- Frontend auto-fallback: simulated realtime mode when WS unavailable.
+- Diagnostics: websocket status and last event health indicators.
+- Safety: no live execution toggles, no token/secret emission in realtime payloads.
