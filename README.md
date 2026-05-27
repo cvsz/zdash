@@ -995,3 +995,6 @@ This project is licensed under the MIT License. See `LICENSE`.
 - Frontend falls back to simulated realtime mode when socket unavailable.
 - System Health includes realtime diagnostics (status, last event, fallback state).
 - Safety defaults preserved: dry-run/mock-safe, no secret/token exposure.
+
+## Collaboration
+- Workspace collaboration endpoints are dry-run safe and federation remains mock-only.

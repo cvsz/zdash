@@ -651,3 +651,6 @@ For every task: inspect, implement, test, document, preserve safety, and report 
 - Frontend auto-fallback: simulated realtime mode when WS unavailable.
 - Diagnostics: websocket status and last event health indicators.
 - Safety: no live execution toggles, no token/secret emission in realtime payloads.
+
+## Phase 7.10 Notes
+- Collaboration layer is tenant-scoped and dry-run safe.

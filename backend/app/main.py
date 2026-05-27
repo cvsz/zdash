@@ -41,6 +41,8 @@ from app.api import (
     governance_refinement,
     long_horizon,
     lessons,
+    collaboration,
+    workspaces,
 )
 from app.api.routes import incidents
 
@@ -150,3 +152,5 @@ app.include_router(self_evolution.router)
 app.include_router(governance_refinement.router)
 app.include_router(long_horizon.router)
 app.include_router(lessons.router)
+app.include_router(collaboration.router)
+app.include_router(workspaces.router)

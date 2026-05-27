@@ -29,6 +29,9 @@ const navItems: NavItem[] = [
   { to: "/settings", label: "Settings", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/system/health", label: "System Health", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/notifications", label: "Notifications", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/workspace/live", label: "Workspace Live", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/workspace/timeline", label: "Workspace Timeline", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/workspace/notes", label: "Workspace Notes", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/admin", label: "Admin", roles: ["admin"] },
 ];
 

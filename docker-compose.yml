@@ -83,3 +83,6 @@ services:
 volumes:
   pgdata:
   redisdata:
+
+# Phase 7.10 collaboration default
+# REDIS_COLLAB_ENABLED=false

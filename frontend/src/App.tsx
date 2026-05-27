@@ -21,6 +21,10 @@ import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
 import EventTimeline from "./pages/EventTimeline";
+import Notifications from "./pages/Notifications";
+import WorkspaceLive from "./pages/WorkspaceLive";
+import WorkspaceTimeline from "./pages/WorkspaceTimeline";
+import WorkspaceNotes from "./pages/WorkspaceNotes";
 import IncidentCenter from "./pages/IncidentCenter";
 import { RealtimeProvider } from "./realtime/context";
 
@@ -45,6 +49,9 @@ function ProtectedDashboardRoutes() {
           <Route path="/system/health" element={<SystemHealth />} />
           <Route path="/events" element={<EventTimeline />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/workspace/live" element={<WorkspaceLive />} />
+          <Route path="/workspace/timeline" element={<WorkspaceTimeline />} />
+          <Route path="/workspace/notes" element={<WorkspaceNotes />} />
           <Route
             path="/admin"
             element={
