@@ -1,22 +1,52 @@
-from fastapi.testclient import TestClient
+import asyncio
 
-from app.main import app
+import pytest
+from fastapi import HTTPException
+
+from app.api.routes.incidents import (
+    ack_incident,
+    create_incident,
+    list_incidents,
+    resolve_incident,
+)
+from app.auth.models import AuthSession
+from app.services.incidents import reset_incident_service as reset_incident_service_state
 
 
-def _token(client: TestClient, username: str, role: str):
-    r = client.post('/api/auth/bootstrap-admin', json={'username': username, 'password': 'pw', 'role': role})
-    return r.json()['data']['access_token']
+@pytest.fixture(autouse=True)
+def reset_incident_service_fixture() -> None:
+    reset_incident_service_state()
+    yield
+    reset_incident_service_state()
 
 
-def test_incident_rbac_flow():
-    c = TestClient(app)
-    viewer = _token(c, 'viewer_u', 'viewer')
-    operator = _token(c, 'op_u', 'operator')
-    admin = _token(c, 'admin_u2', 'admin')
-    assert c.get('/api/incidents', headers={'Authorization': f'Bearer {viewer}'}).status_code == 200
-    assert c.post('/api/incidents', json={'title':'x','severity':'warning'}, headers={'Authorization': f'Bearer {viewer}'}).status_code == 403
-    created = c.post('/api/incidents', json={'title':'x','severity':'warning'}, headers={'Authorization': f'Bearer {operator}'}).json()['data']
-    iid = created['id']
-    assert c.post(f'/api/incidents/{iid}/ack', headers={'Authorization': f'Bearer {operator}'}).status_code == 200
-    assert c.post(f'/api/incidents/{iid}/resolve', json={'notes':'done'}, headers={'Authorization': f'Bearer {operator}'}).status_code == 403
-    assert c.post(f'/api/incidents/{iid}/resolve', json={'notes':'done'}, headers={'Authorization': f'Bearer {admin}'}).status_code == 200
+def test_incident_rbac_flow() -> None:
+    viewer = AuthSession(username="viewer_u", role="viewer")
+    operator = AuthSession(username="op_u", role="operator")
+    admin = AuthSession(username="admin_u2", role="admin")
+
+    list_response = asyncio.run(list_incidents(user=viewer))
+    assert list_response["ok"] is True
+
+    with pytest.raises(HTTPException) as viewer_create_error:
+        asyncio.run(create_incident({"title": "x", "severity": "warning"}, user=viewer))
+    assert viewer_create_error.value.status_code == 403
+
+    created_response = asyncio.run(
+        create_incident({"title": "x", "severity": "warning"}, user=operator)
+    )
+    incident_id = created_response["data"]["id"]
+
+    ack_response = asyncio.run(ack_incident(incident_id, user=operator))
+    assert ack_response["ok"] is True
+    assert ack_response["data"]["status"] == "acknowledged"
+
+    with pytest.raises(HTTPException) as operator_resolve_error:
+        asyncio.run(resolve_incident(incident_id, {"notes": "done"}, user=operator))
+    assert operator_resolve_error.value.status_code == 403
+
+    resolved_response = asyncio.run(
+        resolve_incident(incident_id, {"notes": "done"}, user=admin)
+    )
+    assert resolved_response["ok"] is True
+    assert resolved_response["data"]["status"] == "resolved"

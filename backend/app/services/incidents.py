@@ -46,3 +46,8 @@ def get_incident_service() -> IncidentService:
     if _service is None:
         _service = IncidentService()
     return _service
+
+
+def reset_incident_service() -> None:
+    global _service
+    _service = None

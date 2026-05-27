@@ -1,6 +1,10 @@
 from __future__ import annotations
-import html, re, uuid
+
+import html
+import re
+import uuid
 from datetime import datetime, timedelta, timezone
+
 from .schemas import NoteCreate, NoteRecord, PresenceRecord, PresenceUpdate, TimelineEvent
 
 class CollaborationService:

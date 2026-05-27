@@ -1,7 +1,12 @@
-from fastapi.testclient import TestClient
-from app.main import app
+from app.auth.models import AuthSession
+from app.collaboration.router import get_presence
 
-def test_collab_presence_endpoint():
-    c=TestClient(app)
-    r=c.get('/api/collaboration/presence', params={'workspace_id':'w1'})
-    assert r.status_code==200
+
+def test_collab_presence_endpoint() -> None:
+    response = get_presence(
+        workspace_id="w1",
+        _=AuthSession(username="dev-user", role="admin"),
+    )
+    assert response["ok"] is True
+    assert response["error"] is None
+    assert isinstance(response["data"]["items"], list)
