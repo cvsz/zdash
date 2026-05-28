@@ -38,6 +38,13 @@ import type {
   StrategyPromotionDecision,
   TradingScanResult,
   TradingSignal,
+  Organization,
+  Workspace,
+  QueueStatus,
+  TaskItem,
+  AlertRule,
+  AlertEvent,
+  NotificationChannel,
 } from "./types";
 
 type AgentMessagePayload = {
@@ -663,4 +670,65 @@ export const powerCycleIoT = async (deviceAlias = "zdash-power-node", confirmati
     },
   );
   return data.result;
+};
+
+export const listOrganizations = async () => {
+  const data = await apiClient.get<{ organizations: Organization[] }>("/api/tenancy/organizations", {
+    organizations: [{ id: "org-1", name: "Zeaz Inc", slug: "zeaz", status: "active", plan: "enterprise", role: "admin", mock: true }],
+  });
+  return data.organizations;
+};
+
+export const listWorkspaces = async (orgId: string) => {
+  const data = await apiClient.get<{ workspaces: Workspace[] }>(`/api/tenancy/organizations/${orgId}/workspaces`, {
+    workspaces: [{ id: "ws-1", name: "Production", slug: "prod", environment: "production", is_active: true, mock: true }],
+  });
+  return data.workspaces;
+};
+
+export const getQueueStatus = async () => {
+  const data = await apiClient.get<{ status: QueueStatus[] }>("/api/workers/queues", {
+    status: [{ queue_name: "default", workers_active: 3, tasks_pending: 0, tasks_processing: 1, tasks_failed: 0, uptime_seconds: 3600 }],
+  });
+  return data.status;
+};
+
+export const listTasks = async () => {
+  const data = await apiClient.get<{ tasks: TaskItem[] }>("/api/workers/tasks", {
+    tasks: [{ id: "task-1", name: "Data Sync", type: "sync", status: "completed", created_at: new Date().toISOString(), retries: 0 }],
+  });
+  return data.tasks;
+};
+
+export const enqueueTask = async (payload: { type: string; payload?: Record<string, unknown> }) => {
+  const data = await apiClient.post<{ task: TaskItem }>("/api/workers/enqueue", payload, {
+    task: { id: "task-2", name: payload.type, type: payload.type, payload: payload.payload, status: "pending", created_at: new Date().toISOString(), retries: 0 },
+  });
+  return data.task;
+};
+
+export const listAlertRules = async () => {
+  const data = await apiClient.get<{ rules: AlertRule[] }>("/api/alerts/rules", {
+    rules: [{ id: "rule-1", name: "High Error Rate", condition: "errors > 10", severity: "critical", enabled: true, channels: ["chan-1"], created_at: new Date().toISOString() }],
+  });
+  return data.rules;
+};
+
+export const listAlertEvents = async () => {
+  const data = await apiClient.get<{ events: AlertEvent[] }>("/api/alerts/events", {
+    events: [{ id: "evt-1", rule_id: "rule-1", message: "Error rate exceeded 10%", severity: "critical", status: "active", triggered_at: new Date().toISOString() }],
+  });
+  return data.events;
+};
+
+export const listNotificationChannels = async () => {
+  const data = await apiClient.get<{ channels: NotificationChannel[] }>("/api/alerts/channels", {
+    channels: [{ id: "chan-1", type: "slack", target: "#alerts", enabled: true, created_at: new Date().toISOString() }],
+  });
+  return data.channels;
+};
+
+export const testNotificationChannel = async (channelId: string) => {
+  const data = await apiClient.post<{ ok: boolean }>("/api/alerts/channels/" + channelId + "/test", {}, { ok: true });
+  return data;
 };

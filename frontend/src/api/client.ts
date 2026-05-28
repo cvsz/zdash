@@ -13,6 +13,8 @@ const mockFallbackEnabled =
 
 export let mockFallbackActive = false;
 let sessionToken: string | null = null;
+let currentTenant: string | null = null;
+let currentWorkspace: string | null = null;
 let unauthorizedHandler: (() => void) | null = null;
 
 export const apiClientConfig = {
@@ -30,6 +32,12 @@ function buildRequestHeaders(headers?: HeadersInit): HeadersInit {
   mergedHeaders.set("Content-Type", "application/json");
   if (sessionToken) {
     mergedHeaders.set("Authorization", `Bearer ${sessionToken}`);
+  }
+  if (currentTenant) {
+    mergedHeaders.set("X-ZDash-Tenant", currentTenant);
+  }
+  if (currentWorkspace) {
+    mergedHeaders.set("X-ZDash-Workspace", currentWorkspace);
   }
   return mergedHeaders;
 }
@@ -271,6 +279,14 @@ export const apiPostEnvelope = apiClient.post;
 
 export function setSession(token?: string) {
   sessionToken = token ?? null;
+}
+
+export function setTenant(tenantId?: string) {
+  currentTenant = tenantId ?? null;
+}
+
+export function setWorkspace(workspaceId?: string) {
+  currentWorkspace = workspaceId ?? null;
 }
 
 export function setUnauthorizedHandler(handler?: () => void) {

@@ -25,4 +25,4 @@ backups.env
 .agent/
 agents/
 agents/agents/
-
+gpg-loopback.sh

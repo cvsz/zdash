@@ -393,3 +393,75 @@ export type AdminSafetyCheck = {
   blockers: string[];
   score: number;
 };
+
+export type Organization = {
+  id: string;
+  name: string;
+  slug: string;
+  status: string;
+  plan: string;
+  role: string;
+  created_at?: string;
+  mock?: boolean;
+};
+
+export type Workspace = {
+  id: string;
+  name: string;
+  slug: string;
+  environment: string;
+  is_active: boolean;
+  created_at?: string;
+  mock?: boolean;
+};
+
+export type QueueStatus = {
+  queue_name: string;
+  workers_active: number;
+  tasks_pending: number;
+  tasks_processing: number;
+  tasks_failed: number;
+  uptime_seconds: number;
+};
+
+export type TaskItem = {
+  id: string;
+  name: string;
+  type: string;
+  payload?: Record<string, unknown>;
+  status: "pending" | "processing" | "completed" | "failed" | "cancelled";
+  error?: string | null;
+  created_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
+  worker_id?: string | null;
+  retries: number;
+};
+
+export type AlertRule = {
+  id: string;
+  name: string;
+  condition: string;
+  severity: "info" | "warning" | "error" | "critical";
+  enabled: boolean;
+  channels: string[];
+  created_at: string;
+};
+
+export type AlertEvent = {
+  id: string;
+  rule_id: string;
+  message: string;
+  severity: "info" | "warning" | "error" | "critical";
+  status: "active" | "acknowledged" | "resolved";
+  triggered_at: string;
+  resolved_at?: string | null;
+};
+
+export type NotificationChannel = {
+  id: string;
+  type: "email" | "slack" | "webhook";
+  target: string;
+  enabled: boolean;
+  created_at: string;
+};
