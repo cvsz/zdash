@@ -4,5 +4,5 @@ import Workspace from '../pages/Workspace';
 
 test('shows workspace', () => {
   const { getByText } = render(<Workspace />);
-  expect(getByText('Workspace')).toBeInTheDocument();
+  expect(getByText('Workspace Overview')).toBeInTheDocument();
 });

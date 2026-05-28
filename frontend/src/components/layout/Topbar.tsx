@@ -5,6 +5,8 @@ import { useAuth } from "../../hooks/useAuth";
 import Badge from "../common/Badge";
 import ConnectionStatus from "../system/ConnectionStatus";
 import NotificationCenter from "../system/NotificationCenter";
+import { OrganizationSwitcher } from "../tenancy/OrganizationSwitcher";
+import { WorkspaceSwitcher } from "../tenancy/WorkspaceSwitcher";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -38,6 +40,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <div>
             <p className="text-sm font-semibold text-white">Operational Dashboard</p>
             <p className="text-xs text-slate-400">Dry-run safe defaults active</p>
+          </div>
+          <div className="hidden md:flex items-center space-x-4 ml-6 border-l border-slate-800 pl-6">
+            <OrganizationSwitcher />
+            <WorkspaceSwitcher />
           </div>
         </div>
 

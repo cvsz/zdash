@@ -4,5 +4,5 @@ import Workers from '../pages/Workers';
 
 test('renders workers', () => {
   const { getByText } = render(<Workers />);
-  expect(getByText('Workers')).toBeInTheDocument();
+  expect(getByText('Workers & Queues')).toBeInTheDocument();
 });

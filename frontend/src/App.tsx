@@ -12,6 +12,9 @@ import Dashboard from "./pages/Dashboard";
 import IoTControl from "./pages/IoTControl";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Organizations from "./pages/Organizations";
+import Workspace from "./pages/Workspace";
+import Workers from "./pages/Workers";
 import OrgMapPage from "./pages/OrgMapPage";
 import RiskPanel from "./pages/RiskPanel";
 import Scheduler from "./pages/Scheduler";
@@ -44,6 +47,9 @@ function ProtectedDashboardRoutes() {
           <Route path="/content" element={<ContentPipeline />} />
           <Route path="/iot" element={<IoTControl />} />
           <Route path="/org" element={<OrgMapPage />} />
+          <Route path="/organizations" element={<Organizations />} />
+          <Route path="/workspace" element={<Workspace />} />
+          <Route path="/workers" element={<Workers />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/system/health" element={<SystemHealth />} />

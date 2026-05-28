@@ -1,34 +1,38 @@
+import React from "react";
 import PageHeader from "../components/layout/PageHeader";
-import LiveIndicator from "../components/realtime/LiveIndicator";
-import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
-import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
-import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
-import { useRealtime } from "../realtime/useRealtime";
+import { AlertRuleTable } from "../components/alerts/AlertRuleTable";
+import { AlertEventTable } from "../components/alerts/AlertEventTable";
+import { NotificationChannelForm } from "../components/alerts/NotificationChannelForm";
+import { useNotifications } from "../hooks/useNotifications";
 
 export default function Alerts() {
-  const realtime = useRealtime({ maxEvents: 12 });
+  const { rules, events, loading, testChannel } = useNotifications();
 
   return (
-    <div className="space-y-5">
-      <PageHeader
-        title="Alerts"
-        subtitle="Realtime alert stream for risk, scheduler, and content pipeline notifications."
-        actions={
-          <>
-            <RealtimeStatusBadge connection={realtime.connection} compact />
-            <LiveIndicator connection={realtime.connection} label="Alerts WS" />
-          </>
-        }
+    <div className="flex flex-col space-y-6">
+      <PageHeader 
+        title="Alerts & Notifications" 
+        subtitle="Configure monitoring rules, notification channels, and active events." 
       />
-
-      <RealtimeConnectionBanner connection={realtime.connection} />
-
-      <RealtimeEventFeed
-        title="Live Alert Feed"
-        events={realtime.events}
-        maxItems={12}
-        emptyMessage="No live alerts yet."
-      />
+      {loading ? (
+        <div className="text-slate-400">Loading alerts data...</div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="flex flex-col space-y-4">
+              <h3 className="text-xl font-medium text-white">Alert Rules</h3>
+              <AlertRuleTable rules={rules} />
+            </div>
+            <div className="flex flex-col space-y-4">
+              <NotificationChannelForm onTest={testChannel} />
+            </div>
+          </div>
+          <div className="mt-6 flex flex-col space-y-4">
+            <h3 className="text-xl font-medium text-white">Active Events</h3>
+            <AlertEventTable events={events} />
+          </div>
+        </>
+      )}
     </div>
   );
-}
+};
