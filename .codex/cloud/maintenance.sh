@@ -3,20 +3,37 @@ set -Eeuo pipefail
 
 ROOT_DIR="${CODEX_WORKSPACE_DIR:-$(pwd)}"
 cd "$ROOT_DIR"
+ROOT_DIR="$(pwd)"
 
 printf '\n============================================================\n'
 printf 'zDash Codex Cloud Maintenance\n'
 printf '============================================================\n'
 
-mkdir -p .codex/reports .codex/logs
-REPORT=".codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
+mkdir -p "$ROOT_DIR/.codex/reports" "$ROOT_DIR/.codex/logs"
+REPORT="$ROOT_DIR/.codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
+
+scan_excludes=(
+  --exclude-dir=.git
+  --exclude-dir=node_modules
+  --exclude-dir=.venv
+  --exclude-dir=dist
+  --exclude-dir=.gnupg
+  --exclude-dir=.ssh
+  --exclude-dir=.codex/reports
+  --exclude-dir=.codex/logs
+  --exclude-dir=.codex/cache
+  --exclude-dir=.codex/tmp
+  --exclude="*.prompt"
+  --exclude="*.lock"
+  --exclude="*.sock"
+)
 
 {
   echo "# zDash Codex Cloud Maintenance Report"
   echo
   echo "- Date UTC: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "- Repo: cvsz/zdash"
-  echo "- Baseline: Phase 01-08 plus Phase 7.10 collaboration/federation foundation"
+  echo "- Baseline: Phase 01-10 plus Phase 7.10 collaboration/federation foundation"
   echo "- Cloudflare operator repo: cvsz/zeaz-platform"
   echo "- Branch: $(git branch --show-current 2>/dev/null || true)"
   echo "- Commit: $(git rev-parse --short HEAD 2>/dev/null || true)"
@@ -50,26 +67,14 @@ status=0
   echo "## Static baseline checks"
   echo '```'
   echo "backend port references:"
-  grep -RIn "localhost:8000\|:8000\|BACKEND_PORT=8000" \
-    --exclude-dir=.git \
-    --exclude-dir=node_modules \
-    --exclude-dir=.venv \
-    --exclude-dir=dist \
-    --exclude="*.prompt" \
-    . || true
+  grep -RIn "localhost:8000\|:8000\|BACKEND_PORT=8000" "${scan_excludes[@]}" . || true
   echo
   echo "Cloudflare operator refs:"
   grep -RIn "cvsz/zeaz-platform\|zdash.zeaz.dev\|CLOUDFLARE_OPERATOR_REPO" README.md .env.example .codex/cloud 2>/dev/null || true
   echo '```'
 } >> "$REPORT"
 
-if grep -RIn "localhost:8000\|BACKEND_PORT=8000" \
-  --exclude-dir=.git \
-  --exclude-dir=node_modules \
-  --exclude-dir=.venv \
-  --exclude-dir=dist \
-  --exclude="*.prompt" \
-  . >/tmp/zdash-codex-port8000.txt 2>/dev/null; then
+if grep -RIn "localhost:8000\|BACKEND_PORT=8000" "${scan_excludes[@]}" . >/tmp/zdash-codex-port8000.txt 2>/dev/null; then
   echo "FAILED: old backend port 8000 found outside prompt archives" | tee -a "$REPORT"
   cat /tmp/zdash-codex-port8000.txt | tee -a "$REPORT"
   status=1
@@ -122,13 +127,7 @@ fi
   echo
   echo "## Basic secret-pattern scan"
   echo '```'
-  grep -RInE "(GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID=)" \
-    --exclude-dir=.git \
-    --exclude-dir=node_modules \
-    --exclude-dir=.venv \
-    --exclude-dir=dist \
-    --exclude="*.lock" \
-    . || true
+  grep -RInE "(GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID=)" "${scan_excludes[@]}" . || true
   echo '```'
   echo
   echo "## Current hardening watchlist"
