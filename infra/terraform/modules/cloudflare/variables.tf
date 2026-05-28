@@ -1,1 +1,4 @@
-# phase9 module
+variable "domain" { type = string }
+variable "cloudflare_config" {
+  type = map(string)
+}

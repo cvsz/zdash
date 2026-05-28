@@ -1,1 +1,9 @@
-# phase9
+tunnel: zdash-example-tunnel-id
+credentials-file: /etc/cloudflared/cert.json
+
+ingress:
+  - hostname: zdash.zeaz.dev
+    service: http://nginx:80
+  - hostname: api.zdash.zeaz.dev
+    service: http://backend:8005
+  - service: http_status:404

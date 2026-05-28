@@ -1,1 +1,3 @@
-# phase9 module
+output "hostname" {
+  value = var.domain
+}

@@ -1,1 +1,3 @@
-# phase9 module
+output "app_status" {
+  value = "deployed"
+}

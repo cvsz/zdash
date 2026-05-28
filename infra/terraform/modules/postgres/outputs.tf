@@ -1,1 +1,3 @@
-# phase9 module
+output "endpoint" {
+  value = "db.placeholder.internal:5432"
+}

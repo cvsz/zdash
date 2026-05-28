@@ -1,1 +1,35 @@
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zdash-frontend
+  namespace: zdash
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zdash-frontend
+  template:
+    metadata:
+      labels:
+        app: zdash-frontend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: frontend
+          image: zdash-frontend:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi

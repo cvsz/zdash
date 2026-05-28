@@ -1,1 +1,17 @@
-# phase9
+{
+  "zone_name": "zeaz.dev",
+  "records": [
+    {
+      "type": "CNAME",
+      "name": "zdash",
+      "content": "zdash-example-tunnel-id.cfargotunnel.com",
+      "proxied": true
+    },
+    {
+      "type": "CNAME",
+      "name": "api.zdash",
+      "content": "zdash-example-tunnel-id.cfargotunnel.com",
+      "proxied": true
+    }
+  ]
+}

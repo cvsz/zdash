@@ -1,1 +1,18 @@
-# phase9
+{
+  "name": "zDash Admin Access",
+  "decision": "allow",
+  "include": [
+    {
+      "email": {
+        "email": "admin@zeaz.dev"
+      }
+    }
+  ],
+  "require": [
+    {
+      "login_method": {
+        "id": "example-saml-id"
+      }
+    }
+  ]
+}

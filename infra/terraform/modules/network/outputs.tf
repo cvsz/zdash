@@ -1,1 +1,3 @@
-# phase9 module
+output "vpc_id" {
+  value = "vpc-placeholder"
+}

@@ -1,1 +1,33 @@
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zdash-worker
+  namespace: zdash
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zdash-worker
+  template:
+    metadata:
+      labels:
+        app: zdash-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: worker
+          image: zdash-backend:latest
+          command: ["python", "-m", "app.workers.runner"]
+          envFrom:
+            - configMapRef:
+                name: zdash-config
+            - secretRef:
+                name: zdash-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

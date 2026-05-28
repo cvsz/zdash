@@ -1,1 +1,46 @@
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zdash-backend
+  namespace: zdash
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zdash-backend
+  template:
+    metadata:
+      labels:
+        app: zdash-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: backend
+          image: zdash-backend:latest
+          ports:
+            - containerPort: 8005
+          envFrom:
+            - configMapRef:
+                name: zdash-config
+            - secretRef:
+                name: zdash-secrets
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8005
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8005
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

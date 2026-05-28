@@ -1001,3 +1001,9 @@ This project is licensed under the MIT License. See `LICENSE`.
 
 ## Collaboration
 - Workspace collaboration endpoints are dry-run safe and federation remains mock-only.
+
+## Phase 09 Scale
+- Cloudflare deployment automation is delegated to cvsz/zeaz-platform
+- Terraform & Kubernetes templates added for multi-tenant, cloud-scale environments
+- Worker queue and realtime events are fully implemented
+- Safe runbooks and release scripts added for deployments and rollbacks
