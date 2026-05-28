@@ -4,7 +4,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from app.risk.models import AccountSnapshot
-from app.trading.models import Candle, ExecutionRequest, ExecutionResult, SignalValidationResult, TradingSignal
+from app.trading.models import (
+    Candle,
+    ExecutionRequest,
+    ExecutionResult,
+    SignalValidationResult,
+    TradingSignal,
+)
 from app.trading.trading_service import TradingService
 
 MODEL_VERSION = "phase33-deterministic-ai-trader-v1"
@@ -37,11 +43,7 @@ class FeatureSummary:
 
 
 class AITraderService:
-    """Deterministic, simulation-only AI trader signal generator.
-
-    This service does not execute orders directly. It produces TradingSignal objects
-    and routes validation/execution through the existing TradingService stack.
-    """
+    """Deterministic, simulation-only AI trader signal generator."""
 
     def __init__(self, trading_service: TradingService | None = None) -> None:
         self.trading_service = trading_service or TradingService()
@@ -102,10 +104,7 @@ class AITraderService:
             "safety_notice": SAFETY_NOTICE,
             "reason": reason,
         }
-        if features is not None:
-            metadata["features"] = features.as_dict()
-        else:
-            metadata["features"] = {}
+        metadata["features"] = features.as_dict() if features is not None else {}
         if extra:
             metadata.update(extra)
         return metadata
@@ -160,7 +159,9 @@ class AITraderService:
         trend_delta = features.fast_ma - features.slow_ma
         trend_strength = abs(trend_delta) / max(features.atr_proxy, 0.01)
         momentum_strength = abs(features.momentum_3) / max(features.atr_proxy, 0.01)
-        confidence = self._clamp(0.35 + (trend_strength * 0.18) + (momentum_strength * 0.08))
+        confidence = self._clamp(
+            0.35 + (trend_strength * 0.18) + (momentum_strength * 0.08)
+        )
 
         direction: str = "hold"
         if trend_delta > 0 and features.momentum_3 > 0:
@@ -178,7 +179,10 @@ class AITraderService:
                 entry=latest_close,
                 stop_loss=latest_close,
                 take_profit=latest_close,
-                reason=f"confidence {confidence:.2f} is below min_confidence {min_confidence:.2f}",
+                reason=(
+                    f"confidence {confidence:.2f} is below "
+                    f"min_confidence {min_confidence:.2f}"
+                ),
                 metadata=self._metadata(
                     features,
                     "confidence below minimum threshold",
@@ -257,7 +261,10 @@ class AITraderService:
         timeframe: str = "M5",
         min_confidence: float = 0.55,
         snapshot: AccountSnapshot | None = None,
-    ) -> dict[str, TradingSignal | SignalValidationResult | ExecutionResult | dict[str, Any] | str | bool]:
+    ) -> dict[
+        str,
+        TradingSignal | SignalValidationResult | ExecutionResult | dict[str, Any] | str | bool,
+    ]:
         decision = self.generate_decision(
             candles=candles,
             symbol=symbol,
@@ -267,7 +274,11 @@ class AITraderService:
         signal = decision["signal"]
         request_payload: dict[str, Any] | ExecutionRequest
         if snapshot is None:
-            request_payload = ExecutionRequest(signal=signal, dry_run=True, confirmation=False)
+            request_payload = ExecutionRequest(
+                signal=signal,
+                dry_run=True,
+                confirmation=False,
+            )
         else:
             request_payload = {
                 "signal": signal,
