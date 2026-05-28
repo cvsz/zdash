@@ -84,6 +84,7 @@ port-scan: ## Fail if tracked runtime/source files still reference backend port 
 	@echo "Scanning tracked runtime/source files for old backend port 8000..."
 	@tmp=$$(mktemp); \
 	git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . \
+		':(exclude)Makefile' \
 		':(exclude)docs/prompt/*.prompt' \
 		':(exclude)docs/prompt/codex-runs/**' \
 		':(exclude).codex/**' \
@@ -105,6 +106,7 @@ secret-scan: ## Scan tracked files for common secret patterns without reading ig
 	@echo "Scanning tracked files for common secret patterns..."
 	@tmp=$$(mktemp); \
 	git grep -nE 'GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID=' -- . \
+		':(exclude)Makefile' \
 		':(exclude)docs/prompt/*.prompt' \
 		':(exclude)docs/prompt/codex-runs/**' \
 		':(exclude).codex/reports/**' \
