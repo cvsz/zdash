@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
+
 from app.predictive_sre.models import (
     AnomalyForecast,
     ForecastHorizon,
@@ -7,6 +8,7 @@ from app.predictive_sre.models import (
 
 
 def test_anomaly_model_validation():
+    created_at = datetime.now(UTC)
     item = AnomalyForecast(
         id="1",
         organization_id="o",
@@ -21,7 +23,7 @@ def test_anomaly_model_validation():
         anomaly_score=0.5,
         explanation="rising",
         recommended_actions=["scale"],
-        created_at=datetime.utcnow(),
-        expires_at=datetime.utcnow() + timedelta(hours=1),
+        created_at=created_at,
+        expires_at=created_at + timedelta(hours=1),
     )
     assert item.confidence == 0.8
