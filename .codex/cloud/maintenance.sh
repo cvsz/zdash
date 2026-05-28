@@ -2,6 +2,16 @@
 set -Eeuo pipefail
 
 ROOT_DIR="${CODEX_WORKSPACE_DIR:-$(pwd)}"
+CODEX_MAINTENANCE_ADVISORY="${CODEX_MAINTENANCE_ADVISORY:-false}"
+if [[ "${1:-}" == "--advisory" ]]; then
+  CODEX_MAINTENANCE_ADVISORY=true
+  shift || true
+fi
+if [[ "${1:-}" == "--strict" ]]; then
+  CODEX_MAINTENANCE_ADVISORY=false
+  shift || true
+fi
+
 cd "$ROOT_DIR"
 ROOT_DIR="$(pwd)"
 
@@ -11,6 +21,7 @@ printf '============================================================\n'
 
 mkdir -p "$ROOT_DIR/.codex/reports" "$ROOT_DIR/.codex/logs"
 REPORT="$ROOT_DIR/.codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
+FAILED_STEPS=()
 
 tracked_grep() {
   local pattern="$1"
@@ -38,6 +49,12 @@ tracked_source_grep() {
     "$@" 2>/dev/null || true
 }
 
+record_failure() {
+  local message="$1"
+  FAILED_STEPS+=("$message")
+  printf '%s\n' "FAILED: $message" | tee -a "$REPORT"
+}
+
 {
   echo "# zDash Codex Cloud Maintenance Report"
   echo
@@ -45,6 +62,7 @@ tracked_source_grep() {
   echo "- Repo: cvsz/zdash"
   echo "- Baseline: Phase 01-10 plus Phase 7.10 collaboration/federation foundation"
   echo "- Cloudflare operator repo: cvsz/zeaz-platform"
+  echo "- Mode: $([[ "$CODEX_MAINTENANCE_ADVISORY" == "true" ]] && echo advisory || echo strict)"
   echo "- Branch: $(git branch --show-current 2>/dev/null || true)"
   echo "- Commit: $(git rev-parse --short HEAD 2>/dev/null || true)"
   echo
@@ -63,7 +81,7 @@ run_step() {
   local step_status="${PIPESTATUS[0]}"
   set -e
   if [ "$step_status" -ne 0 ]; then
-    echo "FAILED: $name status=$step_status" | tee -a "$REPORT"
+    record_failure "$name status=$step_status"
     return "$step_status"
   fi
   echo "PASSED: $name" | tee -a "$REPORT"
@@ -85,8 +103,8 @@ status=0
 } >> "$REPORT"
 
 if tracked_source_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
-  echo "FAILED: old backend port 8000 found in tracked runtime/source files" | tee -a "$REPORT"
   cat /tmp/zdash-codex-port8000.txt | tee -a "$REPORT"
+  record_failure "old backend port 8000 found in tracked runtime/source files"
   status=1
 else
   echo "PASSED: no old backend port 8000 found in tracked runtime/source files" | tee -a "$REPORT"
@@ -95,8 +113,13 @@ fi
 if [ -d "backend" ]; then
   run_step "backend dependency repair" bash .codex/cloud/repair-backend-deps.sh || status=1
   cd backend
-  # shellcheck disable=SC1091
-  source .venv/bin/activate
+  if [ -f .venv/bin/activate ]; then
+    # shellcheck disable=SC1091
+    source .venv/bin/activate
+  else
+    record_failure "backend venv missing: backend/.venv/bin/activate"
+    status=1
+  fi
   run_step "backend lint" python -m ruff check app tests || status=1
   run_step "backend tests" python -B -m pytest -q || status=1
   cd "$ROOT_DIR"
@@ -148,5 +171,24 @@ fi
   echo "- Verify frontend WS base URL derives from VITE_WS_BASE_URL or VITE_API_BASE_URL."
 } >> "$REPORT"
 
+{
+  echo
+  echo "## Maintenance summary"
+  if [ "${#FAILED_STEPS[@]}" -eq 0 ]; then
+    echo "PASSED: all required maintenance checks passed."
+  else
+    echo "FAILED: ${#FAILED_STEPS[@]} required maintenance check(s) failed."
+    for failure in "${FAILED_STEPS[@]}"; do
+      echo "- $failure"
+    done
+  fi
+} | tee -a "$REPORT"
+
 printf '\nMaintenance complete: %s\n' "$REPORT"
+
+if [ "$status" -ne 0 ] && [ "$CODEX_MAINTENANCE_ADVISORY" == "true" ]; then
+  printf 'WARN: maintenance completed with failures in advisory mode; see report above.\n'
+  exit 0
+fi
+
 exit "$status"
