@@ -11,6 +11,7 @@ from app.agents.registry import bootstrap_agents
 from app.api import (
     admin,
     agents,
+    ai_trader,
     auth,
     backtesting,
     billing,
@@ -116,6 +117,7 @@ app.include_router(realtime.router)
 app.include_router(incidents.router)
 app.include_router(risk.router)
 app.include_router(trading.router)
+app.include_router(ai_trader.router)
 
 app.include_router(scheduler.router)
 app.include_router(iot.router)
