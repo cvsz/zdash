@@ -12,6 +12,9 @@ FRONTEND_HOST ?= 0.0.0.0
 FRONTEND_PORT ?= 5173
 PYTHON ?= python3
 NPM_INSTALL_FLAGS ?= --legacy-peer-deps --no-audit --fund=false
+GH_REPO ?= cvsz/zdash
+GH_ENV ?= dev
+GH_ENV_FILE ?= .env
 
 BACKEND_ACTIVATE := source $(BACKEND_DIR)/.venv/bin/activate
 NVM_LOAD := source $$HOME/.nvm/nvm.sh >/dev/null 2>&1 || true; nvm use $(NODE_VERSION) >/dev/null 2>&1 || true
@@ -20,7 +23,7 @@ FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|
 .PHONY: help
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-30s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@printf "\nCommon flows:\n  make validate-fast\n  make validate\n  make phase10-final\n  make run-backend\n  make run-frontend\n\n"
+	@printf "\nCommon flows:\n  make validate-fast\n  make validate\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make phase10-final\n  make run-backend\n  make run-frontend\n\n"
 
 .PHONY: info
 info: ## Print local project/runtime info
@@ -78,6 +81,22 @@ env-check: ## Validate .env key syntax without printing values
 		[ "$$file_ok" -eq 0 ] || echo "PASSED: $$file"; \
 	done; \
 	exit "$$status"
+
+.PHONY: gh-env-dry
+gh-env-dry: ## Dry-run sync local env files into GitHub Environment variables/secrets
+	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --dry-run
+
+.PHONY: gh-env-sync
+gh-env-sync: ## Live sync local env file into GitHub Environment variables/secrets; requires GH_ENV/GH_ENV_FILE and gh auth
+	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --yes
+
+.PHONY: gh-env-clean-dry
+gh-env-clean-dry: ## Dry-run stale cleanup for managed GitHub Environment keys
+	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --delete-stale --dry-run
+
+.PHONY: gh-env-clean
+gh-env-clean: ## Delete stale managed GitHub Environment keys not present in local env file; requires confirmation
+	@bash scripts/github/bootstrap-env-from-env.sh --repo $(GH_REPO) --env $(GH_ENV) --file $(GH_ENV_FILE) --delete-stale --yes
 
 .PHONY: port-scan
 port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
