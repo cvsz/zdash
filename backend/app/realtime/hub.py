@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from collections import deque
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.realtime.broadcast import broadcast_event
 from app.realtime.manager import get_realtime_connection_manager
 from app.realtime.models import RealtimeEnvelope
+
+
+def _utc_iso_timestamp() -> str:
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 class EventHub:
@@ -17,7 +22,7 @@ class EventHub:
         event = RealtimeEnvelope(
             id=f"evt_{uuid4().hex[:12]}",
             type=event_type,
-            timestamp=payload.get("timestamp") or payload.get("ts") or __import__("datetime").datetime.utcnow().isoformat() + "Z",
+            timestamp=payload.get("timestamp") or payload.get("ts") or _utc_iso_timestamp(),
             source=source,
             severity=severity,
             payload=payload,
