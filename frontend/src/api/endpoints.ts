@@ -45,6 +45,17 @@ import type {
   AlertRule,
   AlertEvent,
   NotificationChannel,
+  BillingPlan,
+  BillingStatus,
+  UsageSummary,
+  Invoice,
+  PluginManifest,
+  PluginInstallation,
+  EnterpriseLicense,
+  BrandingSettings,
+  ExportBundle,
+  OnboardingChecklist,
+  CustomerHealth,
 } from "./types";
 
 type AgentMessagePayload = {
@@ -732,3 +743,411 @@ export const testNotificationChannel = async (channelId: string) => {
   const data = await apiClient.post<{ ok: boolean }>("/api/alerts/channels/" + channelId + "/test", {}, { ok: true });
   return data;
 };
+
+// Billing API
+export const getBillingStatus = async () => {
+  return apiClient.get<BillingStatus>("/api/billing/status", {
+    status: "active",
+    plan_tier: "pro",
+    plan_id: "pro",
+    provider: "mock",
+    cancel_at_period_end: false,
+    current_period_start: new Date().toISOString(),
+    current_period_end: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
+    trial_ends_at: null,
+  });
+};
+
+export const getBillingPlans = async () => {
+  const data = await apiClient.get<{ plans: BillingPlan[] }>("/api/billing/plans", {
+    plans: [
+      {
+        id: "free",
+        tier: "free",
+        name: "Free",
+        description: "Basic trading operations",
+        price_monthly: 0,
+        price_yearly: 0,
+        features: ["Backtest runs", "Basic signals"],
+        limits: { backtest_runs: 10, content_generation_tokens: 0, marketplace_plugins: 0, iot_actions: 0 },
+      },
+      {
+        id: "starter",
+        tier: "starter",
+        name: "Starter",
+        description: "For individual traders",
+        price_monthly: 19,
+        price_yearly: 190,
+        features: ["Backtest runs", "Basic signals", "1 Marketplace plugin"],
+        limits: { backtest_runs: 50, content_generation_tokens: 10000, marketplace_plugins: 1, iot_actions: 10 },
+      },
+      {
+        id: "pro",
+        tier: "pro",
+        name: "Pro",
+        description: "Advanced automation and safety",
+        price_monthly: 49,
+        price_yearly: 490,
+        features: ["Backtest runs", "Advanced signals", "5 Marketplace plugins", "IoT control", "Guardian risk guards"],
+        limits: { backtest_runs: 200, content_generation_tokens: 50000, marketplace_plugins: 5, iot_actions: 100 },
+      },
+      {
+        id: "enterprise",
+        tier: "enterprise",
+        name: "Enterprise",
+        description: "White-label and custom scale",
+        price_monthly: 199,
+        price_yearly: 1990,
+        features: ["Unlimited backtests", "Priority execution", "Unlimited plugins", "Custom branding", "Exports"],
+        limits: { backtest_runs: 999999, content_generation_tokens: 999999, marketplace_plugins: 999999, iot_actions: 999999 },
+      },
+    ],
+  });
+  return data.plans;
+};
+
+export const startCheckout = async (planId: string) => {
+  return apiClient.post<{ checkout_url: string }>("/api/billing/checkout", { plan_id: planId }, {
+    checkout_url: "https://mock-billing.test/checkout?plan=" + planId,
+  });
+};
+
+export const openBillingPortal = async () => {
+  return apiClient.post<{ portal_url: string }>("/api/billing/portal", {}, {
+    portal_url: "https://mock-billing.test/portal",
+  });
+};
+
+export const cancelSubscription = async () => {
+  return apiClient.post<{ ok: boolean }>("/api/billing/cancel", {}, { ok: true });
+};
+
+export const applyMockPlan = async (planTier: string) => {
+  return apiClient.post<{ ok: boolean }>("/api/billing/mock/apply-plan", { plan_tier: planTier }, { ok: true });
+};
+
+export const getUsageSummary = async () => {
+  return apiClient.get<UsageSummary>("/api/billing/usage", {
+    metrics: {
+      backtest_runs: { limit: 200, usage: 45 },
+      content_generation_tokens: { limit: 50000, usage: 12000 },
+      marketplace_plugins: { limit: 5, usage: 2 },
+      iot_actions: { limit: 100, usage: 85 },
+    },
+    reset_timestamp: new Date(Date.now() + 15 * 24 * 3600 * 1000).toISOString(),
+  });
+};
+
+export const getInvoices = async () => {
+  const data = await apiClient.get<{ invoices: Invoice[] }>("/api/billing/invoices", {
+    invoices: [
+      { id: "inv-001", number: "INV-2026-001", amount: 49.00, currency: "USD", status: "paid", created_at: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString() },
+      { id: "inv-002", number: "INV-2026-002", amount: 49.00, currency: "USD", status: "paid", created_at: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString() },
+    ],
+  });
+  return data.invoices;
+};
+
+// Marketplace API
+export const listMarketplacePlugins = async () => {
+  const data = await apiClient.get<{ plugins: PluginManifest[] }>("/api/marketplace/plugins", {
+    plugins: [
+      {
+        id: "plugin-tapo",
+        name: "Tapo Smart Plug Controller",
+        slug: "tapo-controller",
+        version: "1.0.2",
+        description: "Control smart plugs and devices automatically based on risk events.",
+        author: "zDash Team",
+        category: "iot",
+        status: "approved",
+        required_features: ["feature.iot"],
+        required_permissions: ["iot_control"],
+        config_schema: {},
+        default_config: {},
+        entrypoint: "main.py",
+        safety_level: "sandbox",
+        metadata_json: {},
+      },
+      {
+        id: "plugin-slack",
+        name: "Slack Webhook Notifier",
+        slug: "slack-notifier",
+        version: "2.1.0",
+        description: "Send system alerts and trading summaries to Slack channels.",
+        author: "Slack Inc.",
+        category: "notifications",
+        status: "approved",
+        required_features: [],
+        required_permissions: [],
+        config_schema: {},
+        default_config: {},
+        entrypoint: "slack.py",
+        safety_level: "restricted",
+        metadata_json: {},
+      },
+    ],
+  });
+  return data.plugins;
+};
+
+export const getMarketplacePlugin = async (pluginId: string) => {
+  const data = await apiClient.get<{ plugin: PluginManifest }>("/api/marketplace/plugins/" + pluginId, {
+    plugin: {
+      id: pluginId,
+      name: pluginId === "plugin-tapo" ? "Tapo Smart Plug Controller" : "Slack Webhook Notifier",
+      slug: "plugin-slug",
+      version: "1.0.0",
+      description: "Plugin description",
+      author: "Author",
+      category: "general",
+      status: "approved",
+      required_features: [],
+      required_permissions: [],
+      config_schema: {},
+      default_config: {},
+      entrypoint: "main.py",
+      safety_level: "sandbox",
+      metadata_json: {},
+    },
+  });
+  return data.plugin;
+};
+
+export const listPluginInstallations = async () => {
+  const data = await apiClient.get<{ installations: PluginInstallation[] }>("/api/marketplace/installations", {
+    installations: [
+      {
+        id: "inst-tapo",
+        organization_id: "org-1",
+        workspace_id: "ws-1",
+        plugin_id: "plugin-tapo",
+        version: "1.0.2",
+        status: "enabled",
+        config_json: {},
+        enabled: true,
+        installed_by: "admin@zeaz.dev",
+        installed_at: new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString(),
+      },
+    ],
+  });
+  return data.installations;
+};
+
+export const installMarketplacePlugin = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
+  return apiClient.post<{ ok: boolean, id: string }>("/api/marketplace/install", { plugin_id: pluginId, workspace_id: workspaceId, config }, {
+    ok: true,
+    id: "inst-tapo",
+  });
+};
+
+export const enablePluginInstallation = async (installationId: string) => {
+  return apiClient.post<{ ok: boolean }>("/api/marketplace/installations/" + installationId + "/enable", {}, { ok: true });
+};
+
+export const disablePluginInstallation = async (installationId: string) => {
+  return apiClient.post<{ ok: boolean }>("/api/marketplace/installations/" + installationId + "/disable", {}, { ok: true });
+};
+
+export const uninstallPluginInstallation = async (installationId: string) => {
+  return apiClient.delete<{ ok: boolean }>("/api/marketplace/installations/" + installationId, { ok: true });
+};
+
+export const runPluginAction = async (installationId: string, action: string, payload: Record<string, any> = {}) => {
+  return apiClient.post<{ ok: boolean, output: any }>("/api/marketplace/installations/" + installationId + "/run", { action, payload }, {
+    ok: true,
+    output: { status: "simulated_success" },
+  });
+};
+
+// Enterprise API
+export const getEnterpriseStatus = async () => {
+  return apiClient.get<{ license: EnterpriseLicense, branding: BrandingSettings }>("/status", {
+    license: {
+      organization_id: "org-1",
+      status: "active",
+      tier: "enterprise",
+      seats: 50,
+      features: ["feature.branding", "feature.exports", "feature.unlimited_backtests"],
+      expires_at: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString(),
+      offline_mode: false,
+      issued_to: "Zeaz Inc",
+    },
+    branding: {
+      organization_id: "org-1",
+      workspace_id: "ws-1",
+      brand_name: "zDash Custom",
+      logo_url: null,
+      primary_color: "#7c3aed",
+      accent_color: "#22c55e",
+      support_email: "support@zeaz.dev",
+      custom_domain: "dash.zeaz.dev",
+    },
+  });
+};
+
+export const getLicenseStatus = async () => {
+  return apiClient.get<EnterpriseLicense>("/license", {
+    organization_id: "org-1",
+    status: "active",
+    tier: "enterprise",
+    seats: 50,
+    features: ["feature.branding", "feature.exports", "feature.unlimited_backtests"],
+    expires_at: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString(),
+    offline_mode: false,
+    issued_to: "Zeaz Inc",
+  });
+};
+
+export const applyLicense = async (licenseKey: string) => {
+  return apiClient.post<{ ok: boolean }>("/license/apply", { license_key: licenseKey }, { ok: true });
+};
+
+export const revokeLicense = async () => {
+  return apiClient.post<{ ok: boolean }>("/license/revoke", {}, { ok: true });
+};
+
+export const getBrandingSettings = async () => {
+  return apiClient.get<BrandingSettings>("/branding", {
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    brand_name: "zDash",
+    logo_url: null,
+    primary_color: "#7c3aed",
+    accent_color: "#22c55e",
+    support_email: "support@zeaz.dev",
+    custom_domain: "dash.zeaz.dev",
+  });
+};
+
+export const updateBrandingSettings = async (settings: Partial<BrandingSettings>) => {
+  return apiClient.patch<BrandingSettings>("/branding", settings, {
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    brand_name: settings.brand_name ?? "zDash",
+    logo_url: settings.logo_url ?? null,
+    primary_color: settings.primary_color ?? "#7c3aed",
+    accent_color: settings.accent_color ?? "#22c55e",
+    support_email: settings.support_email ?? "support@zeaz.dev",
+    custom_domain: settings.custom_domain ?? "dash.zeaz.dev",
+  });
+};
+
+export const resetBrandingSettings = async () => {
+  return apiClient.post<BrandingSettings>("/branding/reset", {}, {
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    brand_name: "zDash",
+    logo_url: null,
+    primary_color: "#7c3aed",
+    accent_color: "#22c55e",
+    support_email: "support@zeaz.dev",
+    custom_domain: null,
+  });
+};
+
+export const listExportBundles = async () => {
+  const data = await apiClient.get<{ exports: ExportBundle[] }>("/exports", {
+    exports: [
+      {
+        id: "exp-001",
+        organization_id: "org-1",
+        workspace_id: "ws-1",
+        export_type: "full",
+        status: "completed",
+        file_path: "/exports/bundle_001.zip",
+        include_audit_logs: true,
+        include_content: true,
+        include_backtests: false,
+        include_scheduler: true,
+        include_secrets: false,
+        created_by: "admin@zeaz.dev",
+        created_at: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+        completed_at: new Date(Date.now() - 2 * 24 * 3600 * 1000).toISOString(),
+      },
+    ],
+  });
+  return data.exports;
+};
+
+export const createExportBundle = async (req: {
+  export_type: string;
+  include_audit_logs: boolean;
+  include_content: boolean;
+  include_backtests: boolean;
+  include_scheduler: boolean;
+  include_secrets: boolean;
+}) => {
+  return apiClient.post<ExportBundle>("/exports", req, {
+    id: "exp-new",
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    export_type: req.export_type,
+    status: "completed",
+    file_path: "/exports/bundle_new.zip",
+    include_audit_logs: req.include_audit_logs,
+    include_content: req.include_content,
+    include_backtests: req.include_backtests,
+    include_scheduler: req.include_scheduler,
+    include_secrets: req.include_secrets,
+    created_by: "admin@zeaz.dev",
+    created_at: new Date().toISOString(),
+    completed_at: new Date().toISOString(),
+  });
+};
+
+export const getExportBundle = async (bundleId: string) => {
+  return apiClient.get<ExportBundle>("/exports/" + bundleId, {
+    id: bundleId,
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    export_type: "full",
+    status: "completed",
+    file_path: "/exports/" + bundleId + ".zip",
+    include_audit_logs: true,
+    include_content: true,
+    include_backtests: false,
+    include_scheduler: true,
+    include_secrets: false,
+    created_by: "admin@zeaz.dev",
+    created_at: new Date().toISOString(),
+    completed_at: new Date().toISOString(),
+  });
+};
+
+export const getOnboardingChecklist = async () => {
+  return apiClient.get<OnboardingChecklist>("/onboarding", {
+    organization_id: "org-1",
+    workspace_id: "ws-1",
+    completed_steps: ["create organization", "create workspace"],
+    pending_steps: [
+      "invite team",
+      "verify risk guardian",
+      "run first dry-run scan",
+      "run first backtest",
+      "create first content item",
+      "review scheduler jobs",
+      "configure billing",
+      "review production safety check",
+    ],
+    progress_percent: 20.0,
+  });
+};
+
+export const completeOnboardingStep = async (step: string) => {
+  return apiClient.post<{ ok: boolean }>("/onboarding/complete-step", { step }, { ok: true });
+};
+
+export const resetOnboardingChecklist = async () => {
+  return apiClient.post<{ ok: boolean }>("/onboarding/reset", {}, { ok: true });
+};
+
+export const getCustomerHealth = async () => {
+  return apiClient.get<CustomerHealth>("/customer-health", {
+    health_score: 20.0,
+    status: "poor",
+    active_users: 1,
+    usage_trend: "stable",
+  });
+};
+

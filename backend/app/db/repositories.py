@@ -23,6 +23,8 @@ from app.billing.models import (
     Subscription,
     UsageRecord,
 )
+from app.marketplace.models import PluginInstallation
+
 
 
 class UserRepositoryProtocol(Protocol):
@@ -292,6 +294,15 @@ class BillingRepositoryProtocol(Protocol):
     def record_usage(self, **kwargs) -> UsageRecord: ...
 
 
+class MarketplaceRepositoryProtocol(Protocol):
+    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None: ...
+    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]: ...
+    def create_installation(self, **kwargs) -> PluginInstallation: ...
+    def update_installation(self, installation: PluginInstallation) -> PluginInstallation: ...
+    def delete_installation(self, installation: PluginInstallation) -> None: ...
+
+
+
 class BillingRepository(BillingRepositoryProtocol):
     def __init__(self, db: Session):
         self.db = db
@@ -325,3 +336,38 @@ class BillingRepository(BillingRepositoryProtocol):
         self.db.commit()
         self.db.refresh(row)
         return row
+
+
+class MarketplaceRepository(MarketplaceRepositoryProtocol):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None:
+        return self.db.execute(
+            select(PluginInstallation)
+            .where(PluginInstallation.id == installation_id)
+            .where(PluginInstallation.organization_id == organization_id)
+        ).scalars().first()
+
+    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]:
+        query = select(PluginInstallation).where(PluginInstallation.organization_id == organization_id)
+        if workspace_id:
+            query = query.where(PluginInstallation.workspace_id == workspace_id)
+        return list(self.db.execute(query).scalars().all())
+
+    def create_installation(self, **kwargs) -> PluginInstallation:
+        row = PluginInstallation(**kwargs)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def update_installation(self, installation: PluginInstallation) -> PluginInstallation:
+        self.db.commit()
+        self.db.refresh(installation)
+        return installation
+
+    def delete_installation(self, installation: PluginInstallation) -> None:
+        self.db.delete(installation)
+        self.db.commit()
+

@@ -2,8 +2,8 @@ import hashlib
 from typing import Dict, Any
 from sqlalchemy import select
 from app.db.session import SessionLocal
-from app.enterprise.models import EnterpriseLicense, LicenseStatus
-from app.core.config import settings
+from app.enterprise.models import EnterpriseLicense
+from app.enterprise.models_enums import LicenseStatus
 from datetime import datetime, timezone
 
 def utc_now() -> datetime:

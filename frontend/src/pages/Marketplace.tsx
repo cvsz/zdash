@@ -1,26 +1,101 @@
-import React from "react";
-import { PluginDirectory } from "../components/marketplace/PluginDirectory";
-import { InstalledPlugins } from "../components/marketplace/InstalledPlugins";
+import React, { useState } from "react";
+import { useMarketplace } from "../hooks/useMarketplace";
+import { PluginGrid } from "../components/marketplace/PluginGrid";
+import { InstalledPluginTable } from "../components/marketplace/InstalledPluginTable";
+import { PluginDetailPanel } from "../components/marketplace/PluginDetailPanel";
+import { PluginManifest } from "../api/types";
 
 export default function Marketplace() {
+  const {
+    plugins,
+    installations,
+    loading,
+    error,
+    install,
+    enable,
+    disable,
+    uninstall,
+    runAction,
+  } = useMarketplace();
+
+  const [selectedPlugin, setSelectedPlugin] = useState<PluginManifest | null>(null);
+
+  const handleInstall = async (pluginId: string) => {
+    try {
+      await install(pluginId, "ws-1");
+    } catch (err) {
+      // Handled in hook
+    }
+  };
+
+  const handleRunAction = async (action: string, payload: Record<string, any>, dryRun: boolean) => {
+    if (!selectedPlugin) return;
+    const inst = installations.find((i) => i.plugin_id === selectedPlugin.id);
+    if (!inst) throw new Error("Plugin not installed yet");
+    return runAction(inst.id, action, payload, dryRun);
+  };
+
+  const isPluginInstalled = (pluginId: string) => {
+    return installations.some((inst) => inst.plugin_id === pluginId);
+  };
+
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="p-6 max-w-6xl mx-auto space-y-8 text-white relative">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Marketplace</h2>
-        <p className="text-neutral-400">Discover and install plugins to extend zDash capabilities.</p>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">Plug-in Marketplace</h2>
+        <p className="text-neutral-400">Expand dashboard functionality with verified third-party tools and IoT controls.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <section className="lg:col-span-2">
-          <h3 className="text-xl font-semibold mb-4">Plugin Directory</h3>
-          <PluginDirectory />
-        </section>
+      {error && (
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-sm font-semibold">
+          Error: {error}
+        </div>
+      )}
 
-        <section className="lg:col-span-1">
-          <h3 className="text-xl font-semibold mb-4">Installed Plugins</h3>
-          <InstalledPlugins />
-        </section>
-      </div>
+      {loading ? (
+        <div className="space-y-6">
+          <div className="h-48 bg-neutral-900/50 rounded-xl animate-pulse" />
+          <div className="h-64 bg-neutral-900/50 rounded-xl animate-pulse" />
+        </div>
+      ) : (
+        <>
+          {/* Installed plugins section */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Installed Plug-ins</h3>
+            <InstalledPluginTable
+              installations={installations}
+              plugins={plugins}
+              onEnable={enable}
+              onDisable={disable}
+              onUninstall={uninstall}
+              onViewDetails={setSelectedPlugin}
+            />
+          </section>
+
+          {/* Plugin Grid catalog */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Browse Available Plugins</h3>
+            <PluginGrid
+              plugins={plugins}
+              installations={installations}
+              onInstall={handleInstall}
+              onViewDetails={setSelectedPlugin}
+            />
+          </section>
+
+          {/* Slide-over details & console panel */}
+          {selectedPlugin && (
+            <PluginDetailPanel
+              plugin={selectedPlugin}
+              onClose={() => setSelectedPlugin(null)}
+              onInstall={handleInstall}
+              isInstalled={isPluginInstalled(selectedPlugin.id)}
+              onRunAction={handleRunAction}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }
+export { Marketplace };

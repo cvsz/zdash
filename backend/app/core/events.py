@@ -50,6 +50,18 @@ BILLING_EVENT_TYPES = (
     "billing.webhook.failed",
 )
 
+MARKETPLACE_EVENT_TYPES = (
+    "marketplace.plugin.listed",
+    "marketplace.plugin.installed",
+    "marketplace.plugin.enabled",
+    "marketplace.plugin.disabled",
+    "marketplace.plugin.uninstalled",
+    "marketplace.plugin.action.started",
+    "marketplace.plugin.action.completed",
+    "marketplace.plugin.action.blocked",
+    "marketplace.plugin.action.failed",
+)
+
 
 CONTENT_EVENT_TYPES = (
     "content.draft.created",
@@ -108,6 +120,7 @@ ALL_EVENT_TYPES = (
     + EDITOR_EVENT_TYPES
     + GRAPHIC_EVENT_TYPES
     + SOCIAL_EVENT_TYPES
+    + MARKETPLACE_EVENT_TYPES
 )
 
 class Event(BaseModel):

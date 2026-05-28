@@ -8,6 +8,7 @@ import LiveIndicator from "../components/realtime/LiveIndicator";
 import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
 import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
 import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
+import QuotaBanner from "../components/billing/QuotaBanner";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
 import {
@@ -87,6 +88,8 @@ export default function Dashboard() {
       />
 
       <RealtimeConnectionBanner connection={realtime.connection} />
+
+      <QuotaBanner />
 
       {mockFallbackActive ? (
         <div className="rounded-2xl border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100">

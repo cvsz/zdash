@@ -52,10 +52,14 @@ def api_plugin(plugin_id: str, current_user: Any = Depends(require_permissions([
         return error_response("PLUGIN_ERROR", str(e))
 
 @router.get("/installations")
-def api_installations(current_user: Any = Depends(require_permissions([Permission.marketplace_read]))):
+def api_installations(
+    current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
-        ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
-        insts = list_installations(current_user.organization_id, ws_id)
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", None)
+        insts = list_installations(org_id, ws_id)
         
         # Serialize list of installations
         res = []
@@ -86,11 +90,11 @@ def api_install(
             return error_response("QUOTA_EXCEEDED", "Marketplace plugins quota exceeded")
             
         res = install_plugin(
-            current_user.organization_id,
+            org_id,
             body.plugin_id,
             body.workspace_id,
             body.config,
-            current_user.id
+            getattr(current_user, "username", "system")
         )
         if not res.get("ok"):
             return error_response("INSTALL_FAILED", res.get("error", "Unknown error"))
@@ -99,9 +103,14 @@ def api_install(
         return error_response("INSTALL_ERROR", str(e))
 
 @router.post("/installations/{installation_id}/enable")
-def api_enable(installation_id: str, current_user: Any = Depends(require_permissions([Permission.marketplace_manage]))):
+def api_enable(
+    installation_id: str, 
+    current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
-        res = enable_plugin(current_user.organization_id, installation_id)
+        org_id = getattr(tenant, "organization_id", "default")
+        res = enable_plugin(org_id, installation_id, getattr(current_user, "username", "system"))
         if not res.get("ok"):
             return error_response("ENABLE_FAILED", res.get("error", "Unknown error"))
         return success_response(res)
@@ -109,9 +118,14 @@ def api_enable(installation_id: str, current_user: Any = Depends(require_permiss
         return error_response("ENABLE_ERROR", str(e))
 
 @router.post("/installations/{installation_id}/disable")
-def api_disable(installation_id: str, current_user: Any = Depends(require_permissions([Permission.marketplace_manage]))):
+def api_disable(
+    installation_id: str, 
+    current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
-        res = disable_plugin(current_user.organization_id, installation_id)
+        org_id = getattr(tenant, "organization_id", "default")
+        res = disable_plugin(org_id, installation_id, getattr(current_user, "username", "system"))
         if not res.get("ok"):
             return error_response("DISABLE_FAILED", res.get("error", "Unknown error"))
         return success_response(res)
@@ -119,9 +133,14 @@ def api_disable(installation_id: str, current_user: Any = Depends(require_permis
         return error_response("DISABLE_ERROR", str(e))
 
 @router.delete("/installations/{installation_id}")
-def api_uninstall(installation_id: str, current_user: Any = Depends(require_permissions([Permission.marketplace_manage]))):
+def api_uninstall(
+    installation_id: str, 
+    current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
-        res = uninstall_plugin(current_user.organization_id, installation_id)
+        org_id = getattr(tenant, "organization_id", "default")
+        res = uninstall_plugin(org_id, installation_id, getattr(current_user, "username", "system"))
         if not res.get("ok"):
             return error_response("UNINSTALL_FAILED", res.get("error", "Unknown error"))
         return success_response(res)
@@ -129,13 +148,20 @@ def api_uninstall(installation_id: str, current_user: Any = Depends(require_perm
         return error_response("UNINSTALL_ERROR", str(e))
 
 @router.post("/installations/{installation_id}/run")
-def api_run(installation_id: str, body: RunPluginRequest, current_user: Any = Depends(require_permissions([Permission.marketplace_run_plugin]))):
+def api_run(
+    installation_id: str, 
+    body: RunPluginRequest, 
+    current_user: Any = Depends(require_permissions([Permission.marketplace_run_plugin])),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
+        org_id = getattr(tenant, "organization_id", "default")
         res = run_plugin_action(
-            current_user.organization_id,
+            org_id,
             installation_id,
             body.action,
-            body.payload
+            body.payload,
+            getattr(current_user, "username", "system")
         )
         if not res.get("ok"):
             return error_response("RUN_FAILED", res.get("error", "Unknown error"))

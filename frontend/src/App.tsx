@@ -29,6 +29,11 @@ import WorkspaceLive from "./pages/WorkspaceLive";
 import WorkspaceTimeline from "./pages/WorkspaceTimeline";
 import WorkspaceNotes from "./pages/WorkspaceNotes";
 import IncidentCenter from "./pages/IncidentCenter";
+import Billing from "./pages/Billing";
+import Usage from "./pages/Usage";
+import Marketplace from "./pages/Marketplace";
+import Enterprise from "./pages/Enterprise";
+import Onboarding from "./pages/Onboarding";
 import { RealtimeProvider } from "./realtime/context";
 
 function ProtectedDashboardRoutes() {
@@ -52,6 +57,11 @@ function ProtectedDashboardRoutes() {
           <Route path="/workers" element={<Workers />} />
           <Route path="/logs" element={<SessionLogs />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/billing" element={<Billing />} />
+          <Route path="/usage" element={<Usage />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/enterprise" element={<Enterprise />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/system/health" element={<SystemHealth />} />
           <Route path="/events" element={<EventTimeline />} />
           <Route path="/notifications" element={<Notifications />} />

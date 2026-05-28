@@ -1,5 +1,8 @@
 import pytest
 
+from app.db.migrations import run_migrations
+run_migrations()
+
 from app.backtesting.backtest_service import reset_backtest_service
 from app.core.config import get_settings
 from app.core.events import event_bus

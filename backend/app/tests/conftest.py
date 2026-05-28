@@ -1,6 +1,9 @@
 import pytest
 from collections.abc import Generator
 
+from app.db.migrations import run_migrations
+run_migrations()
+
 from app.agents.registry import reset_registry
 from app.backtesting.backtest_service import reset_backtest_service
 from app.content.pipeline import reset_content_pipeline

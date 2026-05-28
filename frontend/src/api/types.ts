@@ -465,3 +465,146 @@ export type NotificationChannel = {
   enabled: boolean;
   created_at: string;
 };
+
+export type BillingPlan = {
+  id: string;
+  tier: string;
+  name: string;
+  description: string;
+  price_monthly: number;
+  price_yearly: number;
+  features: string[];
+  limits: Record<string, number>;
+};
+
+export type BillingStatus = {
+  status: string;
+  plan_tier: string;
+  plan_id: string | null;
+  provider: string;
+  cancel_at_period_end: boolean;
+  current_period_start?: string | null;
+  current_period_end?: string | null;
+  trial_ends_at?: string | null;
+  grace_period_ends_at?: string | null;
+};
+
+export type UsageMetricValue = {
+  limit: number;
+  usage: number;
+};
+
+export type UsageSummary = {
+  metrics: {
+    backtest_runs?: UsageMetricValue;
+    content_generation_tokens?: UsageMetricValue;
+    marketplace_plugins?: UsageMetricValue;
+    iot_actions?: UsageMetricValue;
+    [key: string]: UsageMetricValue | undefined;
+  };
+  reset_timestamp: string;
+};
+
+export type Invoice = {
+  id: string;
+  number: string;
+  amount: number;
+  currency: string;
+  status: "paid" | "open" | "uncollectible" | "void";
+  created_at: string;
+  hosted_invoice_url?: string;
+  pdf_url?: string;
+};
+
+export type PluginManifest = {
+  id: string;
+  name: string;
+  slug: string;
+  version: string;
+  description: string;
+  author: string;
+  category: string;
+  status: string;
+  required_features: string[];
+  required_permissions: string[];
+  config_schema: Record<string, unknown>;
+  default_config: Record<string, unknown>;
+  entrypoint: string;
+  safety_level: string;
+  metadata_json: Record<string, unknown>;
+};
+
+export type PluginInstallation = {
+  id: string;
+  organization_id: string;
+  workspace_id: string;
+  plugin_id: string;
+  version: string;
+  status: string;
+  config_json: Record<string, unknown>;
+  enabled: boolean;
+  installed_by: string;
+  installed_at: string;
+};
+
+export type EnterpriseLicense = {
+  id?: string;
+  organization_id: string;
+  status: string;
+  tier: string;
+  seats: number;
+  features: string[];
+  expires_at?: string | null;
+  offline_mode: boolean;
+  issued_to?: string;
+  metadata_json?: Record<string, unknown>;
+};
+
+export type BrandingSettings = {
+  id?: string;
+  organization_id: string;
+  workspace_id: string;
+  brand_name: string;
+  logo_url?: string | null;
+  primary_color: string;
+  accent_color: string;
+  support_email?: string | null;
+  custom_domain?: string | null;
+  metadata_json?: Record<string, unknown>;
+};
+
+export type ExportBundle = {
+  id: string;
+  organization_id: string;
+  workspace_id: string;
+  export_type: string;
+  status: string;
+  file_path?: string | null;
+  include_audit_logs: boolean;
+  include_content: boolean;
+  include_backtests: boolean;
+  include_scheduler: boolean;
+  include_secrets: boolean;
+  created_by: string;
+  created_at: string;
+  completed_at?: string | null;
+};
+
+export type OnboardingChecklist = {
+  id?: string;
+  organization_id: string;
+  workspace_id?: string | null;
+  completed_steps: string[];
+  pending_steps: string[];
+  progress_percent: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type CustomerHealth = {
+  health_score: number;
+  status: "poor" | "fair" | "excellent";
+  active_users: number;
+  usage_trend: string;
+};
+

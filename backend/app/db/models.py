@@ -156,3 +156,4 @@ class IoTActionLog(Base, Timestamped):
     payload_json: Mapped[dict] = mapped_column("payload", JSON, default=dict)
 
 # removed circular imports
+from app.marketplace.models import PluginManifest, PluginInstallation  # noqa: E402, F401

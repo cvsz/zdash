@@ -269,6 +269,11 @@ class Settings(BaseSettings):
     billing_webhook_secret: str = Field(default="", alias="BILLING_WEBHOOK_SECRET")
     billing_fail_closed: bool = Field(default=True, alias="BILLING_FAIL_CLOSED")
 
+    # Usage Metering and Quotas
+    usage_metering_enabled: bool = Field(default=True, alias="USAGE_METERING_ENABLED")
+    usage_enforcement_enabled: bool = Field(default=True, alias="USAGE_ENFORCEMENT_ENABLED")
+    usage_reset_mode: str = Field(default="monthly", alias="USAGE_RESET_MODE")
+
     stripe_enabled: bool = Field(default=False, alias="STRIPE_ENABLED")
     stripe_secret_key: str = Field(default="", alias="STRIPE_SECRET_KEY")
     stripe_webhook_secret: str = Field(default="", alias="STRIPE_WEBHOOK_SECRET")

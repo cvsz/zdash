@@ -2,7 +2,9 @@ import { apiClientConfig } from "../api/client";
 import { DEFAULT_ADMIN_USERNAME } from "../api/auth";
 import {
   getBacktestingStatus,
+  getBillingStatus,
   getContentStatus,
+  getEnterpriseStatus,
   getIoTStatus,
   getTradingStatus,
 } from "../api/endpoints";
@@ -22,6 +24,8 @@ export default function Settings() {
   const contentStatus = useApi(getContentStatus, []);
   const iotStatus = useApi(getIoTStatus, []);
   const backtestingStatus = useApi(getBacktestingStatus, []);
+  const billingStatus = useApi(getBillingStatus, []);
+  const enterpriseStatus = useApi(getEnterpriseStatus, []);
 
   const pollIntervalMs = Number(import.meta.env.VITE_POLL_INTERVAL_MS ?? 5000);
   const appVersion = import.meta.env.VITE_APP_VERSION ?? "0.1.0-placeholder";
@@ -67,6 +71,30 @@ export default function Settings() {
       key: "Current user",
       value: user ? `${user.username} (${user.role})` : "anonymous",
     },
+    {
+      key: "Billing provider",
+      value: String(billingStatus.data?.provider ?? "N/A"),
+    },
+    {
+      key: "Current plan tier",
+      value: String(billingStatus.data?.plan_tier ?? "N/A"),
+    },
+    {
+      key: "Enterprise license tier",
+      value: String(enterpriseStatus.data?.license?.tier ?? "N/A"),
+    },
+    {
+      key: "Whitelabel brand name",
+      value: String(enterpriseStatus.data?.branding?.brand_name ?? "N/A"),
+    },
+    {
+      key: "Whitelabel support contact",
+      value: String(enterpriseStatus.data?.branding?.support_email ?? "N/A"),
+    },
+    {
+      key: "Whitelabel custom domain",
+      value: String(enterpriseStatus.data?.branding?.custom_domain ?? "N/A"),
+    },
   ];
 
   return (
@@ -93,13 +121,17 @@ export default function Settings() {
               tradingStatus.loading ||
               contentStatus.loading ||
               iotStatus.loading ||
-              backtestingStatus.loading
+              backtestingStatus.loading ||
+              billingStatus.loading ||
+              enterpriseStatus.loading
             }
             error={
               tradingStatus.error ||
               contentStatus.error ||
               iotStatus.error ||
-              backtestingStatus.error
+              backtestingStatus.error ||
+              billingStatus.error ||
+              enterpriseStatus.error
             }
             rowKey={(row) => row.key}
             columns={[

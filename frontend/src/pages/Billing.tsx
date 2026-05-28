@@ -1,32 +1,97 @@
 import React from "react";
-import { PlanCards } from "../components/billing/PlanCards";
-import { UsageMeter } from "../components/billing/UsageMeter";
-import { InvoiceHistory } from "../components/billing/InvoiceHistory";
+import { useBilling } from "../hooks/useBilling";
+import { SubscriptionStatusCard } from "../components/billing/SubscriptionStatusCard";
+import { PlanCard } from "../components/billing/PlanCard";
+import { PricingTable } from "../components/billing/PricingTable";
+import { InvoiceTable } from "../components/billing/InvoiceTable";
 
 export default function Billing() {
+  const { status, plans, invoices, loading, error, checkout, portal, cancel, applyMock } = useBilling();
+
+  const handleSelectPlan = async (planId: string) => {
+    try {
+      await checkout(planId);
+    } catch (err) {
+      // Handled inside hook
+    }
+  };
+
+  const handleApplyMockPlan = async (planTier: string) => {
+    try {
+      await applyMock(planTier);
+    } catch (err) {
+      // Handled inside hook
+    }
+  };
+
+  const isMock = status?.provider === "mock";
+
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-8">
+    <div className="p-6 max-w-6xl mx-auto space-y-8 text-white">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Billing & Plans</h2>
-        <p className="text-neutral-400">Manage your subscription, usage, and invoices.</p>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">SaaS Subscription & Billing</h2>
+        <p className="text-neutral-400">Manage subscription, upgrades, usage credits, and invoice receipts history.</p>
       </div>
 
-      <section>
-        <h3 className="text-xl font-semibold mb-4">Available Plans</h3>
-        <PlanCards />
-      </section>
+      {error && (
+        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-sm font-semibold">
+          Error: {error}
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <section>
-          <h3 className="text-xl font-semibold mb-4">Current Usage</h3>
-          <UsageMeter />
-        </section>
+      {loading ? (
+        <div className="space-y-6">
+          <div className="h-40 bg-neutral-900/50 rounded-xl animate-pulse" />
+          <div className="h-64 bg-neutral-900/50 rounded-xl animate-pulse" />
+        </div>
+      ) : (
+        <>
+          {/* Subscription Status details */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Active Plan Status</h3>
+            <SubscriptionStatusCard
+              status={status}
+              onCancel={cancel}
+              onPortal={portal}
+              isMock={isMock}
+            />
+          </section>
 
-        <section>
-          <h3 className="text-xl font-semibold mb-4">Invoice History</h3>
-          <InvoiceHistory />
-        </section>
-      </div>
+          {/* Plan Catalog list */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Select Available Plan</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {plans.map((p) => (
+                <PlanCard
+                  key={p.id}
+                  plan={p}
+                  isCurrent={status?.plan_tier === p.tier}
+                  isMock={isMock}
+                  onSelect={handleSelectPlan}
+                  onApplyMock={handleApplyMockPlan}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* Feature Matrix */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Plan Comparison Matrix</h3>
+            <PricingTable
+              plans={plans}
+              currentTier={status?.plan_tier || "free"}
+              onSelect={handleSelectPlan}
+            />
+          </section>
+
+          {/* Invoices table logs */}
+          <section className="space-y-4">
+            <h3 className="text-lg font-bold text-neutral-300">Invoice History Logs</h3>
+            <InvoiceTable invoices={invoices} />
+          </section>
+        </>
+      )}
     </div>
   );
 }
+export { Billing };
