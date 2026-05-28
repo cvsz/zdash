@@ -1,0 +1,135 @@
+Execute only PHASE 09.7.
+
+Goal:
+Finalize Phase 09 integration, README, CI, docs, validation, and final handoff.
+
+Read:
+- docs/prompt/phase09.prompt
+- .codex/cloud/README.md
+- README.md
+- .github/workflows/*
+- backend/app/tests/*
+- frontend/src/tests/*
+- infra/*
+
+Tasks:
+1. Verify all Phase 09 required files exist or are intentionally documented as already existing.
+2. Verify Phase 01–08 and Phase 7.10 behavior remains intact.
+3. Verify backend port 8005 only.
+4. Verify no localhost:8000 outside archived prompt files.
+5. Verify Cloudflare operator handoff says cvsz/zeaz-platform.
+6. Verify no secrets or .env committed.
+7. Verify dry-run defaults:
+   DRY_RUN=true
+   LIVE_TRADING_ACK=false
+   SOCIAL_DRY_RUN=true
+   SOCIAL_APPROVAL_REQUIRED=true
+   SOCIAL_AUTO_POST_ENABLED=false
+   IOT_DRY_RUN=true
+   IOT_REQUIRE_CONFIRMATION=true
+   CLOUDFLARE_DRY_RUN=true
+   NOTIFICATION_DRY_RUN=true
+   PRODUCTION_SAFETY_LOCK=true
+
+README update:
+Add Phase 09 overview:
+- Multi-tenant architecture
+- Organization/workspace model
+- Tenant-scoped RBAC
+- Worker queue architecture
+- WebSocket event stream
+- Alerting and notification system
+- Cloudflare dry-run deployment
+- Terraform templates
+- Kubernetes manifests
+- Release scripts
+- Rollback scripts
+- Runbooks
+- Safety notes
+- Test commands
+
+Commands:
+docker compose up --build
+
+cd backend
+python -m app.workers.runner
+
+cd backend
+uvicorn app.main:app --reload --port 8005
+
+cd frontend
+npm run dev
+
+bash infra/scripts/cloudflare-dry-run.sh
+bash infra/scripts/deploy-dev.sh
+DEPLOY_CONFIRM=yes bash infra/scripts/deploy-prod.sh
+ROLLBACK_CONFIRM=yes bash infra/scripts/rollback.sh
+bash infra/scripts/k8s-smoke-test.sh
+
+Full validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+cd ..
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
+docker compose config
+docker compose -f docker-compose.prod.yml config
+
+bash .codex/cloud/maintenance.sh
+
+Final commit:
+phase09: implement enterprise cloud scale layer
+
+Final report:
+- repository inspection summary
+- sub-phases completed
+- files created
+- files updated
+- tests added/updated
+- validation commands and results
+- Docker/compose validation result
+- .codex/cloud maintenance result
+- safety checklist
+- Cloudflare operator handoff status
+- known limitations
+- Phase 10 handoff notes
+
+Acceptance:
+- Multi-tenant models exist.
+- Default local organization/workspace bootstraps.
+- Tenant context resolver works.
+- Tenant-scoped RBAC works.
+- Cross-tenant access is blocked.
+- Worker queue exists.
+- Worker tasks execute safely.
+- Redis queue support exists with in-memory fallback.
+- WebSocket event stream works.
+- Polling fallback works.
+- Notification service exists.
+- Alert rules exist.
+- Dry-run notifications work.
+- Cloudflare dry-run templates exist.
+- Terraform templates exist.
+- Kubernetes manifests exist.
+- Release/deploy/rollback scripts exist.
+- Runbooks exist.
+- Frontend organization/workspace UI exists.
+- Frontend workers page exists.
+- Frontend alerts page exists.
+- Existing tests pass.
+- New Phase 09 tests pass.
+- DRY_RUN remains true by default.
+- Social posting remains approval-gated.
+- IoT real actions remain blocked by default.
+- Live trading remains blocked by default.
+- README includes Phase 09 documentation.

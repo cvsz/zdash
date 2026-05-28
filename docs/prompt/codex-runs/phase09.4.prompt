@@ -1,0 +1,120 @@
+Execute only PHASE 09.4.
+
+Goal:
+Implement tenant-scoped realtime event stream, alert rules, alert events, notification channels, dry-run notification dispatch, and APIs.
+
+Create/update:
+backend/app/realtime/__init__.py
+backend/app/realtime/websocket_manager.py
+backend/app/realtime/event_stream.py
+
+backend/app/notifications/__init__.py
+backend/app/notifications/models.py
+backend/app/notifications/channels.py
+backend/app/notifications/notification_service.py
+backend/app/notifications/alert_rules.py
+
+backend/app/api/realtime.py
+backend/app/api/notifications.py
+
+Update:
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/audit/audit_service.py
+backend/app/main.py
+.env.example
+
+Tests:
+backend/app/tests/test_notifications.py
+backend/app/tests/test_alert_rules.py
+backend/app/tests/test_realtime_websocket.py
+backend/app/tests/test_phase9_api.py
+
+Config:
+REALTIME_ENABLED=true
+REALTIME_EVENT_BUFFER_SIZE=500
+NOTIFICATIONS_ENABLED=true
+NOTIFICATION_DRY_RUN=true
+ALERT_RULES_ENABLED=true
+EMAIL_NOTIFICATIONS_ENABLED=false
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USERNAME=
+SMTP_PASSWORD=
+SMTP_FROM=
+WEBHOOK_NOTIFICATIONS_ENABLED=false
+WEBHOOK_URL=
+
+Realtime endpoint:
+WS /api/realtime/events
+
+Features:
+- Auth via token query param or Authorization-compatible handshake.
+- Tenant-scoped event stream.
+- Sends recent buffered events on connect.
+- Streams new events live.
+- Supports event category filter.
+- Sends heartbeat ping.
+- Cleans up disconnected clients.
+
+Event categories:
+system, agent, trading, risk, scheduler, worker, iot, backtest, content, auth, audit, notification
+
+AlertRule:
+id, organization_id, workspace_id, name, event_type, severity, enabled, condition, channels, created_at, updated_at
+
+AlertEvent:
+id, organization_id, workspace_id, rule_id, severity, title, message, payload, status, created_at
+
+NotificationChannel:
+id, organization_id, workspace_id, name, channel_type, enabled, config, created_at, updated_at
+
+Channel types:
+dry_run, email, webhook
+
+Default alert rules:
+- risk emergency stop triggered
+- risk halt activated
+- worker task failed
+- scheduler job failed
+- content publish blocked
+- IoT action blocked
+- auth login failure spike
+- production safety blocker
+
+Notification service:
+- In dry-run mode, record notification but do not send.
+- Email channel stubbed unless SMTP configured.
+- Webhook channel stubbed unless WEBHOOK_NOTIFICATIONS_ENABLED=true.
+- Never send secrets in notification payloads.
+
+APIs:
+GET    /api/notifications/status
+GET    /api/notifications/rules
+POST   /api/notifications/rules
+PATCH  /api/notifications/rules/{rule_id}
+DELETE /api/notifications/rules/{rule_id}
+GET    /api/notifications/events
+GET    /api/notifications/channels
+POST   /api/notifications/channels
+PATCH  /api/notifications/channels/{channel_id}
+DELETE /api/notifications/channels/{channel_id}
+POST   /api/notifications/test
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Admin/operator can manage rules and channels.
+- Viewer/analyst can read alert events.
+- Audit all changes.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase09.4: add realtime events alerts and notifications
