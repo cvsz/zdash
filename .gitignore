@@ -63,6 +63,7 @@ skill.sh
 # Codex runtime artifacts; keep .codex/cloud tracked
 .codex/logs/
 .codex/reports/
+.codex/runs/
 .codex/tmp/
 .codex/cache/
 .codex/healthcheck.sh
