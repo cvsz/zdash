@@ -58,31 +58,7 @@ tracked-forbidden: ## Fail if local-only/secret/tooling files are tracked
 
 .PHONY: env-check
 env-check: ## Validate .env key syntax without printing values
-	@$(PYTHON) - <<'PY'
-from pathlib import Path
-import re
-for name in [".env", ".env.production", ".env.production.example", "frontend/.env", "frontend/.env.local"]:
-    path = Path(name)
-    if not path.exists():
-        continue
-    ok = True
-    for n, raw in enumerate(path.read_text(errors="ignore").splitlines(), 1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        if "=" not in line:
-            print(f"{name}:{n}: missing '='")
-            ok = False
-            continue
-        key = line.split("=", 1)[0]
-        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", key):
-            print(f"{name}:{n}: invalid key {key!r}")
-            ok = False
-    if ok:
-        print(f"PASSED: {name}")
-    else:
-        raise SystemExit(1)
-PY
+	@$(PYTHON) -c $$'from pathlib import Path\nimport re\nfiles = [".env", ".env.production", ".env.production.example", "frontend/.env", "frontend/.env.local"]\nall_ok = True\nfor name in files:\n    path = Path(name)\n    if not path.exists():\n        continue\n    file_ok = True\n    for n, raw in enumerate(path.read_text(errors="ignore").splitlines(), 1):\n        line = raw.strip()\n        if not line or line.startswith("#"):\n            continue\n        if "=" not in line:\n            print(f"{name}:{n}: missing =")\n            file_ok = False\n            all_ok = False\n            continue\n        key = line.split("=", 1)[0]\n        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", key):\n            print(f"{name}:{n}: invalid key {key!r}")\n            file_ok = False\n            all_ok = False\n    if file_ok:\n        print(f"PASSED: {name}")\nraise SystemExit(0 if all_ok else 1)'
 
 .PHONY: port-scan
 port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
