@@ -19,3 +19,10 @@ backups.env
 
 # Codex runtime artifacts
 .codex/reports/
+.codex/
+.gemini/
+.agents/
+.agent/
+agents/
+agents/agents/
+
