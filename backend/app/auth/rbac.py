@@ -21,6 +21,12 @@ class Permission(str, Enum):
     READ_LOGS = "read_logs"
     READ_RISK = "read_risk"
     READ_TRADING_SIGNALS = "read_trading_signals"
+    READ_TENANCY = "read_tenancy"
+    MANAGE_TENANCY = "manage_tenancy"
+    READ_WORKERS = "read_workers"
+    MANAGE_WORKERS = "manage_workers"
+    READ_NOTIFICATIONS = "read_notifications"
+    MANAGE_NOTIFICATIONS = "manage_notifications"
 
 
 ROLE_PERMISSIONS = {
@@ -35,6 +41,12 @@ ROLE_PERMISSIONS = {
         Permission.HALT_RESUME_RISK.value,
         Permission.READ_RISK.value,
         Permission.READ_TRADING_SIGNALS.value,
+        Permission.READ_TENANCY.value,
+        Permission.MANAGE_TENANCY.value,
+        Permission.READ_WORKERS.value,
+        Permission.MANAGE_WORKERS.value,
+        Permission.READ_NOTIFICATIONS.value,
+        Permission.MANAGE_NOTIFICATIONS.value,
     },
     RoleName.analyst.value: {
         Permission.READ_DASHBOARD.value,
@@ -42,9 +54,15 @@ ROLE_PERMISSIONS = {
         Permission.READ_LOGS.value,
         Permission.READ_RISK.value,
         Permission.READ_TRADING_SIGNALS.value,
+        Permission.READ_TENANCY.value,
+        Permission.READ_WORKERS.value,
+        Permission.READ_NOTIFICATIONS.value,
     },
     RoleName.viewer.value: {
         Permission.READ_DASHBOARD.value,
+        Permission.READ_TENANCY.value,
+        Permission.READ_WORKERS.value,
+        Permission.READ_NOTIFICATIONS.value,
     },
 }
 
