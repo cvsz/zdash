@@ -13,6 +13,7 @@ import MetricCard from "../components/common/MetricCard";
 import SectionCard from "../components/common/SectionCard";
 import Badge from "../components/common/Badge";
 import PageHeader from "../components/layout/PageHeader";
+import AITraderSimulationCard from "../components/trading/AITraderSimulationCard";
 import DryRunBanner from "../components/trading/DryRunBanner";
 import SignalTable from "../components/trading/SignalTable";
 import XauScannerPanel from "../components/trading/XauScannerPanel";
@@ -169,6 +170,8 @@ export default function XauDashboard() {
       />
 
       <DryRunBanner text="DRY_RUN enabled: all execution stays simulated until explicit guarded enablement." />
+
+      <AITraderSimulationCard />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Scanner Status" value={scanLoading ? "SCANNING" : "READY"} />
