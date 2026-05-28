@@ -58,7 +58,26 @@ tracked-forbidden: ## Fail if local-only/secret/tooling files are tracked
 
 .PHONY: env-check
 env-check: ## Validate .env key syntax without printing values
-	@$(PYTHON) -c $$'from pathlib import Path\nimport re\nfiles = [".env", ".env.production", ".env.production.example", "frontend/.env", "frontend/.env.local"]\nall_ok = True\nfor name in files:\n    path = Path(name)\n    if not path.exists():\n        continue\n    file_ok = True\n    for n, raw in enumerate(path.read_text(errors="ignore").splitlines(), 1):\n        line = raw.strip()\n        if not line or line.startswith("#"):\n            continue\n        if "=" not in line:\n            print(f"{name}:{n}: missing =")\n            file_ok = False\n            all_ok = False\n            continue\n        key = line.split("=", 1)[0]\n        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", key):\n            print(f"{name}:{n}: invalid key {key!r}")\n            file_ok = False\n            all_ok = False\n    if file_ok:\n        print(f"PASSED: {name}")\nraise SystemExit(0 if all_ok else 1)'
+	@status=0; \
+	for file in .env .env.production .env.production.example frontend/.env frontend/.env.local; do \
+		[ -f "$$file" ] || continue; \
+		file_ok=1; \
+		line_no=0; \
+		while IFS= read -r raw || [ -n "$$raw" ]; do \
+			line_no=$$((line_no + 1)); \
+			line="$$(printf '%s' "$$raw" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$$//')"; \
+			[ -n "$$line" ] || continue; \
+			case "$$line" in \#*) continue ;; esac; \
+			case "$$line" in *=*) key="$${line%%=*}" ;; *) echo "$$file:$$line_no: missing ="; file_ok=0; status=1; continue ;; esac; \
+			if ! printf '%s\n' "$$key" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$$'; then \
+				echo "$$file:$$line_no: invalid key '$$key'"; \
+				file_ok=0; \
+				status=1; \
+			fi; \
+		done < "$$file"; \
+		[ "$$file_ok" -eq 0 ] || echo "PASSED: $$file"; \
+	done; \
+	exit "$$status"
 
 .PHONY: port-scan
 port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
