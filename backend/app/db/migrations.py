@@ -4,6 +4,10 @@ from app.db.base import Base
 import app.db.models  # noqa
 from app.db.session import engine
 
+# Import all models here so Base.metadata is populated
+import app.billing.models  # noqa
+import app.marketplace.models  # noqa
+import app.enterprise.models  # noqa
 
 def create_all() -> None:
     Base.metadata.create_all(bind=engine)

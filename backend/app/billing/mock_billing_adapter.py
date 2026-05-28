@@ -1,27 +1,22 @@
-import hashlib
+from typing import Dict, Any, Optional
+from app.billing.billing_adapters import BillingProviderAdapter
+from app.billing.models import Subscription
 
+class MockBillingAdapter(BillingProviderAdapter):
+    def create_customer(self, organization: Any) -> str:
+        return f"cus_mock_{organization.id}"
 
-class MockBillingAdapter:
-    def _id(self, prefix: str, key: str) -> str:
-        return f"{prefix}_{hashlib.sha1(key.encode()).hexdigest()[:12]}"
+    def create_checkout_session(self, organization_id: str, plan_id: str) -> str:
+        return f"https://mock-billing.test/checkout/{organization_id}/{plan_id}"
 
-    def create_customer(self, organization):
-        return {"id": self._id("cus", str(organization))}
+    def get_subscription(self, provider_subscription_id: str) -> Optional[Subscription]:
+        return None
 
-    def create_checkout_session(self, organization_id, plan_id):
-        return {
-            "id": self._id("cs", f"{organization_id}:{plan_id}"),
-            "url": f"https://mock-billing.local/checkout/{organization_id}/{plan_id}",
-        }
+    def cancel_subscription(self, provider_subscription_id: str) -> bool:
+        return True
 
-    def get_subscription(self, provider_subscription_id):
-        return {"id": provider_subscription_id, "status": "active"}
+    def create_billing_portal_session(self, organization_id: str) -> str:
+        return f"https://mock-billing.test/portal/{organization_id}"
 
-    def cancel_subscription(self, provider_subscription_id):
-        return {"id": provider_subscription_id, "status": "canceled"}
-
-    def create_billing_portal_session(self, organization_id):
-        return {"url": f"https://mock-billing.local/portal/{organization_id}"}
-
-    def handle_webhook(self, payload, signature):
-        return {"ok": True, "payload": payload, "signature": bool(signature)}
+    def handle_webhook(self, payload: bytes, signature: str) -> Dict[str, Any]:
+        return {"ok": True, "event": "mock.event"}

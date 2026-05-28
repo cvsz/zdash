@@ -215,6 +215,9 @@ class Settings(BaseSettings):
     )
     worker_max_retries: int = Field(default=3, alias="WORKER_MAX_RETRIES")
 
+    cloudflare_dry_run: bool = Field(default=True, alias="CLOUDFLARE_DRY_RUN")
+    notification_dry_run: bool = Field(default=True, alias="NOTIFICATION_DRY_RUN")
+
     backtesting_enabled: bool = Field(default=True, alias="BACKTESTING_ENABLED")
     backtest_dataset_source: str = Field(
         default="mock", alias="BACKTEST_DATASET_SOURCE"
@@ -260,9 +263,44 @@ class Settings(BaseSettings):
 
     billing_enabled: bool = Field(default=True, alias="BILLING_ENABLED")
     billing_provider: str = Field(default="mock", alias="BILLING_PROVIDER")
+    billing_currency: str = Field(default="USD", alias="BILLING_CURRENCY")
+    billing_trial_days: int = Field(default=14, alias="BILLING_TRIAL_DAYS")
+    billing_grace_period_days: int = Field(default=7, alias="BILLING_GRACE_PERIOD_DAYS")
+    billing_webhook_secret: str = Field(default="", alias="BILLING_WEBHOOK_SECRET")
+    billing_fail_closed: bool = Field(default=True, alias="BILLING_FAIL_CLOSED")
+
     stripe_enabled: bool = Field(default=False, alias="STRIPE_ENABLED")
     stripe_secret_key: str = Field(default="", alias="STRIPE_SECRET_KEY")
     stripe_webhook_secret: str = Field(default="", alias="STRIPE_WEBHOOK_SECRET")
+    stripe_price_starter: str = Field(default="", alias="STRIPE_PRICE_STARTER")
+    stripe_price_pro: str = Field(default="", alias="STRIPE_PRICE_PRO")
+    stripe_price_enterprise: str = Field(default="", alias="STRIPE_PRICE_ENTERPRISE")
+
+    usage_metering_enabled: bool = Field(default=True, alias="USAGE_METERING_ENABLED")
+    usage_enforcement_enabled: bool = Field(default=True, alias="USAGE_ENFORCEMENT_ENABLED")
+    usage_reset_mode: str = Field(default="monthly", alias="USAGE_RESET_MODE")
+
+    marketplace_enabled: bool = Field(default=True, alias="MARKETPLACE_ENABLED")
+    marketplace_install_enabled: bool = Field(default=True, alias="MARKETPLACE_INSTALL_ENABLED")
+    marketplace_review_required: bool = Field(default=True, alias="MARKETPLACE_REVIEW_REQUIRED")
+    plugin_runtime_mode: str = Field(default="sandbox", alias="PLUGIN_RUNTIME_MODE")
+    plugin_allow_external_network: bool = Field(default=False, alias="PLUGIN_ALLOW_EXTERNAL_NETWORK")
+    plugin_allow_secret_access: bool = Field(default=False, alias="PLUGIN_ALLOW_SECRET_ACCESS")
+
+    enterprise_license_enabled: bool = Field(default=True, alias="ENTERPRISE_LICENSE_ENABLED")
+    enterprise_offline_license_enabled: bool = Field(default=True, alias="ENTERPRISE_OFFLINE_LICENSE_ENABLED")
+    enterprise_export_enabled: bool = Field(default=True, alias="ENTERPRISE_EXPORT_ENABLED")
+    enterprise_import_enabled: bool = Field(default=True, alias="ENTERPRISE_IMPORT_ENABLED")
+
+    white_label_enabled: bool = Field(default=True, alias="WHITE_LABEL_ENABLED")
+    default_brand_name: str = Field(default="zDash", alias="DEFAULT_BRAND_NAME")
+    default_brand_logo_url: str = Field(default="", alias="DEFAULT_BRAND_LOGO_URL")
+    default_brand_primary_color: str = Field(default="#7c3aed", alias="DEFAULT_BRAND_PRIMARY_COLOR")
+    default_brand_accent_color: str = Field(default="#22c55e", alias="DEFAULT_BRAND_ACCENT_COLOR")
+
+    onboarding_enabled: bool = Field(default=True, alias="ONBOARDING_ENABLED")
+    customer_success_enabled: bool = Field(default=True, alias="CUSTOMER_SUCCESS_ENABLED")
+
     frontend_origin: str = Field(
         default="http://localhost:5173", alias="FRONTEND_ORIGIN"
     )
@@ -528,3 +566,6 @@ def get_settings() -> Settings:
                 "DEFAULT_ADMIN_PASSWORD must be set to a non-default value in production mode."
             )
     return settings
+
+settings = get_settings()
+

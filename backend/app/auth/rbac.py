@@ -28,6 +28,28 @@ class Permission(str, Enum):
     READ_NOTIFICATIONS = "read_notifications"
     MANAGE_NOTIFICATIONS = "manage_notifications"
 
+    # Phase 10 Billing
+    billing_read = "billing.read"
+    billing_manage = "billing.manage"
+    billing_apply_mock_plan = "billing.apply_mock_plan"
+    
+    # Phase 10 Usage
+    usage_read = "usage.read"
+    
+    # Phase 10 Marketplace
+    marketplace_read = "marketplace.read"
+    marketplace_install = "marketplace.install"
+    marketplace_manage = "marketplace.manage"
+    marketplace_run_plugin = "marketplace.run_plugin"
+    
+    # Phase 10 Enterprise
+    enterprise_read = "enterprise.read"
+    enterprise_license_manage = "enterprise.license.manage"
+    enterprise_branding_manage = "enterprise.branding.manage"
+    enterprise_export = "enterprise.export"
+    enterprise_export_secrets = "enterprise.export_secrets"
+    enterprise_onboarding_manage = "enterprise.onboarding.manage"
+
 
 ROLE_PERMISSIONS = {
     RoleName.admin.value: {permission.value for permission in Permission},
@@ -47,6 +69,14 @@ ROLE_PERMISSIONS = {
         Permission.MANAGE_WORKERS.value,
         Permission.READ_NOTIFICATIONS.value,
         Permission.MANAGE_NOTIFICATIONS.value,
+        Permission.billing_read.value,
+        Permission.usage_read.value,
+        Permission.marketplace_read.value,
+        Permission.marketplace_install.value,
+        Permission.marketplace_run_plugin.value,
+        Permission.enterprise_read.value,
+        Permission.enterprise_branding_manage.value,
+        Permission.enterprise_onboarding_manage.value,
     },
     RoleName.analyst.value: {
         Permission.READ_DASHBOARD.value,
@@ -57,12 +87,19 @@ ROLE_PERMISSIONS = {
         Permission.READ_TENANCY.value,
         Permission.READ_WORKERS.value,
         Permission.READ_NOTIFICATIONS.value,
+        Permission.billing_read.value,
+        Permission.usage_read.value,
+        Permission.marketplace_read.value,
+        Permission.enterprise_read.value,
     },
     RoleName.viewer.value: {
         Permission.READ_DASHBOARD.value,
         Permission.READ_TENANCY.value,
         Permission.READ_WORKERS.value,
         Permission.READ_NOTIFICATIONS.value,
+        Permission.usage_read.value,
+        Permission.marketplace_read.value,
+        Permission.enterprise_read.value,
     },
 }
 

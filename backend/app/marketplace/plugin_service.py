@@ -1,50 +1,101 @@
-from .plugin_store import INSTALLS
-from .plugin_runtime import run_action
-from .safety import check_plugin_action
+from typing import Dict, Any, List
+from sqlalchemy import select
+from app.db.session import SessionLocal
+from app.marketplace.models import PluginInstallation, PluginInstallStatus
+from app.marketplace.plugin_runtime import run_action
+from app.marketplace.safety import check_plugin_action
+from app.billing.entitlement_service import check_feature
+from app.billing.quota_service import consume
+from datetime import datetime, timezone
+import uuid
 
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
-def list_installations(org_id: str):
-    return [i for i in INSTALLS if i["organization_id"] == org_id]
+def list_installations(organization_id: str, workspace_id: str = None) -> List[PluginInstallation]:
+    with SessionLocal() as db:
+        query = select(PluginInstallation).where(PluginInstallation.organization_id == organization_id)
+        if workspace_id:
+            query = query.where(PluginInstallation.workspace_id == workspace_id)
+        return db.execute(query).scalars().all()
 
+def install_plugin(organization_id: str, plugin_id: str, workspace_id: str, config: dict = None, installed_by: str = "system") -> Dict[str, Any]:
+    # Check entitlement
+    ent = check_feature(organization_id, "feature.marketplace")
+    if not ent.allowed:
+        return {"ok": False, "error": "FEATURE_NOT_ENTITLED"}
 
-def install_plugin(organization_id, plugin_id, workspace_id, config=None):
-    item = {
-        "id": f"inst-{len(INSTALLS) + 1}",
-        "organization_id": organization_id,
-        "workspace_id": workspace_id,
-        "plugin_id": plugin_id,
-        "enabled": False,
-        "config": config or {},
-    }
-    INSTALLS.append(item)
-    return item
+    # Check quota
+    quota = consume(organization_id, workspace_id, "marketplace_plugins")
+    if not quota.allowed:
+        return {"ok": False, "error": "QUOTA_EXCEEDED"}
 
+    with SessionLocal() as db:
+        inst = PluginInstallation(
+            organization_id=organization_id,
+            workspace_id=workspace_id,
+            plugin_id=plugin_id,
+            version="1.0.0",
+            status=PluginInstallStatus.installed,
+            config_json=config or {},
+            enabled=False,
+            installed_by=installed_by
+        )
+        db.add(inst)
+        db.commit()
+        db.refresh(inst)
+        
+        # remove internal state before return or return dict
+        ret = dict(inst.__dict__)
+        ret.pop('_sa_instance_state', None)
+        ret["ok"] = True
+        return ret
 
-def enable_plugin(installation_id):
-    for i in INSTALLS:
-        if i["id"] == installation_id:
-            i["enabled"] = True
-            return i
-    return None
-
-
-def disable_plugin(installation_id):
-    for i in INSTALLS:
-        if i["id"] == installation_id:
-            i["enabled"] = False
-            return i
-    return None
-
-
-def uninstall_plugin(installation_id):
-    global INSTALLS
-    INSTALLS = [i for i in INSTALLS if i["id"] != installation_id]
+def enable_plugin(organization_id: str, installation_id: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        inst = db.execute(select(PluginInstallation).where(PluginInstallation.id == installation_id).where(PluginInstallation.organization_id == organization_id)).scalar()
+        if not inst:
+            return {"ok": False, "error": "INSTALLATION_NOT_FOUND"}
+            
+        inst.enabled = True
+        inst.status = PluginInstallStatus.enabled
+        inst.updated_at = utc_now()
+        db.commit()
     return {"ok": True}
 
+def disable_plugin(organization_id: str, installation_id: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        inst = db.execute(select(PluginInstallation).where(PluginInstallation.id == installation_id).where(PluginInstallation.organization_id == organization_id)).scalar()
+        if not inst:
+            return {"ok": False, "error": "INSTALLATION_NOT_FOUND"}
+            
+        inst.enabled = False
+        inst.status = PluginInstallStatus.disabled
+        inst.updated_at = utc_now()
+        db.commit()
+    return {"ok": True}
 
-def run_plugin_action(installation_id, action, payload):
-    inst = next(i for i in INSTALLS if i["id"] == installation_id)
-    ok, msg = check_plugin_action(action, payload)
-    if not ok:
-        return {"ok": False, "error": msg}
-    return run_action(inst["plugin_id"], action, payload)
+def uninstall_plugin(organization_id: str, installation_id: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        inst = db.execute(select(PluginInstallation).where(PluginInstallation.id == installation_id).where(PluginInstallation.organization_id == organization_id)).scalar()
+        if not inst:
+            return {"ok": False, "error": "INSTALLATION_NOT_FOUND"}
+            
+        db.delete(inst)
+        db.commit()
+    return {"ok": True}
+
+def run_plugin_action(organization_id: str, installation_id: str, action: str, payload: dict) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        inst = db.execute(select(PluginInstallation).where(PluginInstallation.id == installation_id).where(PluginInstallation.organization_id == organization_id)).scalar()
+        if not inst:
+            return {"ok": False, "error": "INSTALLATION_NOT_FOUND"}
+            
+        if not inst.enabled:
+            return {"ok": False, "error": "PLUGIN_DISABLED"}
+            
+        ok, msg = check_plugin_action(action, payload)
+        if not ok:
+            return {"ok": False, "error": msg}
+            
+        return run_action(inst.plugin_id, action, payload)

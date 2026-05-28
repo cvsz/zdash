@@ -26,3 +26,4 @@ backups.env
 agents/
 agents/agents/
 gpg-loopback.sh
+gpg-loopback.sh

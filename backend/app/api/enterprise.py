@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, Header
-from app.core.responses import ok
-from app.core.auth import get_current_user
+from typing import Any
+from pydantic import BaseModel
+
+from app.core.responses import success_response, error_response
+from app.auth.dependencies import get_current_user, require_permissions
+from app.auth.rbac import Permission
+
 from app.enterprise.license_service import (
     get_license_status,
     apply_license,
@@ -23,152 +28,98 @@ from app.enterprise.onboarding_service import (
     get_customer_health,
 )
 
-router = APIRouter(prefix="/api/enterprise", tags=["enterprise"])
+router = APIRouter()
 
+class ApplyLicenseRequest(BaseModel):
+    license_key: str
 
-def _org(o):
-    return o or "default-org"
+class ExportRequest(BaseModel):
+    export_type: str = "full"
+    include_audit_logs: bool = False
+    include_content: bool = True
+    include_backtests: bool = False
+    include_scheduler: bool = True
+    include_secrets: bool = False
 
-
-def _ws(w):
-    return w or "default"
-
+class OnboardingStepRequest(BaseModel):
+    step: str
 
 @router.get("/status")
-def status(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(
+def api_status(current_user: Any = Depends(require_permissions([Permission.enterprise_read]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(
         {
-            "license": get_license_status(_org(x_organization_id)),
-            "branding": get_branding(_org(x_organization_id), _ws(x_workspace_id)),
+            "license": get_license_status(current_user.organization_id),
+            "branding": get_branding(current_user.organization_id, ws_id),
         }
     )
 
-
 @router.get("/license")
-def license_status(
-    user=Depends(get_current_user), x_organization_id: str | None = Header(default=None)
-):
-    return ok(get_license_status(_org(x_organization_id)))
-
+def api_license_status(current_user: Any = Depends(require_permissions([Permission.enterprise_read]))):
+    return success_response(get_license_status(current_user.organization_id))
 
 @router.post("/license/apply")
-def license_apply(
-    body: dict,
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-):
-    return ok(apply_license(_org(x_organization_id), body.get("license_key", "")))
-
+def api_license_apply(req: ApplyLicenseRequest, current_user: Any = Depends(require_permissions([Permission.enterprise_license_manage]))):
+    return success_response(apply_license(current_user.organization_id, req.license_key))
 
 @router.post("/license/revoke")
-def license_revoke(
-    user=Depends(get_current_user), x_organization_id: str | None = Header(default=None)
-):
-    return ok(revoke_license(_org(x_organization_id)))
-
+def api_license_revoke(current_user: Any = Depends(require_permissions([Permission.enterprise_license_manage]))):
+    return success_response(revoke_license(current_user.organization_id))
 
 @router.get("/branding")
-def branding(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(get_branding(_org(x_organization_id), _ws(x_workspace_id)))
-
+def api_branding(current_user: Any = Depends(require_permissions([Permission.enterprise_read]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(get_branding(current_user.organization_id, ws_id))
 
 @router.patch("/branding")
-def branding_patch(
-    body: dict,
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(update_branding(_org(x_organization_id), _ws(x_workspace_id), body))
-
+def api_branding_patch(body: dict, current_user: Any = Depends(require_permissions([Permission.enterprise_branding_manage]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(update_branding(current_user.organization_id, ws_id, body))
 
 @router.post("/branding/reset")
-def branding_reset(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(reset_branding(_org(x_organization_id), _ws(x_workspace_id)))
-
+def api_branding_reset(current_user: Any = Depends(require_permissions([Permission.enterprise_branding_manage]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(reset_branding(current_user.organization_id, ws_id))
 
 @router.get("/exports")
-def exports(
-    user=Depends(get_current_user), x_organization_id: str | None = Header(default=None)
-):
-    return ok({"exports": list_export_bundles(_org(x_organization_id))})
-
+def api_exports(current_user: Any = Depends(require_permissions([Permission.enterprise_export]))):
+    return success_response({"exports": list_export_bundles(current_user.organization_id)})
 
 @router.post("/exports")
-def create_export(
-    body: dict,
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(
-        create_export_bundle(
-            {
-                "organization_id": _org(x_organization_id),
-                "workspace_id": _ws(x_workspace_id),
-                **body,
-            }
-        )
-    )
+def api_create_export(req: ExportRequest, current_user: Any = Depends(require_permissions([Permission.enterprise_export]))):
+    if req.include_secrets:
+        # Check specific permission for secret export
+        if not hasattr(current_user, "permissions") or Permission.enterprise_export_secrets not in current_user.permissions:
+            return error_response("SECRET_EXPORT_DENIED", "Missing enterprise_export_secrets permission")
 
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    
+    req_dict = req.model_dump()
+    req_dict["organization_id"] = current_user.organization_id
+    req_dict["workspace_id"] = ws_id
+    
+    return success_response(create_export_bundle(req_dict))
 
 @router.get("/exports/{bundle_id}")
-def export_get(
-    bundle_id: str,
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-):
-    return ok(get_export_bundle(_org(x_organization_id), bundle_id))
-
+def api_export_get(bundle_id: str, current_user: Any = Depends(require_permissions([Permission.enterprise_export]))):
+    return success_response(get_export_bundle(current_user.organization_id, bundle_id))
 
 @router.get("/onboarding")
-def onboarding(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(get_checklist(_org(x_organization_id), _ws(x_workspace_id)))
-
+def api_onboarding(current_user: Any = Depends(require_permissions([Permission.enterprise_read]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(get_checklist(current_user.organization_id, ws_id))
 
 @router.post("/onboarding/complete-step")
-def onboarding_step(
-    body: dict,
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(
-        mark_step_complete(
-            _org(x_organization_id), _ws(x_workspace_id), body.get("step", "")
-        )
-    )
-
+def api_onboarding_step(req: OnboardingStepRequest, current_user: Any = Depends(require_permissions([Permission.enterprise_onboarding_manage]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(mark_step_complete(current_user.organization_id, ws_id, req.step))
 
 @router.post("/onboarding/reset")
-def onboarding_reset(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(reset_checklist(_org(x_organization_id), _ws(x_workspace_id)))
-
+def api_onboarding_reset(current_user: Any = Depends(require_permissions([Permission.enterprise_onboarding_manage]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(reset_checklist(current_user.organization_id, ws_id))
 
 @router.get("/customer-health")
-def health(
-    user=Depends(get_current_user),
-    x_organization_id: str | None = Header(default=None),
-    x_workspace_id: str | None = Header(default=None),
-):
-    return ok(get_customer_health(_org(x_organization_id), _ws(x_workspace_id)))
+def api_health(current_user: Any = Depends(require_permissions([Permission.enterprise_read]))):
+    ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
+    return success_response(get_customer_health(current_user.organization_id, ws_id))

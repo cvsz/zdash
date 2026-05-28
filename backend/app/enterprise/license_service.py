@@ -1,24 +1,66 @@
 import hashlib
+from typing import Dict, Any
+from sqlalchemy import select
+from app.db.session import SessionLocal
+from app.enterprise.models import EnterpriseLicense, LicenseStatus
+from app.core.config import settings
+from datetime import datetime, timezone
 
-_LICENSES: dict[str, dict[str, str]] = {}
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc)
 
+def hash_license(key: str) -> str:
+    return hashlib.sha256(key.encode()).hexdigest()
 
-def get_license_status(organization_id):
-    return _LICENSES.get(organization_id, {"status": "none"})
+def get_license_status(organization_id: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        lic = db.execute(select(EnterpriseLicense).where(EnterpriseLicense.organization_id == organization_id)).scalar()
+        if not lic:
+            return {"status": "none"}
+            
+        ret = dict(lic.__dict__)
+        ret.pop('_sa_instance_state', None)
+        
+        # Check expiry
+        if lic.expires_at and lic.expires_at < utc_now():
+            ret["status"] = LicenseStatus.expired.value
+            
+        return ret
 
+def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        lic = db.execute(select(EnterpriseLicense).where(EnterpriseLicense.organization_id == organization_id)).scalar()
+        
+        # Super simplified validation for demo
+        valid = len(license_key) > 5
+        if not valid:
+            return {"ok": False, "error": "LICENSE_INVALID"}
+            
+        if not lic:
+            lic = EnterpriseLicense(
+                organization_id=organization_id,
+                license_key_hash=hash_license(license_key),
+                status=LicenseStatus.active,
+                tier="enterprise"
+            )
+            db.add(lic)
+        else:
+            lic.license_key_hash = hash_license(license_key)
+            lic.status = LicenseStatus.active
+            lic.updated_at = utc_now()
+            
+        db.commit()
+    return {"ok": True, "status": "active"}
 
-def apply_license(organization_id, license_key):
-    _LICENSES[organization_id] = {
-        "status": "active",
-        "license_key_hash": hashlib.sha256(license_key.encode()).hexdigest(),
-    }
-    return _LICENSES[organization_id]
+def revoke_license(organization_id: str) -> Dict[str, Any]:
+    with SessionLocal() as db:
+        lic = db.execute(select(EnterpriseLicense).where(EnterpriseLicense.organization_id == organization_id)).scalar()
+        if lic:
+            lic.status = LicenseStatus.revoked
+            lic.updated_at = utc_now()
+            db.commit()
+    return {"ok": True, "status": "revoked"}
 
-
-def validate_license(organization_id):
-    return get_license_status(organization_id)
-
-
-def revoke_license(organization_id):
-    _LICENSES[organization_id] = {"status": "revoked"}
-    return _LICENSES[organization_id]
+def validate_license(organization_id: str) -> bool:
+    status = get_license_status(organization_id)
+    return status.get("status") == "active"

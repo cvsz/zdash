@@ -1,0 +1,141 @@
+Execute only PHASE 10.1.
+
+Goal:
+Add Phase 10 billing model foundation and default plan catalog.
+
+Create/update:
+backend/app/billing/__init__.py
+backend/app/billing/models.py
+backend/app/billing/plan_catalog.py
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/core/config.py
+.env.example
+
+Tests:
+backend/app/tests/test_billing_models.py
+backend/app/tests/test_plan_catalog.py
+
+Config additions:
+BILLING_ENABLED=true
+BILLING_PROVIDER=mock
+BILLING_CURRENCY=USD
+BILLING_TRIAL_DAYS=14
+BILLING_GRACE_PERIOD_DAYS=7
+BILLING_WEBHOOK_SECRET=
+BILLING_FAIL_CLOSED=true
+
+STRIPE_ENABLED=false
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=
+STRIPE_PRICE_PRO=
+STRIPE_PRICE_ENTERPRISE=
+
+Rules:
+- Mock billing must work without provider secrets.
+- Real Stripe mode requires all required Stripe config.
+- Billing must fail closed when BILLING_FAIL_CLOSED=true.
+- Do not store raw card data.
+- Do not hardcode payment provider secrets.
+- All billing data tenant-scoped by organization_id and workspace_id where applicable.
+- SQLite and PostgreSQL compatible.
+- Use SQLAlchemy 2.x style where touching database models.
+- Preserve existing billing code if scaffold exists; harden/complete instead of replacing blindly.
+
+Billing models:
+1. PlanTier:
+   free, starter, pro, enterprise
+
+2. SubscriptionStatus:
+   trialing, active, past_due, canceled, expired, suspended
+
+3. BillingPlan:
+   id, tier, name, description, price_monthly, price_yearly, currency, features, limits, is_public, created_at, updated_at
+
+4. Subscription:
+   id, organization_id, plan_id, status, provider, provider_customer_id, provider_subscription_id,
+   trial_ends_at, current_period_start, current_period_end, cancel_at_period_end, metadata, created_at, updated_at
+
+5. UsageRecord:
+   id, organization_id, workspace_id, metric, quantity, source, resource_id, metadata, measured_at, created_at
+
+6. UsageSummary:
+   organization_id, workspace_id, metric, used, limit, remaining, reset_at, percent_used
+
+7. Invoice:
+   id, organization_id, provider, provider_invoice_id, status, amount_due, amount_paid, currency,
+   hosted_invoice_url, invoice_pdf_url, created_at, due_at, paid_at
+
+8. EntitlementDecision:
+   allowed, feature, reason, plan_tier, required_tier, quota, usage, timestamp
+
+Default plan catalog:
+FREE:
+- price: 0
+- workspaces: 1
+- users: 1
+- agents: basic
+- backtests_per_month: 25
+- optimizations_per_month: 5
+- content_items_per_month: 25
+- scheduler_jobs: 3
+- marketplace_plugins: 0
+- realtime_events: limited
+- support: community
+
+STARTER:
+- price: 29/month
+- workspaces: 2
+- users: 3
+- backtests_per_month: 250
+- optimizations_per_month: 25
+- content_items_per_month: 250
+- scheduler_jobs: 10
+- marketplace_plugins: 3
+- support: email
+
+PRO:
+- price: 99/month
+- workspaces: 10
+- users: 15
+- backtests_per_month: 2500
+- optimizations_per_month: 250
+- content_items_per_month: 2500
+- scheduler_jobs: 100
+- marketplace_plugins: 25
+- support: priority
+
+ENTERPRISE:
+- price: custom
+- workspaces: unlimited
+- users: unlimited
+- custom quotas
+- SSO-ready placeholder
+- audit export
+- white label
+- offline license
+- dedicated support
+
+Feature flags:
+feature.trading_scanner
+feature.risk_guardian
+feature.scheduler
+feature.backtesting
+feature.optimization
+feature.content_pipeline
+feature.iot
+feature.marketplace
+feature.white_label
+feature.audit_export
+feature.enterprise_export
+feature.realtime_stream
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase10.1: add billing models and plan catalog

@@ -1002,8 +1002,12 @@ This project is licensed under the MIT License. See `LICENSE`.
 ## Collaboration
 - Workspace collaboration endpoints are dry-run safe and federation remains mock-only.
 
-## Phase 09 Scale
-- Cloudflare deployment automation is delegated to cvsz/zeaz-platform
-- Terraform & Kubernetes templates added for multi-tenant, cloud-scale environments
-- Worker queue and realtime events are fully implemented
-- Safe runbooks and release scripts added for deployments and rollbacks
+## Phase 09 Enterprise Cloud Scale
+
+Phase 09 delivers the enterprise scale foundation, ensuring multi-tenant capabilities, cloud infrastructure, and robust background worker processing.
+
+- **Tenancy & Organizations**: The backend and frontend are now tenant-aware. Organizations (`/api/organizations`) and Workspaces (`/api/workspaces`) provide a solid RBAC boundary. The frontend automatically injects `X-ZDash-Tenant` and `X-ZDash-Workspace` headers.
+- **Worker Queues**: Background tasks are processed using Celery/Redis (`/api/workers`). Safe retry and dry-run execution are maintained by default.
+- **Cloud Infrastructure (`infra/`)**: Docker Compose now natively supports Postgres and Redis. Terraform and Kubernetes YAMLs are available for cloud deployment.
+- **Cloudflare Automation**: Cloudflare deployment automation is explicitly delegated to `cvsz/zeaz-platform` rather than operating in `cvsz/zdash`.
+- **Safe Runbooks**: Release and rollback scripts ensure that changes are handled safely and consistently.
