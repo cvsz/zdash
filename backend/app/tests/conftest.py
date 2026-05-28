@@ -1,9 +1,6 @@
 import pytest
 from collections.abc import Generator
 
-from app.db.migrations import run_migrations
-run_migrations()
-
 from app.agents.registry import reset_registry
 from app.backtesting.backtest_service import reset_backtest_service
 from app.content.pipeline import reset_content_pipeline
@@ -17,6 +14,10 @@ from app.realtime import (
 from app.scheduler.friday_agent import reset_friday_agent
 from app.scheduler.scheduler_service import reset_scheduler_service
 
+
+from app.db.migrations import run_migrations
+
+run_migrations()
 
 @pytest.fixture(autouse=True)
 def reset_runtime_state() -> Generator[None, None, None]:
