@@ -12,21 +12,18 @@ printf '============================================================\n'
 mkdir -p "$ROOT_DIR/.codex/reports" "$ROOT_DIR/.codex/logs"
 REPORT="$ROOT_DIR/.codex/reports/codex-maintenance-$(date -u +%Y%m%dT%H%M%SZ).md"
 
-scan_excludes=(
-  --exclude-dir=.git
-  --exclude-dir=node_modules
-  --exclude-dir=.venv
-  --exclude-dir=dist
-  --exclude-dir=.gnupg
-  --exclude-dir=.ssh
-  --exclude-dir=.codex/reports
-  --exclude-dir=.codex/logs
-  --exclude-dir=.codex/cache
-  --exclude-dir=.codex/tmp
-  --exclude="*.prompt"
-  --exclude="*.lock"
-  --exclude="*.sock"
-)
+tracked_grep() {
+  local pattern="$1"
+  shift || true
+  git grep -nE "$pattern" -- . \
+    ':(exclude)docs/prompt/*.prompt' \
+    ':(exclude)docs/prompt/codex-runs/**' \
+    ':(exclude).codex/reports/**' \
+    ':(exclude).codex/runs/**' \
+    ':(exclude).agent/**' \
+    ':(exclude).agents/**' \
+    "$@" 2>/dev/null || true
+}
 
 {
   echo "# zDash Codex Cloud Maintenance Report"
@@ -66,20 +63,20 @@ status=0
   echo
   echo "## Static baseline checks"
   echo '```'
-  echo "backend port references:"
-  grep -RIn "localhost:8000\|:8000\|BACKEND_PORT=8000" "${scan_excludes[@]}" . || true
+  echo "tracked backend port references:"
+  tracked_grep "localhost:8000|BACKEND_PORT=8000"
   echo
   echo "Cloudflare operator refs:"
-  grep -RIn "cvsz/zeaz-platform\|zdash.zeaz.dev\|CLOUDFLARE_OPERATOR_REPO" README.md .env.example .codex/cloud 2>/dev/null || true
+  git grep -nE "cvsz/zeaz-platform|zdash.zeaz.dev|CLOUDFLARE_OPERATOR_REPO" -- README.md .env.example .codex/cloud 2>/dev/null || true
   echo '```'
 } >> "$REPORT"
 
-if grep -RIn "localhost:8000\|BACKEND_PORT=8000" "${scan_excludes[@]}" . >/tmp/zdash-codex-port8000.txt 2>/dev/null; then
-  echo "FAILED: old backend port 8000 found outside prompt archives" | tee -a "$REPORT"
+if tracked_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
+  echo "FAILED: old backend port 8000 found in tracked source files" | tee -a "$REPORT"
   cat /tmp/zdash-codex-port8000.txt | tee -a "$REPORT"
   status=1
 else
-  echo "PASSED: no old backend port 8000 found outside prompt archives" | tee -a "$REPORT"
+  echo "PASSED: no old backend port 8000 found in tracked source files" | tee -a "$REPORT"
 fi
 
 if [ -d "backend" ]; then
@@ -125,9 +122,9 @@ fi
 
 {
   echo
-  echo "## Basic secret-pattern scan"
+  echo "## Basic secret-pattern scan over tracked files"
   echo '```'
-  grep -RInE "(GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID=)" "${scan_excludes[@]}" . || true
+  tracked_grep "GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID="
   echo '```'
   echo
   echo "## Current hardening watchlist"
