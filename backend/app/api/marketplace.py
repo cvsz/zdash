@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from typing import Any
 from pydantic import BaseModel
 
-from app.auth.dependencies import get_current_user, require_permissions
+from app.auth.dependencies import require_permissions
 from app.auth.rbac import Permission
 from app.marketplace.plugin_registry import list_plugins, get_plugin
 from app.marketplace.plugin_service import (
@@ -13,9 +13,13 @@ from app.marketplace.plugin_service import (
     uninstall_plugin,
     run_plugin_action,
 )
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
+from app.tenancy.dependencies import get_tenant_context
+from app.tenancy.tenant_context import TenantContext
 from app.core.responses import success_response, error_response
 
-router = APIRouter()
+router = APIRouter(prefix="/api/marketplace", tags=["marketplace"])
 
 class InstallPluginRequest(BaseModel):
     plugin_id: str
@@ -68,8 +72,19 @@ def api_installations(current_user: Any = Depends(require_permissions([Permissio
         return error_response("INSTALLATIONS_ERROR", str(e))
 
 @router.post("/install")
-def api_install(body: InstallPluginRequest, current_user: Any = Depends(require_permissions([Permission.marketplace_install]))):
+def api_install(
+    body: InstallPluginRequest, 
+    current_user: Any = Depends(require_permissions([Permission.marketplace_install])),
+    _f: str = Depends(require_feature("feature.marketplace")),
+    tenant: TenantContext = Depends(get_tenant_context)
+):
     try:
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", "default")
+        decision = consume(org_id, ws_id, "marketplace_plugins")
+        if not decision.allowed:
+            return error_response("QUOTA_EXCEEDED", "Marketplace plugins quota exceeded")
+            
         res = install_plugin(
             current_user.organization_id,
             body.plugin_id,

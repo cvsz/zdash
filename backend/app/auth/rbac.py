@@ -97,6 +97,7 @@ ROLE_PERMISSIONS = {
         Permission.READ_TENANCY.value,
         Permission.READ_WORKERS.value,
         Permission.READ_NOTIFICATIONS.value,
+        Permission.billing_read.value,
         Permission.usage_read.value,
         Permission.marketplace_read.value,
         Permission.enterprise_read.value,

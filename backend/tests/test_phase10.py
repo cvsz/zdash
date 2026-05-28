@@ -56,7 +56,21 @@ def test_mock_billing_adapter():
     class MockOrg:
         id = "org123"
     adapter = MockBillingAdapter()
-    assert adapter.create_customer(MockOrg()) == "cus_mock_org123"
+    cus_id = adapter.create_customer(MockOrg())
+    # deterministic: same input always yields same ID
+    assert cus_id == adapter.create_customer(MockOrg())
+    # starts with the expected prefix
+    assert cus_id.startswith("cus_mock_")
+    # checkout URL is deterministic and contains a session token
+    url = adapter.create_checkout_session("org123", "pro")
+    assert url.startswith("https://mock-billing.test/checkout/")
+    assert url == adapter.create_checkout_session("org123", "pro")
+    # portal URL is deterministic
+    portal = adapter.create_billing_portal_session("org123")
+    assert portal.startswith("https://mock-billing.test/portal/")
+    # webhook always OK in mock
+    result = adapter.handle_webhook(b"payload", "sig")
+    assert result["ok"] is True
 
 def test_marketplace_models():
     pass

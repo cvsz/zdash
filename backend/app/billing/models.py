@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional
 from enum import Enum
 from pydantic import BaseModel
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, JSON, String, Text, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, JSON, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base

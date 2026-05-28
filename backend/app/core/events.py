@@ -34,6 +34,23 @@ JOE_EVENT_TYPES = (
     "joe.command.failed",
 )
 
+USAGE_EVENT_TYPES = (
+    "usage.recorded",
+    "usage.quota.warning",
+    "usage.quota.exceeded",
+)
+
+BILLING_EVENT_TYPES = (
+    "billing.plan.listed",
+    "billing.checkout.started",
+    "billing.subscription.updated",
+    "billing.subscription.canceled",
+    "billing.invoice.synced",
+    "billing.webhook.received",
+    "billing.webhook.failed",
+)
+
+
 CONTENT_EVENT_TYPES = (
     "content.draft.created",
     "content.edited",
@@ -79,6 +96,19 @@ SOCIAL_EVENT_TYPES = (
     "social.command.failed",
 )
 
+ALL_EVENT_TYPES = (
+    BACKTEST_EVENT_TYPES
+    + OPTIMIZER_EVENT_TYPES
+    + STRATEGY_EVENT_TYPES
+    + JOE_EVENT_TYPES
+    + USAGE_EVENT_TYPES
+    + BILLING_EVENT_TYPES
+    + CONTENT_EVENT_TYPES
+    + CONTENT_PIPELINE_EVENT_TYPES
+    + EDITOR_EVENT_TYPES
+    + GRAPHIC_EVENT_TYPES
+    + SOCIAL_EVENT_TYPES
+)
 
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))

@@ -8,6 +8,8 @@ from app.audit.models import AuditLogCreate
 from app.auth.dependencies import require_authenticated, require_permission
 from app.auth.models import AuthSession
 from app.auth.rbac import Permission
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
 from app.core.observability import scheduler_job_total
 from app.core.responses import fail, ok
 from app.db.session import get_db_session
@@ -15,6 +17,8 @@ from app.observability.metrics import metrics_store
 from app.scheduler import CreateJobRequest
 from app.scheduler.job_store import JobNotFoundError
 from app.scheduler.scheduler_service import get_scheduler_service
+from app.tenancy.dependencies import get_tenant_context
+from app.tenancy.tenant_context import TenantContext
 
 router = APIRouter(prefix="/api/scheduler", tags=["scheduler"])
 
@@ -50,8 +54,16 @@ def create_job(
     req: CreateJobRequest,
     current_user: AuthSession = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
     session: Session = Depends(get_db_session),
+    _f: str = Depends(require_feature("feature.scheduler")),
+    tenant: TenantContext = Depends(get_tenant_context),
 ) -> dict:
     try:
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", "default")
+        decision = consume(org_id, ws_id, "scheduler_jobs")
+        if not decision.allowed:
+            return fail("QUOTA_EXCEEDED", "Scheduler jobs quota exceeded")
+            
         job = _service().create_job(req)
     except ValueError as exc:
         return fail("SCHEDULER_JOB_INVALID", str(exc))

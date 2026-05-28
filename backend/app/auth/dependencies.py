@@ -59,3 +59,18 @@ def require_permission(permission: Permission):
         return user
 
     return _dependency
+
+
+def require_permissions(permissions: list[Permission]):
+    """Dependency factory: user must have ALL listed permissions (or be admin)."""
+
+    def _dependency(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+        for perm in permissions:
+            if not has_permission(user.role, perm):
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Insufficient permissions",
+                )
+        return user
+
+    return _dependency

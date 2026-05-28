@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends
 from typing import Any
 from pydantic import BaseModel
 
 from app.core.responses import success_response, error_response
-from app.auth.dependencies import get_current_user, require_permissions
+from app.billing.entitlement_service import require_feature
+from app.auth.dependencies import require_permissions
 from app.auth.rbac import Permission
 
 from app.enterprise.license_service import (
@@ -86,7 +87,11 @@ def api_exports(current_user: Any = Depends(require_permissions([Permission.ente
     return success_response({"exports": list_export_bundles(current_user.organization_id)})
 
 @router.post("/exports")
-def api_create_export(req: ExportRequest, current_user: Any = Depends(require_permissions([Permission.enterprise_export]))):
+def api_create_export(
+    req: ExportRequest, 
+    current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    _f: str = Depends(require_feature("feature.enterprise_export"))
+):
     if req.include_secrets:
         # Check specific permission for secret export
         if not hasattr(current_user, "permissions") or Permission.enterprise_export_secrets not in current_user.permissions:

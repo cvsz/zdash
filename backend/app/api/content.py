@@ -22,6 +22,10 @@ from app.content.reports import ContentReportBuilder
 from app.core.responses import fail, ok
 from app.db.session import get_db_session
 from app.observability.metrics import metrics_store
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
+from app.tenancy.dependencies import get_tenant_context
+from app.tenancy.tenant_context import TenantContext
 
 router = APIRouter(prefix="/api/content", tags=["content"])
 reports = ContentReportBuilder()
@@ -52,8 +56,16 @@ def create(
     req: CreateContentRequest,
     current_user: AuthSession = Depends(require_authenticated),
     session: Session = Depends(get_db_session),
+    _f: str = Depends(require_feature("feature.content_pipeline")),
+    tenant: TenantContext = Depends(get_tenant_context),
 ):
     try:
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", "default")
+        decision = consume(org_id, ws_id, "content_items_per_month")
+        if not decision.allowed:
+            return fail("QUOTA_EXCEEDED", "Content items per month quota exceeded")
+            
         item = _pipeline().editor.create_draft(req)
         metrics_store.increment_content_items()
         _maybe_audit(

@@ -11,9 +11,13 @@ from app.auth.rbac import Permission
 from app.backtesting.backtest_service import get_backtest_service
 from app.backtesting.models import BacktestRequest, OptimizationRequest
 from app.backtesting.reports import BacktestReportBuilder
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
 from app.core.responses import fail, ok
 from app.db.session import get_db_session
 from app.observability.metrics import metrics_store
+from app.tenancy.dependencies import get_tenant_context
+from app.tenancy.tenant_context import TenantContext
 
 router = APIRouter(prefix="/api/backtesting", tags=["backtesting"])
 reports = BacktestReportBuilder()
@@ -45,8 +49,16 @@ def run(
     req: BacktestRequest,
     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
     session: Session = Depends(get_db_session),
+    _f: str = Depends(require_feature("feature.backtesting")),
+    tenant: TenantContext = Depends(get_tenant_context),
 ):
     try:
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", "default")
+        decision = consume(org_id, ws_id, "backtests_per_month")
+        if not decision.allowed:
+            return fail("QUOTA_EXCEEDED", "Backtests per month quota exceeded")
+            
         result = get_backtest_service().run_backtest(req)
         metrics_store.increment_backtests()
         _maybe_audit(
@@ -93,8 +105,16 @@ def optimize(
     req: OptimizationRequest,
     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
     session: Session = Depends(get_db_session),
+    _f: str = Depends(require_feature("feature.optimization")),
+    tenant: TenantContext = Depends(get_tenant_context),
 ):
     try:
+        org_id = getattr(tenant, "organization_id", "default")
+        ws_id = getattr(tenant, "workspace_id", "default")
+        decision = consume(org_id, ws_id, "optimizations_per_month")
+        if not decision.allowed:
+            return fail("QUOTA_EXCEEDED", "Optimizations per month quota exceeded")
+            
         optimization = get_backtest_service().optimize(req)
         metrics_store.increment_backtests()
         _maybe_audit(

@@ -1,110 +1,256 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
-from typing import Any, Dict
+"""Billing API — Phase 10.3
+
+Endpoints:
+  GET  /api/billing/status
+  GET  /api/billing/plans
+  GET  /api/billing/subscription
+  POST /api/billing/checkout
+  POST /api/billing/portal
+  POST /api/billing/cancel
+  POST /api/billing/mock/apply-plan
+  GET  /api/billing/usage
+  GET  /api/billing/usage/{metric}
+  GET  /api/billing/invoices
+  POST /api/billing/webhooks/provider
+
+Rules enforced:
+- All endpoints except /webhooks/provider require authentication.
+- Tenant-scoped via X-Organization-ID header (or auth token org_id).
+- Admin / billing_manage can mutate; billing_read and usage_read can read.
+- Webhook endpoint verifies provider signature when Stripe is enabled.
+- All billing mutations emit audit events.
+- Standard API response envelope used throughout.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
-from app.auth.dependencies import get_current_user, require_permissions
+from app.auth.dependencies import require_permissions
+from app.auth.models import AuthSession
 from app.auth.rbac import Permission
-from app.billing.subscription_service import get_status, list_plans, start_checkout, open_billing_portal, cancel_subscription, apply_mock_plan
-from app.billing.usage_meter import get_usage_summary, get_metric_summary
-from app.billing.invoice_service import get_invoices
 from app.billing.billing_webhooks import handle_webhook
-from app.core.responses import success_response, error_response
+from app.billing.invoice_service import get_invoices
+from app.billing.subscription_service import (
+    apply_mock_plan,
+    cancel_subscription,
+    get_status,
+    list_plans,
+    open_billing_portal,
+    start_checkout,
+)
+from app.billing.usage_meter import get_metric_summary, get_usage_summary
+from app.core.events import event_bus
+from app.core.responses import error_response, success_response
 
-router = APIRouter()
+router = APIRouter(prefix="/api/billing", tags=["billing"])
 
-class ApplyMockPlanRequest(BaseModel):
-    plan_tier: str
+
+# ------------------------------------------------------------------ #
+# Request bodies                                                       #
+# ------------------------------------------------------------------ #
+
 
 class CheckoutRequest(BaseModel):
     plan_id: str
 
+
+class ApplyMockPlanRequest(BaseModel):
+    plan_tier: str
+
+
+# ------------------------------------------------------------------ #
+# helpers                                                              #
+# ------------------------------------------------------------------ #
+
+
+def _org_id(user: AuthSession) -> str:
+    return getattr(user, "organization_id", None) or getattr(user, "username", "default")
+
+
+def _ws_id(user: AuthSession) -> str | None:
+    return getattr(user, "workspace_id", None)
+
+
+def _audit(action: str, user: AuthSession, extra: dict[str, Any] | None = None) -> None:
+    event_bus.emit(
+        "billing.subscription.updated",
+        "api.billing",
+        action,
+        {"actor": user.username, "organization_id": _org_id(user), **(extra or {})},
+    )
+
+
+# ------------------------------------------------------------------ #
+# Endpoints                                                            #
+# ------------------------------------------------------------------ #
+
+
 @router.get("/status")
-def api_get_status(current_user: Any = Depends(get_current_user)):
+def api_get_status(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_read])
+    ),
+) -> dict:
     try:
-        status = get_status(current_user.organization_id)
-        return success_response(status)
-    except Exception as e:
-        return error_response("BILLING_ERROR", str(e))
+        result = get_status(_org_id(current_user))
+        return success_response(result)
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
 
 @router.get("/plans")
-def api_list_plans():
-    return success_response(list_plans())
+def api_list_plans() -> dict:
+    """Public — no auth required to list plans."""
+    try:
+        return success_response({"plans": list_plans()})
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
+
+@router.get("/subscription")
+def api_get_subscription(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_read])
+    ),
+) -> dict:
+    try:
+        result = get_status(_org_id(current_user))
+        return success_response(result)
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
 
 @router.post("/checkout")
-def api_checkout(req: CheckoutRequest, current_user: Any = Depends(require_permissions([Permission.billing_manage]))):
-    try:
-        result = start_checkout(current_user.organization_id, req.plan_id)
-        if not result.get("ok"):
-            return error_response("CHECKOUT_FAILED", result.get("error", "Unknown error"))
-        return success_response({"checkout_url": result["checkout_url"]})
-    except Exception as e:
-        return error_response("CHECKOUT_ERROR", str(e))
+def api_checkout(
+    req: CheckoutRequest,
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_manage])
+    ),
+) -> dict:
+    org = _org_id(current_user)
+    result = start_checkout(org, req.plan_id)
+    if not result.get("ok"):
+        code = result.get("error", "BILLING_ERROR")
+        return error_response(
+            code if code in ("BILLING_PROVIDER_NOT_CONFIGURED", "PLAN_NOT_FOUND") else "BILLING_ERROR",
+            result.get("error", "Checkout failed"),
+        )
+    _audit("billing.checkout.started", current_user, {"plan_id": req.plan_id})
+    return success_response({"checkout_url": result["checkout_url"]})
+
 
 @router.post("/portal")
-def api_portal(current_user: Any = Depends(require_permissions([Permission.billing_manage]))):
-    try:
-        result = open_billing_portal(current_user.organization_id)
-        if not result.get("ok"):
-            return error_response("PORTAL_FAILED", result.get("error", "Unknown error"))
-        return success_response({"portal_url": result["portal_url"]})
-    except Exception as e:
-        return error_response("PORTAL_ERROR", str(e))
+def api_portal(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_manage])
+    ),
+) -> dict:
+    org = _org_id(current_user)
+    result = open_billing_portal(org)
+    if not result.get("ok"):
+        return error_response(
+            "BILLING_PROVIDER_NOT_CONFIGURED", result.get("error", "Portal failed")
+        )
+    return success_response({"portal_url": result["portal_url"]})
+
 
 @router.post("/cancel")
-def api_cancel(current_user: Any = Depends(require_permissions([Permission.billing_manage]))):
-    try:
-        result = cancel_subscription(current_user.organization_id)
-        if not result.get("ok"):
-            return error_response("CANCEL_FAILED", result.get("error", "Unknown error"))
-        return success_response(result)
-    except Exception as e:
-        return error_response("CANCEL_ERROR", str(e))
+def api_cancel(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_manage])
+    ),
+) -> dict:
+    org = _org_id(current_user)
+    result = cancel_subscription(org)
+    if not result.get("ok"):
+        code = result.get("error", "BILLING_ERROR")
+        return error_response(
+            code if code == "SUBSCRIPTION_INACTIVE" else "BILLING_ERROR",
+            result.get("error", "Cancel failed"),
+        )
+    _audit("billing.subscription.canceled", current_user)
+    return success_response(result)
+
 
 @router.post("/mock/apply-plan")
-def api_apply_mock_plan(req: ApplyMockPlanRequest, current_user: Any = Depends(require_permissions([Permission.billing_apply_mock_plan]))):
-    try:
-        result = apply_mock_plan(current_user.organization_id, req.plan_tier)
-        if not result.get("ok"):
-            return error_response("APPLY_FAILED", result.get("error", "Unknown error"))
-        return success_response(result)
-    except Exception as e:
-        return error_response("APPLY_ERROR", str(e))
+def api_apply_mock_plan(
+    req: ApplyMockPlanRequest,
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_apply_mock_plan])
+    ),
+) -> dict:
+    org = _org_id(current_user)
+    result = apply_mock_plan(org, req.plan_tier)
+    if not result.get("ok"):
+        code = result.get("error", "BILLING_ERROR")
+        return error_response(
+            code if code in ("PLAN_NOT_FOUND",) else "BILLING_ERROR",
+            result.get("error", "Apply failed"),
+        )
+    _audit("billing.mock_plan.applied", current_user, {"plan_tier": req.plan_tier})
+    return success_response(result)
+
 
 @router.get("/usage")
-def api_get_usage(current_user: Any = Depends(require_permissions([Permission.usage_read]))):
+def api_get_usage(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.usage_read])
+    ),
+) -> dict:
     try:
-        # If user is restricted to a workspace, only show that workspace's usage
-        ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
-        usage = get_usage_summary(current_user.organization_id, ws_id)
-        return success_response(usage)
-    except Exception as e:
-        return error_response("USAGE_ERROR", str(e))
+        org = _org_id(current_user)
+        ws = _ws_id(current_user)
+        result = get_usage_summary(org, ws)
+        return success_response(result)
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
 
 @router.get("/usage/{metric}")
-def api_get_metric_usage(metric: str, current_user: Any = Depends(require_permissions([Permission.usage_read]))):
+def api_get_metric_usage(
+    metric: str,
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.usage_read])
+    ),
+) -> dict:
     try:
-        ws_id = current_user.workspace_id if hasattr(current_user, "workspace_id") else None
-        usage = get_metric_summary(current_user.organization_id, ws_id, metric)
-        return success_response(usage)
-    except Exception as e:
-        return error_response("USAGE_ERROR", str(e))
+        org = _org_id(current_user)
+        ws = _ws_id(current_user)
+        result = get_metric_summary(org, ws, metric)
+        return success_response(result)
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
 
 @router.get("/invoices")
-def api_get_invoices(current_user: Any = Depends(require_permissions([Permission.billing_read]))):
+def api_get_invoices(
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.billing_read])
+    ),
+) -> dict:
     try:
-        invoices = get_invoices(current_user.organization_id)
-        return success_response(invoices)
-    except Exception as e:
-        return error_response("INVOICES_ERROR", str(e))
+        org = _org_id(current_user)
+        invoices = get_invoices(org)
+        return success_response({"invoices": invoices})
+    except Exception as exc:  # noqa: BLE001
+        return error_response("BILLING_ERROR", str(exc))
+
 
 @router.post("/webhooks/provider")
-async def api_webhook(request: Request):
-    payload = await request.body()
-    signature = request.headers.get("stripe-signature", "")
+async def api_webhook(request: Request) -> dict:
+    """Inbound provider webhook — no user auth, verifies provider signature."""
     try:
+        payload = await request.body()
+        signature = request.headers.get("stripe-signature", "")
         result = handle_webhook(payload, signature)
         if not result.get("ok"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
+            raise HTTPException(status_code=400, detail=result.get("error", "Webhook failed"))
         return success_response(result)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

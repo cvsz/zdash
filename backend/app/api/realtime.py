@@ -9,12 +9,29 @@ from app.core.responses import ok
 from app.realtime import bind_realtime_loop, get_realtime_broadcaster, get_realtime_connection_manager, get_realtime_heartbeat
 from app.realtime.events import build_event_envelope
 from app.realtime.mock_streams import start_mock_stream_if_enabled
+from app.billing.entitlement_service import check_feature
+from app.billing.quota_service import consume
+from app.core.config import settings
 
 router = APIRouter(prefix="/api/realtime", tags=["realtime"])
 
 
 @router.websocket("/ws")
 async def ws_realtime(websocket: WebSocket) -> None:
+    org_id = websocket.headers.get(settings.tenant_header_name, "default")
+    ws_id = websocket.headers.get(settings.workspace_header_name, "default")
+    
+    if settings.billing_enabled:
+        dec = check_feature(org_id, "feature.realtime_stream")
+        if not dec.allowed and settings.billing_fail_closed:
+            await websocket.close(code=4003, reason="FEATURE_NOT_ENTITLED")
+            return
+            
+        quota = consume(org_id, ws_id, "realtime_connections")
+        if not quota.allowed and settings.usage_enforcement_enabled:
+            await websocket.close(code=4002, reason="QUOTA_EXCEEDED")
+            return
+
     bind_realtime_loop(asyncio.get_running_loop())
     start_mock_stream_if_enabled()
     manager = get_realtime_connection_manager()
