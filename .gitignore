@@ -151,3 +151,4 @@ Pasted*.txt
 Pasted*.md
 pasted*.txt
 pasted*.md
+.env.production.example
