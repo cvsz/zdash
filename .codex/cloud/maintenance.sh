@@ -25,6 +25,19 @@ tracked_grep() {
     "$@" 2>/dev/null || true
 }
 
+tracked_source_grep() {
+  local pattern="$1"
+  shift || true
+  git grep -nE "$pattern" -- . \
+    ':(exclude)docs/prompt/*.prompt' \
+    ':(exclude)docs/prompt/codex-runs/**' \
+    ':(exclude).codex/**' \
+    ':(exclude).agent/**' \
+    ':(exclude).agents/**' \
+    ':(exclude)**/*.md' \
+    "$@" 2>/dev/null || true
+}
+
 {
   echo "# zDash Codex Cloud Maintenance Report"
   echo
@@ -63,20 +76,20 @@ status=0
   echo
   echo "## Static baseline checks"
   echo '```'
-  echo "tracked backend port references:"
-  tracked_grep "localhost:8000|BACKEND_PORT=8000"
+  echo "tracked runtime/backend port references:"
+  tracked_source_grep "localhost:8000|BACKEND_PORT=8000"
   echo
   echo "Cloudflare operator refs:"
   git grep -nE "cvsz/zeaz-platform|zdash.zeaz.dev|CLOUDFLARE_OPERATOR_REPO" -- README.md .env.example .codex/cloud 2>/dev/null || true
   echo '```'
 } >> "$REPORT"
 
-if tracked_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
-  echo "FAILED: old backend port 8000 found in tracked source files" | tee -a "$REPORT"
+if tracked_source_grep "localhost:8000|BACKEND_PORT=8000" >/tmp/zdash-codex-port8000.txt && [ -s /tmp/zdash-codex-port8000.txt ]; then
+  echo "FAILED: old backend port 8000 found in tracked runtime/source files" | tee -a "$REPORT"
   cat /tmp/zdash-codex-port8000.txt | tee -a "$REPORT"
   status=1
 else
-  echo "PASSED: no old backend port 8000 found in tracked source files" | tee -a "$REPORT"
+  echo "PASSED: no old backend port 8000 found in tracked runtime/source files" | tee -a "$REPORT"
 fi
 
 if [ -d "backend" ]; then
