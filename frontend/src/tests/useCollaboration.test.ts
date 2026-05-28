@@ -59,12 +59,36 @@ describe("useCollaboration", () => {
     expect(url).toBe("ws://localhost:8005/api/collaboration/ws/collaboration/w1");
   });
 
+  it("derives wss URL from secure API base", () => {
+    const url = buildCollaborationWsUrl("w1", {
+      apiBaseUrl: "https://zdash.zeaz.dev/",
+      wsBaseUrl: "",
+    });
+    expect(url).toBe("wss://zdash.zeaz.dev/api/collaboration/ws/collaboration/w1");
+  });
+
   it("prefers explicit ws base URL when provided", () => {
     const url = buildCollaborationWsUrl("w1", {
       apiBaseUrl: "http://localhost:8005",
       wsBaseUrl: "wss://realtime.example.com/",
     });
     expect(url).toBe("wss://realtime.example.com/api/collaboration/ws/collaboration/w1");
+  });
+
+  it("falls back to backend default when no base URL is provided", () => {
+    const configuredApiBase = String(import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8005")
+      .trim()
+      .replace(/\/+$/, "");
+    const expectedBase = configuredApiBase.startsWith("https://")
+      ? `wss://${configuredApiBase.slice("https://".length)}`
+      : configuredApiBase.startsWith("http://")
+        ? `ws://${configuredApiBase.slice("http://".length)}`
+        : configuredApiBase;
+    const url = buildCollaborationWsUrl("w1", {
+      apiBaseUrl: "",
+      wsBaseUrl: "",
+    });
+    expect(url).toBe(`${expectedBase}/api/collaboration/ws/collaboration/w1`);
   });
 
   it("passes bearer token as websocket subprotocol when session exists", () => {

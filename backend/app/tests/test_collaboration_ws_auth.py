@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.auth.jwt import create_access_token
+from app.auth.jwt import create_access_token, create_refresh_token
 from app.core.config import get_settings
 
 collaboration_router = importlib.import_module("app.collaboration.router")
@@ -55,6 +55,16 @@ def test_authenticate_websocket_accepts_valid_access_token(
     assert user is not None
     assert user.username == "alice"
     assert user.role == "operator"
+
+
+def test_authenticate_websocket_rejects_refresh_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("AUTH_ENABLED", "true")
+    get_settings.cache_clear()
+    token = create_refresh_token("alice", "operator")
+    websocket = _fake_websocket(query_token=token)
+    assert collaboration_router._authenticate_websocket(websocket) is None
 
 
 def test_authenticate_websocket_allows_dev_mode_when_auth_disabled(

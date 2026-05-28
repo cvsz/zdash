@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field, field_validator
 
-from app.auth.dependencies import require_authenticated
+from app.auth.dependencies import require_permission
 from app.auth.models import AuthSession
+from app.auth.rbac import Permission
 from app.core.responses import ok
 
 router = APIRouter(prefix="/api/workspaces/federation", tags=["workspaces-federation"])
@@ -27,14 +28,14 @@ def status():
 
 
 @router.get("/peers")
-def peers(_: AuthSession = Depends(require_authenticated)):
+def peers(_: AuthSession = Depends(require_permission(Permission.READ_TENANCY))):
     return ok({"items": _peers})
 
 
 @router.post("/register")
 def register(
     payload: FederationRegisterRequest,
-    _: AuthSession = Depends(require_authenticated),
+    _: AuthSession = Depends(require_permission(Permission.MANAGE_TENANCY)),
 ):
     peer = {"name": payload.name, "registered": True, "active": False}
     _peers.append(peer)

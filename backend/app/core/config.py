@@ -210,6 +210,10 @@ class Settings(BaseSettings):
     workspace_header_name: str = Field(
         default="X-ZDash-Workspace", alias="WORKSPACE_HEADER_NAME"
     )
+    worker_queue_backend: str = Field(
+        default="memory", alias="WORKER_QUEUE_BACKEND"
+    )
+    worker_max_retries: int = Field(default=3, alias="WORKER_MAX_RETRIES")
 
     backtesting_enabled: bool = Field(default=True, alias="BACKTESTING_ENABLED")
     backtest_dataset_source: str = Field(
