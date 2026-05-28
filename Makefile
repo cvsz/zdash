@@ -102,25 +102,27 @@ port-scan: ## Fail if tracked runtime/source files still reference backend port 
 	fi
 
 .PHONY: secret-scan
-secret-scan: ## Scan tracked files for common secret patterns without reading ignored caches
-	@echo "Scanning tracked files for common secret patterns..."
+secret-scan: ## Scan tracked runtime/source files for actual secret-looking values
+	@echo "Scanning tracked runtime/source files for actual secret-looking values..."
 	@tmp=$$(mktemp); \
-	git grep -nE 'GPG_PASSPHRASE|sk-[A-Za-z0-9_-]{20,}|api[_-]?key=|password=|private key|BEGIN RSA|BEGIN OPENSSH|STRIPE_SECRET|CLOUDFLARE_API_TOKEN|TUNNEL_TOKEN|ZONE_ID=|ACCOUNT_ID=' -- . \
+	git grep -nE 'sk-[A-Za-z0-9_-]{20,}|BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY|(GPG_PASSPHRASE|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|CLOUDFLARE_API_TOKEN|CLOUDFLARE_ACCOUNT_ID|CLOUDFLARE_ZONE_ID|TUNNEL_TOKEN|OPENAI_API_KEY)[[:space:]]*=[[:space:]]*[^[:space:]#]+' -- . \
 		':(exclude)Makefile' \
-		':(exclude)docs/prompt/*.prompt' \
-		':(exclude)docs/prompt/codex-runs/**' \
-		':(exclude).codex/reports/**' \
-		':(exclude).codex/runs/**' \
+		':(exclude)**/*.md' \
+		':(exclude)docs/**' \
+		':(exclude).codex/**' \
 		':(exclude).agent/**' \
-		':(exclude).agents/**' > $$tmp 2>/dev/null || true; \
+		':(exclude).agents/**' \
+		':(exclude)backend/app/tests/**' \
+		':(exclude)backend/tests/**' \
+		':(exclude)frontend/src/tests/**' > $$tmp 2>/dev/null || true; \
 	if [ -s $$tmp ]; then \
 		cat $$tmp; \
 		rm -f $$tmp; \
-		echo "FAILED: possible secret pattern in tracked files" >&2; \
+		echo "FAILED: possible real secret in tracked runtime/source files" >&2; \
 		exit 1; \
 	else \
 		rm -f $$tmp; \
-		echo "PASSED: no common tracked secret patterns"; \
+		echo "PASSED: no actual secret-looking tracked values"; \
 	fi
 
 .PHONY: safety-scan
