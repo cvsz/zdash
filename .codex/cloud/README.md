@@ -5,7 +5,7 @@ Repository: `cvsz/zdash`
 This folder contains the Codex Cloud setup/maintenance suite for zDash.
 It is designed for safe phase execution with current project constraints:
 
-- current baseline: Phase 01-08 plus Phase 7.10 collaboration/federation foundation
+- current baseline: Phase 01-10 plus Phase 7.10 collaboration/federation foundation
 - backend on port `8005`
 - frontend dev on port `5173`
 - Node `20` via `nvm`
@@ -85,6 +85,32 @@ docker compose config
 docker compose -f docker-compose.prod.yml config
 ```
 
+## Phase 10 documentation
+
+Phase 10 commercial packaging docs:
+
+```text
+docs/architecture/PHASE_10_SAAS_MONETIZATION.md
+docs/architecture/BILLING_MODEL.md
+docs/architecture/MARKETPLACE_MODEL.md
+docs/architecture/ENTERPRISE_PACKAGING.md
+docs/runbooks/BILLING_INCIDENT_RUNBOOK.md
+docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md
+docs/runbooks/MARKETPLACE_REVIEW_RUNBOOK.md
+docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md
+```
+
+Phase 10 safety rules:
+
+- mock billing is default in development
+- Stripe is disabled by default
+- no raw card data is stored
+- marketplace plugins run in sandbox mode by default
+- marketplace review is required by default
+- enterprise exports exclude secrets by default
+- secret export requires `CONFIRM_SECRET_EXPORT`
+- backend API examples use port `8005`, never `8000`
+
 ## Current hardening watchlist
 
 Before starting a new major phase, inspect or fix:
@@ -144,7 +170,7 @@ Primary phase prompts:
 docs/prompt/phase01.prompt ... docs/prompt/phase32.prompt
 ```
 
-Codex run prompts used in this repo:
+Codex run prompts used in local workspaces should remain untracked:
 
 ```text
 docs/prompt/codex-runs/*.prompt
