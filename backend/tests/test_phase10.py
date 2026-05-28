@@ -1,22 +1,21 @@
 import pytest
 from app.billing.models import PlanTier, SubscriptionStatus
 from app.billing.plan_catalog import get_plan
-from app.billing.entitlement_service import check_feature, get_plan_for_org, check_quota
+from app.billing.entitlement_service import check_feature
 from app.billing.usage_meter import record_usage, get_metric_summary
-from app.billing.quota_service import can_consume, consume
+from app.billing.quota_service import consume
 from app.billing.mock_billing_adapter import MockBillingAdapter
-from app.marketplace.models import PluginManifest, PluginInstallStatus
 from app.marketplace.plugin_registry import get_plugin
-from app.marketplace.plugin_service import install_plugin, enable_plugin, run_plugin_action
+from app.marketplace.plugin_service import install_plugin
 from app.marketplace.safety import check_plugin_action
-from app.enterprise.license_service import apply_license, validate_license, get_license_status
+from app.enterprise.license_service import apply_license, validate_license
 from app.enterprise.branding_service import update_branding, get_branding
 from app.enterprise.export_service import create_export_bundle
 from app.db.session import SessionLocal
 
 @pytest.fixture(autouse=True)
 def clean_db():
-    with SessionLocal() as db:
+    with SessionLocal():
         # cleanup if necessary
         pass
 
@@ -70,7 +69,7 @@ def test_plugin_registry():
 def test_plugin_service():
     org_id = "test-plugin-org"
     ws_id = "test-ws"
-    res = install_plugin(org_id, "zdash-risk-summary", ws_id, {})
+    install_plugin(org_id, "zdash-risk-summary", ws_id, {})
     # Need to check entitlement or mock it
     pass
 

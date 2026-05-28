@@ -19,6 +19,10 @@ from app.db.models import (
     SchedulerRun,
     User,
 )
+from app.billing.models import (
+    Subscription,
+    UsageRecord,
+)
 
 
 class UserRepositoryProtocol(Protocol):
@@ -279,3 +283,45 @@ class RefreshTokenRepository(RefreshTokenRepositoryProtocol):
         row.is_revoked = True
         self.db.commit()
         return True
+
+
+class BillingRepositoryProtocol(Protocol):
+    def get_subscription_by_org(self, organization_id: str) -> Subscription | None: ...
+    def create_subscription(self, **kwargs) -> Subscription: ...
+    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None: ...
+    def record_usage(self, **kwargs) -> UsageRecord: ...
+
+
+class BillingRepository(BillingRepositoryProtocol):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_subscription_by_org(self, organization_id: str) -> Subscription | None:
+        return self.db.execute(
+            select(Subscription)
+            .where(Subscription.organization_id == organization_id)
+            .order_by(Subscription.created_at.desc())
+        ).scalars().first()
+
+    def create_subscription(self, **kwargs) -> Subscription:
+        row = Subscription(**kwargs)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None:
+        return self.db.execute(
+            select(UsageRecord)
+            .where(UsageRecord.organization_id == organization_id)
+            .where(UsageRecord.workspace_id == workspace_id)
+            .where(UsageRecord.metric == metric)
+            .order_by(UsageRecord.created_at.desc())
+        ).scalars().first()
+
+    def record_usage(self, **kwargs) -> UsageRecord:
+        row = UsageRecord(**kwargs)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
