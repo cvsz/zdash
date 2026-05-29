@@ -1,0 +1,34 @@
+# Build the zDash Full‑Stack Environment
+
+You are tasked with setting up and building the zDash full‑stack project in a clean Ubuntu environment. Follow these steps carefully:
+
+1. **Environment Preparation**
+   - Use **Node 20 LTS** via nvm (do not install `nodejs`/`npm` via apt). 
+   - Ensure **Python 3.11+** is available and install it if necessary.
+   - Install general prerequisites: `git`, `curl`, `build-essential`, `python3-venv`, and `python3-pip`.
+
+2. **Clone and Configure**
+   - Clone the zDash repository from `https://github.com/cvsz/zdash.git` into a working directory (e.g., `~/zdash`).
+   - Copy `.env.example` to `.env` and set safe defaults (e.g., `DRY_RUN=true`, `LIVE_TRADING_ACK=false`, etc.)
+
+3. **Backend Setup**
+   - Create a Python virtual environment inside `backend/` and install dependencies using `pip install -e '.[dev]'`.
+   - Run linting and tests (`ruff`, `pytest`) to ensure code quality.
+
+4. **Frontend Setup**
+   - In `frontend/`, install dependencies with `npm install --legacy-peer-deps --no-audit --fund=false`.
+   - Run `npm test` (Vitest) and then build the production bundle via `npm run build`.
+
+5. **Optional Docker Build**
+   - If required for deployment, build the backend and frontend Docker images using the provided Dockerfiles in `infra/docker/`.
+
+6. **Run the Application**
+   - Start the backend with `uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload`.
+   - Serve the frontend (dev mode: `npm run dev -- --host 0.0.0.0 --port 5173`, or production mode using a static server to serve `dist/`).
+   - Verify the backend health endpoint at `http://localhost:8005/health` and open the frontend in a browser at `http://localhost:5173`.
+
+7. **Use AI Agents Wisely**
+   - Refer to the “AI Automated Coding Tools” document for recommended coding agents and workflows. Primary agents: **OpenAI Codex** for building/testing, **Claude Code** for deeper refactors, **Cursor** or **Windsurf** for IDE assistance, and **Qodo/CodeRabbit** for PR review and test generation.
+   - Use security scanners such as **Snyk** and **GitHub Advanced Security** after build, and adopt the suggested pipeline: plan → implement → test → review → secure → draft PR → review → merge.
+
+Once these steps are complete, ensure that the application runs without errors and that both frontend and backend are accessible locally. Document any issues or deviations encountered during the build.

@@ -1,0 +1,55 @@
+# zDash Deployment — Phase‑by‑Phase
+
+You are responsible for deploying the zDash application into a production or staging environment. Work through each phase in order, ensuring all prerequisites and safety guidelines are met.
+
+## Phase 1: Pre‑Deployment Preparation
+1. **Verify prerequisites**: Ensure the target server runs Ubuntu 22.04/24.04, has internet access, and can accept inbound connections on the intended backend and frontend ports (default 8005 and 5173).
+2. **Set environment variables**: Decide on port numbers and confirm that safety‑first flags (e.g., `DRY_RUN=true`, `LIVE_TRADING_ACK=false`) are set.
+3. **Install system dependencies**: Use the zDash installer script (`install‑zdash‑production.sh`) or manually install `git`, `curl`, `build‑essential`, `python3-venv`, and `python3-pip`. Use **nvm** to install Node 20 LTS (do not use `apt install nodejs`/`npm`).
+
+## Phase 2: Code Acquisition and Build
+1. **Clone or update the repository**: Pull the latest `main` branch of `cvsz/zdash` into a clean working directory.
+2. **Configure `.env`**: Copy `.env.example` to `.env` and confirm that safe defaults are applied.
+3. **Build the backend**:
+   - Create a Python virtual environment inside `backend/`.
+   - Run `pip install -e '.[dev]'` (or `pip install -r requirements.txt` if necessary).
+   - Execute any database migrations or initialization scripts if required.
+   - Run backend tests (`pytest`) to ensure the build is healthy.
+4. **Build the frontend**:
+   - In `frontend/`, run `npm install --legacy-peer-deps --no-audit --fund=false`.
+   - Optionally run `npm test` to validate components.
+   - Build the production bundle via `npm run build`.
+
+## Phase 3: Deploy Backend Service
+1. **Choose a deployment method**: Use a process manager (e.g., systemd) or containerization.
+2. **Systemd deployment**:
+   - Create a service unit that runs `uvicorn app.main:app --host 0.0.0.0 --port 8005 --workers <n>`.
+   - Enable and start the service (`systemctl enable --user zdash-backend.service && systemctl start --user zdash-backend.service`).
+3. **Container deployment**:
+   - Build the Docker image using `infra/docker/backend.Dockerfile`.
+   - Run the container with environment variables from `.env` and expose the chosen backend port.
+4. **Verify**: Use `curl http://localhost:8005/health` to ensure the API responds. Check logs for errors and ensure the service restarts on failure.
+
+## Phase 4: Deploy Frontend Service
+1. **Serve static files**:
+   - Option 1 (Node‑based): Use a simple static server (`serve -s dist -l 5173`) to host the contents of `frontend/dist/`.
+   - Option 2 (Reverse proxy): Configure Nginx or another web server to serve the built assets and optionally proxy `/api` calls to the backend.
+2. **Systemd or container deployment**:
+   - Create a systemd unit for the static server or a Docker container using `infra/docker/frontend.Dockerfile`.
+   - Start and enable the service.
+3. **Verify**:
+   - Open `http://<server-ip>:5173` in a browser to confirm the UI loads and can communicate with the backend.
+   - Use the healthcheck script (e.g., `healthcheck-zdash.sh`) to confirm both ports are listening and endpoints are reachable.
+
+## Phase 5: Post‑Deployment Tasks
+1. **Monitoring & Logging**: Set up monitoring for CPU, memory, and disk usage; configure log rotation and consider log aggregation.
+2. **Security Hardening**: Confirm firewall rules allow only necessary ports. Ensure TLS termination is configured if serving over the public internet. Run vulnerability scans (e.g., Snyk) against the deployed code and dependencies.
+3. **Backup & Rollback Plan**: Take backups of any persistent data or database used by zDash. Document rollback procedures should issues arise after deployment.
+4. **Documentation & Handover**: Update deployment documentation and notify the team that deployment is complete, providing access details for smoke testing and user acceptance tests.
+
+## Completion
+• Confirm that both backend and frontend services stay up for at least 24 hours without issues.
+• Schedule regular maintenance windows to apply updates and run security patches.
+• Close the deployment ticket once stakeholders approve.
+
+Follow these phases sequentially, pausing to troubleshoot if any step fails. Always prioritize safety and ensure live‑action features remain disabled unless explicitly allowed.

@@ -1,0 +1,67 @@
+Execute only PHASE 09.1.
+
+Goal:
+Fix production-hardening gaps discovered after Phase 08 + Phase 7.10 before adding new Enterprise Cloud Scale features.
+
+Scope:
+1. Add/verify PostgreSQL runtime driver:
+   - backend/pyproject.toml
+   - backend/requirements.txt
+   Add psycopg[binary]>=3.2.0 if missing.
+
+2. Harden collaboration WebSocket:
+   - backend/app/collaboration/router.py
+   - When AUTH_ENABLED=true, require valid access token.
+   - Accept token via query param token=... or compatible WebSocket handshake/subprotocol.
+   - Decode token using existing JWT utilities.
+   - Close invalid/missing auth with policy violation code.
+   - Preserve dev behavior when AUTH_ENABLED=false.
+
+3. Harden workspace federation:
+   - backend/app/api/workspaces.py
+   - Keep /status public if useful.
+   - Protect /peers and /register with auth/RBAC.
+   - Add Pydantic model for register payload.
+   - Validate name length.
+   - Keep mode mock-only/dry-run.
+   - Do not perform outbound network calls.
+
+4. Harden frontend WebSocket base URL:
+   - Add optional VITE_WS_BASE_URL.
+   - Otherwise derive ws/wss from VITE_API_BASE_URL.
+   - Do not depend only on window.location.origin.
+   - Keep fallback behavior.
+
+5. Add tests:
+   - backend collaboration websocket auth test if practical
+   - backend federation auth test
+   - frontend WS URL helper test
+
+Rules:
+- Keep backend port 8005.
+- Never use localhost:8000.
+- No secrets.
+- No real external actions.
+- No autopep8 --aggressive.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+cd ..
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
+docker compose config
+docker compose -f docker-compose.prod.yml config
+
+Commit:
+fix(prod): harden collaboration auth and postgres runtime

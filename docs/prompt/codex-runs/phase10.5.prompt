@@ -1,0 +1,163 @@
+Execute only PHASE 10.5.
+
+Goal:
+Implement enterprise license model, white-label branding, export/import safety, onboarding checklist, customer health, and Enterprise API.
+
+Create/update:
+backend/app/enterprise/__init__.py
+backend/app/enterprise/models.py
+backend/app/enterprise/license_service.py
+backend/app/enterprise/branding_service.py
+backend/app/enterprise/export_service.py
+backend/app/enterprise/onboarding_service.py
+backend/app/enterprise/customer_success.py
+backend/app/api/enterprise.py
+
+Update:
+backend/app/db/models.py
+backend/app/db/repositories.py
+backend/app/auth/rbac.py
+backend/app/audit/audit_service.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/main.py
+.env.example
+
+Tests:
+backend/app/tests/test_enterprise_license.py
+backend/app/tests/test_branding_service.py
+backend/app/tests/test_export_service.py
+backend/app/tests/test_enterprise_api.py
+backend/app/tests/test_phase10_tenant_isolation.py
+
+Config:
+ENTERPRISE_LICENSE_ENABLED=true
+ENTERPRISE_OFFLINE_LICENSE_ENABLED=true
+ENTERPRISE_EXPORT_ENABLED=true
+ENTERPRISE_IMPORT_ENABLED=true
+
+WHITE_LABEL_ENABLED=true
+DEFAULT_BRAND_NAME=zDash
+DEFAULT_BRAND_LOGO_URL=
+DEFAULT_BRAND_PRIMARY_COLOR=#7c3aed
+DEFAULT_BRAND_ACCENT_COLOR=#22c55e
+
+ONBOARDING_ENABLED=true
+CUSTOMER_SUCCESS_ENABLED=true
+
+EnterpriseLicense fields:
+id, organization_id, license_key_hash, status, tier, seats, features,
+expires_at, offline_mode, issued_to, metadata, created_at, updated_at
+
+BrandingSettings fields:
+id, organization_id, workspace_id, brand_name, logo_url, primary_color,
+accent_color, support_email, custom_domain, metadata, created_at, updated_at
+
+ExportBundle fields:
+id, organization_id, workspace_id, export_type, status, file_path,
+include_audit_logs, include_content, include_backtests, include_scheduler,
+include_secrets, created_by, created_at, completed_at
+
+OnboardingChecklist fields:
+organization_id, workspace_id, completed_steps, pending_steps, progress_percent, updated_at
+
+License service:
+- get_license_status(organization_id)
+- apply_license(organization_id, license_key)
+- validate_license(organization_id)
+- revoke_license(organization_id)
+
+Rules:
+- Store only license hash.
+- Offline license mode supported.
+- Invalid license must not disable free/core safe mode.
+- License cannot disable production safety lock.
+
+Branding service:
+- get_branding(organization_id, workspace_id)
+- update_branding(organization_id, workspace_id, patch)
+- reset_branding(organization_id, workspace_id)
+
+Rules:
+- Tenant scoped.
+- Validate color values.
+- Never allow script injection in branding fields.
+
+Export service:
+- create_export_bundle(request)
+- get_export_bundle(bundle_id)
+- list_export_bundles()
+- import_bundle(file)
+
+Rules:
+- Secrets excluded by default.
+- include_secrets requires admin and explicit typed confirmation:
+  CONFIRM_SECRET_EXPORT
+- Export tenant-scoped.
+- Export audit event required.
+
+Onboarding service:
+- get_checklist(organization_id, workspace_id)
+- mark_step_complete(step)
+- reset_checklist()
+- get_customer_health()
+
+Default onboarding steps:
+- create organization
+- create workspace
+- invite team
+- verify risk guardian
+- run first dry-run scan
+- run first backtest
+- create first content item
+- review scheduler jobs
+- configure billing
+- review production safety check
+
+Enterprise API:
+GET  /api/enterprise/status
+GET  /api/enterprise/license
+POST /api/enterprise/license/apply
+POST /api/enterprise/license/revoke
+GET  /api/enterprise/branding
+PATCH /api/enterprise/branding
+POST /api/enterprise/branding/reset
+GET  /api/enterprise/exports
+POST /api/enterprise/exports
+GET  /api/enterprise/exports/{bundle_id}
+GET  /api/enterprise/onboarding
+POST /api/enterprise/onboarding/complete-step
+POST /api/enterprise/onboarding/reset
+GET  /api/enterprise/customer-health
+
+Rules:
+- Auth required.
+- Tenant scoped.
+- Branding requires owner/admin/operator.
+- License apply/revoke requires admin/owner.
+- Export requires enterprise entitlement.
+- Export with secrets requires admin and confirmation.
+- All actions audited.
+- Error codes:
+  LICENSE_INVALID
+  EXPORT_NOT_ALLOWED
+  TENANT_ACCESS_DENIED
+  FEATURE_NOT_ENTITLED
+
+Events:
+enterprise.license.applied
+enterprise.license.revoked
+enterprise.branding.updated
+enterprise.export.started
+enterprise.export.completed
+enterprise.export.failed
+enterprise.onboarding.step.completed
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase10.5: add enterprise licensing branding and export

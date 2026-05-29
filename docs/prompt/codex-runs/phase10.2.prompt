@@ -1,0 +1,103 @@
+Execute only PHASE 10.2.
+
+Goal:
+Implement entitlement checks, usage metering, and quota enforcement.
+
+Create/update:
+backend/app/billing/entitlement_service.py
+backend/app/billing/usage_meter.py
+backend/app/billing/quota_service.py
+
+Update:
+backend/app/core/events.py
+backend/app/core/config.py
+backend/app/auth/rbac.py
+backend/app/auth/dependencies.py
+backend/app/api/backtesting.py
+backend/app/api/scheduler.py
+backend/app/api/content.py
+backend/app/api/marketplace.py if present
+backend/app/api/realtime.py if present
+
+Tests:
+backend/app/tests/test_entitlements.py
+backend/app/tests/test_usage_meter.py
+backend/app/tests/test_quota_service.py
+backend/app/tests/test_phase10_tenant_isolation.py
+
+Config:
+USAGE_METERING_ENABLED=true
+USAGE_ENFORCEMENT_ENABLED=true
+USAGE_RESET_MODE=monthly
+
+Entitlement service methods:
+- get_plan_for_org(organization_id) -> BillingPlan
+- check_feature(organization_id, feature) -> EntitlementDecision
+- check_quota(organization_id, workspace_id, metric, increment=1) -> EntitlementDecision
+- require_feature(feature)
+- require_quota(metric, increment=1)
+
+Rules:
+- Enterprise plan allows custom limits.
+- Free plan must be safe and limited.
+- If billing disabled in dev, allow but mark mock/dev mode.
+- If billing provider fails and BILLING_FAIL_CLOSED=true, block paid-only features.
+- Never bypass tenant isolation.
+- Entitlement checks must be used by:
+  - backtest run
+  - optimization run
+  - scheduler job creation
+  - content creation
+  - marketplace plugin install
+  - realtime stream access
+  - enterprise export
+
+Usage metrics:
+- api_requests
+- backtests_run
+- optimizations_run
+- content_items_created
+- content_posts_attempted
+- scheduler_jobs_created
+- scheduler_jobs_run
+- iot_actions_requested
+- marketplace_plugins_installed
+- worker_tasks_enqueued
+- realtime_connections
+- storage_mb_estimated
+
+Usage meter methods:
+- record_usage(organization_id, workspace_id, metric, quantity=1, source=None, resource_id=None, metadata=None)
+- get_usage_summary(organization_id, workspace_id=None)
+- get_metric_summary(organization_id, workspace_id, metric)
+- reset_period_if_needed()
+
+Rules:
+- Usage records tenant-scoped.
+- Do not record secret payloads.
+- Usage metering failure must not crash core system.
+- Quota checks must fail safely if enforcement is enabled.
+
+Quota service methods:
+- can_consume(organization_id, workspace_id, metric, quantity=1) -> EntitlementDecision
+- consume(organization_id, workspace_id, metric, quantity=1, source=None, resource_id=None) -> EntitlementDecision
+- get_quota_status(organization_id, workspace_id=None) -> dict
+
+Rules:
+- Quota checks happen before expensive operations.
+- If quota exceeded, return standard API error code: QUOTA_EXCEEDED.
+- Quota events must be logged.
+- Emit:
+  usage.recorded
+  usage.quota.warning
+  usage.quota.exceeded
+- Warning threshold at >80%.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase10.2: implement entitlements usage and quotas

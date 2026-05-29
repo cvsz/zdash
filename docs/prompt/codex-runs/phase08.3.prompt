@@ -1,0 +1,106 @@
+Execute only PHASE 08.3.
+
+Goal:
+Add persistent audit logging, request observability, Prometheus-compatible metrics, and production safety checker.
+
+Create or update:
+backend/app/audit/__init__.py
+backend/app/audit/models.py
+backend/app/audit/audit_service.py
+backend/app/observability/__init__.py
+backend/app/observability/metrics.py
+backend/app/observability/middleware.py
+backend/app/api/metrics.py
+backend/app/api/admin.py
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/events.py
+backend/app/tests/test_audit_service.py
+backend/app/tests/test_metrics_api.py
+backend/app/tests/test_admin_api.py
+backend/app/tests/test_production_safety.py
+
+Audit fields:
+- id
+- actor_user_id
+- actor_email
+- action
+- resource_type
+- resource_id
+- result
+- ip_address
+- user_agent
+- metadata
+- created_at
+
+Audit these:
+- login success
+- login failure
+- logout
+- token refresh
+- risk halt
+- risk resume
+- scheduler job create
+- scheduler job run
+- scheduler job delete
+- IoT action requested
+- content approval
+- content publish request
+- backtest run
+- optimization run
+- promotion check
+- admin user action
+
+Admin endpoints:
+GET    /api/admin/audit-logs
+GET    /api/admin/users
+POST   /api/admin/users
+PATCH  /api/admin/users/{user_id}
+DELETE /api/admin/users/{user_id}
+GET    /api/admin/safety-check
+
+Metrics endpoint:
+GET /api/metrics
+
+Expose safe metrics:
+- zdash_requests_total
+- zdash_request_latency_ms
+- zdash_errors_total
+- zdash_events_total
+- zdash_scheduler_jobs_total
+- zdash_risk_halt_active
+- zdash_backtests_total
+- zdash_content_items_total
+- zdash_iot_actions_total
+
+Middleware:
+- request ID middleware
+- request logging middleware
+- error logging middleware
+
+Production safety checker:
+If APP_ENV=production:
+- DRY_RUN must remain true unless PRODUCTION_SAFETY_LOCK=false and explicit config is present.
+- LIVE_TRADING_ACK cannot be enabled with default secrets.
+- Social real posting requires explicit approval config.
+- IoT real actions require explicit confirmation config.
+- JWT_SECRET_KEY must not be default.
+- DEFAULT_ADMIN_PASSWORD must not be default.
+- CORS wildcard must be rejected if credentials are allowed.
+
+Rules:
+- Metrics must not expose secrets.
+- Metrics endpoint requires admin if METRICS_AUTH_REQUIRED=true.
+- In dev mode, local unauthenticated metrics may be allowed only if configured.
+- Admin user list must never expose password hashes.
+- Prefer deactivate over hard delete.
+- Do not permanently delete the current authenticated admin.
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+Commit:
+phase08.3: add audit observability metrics and safety checks

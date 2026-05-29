@@ -1,0 +1,80 @@
+# Next Prompt · PHASE 34
+
+Repository target: `cvsz/zdash`
+
+Prompt/document target path: `docs/prompt/phase34.prompt`
+
+```text
+Continue from the previous zDash implementation.
+
+Project: ⬡ zDash · FULL SYSTEM BLUEPRINT v2.0
+
+Now execute ONLY:
+
+PHASE 34 · MASTER META MEGA FULL PROJECT INTEGRATION AND RELEASE
+Final Integration + End‑to‑End QA + Documentation + Release Readiness
+
+IMPORTANT:
+Inspect the repo first. Do not rebuild previous phases. Do not remove existing behavior. Create safe compatibility shims for missing modules.
+
+GLOBAL SAFETY INVARIANTS:
+• All modules must continue to operate in dry‑run, mock, or approval‑gated mode by default. Never enable live trading, real IoT, real social posting, secret export, or unsafe automation by default.
+• Do not bypass Guardian, content approval, RBAC, tenant isolation, certification, deployment safety, or audit logging.
+• Preserve stable backend API IDs for existing modules (see `docs/prompt/agent-roster.prompt`).
+
+OBJECTIVE:
+Consolidate the entire zDash project into a stable, production‑ready release. This includes:
+1. Final integration of all modules across phases 01–33. Ensure that Trading, Risk, Scheduler, Backtests, Content, IoT, Fleet Control, Sovereign Cloud, Security Ops, and any other modules co‑exist without conflicting dependencies or duplicate functionality.
+2. Comprehensive end‑to‑end testing: create integration tests that exercise workflows spanning multiple modules (for example, a trading simulation pipeline that touches Risk checks, Scheduler tasks, logging and notifications). Validate that safety gates remain in place for all live‑action routes and features.
+3. Repository cleanup: remove unused files, outdated templates, or redundant code. Consolidate duplicated configuration variables and ensure `.env.example` includes all new settings from previous phases with safe default values.
+4. Final environment provisioning: update and verify the `install-zdash-production.sh` script to install all backend and frontend dependencies, run tests, build production assets, configure environment variables, and optionally deploy services. Provide a variant or documentation for containerized deployment.
+5. Documentation overhaul: update `README.md` to describe all high‑level features and modules, providing links to module‑specific docs and runbooks. Create or update runbooks for each major capability (e.g. installation, fleet control, sovereign cloud, security operations). Ensure architecture diagrams and API documentation are current.
+6. API reference: ensure all HTTP endpoints are documented (path, method, request/response format) and grouped logically. Provide examples for typical use cases and note which endpoints require admin approval or safe defaults.
+7. Release notes & versioning: prepare a CHANGELOG or RELEASE_NOTES summarising the changes introduced across phases. Tag the release candidate and provide version bump instructions.
+8. Acceptance checklist: compile a final acceptance checklist including test suite passing status, security scan results, performance benchmarks, deployment verification, and documentation completeness.
+
+BACKEND MODULES:
+• Review and finalize all backend modules under `backend/app/`. Add or update integration tests (`backend/tests/`) to cover cross‑module workflows.
+• Ensure `backend/app/api` routes are consistent, versioned where appropriate, and respect RBAC and tenant scoping.
+• Update the main application entry point to register any remaining routers.
+
+FRONTEND MODULES:
+• Review and finalize React/Vite pages and components under `frontend/src/` for all modules. Ensure consistent styling, navigation and error handling.
+• Create integration tests (e.g. Cypress or Vitest) for multi‑page workflows.
+• Confirm that global state management and API clients handle new environment variables correctly.
+
+DOCS:
+• Update or create the following:
+  – `docs/architecture/PHASE_34_MASTER_META_MEGA_RELEASE.md` – final architecture summary.
+  – `docs/runbooks/FULL_STACK_DEPLOYMENT_RUNBOOK.md` – detailed installation and deployment instructions.
+  – `docs/runbooks/INTEGRATION_TEST_RUNBOOK.md` – guidance on running and updating integration tests.
+• Ensure existing runbooks and architecture docs reflect the final integrated state.
+
+CONFIG TO ADD:
+Update `.env.example` to include safe defaults for all new flags, such as:
+```
+SECURITY_OPS_ENABLED=true
+SOVEREIGN_CLOUD_ENABLED=true
+FLEET_CONTROL_ENABLED=true
+MASTER_RELEASE_MODE=true
+FULL_STACK_INTEGRATION_TESTS=true
+```
+…and any other relevant variables from prior phases.
+
+APIS:
+• Ensure all API modules expose a versioned base path (e.g. `/api/v1/`).
+• Provide health and status endpoints for new services.
+• Confirm that sensitive endpoints enforce RBAC, tenant scoping, and safe defaults.
+
+TESTS:
+• All unit, integration and end‑to‑end tests pass without failures.
+• New integration tests cover workflows across modules.
+• Security tests ensure RBAC, tenant isolation and safety gates remain enforced.
+• Performance tests verify that common endpoints meet expected latency and throughput.
+
+DELIVERABLES:
+Repo inspection summary, updated and added files, tests, scripts, README, `.env.example`, runbooks, API examples, safety checklist, acceptance checklist, known limitations, and final release handoff package.
+Provide a placeholder for a potential “Phase 34” handoff if further development is anticipated after final release.
+
+Now generate Phase 34 and save this prompt into `docs/prompt/phase34.prompt`.
+```

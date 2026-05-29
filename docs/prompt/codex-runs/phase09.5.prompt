@@ -1,0 +1,159 @@
+Execute only PHASE 09.5.
+
+Goal:
+Add enterprise cloud deployment templates, Cloudflare dry-run handoff, Terraform skeleton, Kubernetes manifests, release automation, deploy/rollback scripts, and runbooks.
+
+Important Cloudflare rule:
+Cloudflare operator automation source of truth is cvsz/zeaz-platform.
+In cvsz/zdash, add only safe templates, dry-run scripts, docs, and handoff notes.
+Do not add real Cloudflare credentials, account IDs, zone IDs, tunnel tokens, or origin certs.
+
+Create/update:
+infra/cloudflare/README.md
+infra/cloudflare/tunnel-config.example.yml
+infra/cloudflare/dns-records.example.json
+infra/cloudflare/zero-trust-policy.example.json
+
+infra/scripts/cloudflare-dry-run.sh
+infra/scripts/deploy-dev.sh
+infra/scripts/deploy-prod.sh
+infra/scripts/rollback.sh
+infra/scripts/release.sh
+infra/scripts/k8s-smoke-test.sh
+
+infra/terraform/README.md
+infra/terraform/variables.tf
+infra/terraform/outputs.tf
+infra/terraform/main.tf
+infra/terraform/modules/network/main.tf
+infra/terraform/modules/network/variables.tf
+infra/terraform/modules/network/outputs.tf
+infra/terraform/modules/postgres/main.tf
+infra/terraform/modules/postgres/variables.tf
+infra/terraform/modules/postgres/outputs.tf
+infra/terraform/modules/redis/main.tf
+infra/terraform/modules/redis/variables.tf
+infra/terraform/modules/redis/outputs.tf
+infra/terraform/modules/app/main.tf
+infra/terraform/modules/app/variables.tf
+infra/terraform/modules/app/outputs.tf
+infra/terraform/modules/cloudflare/main.tf
+infra/terraform/modules/cloudflare/variables.tf
+infra/terraform/modules/cloudflare/outputs.tf
+
+infra/k8s/namespace.yaml
+infra/k8s/configmap.yaml
+infra/k8s/secret.example.yaml
+infra/k8s/backend-deployment.yaml
+infra/k8s/frontend-deployment.yaml
+infra/k8s/worker-deployment.yaml
+infra/k8s/postgres-statefulset.yaml
+infra/k8s/redis-deployment.yaml
+infra/k8s/nginx-ingress.yaml
+infra/k8s/prometheus-servicemonitor.yaml
+
+docs/runbooks/INCIDENT_RESPONSE.md
+docs/runbooks/RISK_HALT_RUNBOOK.md
+docs/runbooks/BACKUP_RESTORE_RUNBOOK.md
+docs/runbooks/DEPLOYMENT_RUNBOOK.md
+docs/runbooks/TENANT_ISOLATION_RUNBOOK.md
+
+docs/architecture/PHASE_9_ENTERPRISE_SCALE.md
+docs/architecture/MULTI_TENANT_MODEL.md
+docs/architecture/WORKER_QUEUE_MODEL.md
+docs/architecture/REALTIME_EVENT_MODEL.md
+
+Update:
+.env.example
+docker-compose.yml
+docker-compose.prod.yml
+README.md
+
+Config:
+CLOUDFLARE_ENABLED=false
+CLOUDFLARE_DRY_RUN=true
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_ZONE_ID=
+CLOUDFLARE_API_TOKEN=
+CLOUDFLARE_TUNNEL_NAME=zdash
+CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
+CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
+K8S_NAMESPACE=zdash
+K8S_IMAGE_TAG=latest
+RELEASE_CHANNEL=local
+RELEASE_VERSION=0.9.0-phase9
+
+Cloudflare dry-run script:
+- Validate required env vars.
+- Print planned actions.
+- Do not call Cloudflare API unless CLOUDFLARE_DRY_RUN=false.
+- Even when false, never print token values.
+- Support tunnel name, hostname, zone ID, account ID, DNS CNAME target, Zero Trust template.
+- Print deployment summary.
+- Explicitly say Cloudflare production automation belongs in cvsz/zeaz-platform.
+
+Terraform:
+- Provider-neutral skeleton where possible.
+- Variables for app name, environment, region, domain, image tags, database sizing, Redis sizing, Cloudflare config.
+- Outputs for app URL, backend URL, database endpoint, Redis endpoint, Cloudflare hostname.
+- No credentials.
+- README explains adaptation for AWS/GCP/local VM.
+
+Kubernetes:
+- placeholders only for secrets
+- non-root containers where possible
+- readiness/liveness probes
+- resource requests/limits
+- DRY_RUN=true by default
+- PRODUCTION_SAFETY_LOCK=true by default
+
+Scripts:
+release.sh:
+- validate clean git tree
+- run backend tests
+- run frontend tests
+- build Docker images
+- tag release
+- generate changelog summary
+- print deployment checklist
+
+deploy-dev.sh:
+- docker compose up --build
+- run migrations
+- run smoke test
+
+deploy-prod.sh:
+- require DEPLOY_CONFIRM=yes
+- require APP_ENV=production
+- require production safety check pass
+- build/pull images
+- run migrations
+- start services
+- run smoke test
+
+rollback.sh:
+- require ROLLBACK_CONFIRM=yes
+- roll back to previous image tag or compose backup
+- run smoke test
+
+Validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+cd ..
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
+docker compose config
+docker compose -f docker-compose.prod.yml config
+
+Commit:
+phase09.5: add enterprise cloud deployment templates

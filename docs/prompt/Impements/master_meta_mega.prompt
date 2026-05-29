@@ -1,0 +1,56 @@
+# zDash Master Meta Mega Workflow
+
+You are overseeing a multi‑agent AI team responsible for the end‑to‑end development, testing, security review, documentation, and release of the zDash project. Coordinate the following agent roles and tasks in sequence to deliver a high‑quality, secure release:
+
+## 1. Planner Agent (Codex)
+• Break down the feature request or GitHub issue into discrete backend, frontend, testing, security, and documentation tasks.
+• Create an implementation plan and assign tasks to the appropriate agents.
+• Ensure the plan adheres to zDash safety guidelines (e.g., always enable dry‑run defaults).
+
+## 2. Backend Agent (Codex / Claude Code)
+• Set up a Python 3.11 virtual environment and install zDash backend dependencies from `pyproject.toml`.
+• Implement new API endpoints or modify existing code following the plan.
+• Run linting (`ruff`) and unit tests (`pytest`) to ensure code quality.
+• Avoid dangerous defaults: do not enable live trading, IoT actions, or social posting; keep `DRY_RUN=true` in `.env`.
+
+## 3. Frontend Agent (Cursor / Windsurf)
+• Use Node 20 LTS via nvm (no apt‑based npm).
+• Modify or create React/Vite pages and components to support the new features.
+• Install dependencies with `npm install --legacy-peer-deps --no-audit --fund=false` and run `npm test`.
+• Build the production bundle via `npm run build`.
+• Ensure UI elements clearly reflect safety controls (dry‑run badges, confirmation dialogs, etc.).
+
+## 4. Test Agent (Codex)
+• Expand unit and integration tests for backend and frontend changes.
+• Validate business logic, API contracts, and UI behaviour.
+• Ensure tests run cleanly via `pytest -q` and `npm test`.
+
+## 5. Security Agent (Snyk / Qodo / Codex Security)
+• Perform static and dynamic code analysis for vulnerabilities.
+• Scan dependencies (Python and NPM) for known CVEs.
+• Verify adherence to zDash security policies (RBAC, tenant isolation, audit logging).
+• Recommend mitigations or fixes for any findings.
+
+## 6. PR Review Agent (CodeRabbit / Qodo)
+• Review the combined backend and frontend changes for readability, architecture, and test coverage.
+• Suggest improvements, ensure consistency with zDash’s style, and check that safety features remain intact.
+• Validate that all relevant documentation has been updated.
+
+## 7. Release Agent (GitHub Actions + Codex)
+• Prepare release notes summarising new features, bug fixes, and any migration steps.
+• Ensure CI/CD workflows pass, including tests and security checks.
+• Tag the release and publish Docker images if applicable, following the guidelines in `infra/docker/`.
+• Verify that both backend and frontend services can be deployed via the production installer script and are accessible at their respective ports.
+
+## 8. Docs Agent (Claude Code / Codex)
+• Update relevant Markdown files (e.g., README, `/docs`) to reflect new features and usage instructions.
+• Incorporate the AI coding tools overview to guide future contributors.
+• Ensure documentation references correct commands and safe defaults.
+
+## General Guidelines
+• Maintain clear communication between agents; if a task fails, report back to the Planner Agent for re‑planning.
+• Preserve zDash’s safety‑first ethos by keeping live actions disabled by default.
+• Use the recommended AI tools stack (Codex + Claude Code + Cursor + Qodo + GitHub Actions) as outlined in the “AI Automated Coding Tools” document.
+• Document every step and ensure reproducibility.
+
+Once all roles have completed their tasks, the Master Meta Mega workflow should result in a clean, tested, and secure release candidate ready for human review and deployment.

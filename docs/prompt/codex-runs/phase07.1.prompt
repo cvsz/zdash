@@ -1,0 +1,151 @@
+Execute only PHASE 07.1.
+
+Goal:
+Harden the frontend API foundation so all Phase 01–06 backend modules can be consumed safely by the dashboard.
+
+Read:
+- docs/prompt/phase07.prompt
+- docs/prompt/agent-roster.prompt
+- frontend/src/api/client.ts
+- frontend/src/api/endpoints.ts
+- frontend/src/api/types.ts
+- frontend/src/api/mockData.ts
+- frontend/src/tests/apiClient.test.ts
+- frontend/.env.example
+- backend/app/core/config.py
+- backend/app/main.py
+- README.md
+
+Tasks:
+1. Update frontend/.env.example:
+   VITE_APP_NAME=zDash
+   VITE_API_BASE_URL=http://localhost:8005
+   VITE_ENABLE_MOCK_FALLBACK=true
+   VITE_POLL_INTERVAL_MS=5000
+   VITE_DEFAULT_THEME=dark
+   VITE_SHOW_SAFETY_BANNERS=true
+
+2. Ensure API base URL is configurable and defaults to 8005, not 8000.
+
+3. Harden frontend/src/api/client.ts:
+   - central fetch wrapper
+   - standard response shape support:
+     { ok, data, error, timestamp }
+   - typed ApiError
+   - GET / POST / DELETE helpers
+   - timeout support
+   - mock fallback when backend is unavailable
+   - no hardcoded secrets
+   - no hardcoded production URLs
+
+4. Harden frontend/src/api/types.ts:
+   Include or update types for:
+   - ApiResponse<T>
+   - ApiError
+   - HealthStatus
+   - Agent
+   - EventLog
+   - TradingSignal
+   - ExecutionResult
+   - AccountSnapshot
+   - DrawdownResult
+   - HaltState
+   - RiskDecision
+   - ScheduledJob
+   - JobRunResult
+   - BacktestRequest
+   - BacktestResult
+   - BacktestMetrics
+   - OptimizationResult
+   - StrategyPromotionDecision
+   - ContentItem
+   - PipelineRunResult
+   - SocialPostResult
+   - IoTActionResult
+
+5. Harden frontend/src/api/endpoints.ts:
+   Add or verify functions:
+   System:
+   - getHealth()
+   - getLogs()
+
+   Agents:
+   - getAgents()
+   - sendAgentMessage()
+
+   Trading:
+   - getTradingStatus()
+   - runTradingScan()
+   - validateSignal()
+   - dryRunExecution()
+
+   Risk:
+   - getRiskStatus()
+   - checkRisk()
+   - getDrawdown()
+   - haltRisk()
+   - resumeRisk()
+   - approveExecution()
+
+   Scheduler:
+   - getSchedulerStatus()
+   - listJobs()
+   - createJob()
+   - runJob()
+   - pauseJob()
+   - resumeJob()
+   - deleteJob()
+   - listRuns()
+
+   Backtesting:
+   - getBacktestingStatus()
+   - listStrategies()
+   - runBacktest()
+   - listBacktestResults()
+   - getBacktestResult()
+   - runOptimization()
+   - listOptimizations()
+   - checkPromotion()
+   - getBacktestReport()
+
+   Content:
+   - getContentStatus()
+   - createContent()
+   - editContent()
+   - generateGraphic()
+   - scheduleContent()
+   - approveContent()
+   - publishContent()
+   - runContentPipeline()
+   - listContentItems()
+   - getContentItem()
+   - listContentRuns()
+   - getContentReport()
+
+   IoT:
+   - getIoTStatus()
+   - runIoTAction()
+   - powerCycleIoT()
+
+6. Update mockData.ts:
+   Use canonical roster display names:
+   Alexander Prime, Sophia Lane, Victor Hale, Isla Grant, Nathan Cole, Elena Voss, Julian Reed, Maya Quinn, Damien Cross.
+   Mock data must clearly identify itself as mock.
+   Do not make mock data look like live execution.
+
+7. Backend only if needed:
+   - Ensure CORS allows frontend dev origin.
+   - Preserve production configurability.
+   - Do not allow wildcard credentials in production.
+   - Do not break existing routes.
+
+Tests:
+- Update apiClient.test.ts for success unwrap, error unwrap, timeout, and mock fallback.
+- Keep existing frontend tests green.
+
+Validation:
+cd backend && source .venv/bin/activate && python -m ruff check app tests && python -B -m pytest -q
+cd ../frontend && source ~/.nvm/nvm.sh && nvm use 20 && npm test && npm run build
+
+Commit:
+phase07.1: harden dashboard api foundation

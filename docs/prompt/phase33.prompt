@@ -1,0 +1,51 @@
+# Phase 33 · AI Trader Simulation Layer
+
+Goal:
+Add a safety-first AI Trader module that generates TradingSignal objects from OHLCV candle data and routes every result through existing zDash trading validation, Guardian risk checks, and dry-run execution.
+
+Safety requirements:
+
+- Simulation-only.
+- Not financial advice.
+- Live trading remains disabled by default.
+- Do not add real broker order execution.
+- Do not bypass TradingService, SignalValidationService, ExecutionEngine, Guardian risk checks, RBAC, audit/event logging, dry-run mode, or existing zDash safety policy.
+- Every response includes simulation-only metadata.
+- No external ML dependencies in this phase.
+
+Backend:
+
+- `backend/app/ai_trader/__init__.py`
+- `backend/app/ai_trader/service.py`
+- `backend/app/api/ai_trader.py`
+- router registration in `backend/app/main.py`
+
+API:
+
+- `GET /api/ai-trader/status`
+- `POST /api/ai-trader/signal`
+- `POST /api/ai-trader/paper-trade`
+
+Frontend:
+
+- XAU dashboard AI Trader Simulation card.
+- Model version display.
+- Generated direction and confidence display.
+- Validation/risk state display.
+- Dry-run paper trade button.
+- Visible `Simulation only / Not financial advice / No live execution` banner.
+
+Validation:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```

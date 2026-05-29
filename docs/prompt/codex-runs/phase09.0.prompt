@@ -1,0 +1,122 @@
+Continue zDash from the current main branch baseline.
+
+Repo:
+  cvsz/zdash
+  Local path:
+  ~/zdash
+
+Current baseline:
+  Phase 01–08 complete
+  Phase 7.10 collaboration/federation foundation exists
+  Latest .codex/cloud suite has been refreshed for this baseline
+
+Cloudflare operator:
+  cvsz/zeaz-platform
+
+Support domain:
+  zdash.zeaz.dev
+
+Read first:
+1. AGENTS.md
+2. .codex/cloud/README.md
+3. docs/prompt/agent-roster.prompt
+4. docs/prompt/phase09.prompt
+5. README.md
+6. backend/app/main.py
+7. backend/app/core/config.py
+8. backend/app/auth/*
+9. backend/app/db/*
+10. backend/app/api/*
+11. backend/app/collaboration/*
+12. frontend/src/App.tsx
+13. frontend/src/api/*
+14. frontend/src/hooks/*
+15. frontend/src/pages/*
+16. docker-compose.yml
+17. docker-compose.prod.yml
+18. infra/docker/*
+19. infra/nginx/*
+20. .github/workflows/*
+
+PHASE 09 · ENTERPRISE CLOUD SCALE
+Multi-Tenant SaaS + Cloud Deploy + Queue Workers + Alerts + Release Automation
+
+Do not edit files yet.
+
+First inspect and report:
+- current tenant/org/workspace code state
+- current worker/queue code state
+- current notification/alert code state
+- current realtime/WebSocket code state
+- current collaboration/federation auth state
+- current Postgres driver dependency state
+- current Cloudflare/infra/operator handoff state
+- existing frontend org/workspace/workers/alerts/realtime pages
+- missing files vs docs/prompt/phase09.prompt
+- risks that could break Phase 01–08 and Phase 7.10
+- safest split into Phase 09.1–09.6
+
+Critical rules:
+- Do not rebuild Phase 01–08.
+- Do not remove Phase 7.10 collaboration/federation behavior.
+- Do not change backend port from 8005.
+- Do not introduce localhost:8000 anywhere.
+- Do not commit .env or secrets.
+- Do not expose secrets in frontend.
+- Do not log passwords, JWTs, API keys, refresh tokens, Cloudflare tokens, tunnel tokens, or provider tokens.
+- Do not enable live trading by default.
+- Do not enable real IoT actions by default.
+- Do not enable real social posting by default.
+- Do not bypass Guardian risk checks.
+- Do not bypass content approval checks.
+- Do not bypass tenant isolation.
+- All external cloud integrations must be dry-run or template-first by default.
+- Cloudflare operator automation belongs in cvsz/zeaz-platform, not cvsz/zdash.
+- zDash may include safe templates/docs/scripts only.
+
+Canonical roster:
+Use docs/prompt/agent-roster.prompt.
+Keep stable backend/API IDs unchanged.
+
+Stable IDs:
+ceo, janie, guardian, friday, joe, editor, graphic, social, trading
+
+Display names:
+ceo      -> Alexander Prime
+janie    -> Sophia Lane
+guardian -> Victor Hale
+friday   -> Isla Grant
+joe      -> Nathan Cole
+editor   -> Elena Voss
+graphic  -> Julian Reed
+social   -> Maya Quinn
+trading  -> Damien Cross
+
+Current hardening watchlist must be addressed before or during Phase 09:
+1. Ensure backend manifests include psycopg[binary]>=3.2.0 if production compose uses postgresql+psycopg://.
+2. Ensure collaboration WebSocket validates auth when AUTH_ENABLED=true.
+3. Ensure workspace federation mutation endpoints require auth/RBAC.
+4. Ensure frontend collaboration/realtime WS URL derives from VITE_WS_BASE_URL or VITE_API_BASE_URL.
+5. Keep Cloudflare work dry-run/template-only in cvsz/zdash.
+
+Validation after each sub-phase:
+cd ~/zdash/backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ~/zdash/frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+If infra changes:
+cd ~/zdash
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
+docker compose config
+docker compose -f docker-compose.prod.yml config
+
+Start by inspecting only and reporting the safest Phase 09.1 plan. Do not edit files yet.

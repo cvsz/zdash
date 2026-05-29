@@ -1,0 +1,64 @@
+# Full Project Lifecycle – zDash
+
+You are orchestrating the complete software development lifecycle (SDLC) for the zDash project. Proceed through each phase in order, ensuring that all safety and quality practices are followed.
+
+## Phase 1: Planning and Requirements
+1. **Define objectives**: Gather requirements for the new feature or release. Clarify goals, user stories, and acceptance criteria.
+2. **Scope and risk analysis**: Identify dependencies (e.g., backend vs. frontend), estimate effort, and consider any compliance or security constraints.
+3. **Safety considerations**: Confirm that all planned features respect zDash’s “safety‑first” policies—no live trading or real external actions by default.
+4. **Agent assignments**: Assign the Planner, Backend, Frontend, Test, Security, PR Review, Release, and Docs agents, ensuring clear responsibilities for each role.
+
+## Phase 2: Design
+1. **Architectural design**: Decide how backend services will expose APIs and how frontend components will consume them.
+2. **Data and API specifications**: Define data models, endpoints, request/response formats, and error handling.
+3. **UI/UX planning**: Outline the user interface changes, ensuring consistent design patterns and safe UI cues (e.g., dry‑run badges and confirmation dialogs).
+4. **Review and sign‑off**: Conduct design reviews to validate feasibility, adherence to zDash architecture, and maintainability.
+
+## Phase 3: Implementation (Build)
+1. **Environment setup**:
+   - Install prerequisites: `git`, `curl`, `build‑essential`, `python3-venv`, `python3-pip`.
+   - Install Node 20 LTS via nvm; do not use `apt install nodejs`.
+   - Clone the zDash repository and copy `.env.example` to `.env`, adding safe defaults (`DRY_RUN=true`, `LIVE_TRADING_ACK=false`, etc.).
+2. **Backend implementation**:
+   - Create and activate a Python virtual environment in `backend/`.
+   - Install dependencies via `pip install -e '.[dev]'` or fallback to `requirements.txt`.
+   - Write or modify FastAPI endpoints and business logic as per the design.
+   - Lint with `ruff` and run tests with `pytest` to catch issues early.
+3. **Frontend implementation**:
+   - In `frontend/`, run `npm install --legacy-peer-deps --no-audit --fund=false` and optionally `npm test`.
+   - Develop React/Vite components, integrate API calls, and ensure robust mock fallbacks.
+   - Build the production bundle via `npm run build`.
+4. **Version control**: Commit changes in small increments, create branches per feature, and ensure CI passes.
+
+## Phase 4: Testing
+1. **Unit tests**: Ensure both backend (`pytest`) and frontend (`vitest`) have adequate coverage.
+2. **Integration tests**: Validate end‑to‑end workflows where the frontend calls the backend API.
+3. **Security tests**: Run static and dynamic analysis tools (e.g., Snyk, CodeQL) to identify vulnerabilities.
+4. **Regression tests**: Confirm that new changes do not break existing functionality.
+5. **Review test results**: Address any failures before moving to the next phase.
+
+## Phase 5: Code Review and Quality Assurance
+1. **Peer review**: Open a Pull Request and assign reviewers. Use tools like CodeRabbit or Qodo for automated code review and test generation.
+2. **PR checklist**: Confirm tests pass, linting is clean, docs are updated, and safe defaults remain intact.
+3. **Security review**: Double‑check that sensitive operations remain disabled by default and adhere to zDash’s policies.
+4. **Merge readiness**: Only merge when approvals are in place and CI/CD pipelines pass without errors.
+
+## Phase 6: Deployment
+1. **Prepare server**: Ensure the target environment meets system requirements and has appropriate firewall rules.
+2. **Backend deployment**: Use systemd or Docker to run `uvicorn app.main:app` on the desired port (default 8005), ensuring the virtual environment or container is configured correctly.
+3. **Frontend deployment**: Serve the built `dist/` folder using a static server or reverse proxy, exposing it on the chosen port (default 5173).
+4. **Verify health**: Hit `http://<server>:8005/health` and load `http://<server>:5173` to confirm both services are running.
+5. **Enable monitoring and logging**: Set up log aggregation and monitoring to detect issues post‑deployment.
+
+## Phase 7: Post‑Deployment and Maintenance
+1. **User acceptance testing**: Invite stakeholders to perform final testing and collect feedback.
+2. **Documentation update**: Ensure all new features, environment variables, and deployment instructions are documented in the repository.
+3. **Continuous monitoring**: Monitor resource usage, error logs, and security advisories.
+4. **Patch and update**: Apply security patches and dependency updates regularly.
+5. **Retrospective**: Conduct a retrospective meeting to identify lessons learned and process improvements for future iterations.
+
+## Completion
+• Confirm that the deployed version meets all acceptance criteria and safety standards.
+• Close relevant tasks and GitHub issues, noting any follow‑up work for future releases.
+
+Work through these phases sequentially, collaborating with each specialized agent or team member as appropriate. Always prioritize safe defaults and robust testing to uphold the integrity and security of the zDash platform.

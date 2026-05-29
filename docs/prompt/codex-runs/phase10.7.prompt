@@ -1,0 +1,111 @@
+Execute only PHASE 10.7.
+
+Goal:
+Finalize Phase 10 docs, architecture, runbooks, README, API examples, CI validation, safety audit, and handoff.
+
+Create/update docs:
+docs/architecture/PHASE_10_SAAS_MONETIZATION.md
+docs/architecture/BILLING_MODEL.md
+docs/architecture/MARKETPLACE_MODEL.md
+docs/architecture/ENTERPRISE_PACKAGING.md
+
+docs/runbooks/BILLING_INCIDENT_RUNBOOK.md
+docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md
+docs/runbooks/MARKETPLACE_REVIEW_RUNBOOK.md
+docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md
+
+Update:
+README.md
+.codex/cloud/README.md if needed
+.codex/cloud/phase-runner.md if needed
+.env.example
+frontend/.env.example if needed
+.github/workflows/* only if needed
+
+README must include:
+- Phase 10 overview
+- SaaS billing model
+- Plan catalog
+- Entitlement system
+- Usage metering
+- Quota enforcement
+- Mock billing adapter
+- Stripe adapter placeholder
+- Marketplace architecture
+- Plugin safety model
+- Enterprise license model
+- White-label branding
+- Export/import safety
+- Onboarding workflow
+- Frontend pages
+- API examples
+- Test commands
+- Production safety notes
+
+API examples must use port 8005, not 8000:
+curl http://localhost:8005/api/billing/plans -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/billing/status -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/billing/usage -H "Authorization: Bearer TOKEN"
+curl -X POST http://localhost:8005/api/billing/mock/apply-plan \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"plan_tier": "pro"}'
+curl http://localhost:8005/api/marketplace/plugins -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/enterprise/status -H "Authorization: Bearer TOKEN"
+
+Final checks:
+- No localhost:8000 outside archived prompt files.
+- No .env committed.
+- No gpg-loopback.sh committed.
+- No raw card data.
+- No payment secrets in frontend.
+- No secrets in export bundles by default.
+- Plugin runtime sandbox by default.
+- Marketplace review required by default.
+- Billing provider mock by default.
+- Stripe disabled by default.
+- Enterprise license cannot disable production safety lock.
+- Tenant isolation applies to billing, marketplace, and enterprise data.
+- Existing Phase 01–09 behavior remains intact.
+
+Full validation:
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+
+cd ..
+docker build -f infra/docker/backend.Dockerfile .
+docker build -f infra/docker/frontend.Dockerfile .
+docker build -f infra/docker/nginx.Dockerfile .
+docker compose config
+docker compose -f docker-compose.prod.yml config
+
+bash .codex/cloud/maintenance.sh
+
+Final commit:
+phase10: implement saas monetization marketplace enterprise packaging
+
+Final report:
+- repository inspection summary
+- sub-phases completed
+- files created
+- files updated
+- tests added/updated
+- validation commands and results
+- Docker/compose validation result
+- .codex/cloud maintenance result
+- safety checklist
+- tenant isolation status
+- billing/mock/Stripe safety status
+- marketplace plugin safety status
+- enterprise export safety status
+- Cloudflare operator handoff status
+- known limitations
+- Phase 11 handoff notes

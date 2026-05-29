@@ -1,0 +1,146 @@
+Execute only PHASE 07.4.
+
+Goal:
+Finish frontend tests, README updates, CI compatibility, and final Phase 07 handoff.
+
+Read:
+- docs/prompt/phase07.prompt
+- docs/prompt/agent-roster.prompt
+- README.md
+- frontend/src/tests/*
+- frontend/package.json
+- frontend/tsconfig.build.json
+- backend/app/tests/*
+- .github/workflows/*
+
+Tasks:
+1. Frontend tests:
+   Ensure Vitest + React Testing Library coverage for:
+   - App.test.tsx
+     app renders
+     sidebar navigation exists
+     dashboard route works
+
+   - apiClient.test.ts
+     successful API response unwraps data
+     error response throws typed error
+     mock fallback activates when fetch fails
+     timeout handled safely
+
+   - Dashboard.test.tsx
+     dashboard renders system cards
+     mock fallback banner appears when mock data used
+     risk card appears
+     content card appears
+     team roster remains visible or reachable
+
+   - RiskPanel.test.tsx
+     kill switch banner renders
+     halt button exists
+     resume requires reason
+     risk status displays drawdown
+
+   - Scheduler.test.tsx
+     job table renders
+     run job button appears
+     iot_power_cycle warning appears
+     content_pipeline job shows no-auto-publish/approval messaging
+
+   - ContentPipeline.test.tsx
+     content board renders
+     publish disabled before approval
+     policy notes displayed
+     dry-run state displayed
+
+2. Build compatibility:
+   - npm test must pass.
+   - npm run build must pass.
+   - Do not compile src/tests/** in production build.
+   - Do not call npm test -- --run.
+
+3. Backend compatibility:
+   - backend tests must still pass.
+   - backend CORS must support frontend dev server.
+   - /api/logs returns recent event logs.
+   - /api/agents includes all stable agents.
+   - no backend behavior from Phase 01–06 removed.
+
+4. README update:
+   Add or refresh:
+   - Phase 07 overview
+   - dashboard architecture
+   - frontend setup using nvm Node 20
+   - environment variables
+   - run backend + frontend together
+   - mock fallback behavior
+   - page list
+   - safety banners
+   - test commands
+   - build commands
+   - port 8005 examples only
+   - canonical roster reference
+
+5. CI notes:
+   - Keep ruff clean.
+   - Keep backend pytest clean.
+   - Keep frontend tests/build clean.
+   - Keep Docker builds clean if run.
+   - Keep secrets out of frontend and README.
+
+6. Final validation:
+   cd backend
+   source .venv/bin/activate
+   python -m ruff check app tests
+   python -B -m pytest -q
+
+   cd ../frontend
+   source ~/.nvm/nvm.sh
+   nvm use 20
+   npm test
+   npm run build
+
+   Optional:
+   docker build -f infra/docker/backend.Dockerfile .
+   docker build -f infra/docker/frontend.Dockerfile .
+
+7. Final commit:
+   phase07: implement full dashboard integration
+
+Final report format:
+- repository inspection summary
+- phase implemented
+- sub-phases completed
+- files created
+- files updated
+- tests added/updated
+- validation commands and results
+- safety checklist
+- known limitations
+- Phase 08 handoff notes
+
+Acceptance checklist:
+- React/Vite frontend works.
+- TypeScript compiles.
+- Sidebar navigation works.
+- Dashboard page works.
+- Team Roster works.
+- XAU Dashboard works.
+- Risk Panel works.
+- Scheduler page works.
+- Backtests page works.
+- Content Pipeline page works.
+- IoT Control page works.
+- Org Map works.
+- Session Logs works.
+- Settings works.
+- API client handles standard backend response format.
+- Mock fallback works when backend is unavailable.
+- Kill switch/halt status visually prominent.
+- Dry-run state visually prominent.
+- Publishing requires approval in UI.
+- IoT power cycle requires confirmation in UI.
+- Backtest page displays risk disclaimer.
+- Frontend tests pass.
+- Frontend build passes.
+- Backend tests pass.
+- README includes Phase 07 instructions.
