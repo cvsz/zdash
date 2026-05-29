@@ -1,0 +1,64 @@
+# Phase 34 · Master Meta Mega AI Trader Control Plane
+
+Goal:
+Upgrade the Phase 33 AI Trader Simulation Layer into a full simulation-grade AI Trader Control Plane.
+
+Hard safety policy:
+
+- Do not enable live trading.
+- Do not add broker live order execution.
+- Do not bypass Guardian Risk.
+- Do not bypass TradingService, ExecutionEngine, SignalValidationService, RBAC, audit logs, event bus, dry-run mode, or backtesting gates.
+- All order execution must remain dry-run / paper-trading only.
+- Any UI execution button must visibly say simulation-only or dry-run only.
+- Any API execution path must force dry_run=true.
+- Do not add high-risk financial advice wording.
+- Do not claim guaranteed profit.
+
+Backend scope:
+
+- `backend/app/ai_trader/registry.py`
+- `backend/app/ai_trader/features.py`
+- `backend/app/ai_trader/service.py`
+- `backend/app/api/ai_trader.py`
+- `backend/tests/test_ai_trader_phase34.py`
+
+Default strategies:
+
+- `trend_momentum_v1`
+- `mean_reversion_v1`
+- `volatility_breakout_v1`
+- `conservative_guarded_v1`
+
+API:
+
+- `GET /api/ai-trader/status`
+- `GET /api/ai-trader/strategies`
+- `POST /api/ai-trader/signal`
+- `POST /api/ai-trader/compare`
+- `POST /api/ai-trader/paper-trade`
+
+Frontend scope:
+
+- AI Trader Control Plane card on XAU dashboard
+- strategy selector
+- symbol/timeframe/min-confidence controls
+- generated signal state
+- strategy comparison table
+- dry-run-only paper-trade button
+- no live trading button
+
+Validation:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+
+cd ../frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```
