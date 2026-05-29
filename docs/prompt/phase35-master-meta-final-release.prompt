@@ -1,0 +1,253 @@
+# Phase 35 · Master Meta Mega Final Release
+
+Repository: `cvsz/zdash`
+
+Goal:
+Finalize zDash into a production-grade, safety-first, full-stack release candidate by completing source code polish, feature integration, options, functions, backend logic, frontend UI/UX, dashboards, documentation, validation, and release hardening while preserving all safety policies from Phases 01–34.
+
+Do not rebuild the project from scratch. Inspect the repository first, preserve the current architecture, and apply incremental, tested changes only.
+
+---
+
+## Non-negotiable safety invariants
+
+- Do not enable live trading.
+- Do not add real broker order execution.
+- Do not bypass Guardian risk checks.
+- Do not bypass `TradingService`, `ExecutionEngine`, `SignalValidationService`, RBAC, audit/event logging, dry-run mode, or existing zDash safety policy.
+- AI Trader remains simulation-only / paper-trading only.
+- Content publishing remains approval-gated and dry-run by default.
+- Billing provider remains mock by default.
+- Stripe remains disabled by default unless explicitly configured outside this phase.
+- Marketplace plugin runtime remains sandboxed by default.
+- Marketplace review is required by default.
+- Enterprise license must never disable `PRODUCTION_SAFETY_LOCK`.
+- No raw secrets, `.env`, GPG passphrases, token dumps, private keys, payment secrets, API keys, or Cloudflare tokens may be committed.
+- `docs/prompt/codex-runs/` must remain local-only and untracked.
+- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` outside archived/local-only prompt artifacts.
+- All risky flows must show visible safety copy in UI.
+- All financial/trading UI must include simulation-only / not financial advice language.
+
+---
+
+## Repository inspection first
+
+Before editing, inspect these areas and summarize current state:
+
+```text
+README.md
+Makefile
+.env.example
+frontend/.env.example
+.github/workflows/
+backend/app/main.py
+backend/app/core/config.py
+backend/app/api/
+backend/app/trading/
+backend/app/ai_trader/
+backend/app/risk/
+backend/app/backtesting/
+backend/app/content/
+backend/app/billing/
+backend/app/marketplace/
+backend/app/enterprise/
+frontend/src/App.tsx
+frontend/src/api/
+frontend/src/components/
+frontend/src/pages/
+frontend/src/tests/
+docs/
+```
+
+Identify what is already complete, what is duplicated, what is stale, and what still needs release polish.
+
+---
+
+## Scope A · Backend finalization
+
+Complete backend release readiness:
+
+- Verify every router is registered once in `backend/app/main.py`.
+- Verify every API response follows the existing response envelope style.
+- Verify auth/RBAC on all sensitive endpoints.
+- Verify tenancy isolation on billing, marketplace, enterprise, trading, AI trader, content, and collaboration data.
+- Verify dry-run defaults and production safety lock behavior.
+- Verify `APP_ENV=production` requires PostgreSQL and secure settings.
+- Verify SQLite remains allowed only in development/test.
+- Verify backend health, metrics, admin, audit, realtime, scheduler, trading, AI trader, content, billing, marketplace, and enterprise routes work.
+- Remove dead imports, duplicate route registration, stale TODO-only code, and unreachable logic.
+- Do not remove working phase modules.
+
+Expected backend checks:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m ruff check app tests
+python -B -m pytest -q
+```
+
+---
+
+## Scope B · Frontend finalization
+
+Complete frontend release readiness:
+
+- Verify all sidebar/topbar routes render.
+- Verify dashboard cards show safe fallback states.
+- Verify XAU/Trading page shows dry-run, Guardian, and simulation disclaimers.
+- Verify AI Trader panel shows strategy selection, compare, validation, dry-run-only execution, and no live-trading button.
+- Verify billing pages show mock billing banner when provider is mock.
+- Verify marketplace pages show plugin safety and review requirements.
+- Verify enterprise pages sanitize/escape branding fields and require confirmation for secret export.
+- Verify onboarding encourages dry-run validation before production.
+- Verify settings page does not expose secrets.
+- Verify responsive layout and empty/loading/error states.
+- Remove duplicate imports, stale unreachable code, and broken UI labels.
+
+Expected frontend checks:
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```
+
+---
+
+## Scope C · AI Trader final release polish
+
+Finalize the AI Trader Simulation Control Plane:
+
+- Ensure status endpoint reports `simulation_only=true`, `dry_run_forced=true`, and `live_execution_allowed=false`.
+- Ensure strategies endpoint lists all deterministic strategies.
+- Ensure signal endpoint returns signal, validation, features, warnings, explanation, risk policy, and safety notice.
+- Ensure compare endpoint returns ranked strategy decisions without enabling execution.
+- Ensure paper-trade endpoint forces dry-run through existing execution engine.
+- Ensure every signal metadata includes `simulation_only=true` and `risk_policy.live_execution_allowed=false`.
+- Ensure no external ML dependency is added.
+- Ensure tests cover insufficient candles, malformed candles, buy/sell/hold, comparison, and dry-run paper-trade.
+
+---
+
+## Scope D · Dashboard and UI/UX release polish
+
+Improve UI/UX without large redesign churn:
+
+- Standardize card titles, badges, safety banners, empty states, and loading states.
+- Keep a consistent dark dashboard visual style.
+- Ensure all action buttons communicate dry-run/simulation status.
+- Ensure dangerous actions require confirmation and reason where applicable.
+- Improve dashboard information hierarchy.
+- Add missing tests for critical UI paths only.
+- Do not add unnecessary dependencies.
+
+---
+
+## Scope E · Docs and runbooks
+
+Update release docs:
+
+- README Phase 35 final release section.
+- API examples using port `8005` only.
+- AI Trader simulation docs.
+- Production safety notes.
+- Local development quickstart.
+- Validation commands.
+- Troubleshooting notes for common warnings:
+  - passlib `crypt` deprecation warning from dependency.
+  - React `act(...)` test warnings.
+  - intentional ErrorBoundary test error.
+- Cloudflare operator handoff: `cvsz/zeaz-platform`.
+
+Do not commit local-only Codex run logs/prompts.
+
+---
+
+## Scope F · CI, Makefile, and release checks
+
+Verify and improve if needed:
+
+- `make safety-scan`
+- `make validate-fast`
+- `make validate`
+- backend lint/tests
+- frontend tests/build
+- Docker backend/frontend/nginx builds
+- compose config checks
+- `.codex/cloud/maintenance.sh`
+
+If Makefile scans false-positive local caches or generated ignored files, update scans to check tracked files only.
+
+---
+
+## Required final validation
+
+Run these commands and report results:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+Then, if Docker is available:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate
+```
+
+---
+
+## Required final report
+
+Return a final report with:
+
+- Repository inspection summary.
+- Files created.
+- Files updated.
+- Tests added/updated.
+- Backend validation result.
+- Frontend validation result.
+- Docker/compose validation result if run.
+- Makefile/maintenance validation result.
+- Safety checklist.
+- AI Trader simulation-only status.
+- Billing/mock/Stripe safety status.
+- Marketplace plugin safety status.
+- Enterprise export safety status.
+- Cloudflare operator handoff status.
+- Known warnings and whether they are blocking.
+- Known limitations.
+- Next phase recommendation.
+
+---
+
+## Commit
+
+Use one final commit if changes are small and cohesive:
+
+```bash
+git add .
+git commit -m "phase35: finalize zdash release candidate"
+```
+
+If many unrelated fixes are required, split commits by area:
+
+```bash
+git commit -m "phase35: harden backend release checks"
+git commit -m "phase35: polish frontend release dashboard"
+git commit -m "phase35: update final release documentation"
+```
