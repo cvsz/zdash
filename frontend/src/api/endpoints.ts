@@ -12,6 +12,10 @@ import {
 } from "./mockData";
 import type {
   AccountSnapshot,
+  AITraderDecision,
+  AITraderPaperTradeResult,
+  AITraderSignalRequest,
+  AITraderStatus,
   AdminSafetyCheck,
   AdminUser,
   AdminUserCreateInput,
@@ -1149,5 +1153,81 @@ export const getCustomerHealth = async () => {
     active_users: 1,
     usage_trend: "stable",
   });
+};
+
+
+function mockAITraderDecision(payload: AITraderSignalRequest): AITraderDecision {
+  const latest = payload.candles[payload.candles.length - 1];
+  const signal: TradingSignal = {
+    symbol: payload.symbol,
+    timeframe: payload.timeframe,
+    strategy: "ai_trader_simulation",
+    direction: "hold",
+    confidence: 0.42,
+    entry: latest?.close ?? 2300,
+    stop_loss: latest?.close ?? 2300,
+    take_profit: latest?.close ?? 2300,
+    reason: "Mock AI trader fallback remains simulation-only.",
+    metadata: {
+      model_version: "phase33-deterministic-ai-trader-v1",
+      simulation_only: true,
+      safety_notice: "Simulation only. Not financial advice. No live execution.",
+      features: { close: latest?.close ?? 2300, mock: true },
+    },
+    created_at: new Date().toISOString(),
+  };
+
+  return {
+    signal,
+    validation: {
+      valid: true,
+      reason: "Mock validation for simulation-only AI trader signal.",
+      warnings: ["Simulation only", "No live execution"],
+      signal,
+      timestamp: new Date().toISOString(),
+    },
+    feature_summary: { close: latest?.close ?? 2300, mock: true },
+    model_version: "phase33-deterministic-ai-trader-v1",
+    simulation_only: true,
+    safety_notice: "Simulation only. Not financial advice. No live execution.",
+  };
+}
+
+export const getAITraderStatus = () =>
+  apiClient.get<AITraderStatus>("/api/ai-trader/status", {
+    enabled: false,
+    live_trading_enabled: false,
+    dry_run: true,
+    simulation_only: true,
+    model_version: "phase33-deterministic-ai-trader-v1",
+    safety_notice: "Simulation only. Not financial advice. No live execution.",
+  });
+
+export const generateAITraderSignal = (payload: AITraderSignalRequest) =>
+  apiClient.post<AITraderDecision>(
+    "/api/ai-trader/signal",
+    payload,
+    mockAITraderDecision(payload),
+  );
+
+export const runAITraderPaperTrade = (payload: AITraderSignalRequest & { snapshot?: AccountSnapshot }) => {
+  const fallback = mockAITraderDecision(payload);
+  return apiClient.post<AITraderPaperTradeResult>(
+    "/api/ai-trader/paper-trade",
+    payload,
+    {
+      ...fallback,
+      dry_run: true,
+      execution: {
+        ok: true,
+        status: "simulated",
+        dry_run: true,
+        signal: fallback.signal,
+        message: "Mock AI trader paper trade simulated. No live order sent.",
+        simulated_order_id: "mock-ai-trader-paper-1",
+        timestamp: new Date().toISOString(),
+      },
+    },
+  );
 };
 

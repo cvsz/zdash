@@ -608,3 +608,47 @@ export type CustomerHealth = {
   usage_trend: string;
 };
 
+export type Candle = {
+  timestamp: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume?: number;
+};
+
+export type AITraderStatus = {
+  enabled: boolean;
+  live_trading_enabled?: boolean;
+  dry_run: boolean;
+  simulation_only: boolean;
+  model_version: string;
+  safety_notice: string;
+};
+
+export type AITraderSignalRequest = {
+  symbol: string;
+  timeframe: string;
+  candles: Candle[];
+  min_confidence?: number;
+};
+
+export type AITraderDecision = {
+  signal: TradingSignal;
+  validation: {
+    valid: boolean;
+    reason: string;
+    warnings: string[];
+    signal?: TradingSignal | null;
+    timestamp?: string;
+  };
+  feature_summary: Record<string, number | string | boolean>;
+  model_version: string;
+  simulation_only: boolean;
+  safety_notice: string;
+};
+
+export type AITraderPaperTradeResult = AITraderDecision & {
+  dry_run: true;
+  execution: ExecutionResult;
+};

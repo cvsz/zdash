@@ -17,6 +17,7 @@ import AITraderSimulationCard from "../components/trading/AITraderSimulationCard
 import DryRunBanner from "../components/trading/DryRunBanner";
 import SignalTable from "../components/trading/SignalTable";
 import XauScannerPanel from "../components/trading/XauScannerPanel";
+import AITraderSimulationCard from "../components/trading/AITraderSimulationCard";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
 
