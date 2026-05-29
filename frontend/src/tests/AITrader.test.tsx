@@ -18,7 +18,8 @@ describe("AI Trader Control Plane", () => {
     expect(await screen.findByText(/Decision explanation/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /Compare simulation strategies/i }));
-    expect(await screen.findByText(/simulation-only/i)).toBeInTheDocument();
+    const simulationOnlyCells = await screen.findAllByText(/simulation-only/i);
+    expect(simulationOnlyCells.length).toBeGreaterThanOrEqual(4);
 
     expect(screen.getByRole("button", { name: /Run dry-run paper trade only/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Live/i })).not.toBeInTheDocument();
