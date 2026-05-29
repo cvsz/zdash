@@ -18,7 +18,7 @@ set -Eeuo pipefail
 
 readonly GH_OWNER="cvsz"
 readonly GH_REPO="zdash"
-readonly GH_ENV="dev,production"
+readonly GH_ENV="prod"
 
 readonly REPO="${GH_OWNER}/${GH_REPO}"
 
