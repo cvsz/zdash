@@ -37,6 +37,9 @@ packages = ["app"]
 [tool.pytest.ini_options]
 testpaths = ["tests", "app/tests"]
 addopts = "-q"
+filterwarnings = [
+  "ignore:.*'crypt' is deprecated and slated for removal in Python 3.13:DeprecationWarning:passlib\\.utils",
+]
 
 [tool.ruff.lint]
 extend-ignore = ["E701", "E702", "F403", "E741"]
