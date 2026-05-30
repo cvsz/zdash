@@ -36,7 +36,7 @@ FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|
 .PHONY: help
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-34s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
+	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make server-start\n  make server-status\n  make server-logs SERVICE=backend\n  make server-stop\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make git-safe-add ARGS=\"Makefile backend/app/risk/high_risk_policy.py\"\n  make git-safe-commit MESSAGE=\"Fix validation scan\"\n  make git-safe-push\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
 
 .PHONY: info
 info: ## Print local project/runtime info
@@ -575,6 +575,60 @@ run-backend: ## Run backend dev server on port 8005
 .PHONY: run-frontend
 run-frontend: ## Run frontend dev server on port 5173
 	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm run dev -- --host $(FRONTEND_HOST) --port $(FRONTEND_PORT)
+
+# ---------------------------------------------------------------------------
+# Server commands (Phase 36)
+# ---------------------------------------------------------------------------
+
+.PHONY: server-start
+server-start: ## Start local backend and frontend servers
+	bash scripts/server/start-local.sh
+
+.PHONY: server-stop
+server-stop: ## Stop local backend and frontend servers
+	bash scripts/server/stop-local.sh
+
+.PHONY: server-status
+server-status: ## Show local server status
+	bash scripts/server/status-local.sh
+
+.PHONY: server-logs
+server-logs: ## Follow local server logs (SERVICE=backend|frontend)
+	SERVICE=$(SERVICE) bash scripts/server/logs-local.sh
+
+.PHONY: server-open
+server-open: ## Print or open local server URLs
+	bash scripts/server/open-local.sh
+
+.PHONY: server-restart
+server-restart: server-stop server-start ## Restart local servers
+
+# ---------------------------------------------------------------------------
+# Git safe workflow (Phase 36)
+# ---------------------------------------------------------------------------
+
+.PHONY: git-clean-local
+git-clean-local: ## Remove local artifacts (baks, logs, tmp)
+	bash scripts/git/clean-local-artifacts.sh
+
+.PHONY: git-safe-status
+git-safe-status: ## Show git status with risky file detection
+	bash scripts/git/safe-status.sh
+
+.PHONY: git-safe-add
+git-safe-add: ## Stage files safely (ARGS="path1 path2" or default)
+	bash scripts/git/safe-add.sh $(ARGS)
+
+.PHONY: git-safe-commit
+git-safe-commit: ## Commit with pre-commit safety scan (MESSAGE="...")
+	MESSAGE="$(MESSAGE)" bash scripts/git/safe-commit.sh
+
+.PHONY: git-safe-push safe-push
+git-safe-push safe-push: ## Validate, status, then push to origin/main
+	bash scripts/git/safe-push.sh
+
+.PHONY: safe-commit
+safe-commit: git-safe-commit ## Alias to git-safe-commit
 
 .PHONY: health
 health: ## Check backend health endpoint

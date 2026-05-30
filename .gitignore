@@ -116,6 +116,12 @@ log.txt
 *.backup
 *.orig
 *.rej
+Makefile.bak.*
+backend.log
+frontend.log
+.runtime/
+.installer-backups/
+release-artifacts/
 
 # Databases, dumps, and generated local data
 *.db

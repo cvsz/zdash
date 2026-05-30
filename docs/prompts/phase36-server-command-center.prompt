@@ -1,0 +1,436 @@
+Implement Phase 36: zDash Server Command Center + Secret-Safe Git Workflow.
+
+Context:
+The current Makefile already includes many install, production, validation, Codex, infra, Docker, release, and cleanup targets.
+
+Current Makefile already has:
+- install-local
+- install-local-start
+- install-local-pull
+- install-local-fast
+- install-local-docker
+- install-repair
+- install-validate
+- install-health
+- install-prod
+- install-prod-tests
+- install-prod-no-firewall
+- prod-ps
+- prod-health
+- prod-logs
+- prod-backend-logs
+- prod-nginx-logs
+- prod-backup
+- prod-update
+- prod-start
+- prod-stop
+- prod-restart
+- prod-status
+- prod-up
+- prod-down
+- codex-setup
+- codex-maintenance
+- codex-repair-backend
+- codex-healthcheck
+- script-run-phases
+- script-export-json-prompt
+- script-integrate-ecc
+- script-sync-ecc-codex
+- script-setup-dev
+- script-enable-agents
+- infra-deploy-dev
+- infra-deploy-prod
+- infra-rollback
+- validate-fast
+- validate
+- run-backend
+- run-frontend
+
+Do not duplicate existing targets.
+Do not re-add prod-up, prod-down, prod-ps, prod-logs, or prod-health if they already exist.
+Do not create duplicate Makefile recipes.
+Keep make help clean with no override warnings.
+
+Goal:
+Add a clean server command layer and secret-safe Git workflow for local Ubuntu/VMware development and safe push to GitHub.
+
+Hard safety requirements:
+- Do not enable live trading.
+- Keep DRY_RUN=true by default.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not add real broker execution.
+- Do not add real AWS, OpenAI, GitHub, Cloudflare, broker, or database secrets.
+- Do not weaken GitHub push protection.
+- Do not bypass safety-scan.
+- Do not bypass high-risk action policy.
+- Do not commit Makefile.bak.* or local backup files.
+
+Part 1: Add local server scripts
+
+Create directory:
+
+scripts/server/
+
+Create files:
+
+scripts/server/start-local.sh
+scripts/server/stop-local.sh
+scripts/server/status-local.sh
+scripts/server/logs-local.sh
+scripts/server/open-local.sh
+
+Requirements:
+
+start-local.sh:
+- Must start backend and frontend in background.
+- Backend:
+  - cd backend
+  - source .venv/bin/activate
+  - run uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT:-8005}
+- Frontend:
+  - use nvm if available
+  - use Node ${NODE_VERSION:-20}
+  - cd frontend
+  - run npm run dev -- --host 0.0.0.0 --port ${FRONTEND_PORT:-5173}
+- Create:
+  - .runtime/logs/
+  - .runtime/pids/
+- Write:
+  - .runtime/logs/backend.log
+  - .runtime/logs/frontend.log
+  - .runtime/pids/backend.pid
+  - .runtime/pids/frontend.pid
+- Must not use pkill.
+- Must not kill unrelated uvicorn/vite processes.
+- If a PID file exists but process is dead, clean it.
+- If server is already running, print status and do not start duplicate process.
+- Print local and LAN URLs.
+- Check backend /health after start.
+- Check frontend root URL after start.
+- Clearly print:
+  - Backend URL
+  - Frontend URL
+  - API docs URL
+  - log file paths
+
+stop-local.sh:
+- Read PIDs only from .runtime/pids.
+- Stop only those PIDs.
+- Remove PID files after stop.
+- Do not use broad pkill.
+- Be idempotent.
+
+status-local.sh:
+- Show backend/frontend PID status.
+- Show open ports 8005 and 5173.
+- Show backend /health result if available.
+- Show frontend HTTP status if available.
+- Show LAN IP from hostname -I.
+
+logs-local.sh:
+- Follow both logs by default.
+- Support SERVICE=backend or SERVICE=frontend.
+- If log file does not exist, print clear message.
+
+open-local.sh:
+- Print browser URLs.
+- If xdg-open exists and OPEN_BROWSER=true, open frontend URL.
+- Default must only print URLs.
+
+Part 2: Add production server wrapper scripts
+
+Create:
+
+scripts/server/start-prod.sh
+scripts/server/stop-prod.sh
+scripts/server/status-prod.sh
+scripts/server/logs-prod.sh
+
+Requirements:
+
+- These scripts must wrap existing production runtime helpers:
+  - /opt/zdash/runtime/scripts/zdash-health.sh
+  - /opt/zdash/runtime/scripts/zdash-logs.sh
+  - /opt/zdash/runtime/scripts/zdash-backup.sh
+  - /opt/zdash/runtime/scripts/zdash-update.sh
+- If production installer has not been run, fail safely with a clear message:
+  “Production runtime not found. Run: sudo ./install-zdash-prod.sh”
+- start-prod.sh:
+  - sudo systemctl start zdash
+  - show systemctl status --no-pager
+  - run production health helper if available
+- stop-prod.sh:
+  - sudo systemctl stop zdash
+  - show status
+- status-prod.sh:
+  - show systemd status
+  - show docker compose ps if runtime compose exists
+  - show health
+- logs-prod.sh:
+  - call production log helper
+  - support SERVICE=backend/nginx/frontend/postgres/redis
+
+Part 3: Add safe Git scripts
+
+Create directory:
+
+scripts/git/
+
+Create files:
+
+scripts/git/clean-local-artifacts.sh
+scripts/git/safe-status.sh
+scripts/git/safe-add.sh
+scripts/git/safe-commit.sh
+scripts/git/safe-push.sh
+
+clean-local-artifacts.sh:
+- Remove:
+  - Makefile.bak.*
+  - *.bak
+  - backend.log
+  - frontend.log
+  - .runtime/tmp/
+  - local generated temp files
+- Do not remove:
+  - source code
+  - .env
+  - .env.production
+  - frontend/.env.local
+  - user data directories
+- Print removed paths.
+
+safe-status.sh:
+- Run:
+  - git status --short
+  - git diff --stat
+  - git diff --cached --stat
+- Highlight risky files if staged:
+  - .env
+  - .env.*
+  - *.pem
+  - *.key
+  - Makefile.bak.*
+  - backend.log
+  - frontend.log
+  - .runtime/
+- Do not print secret values.
+
+safe-add.sh:
+- Run clean-local-artifacts.sh first.
+- Add only safe project files by default.
+- Never add:
+  - .env
+  - .env.*
+  - frontend/.env.local
+  - Makefile.bak.*
+  - *.bak
+  - backend.log
+  - frontend.log
+  - .runtime/
+  - node_modules/
+  - backend/.venv/
+- Support explicit path args:
+  scripts/git/safe-add.sh Makefile backend/app/risk/high_risk_policy.py
+- Reject unsafe explicit paths with clear error.
+
+safe-commit.sh:
+- Accept message through:
+  - MESSAGE="..."
+  - or first argument
+- Before commit:
+  - run safe-status.sh
+  - run make safety-scan
+  - scan staged diff for:
+    - AWS access key IDs
+    - AWS secret access keys
+    - OpenAI keys
+    - GitHub tokens
+    - Claude/Anthropic keys
+    - Cloudflare tokens
+    - private keys
+- Avoid false-positive blocking for harmless unit test fixture strings.
+- If ECC pre-commit blocks a known false positive in test fixtures, print guidance but do not automatically bypass.
+- Do not use ECC_SKIP_PRECOMMIT automatically.
+- Commit only if checks pass.
+
+safe-push.sh:
+- Run:
+  - make validate-fast
+  - safe-status.sh
+- Push:
+  - git push origin main
+- If GitHub push protection blocks:
+  - print exact recovery instructions:
+    - git fetch origin main
+    - git reset --soft origin/main
+    - remove secret from files
+    - git add safe files
+    - make validate-fast
+    - git commit
+    - git push origin main
+  - remind to rotate/delete leaked cloud keys immediately
+- Do not print secret values.
+- Do not open unblock URL automatically.
+
+Part 4: Update .gitignore
+
+Ensure these entries exist:
+
+.runtime/
+*.bak
+Makefile.bak.*
+backend.log
+frontend.log
+.installer-backups/
+release-artifacts/
+.codex/tmp/
+.codex/cache/
+.codex/runs/
+
+Do not ignore:
+- Makefile
+- install-zdash-fullstack.sh
+- install-zdash-prod.sh
+- scripts/server/*.sh
+- scripts/git/*.sh
+- backend/app/**
+- frontend/src/**
+
+Part 5: Update Makefile without duplication
+
+Important:
+Before adding targets, check if a target already exists.
+Do not duplicate any target.
+Do not create override warnings.
+
+Add these targets only if missing:
+
+server-start:
+- bash scripts/server/start-local.sh
+
+server-stop:
+- bash scripts/server/stop-local.sh
+
+server-status:
+- bash scripts/server/status-local.sh
+
+server-logs:
+- SERVICE=$(SERVICE) bash scripts/server/logs-local.sh
+
+server-open:
+- bash scripts/server/open-local.sh
+
+server-restart:
+- make server-stop
+- make server-start
+
+git-clean-local:
+- bash scripts/git/clean-local-artifacts.sh
+
+git-safe-status:
+- bash scripts/git/safe-status.sh
+
+git-safe-add:
+- bash scripts/git/safe-add.sh $(ARGS)
+
+git-safe-commit:
+- MESSAGE="$(MESSAGE)" bash scripts/git/safe-commit.sh
+
+git-safe-push:
+- bash scripts/git/safe-push.sh
+
+safe-push:
+- alias to git-safe-push
+
+safe-commit:
+- alias to git-safe-commit
+
+Update help common flows to include:
+- make server-start
+- make server-status
+- make server-logs SERVICE=backend
+- make server-stop
+- make git-safe-add ARGS="Makefile backend/app/risk/high_risk_policy.py"
+- make git-safe-commit MESSAGE="Fix validation scan"
+- make git-safe-push
+
+Keep existing targets:
+- install-local
+- install-local-start
+- install-prod
+- prod-health
+- prod-logs
+- run-backend
+- run-frontend
+- validate-fast
+
+Do not rename existing targets.
+
+Part 6: Add docs
+
+Create:
+
+docs/runbooks/START_SERVER.md
+docs/runbooks/GIT_SAFE_PUSH.md
+docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md
+
+START_SERVER.md:
+- Explain local dev run:
+  - make server-start
+  - make server-status
+  - make server-logs
+  - make server-stop
+- Explain manual run:
+  - make run-backend
+  - make run-frontend
+- Explain production run:
+  - sudo ./install-zdash-prod.sh
+  - make prod-health
+  - make prod-logs SERVICE=backend
+- Include default URLs:
+  - http://localhost:8005/health
+  - http://localhost:8005/docs
+  - http://localhost:5173
+
+GIT_SAFE_PUSH.md:
+- Explain:
+  - make git-safe-status
+  - make git-safe-add ARGS="..."
+  - make git-safe-commit MESSAGE="..."
+  - make git-safe-push
+- Explain GitHub push protection recovery.
+- Explain secret rotation.
+- Explain why not to use unblock URL for real secrets.
+
+PHASE36_SERVER_COMMAND_CENTER.md:
+- Summarize architecture.
+- List new scripts.
+- List new Make targets.
+- Explain local vs production mode.
+- Explain safety guarantees.
+
+Part 7: Validation
+
+Run:
+
+make scripts-chmod
+make help
+make scripts-list
+make server-status || true
+make git-safe-status
+make validate-fast
+
+Acceptance criteria:
+- make validate-fast passes.
+- make help shows new server and git-safe targets.
+- no duplicate target warnings.
+- no Makefile.bak.* tracked.
+- no old backend port 8000 runtime source references.
+- no secret-looking values in tracked runtime/source files.
+- server-start and server-stop are idempotent.
+- stop-local.sh only kills PIDs it created.
+- production wrapper scripts fail safely if /opt/zdash/runtime is absent.
