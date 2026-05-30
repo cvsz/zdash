@@ -2,10 +2,106 @@
 
 Repository: `cvsz/zdash`
 
+Target execution profile:
+
+- Primary model profile: **DeepSeek V4 Flash Free** or any fast/free coding model with limited context budget.
+- Execution style: small, deterministic, phase-split, validation-first.
+- Do not assume paid tools, large context windows, proprietary MCP servers, external APIs, or long-running background jobs.
+- Prefer one focused patch per pass instead of one giant rewrite.
+- If the model context becomes crowded, stop after the current safe patch and produce a handoff report.
+
 Goal:
 Finalize zDash into a production-grade, safety-first, full-stack release candidate by completing source code polish, feature integration, options, functions, backend logic, frontend UI/UX, dashboards, documentation, validation, and release hardening while preserving all safety policies from Phases 01–34.
 
 Do not rebuild the project from scratch. Inspect the repository first, preserve the current architecture, and apply incremental, tested changes only.
+
+---
+
+## DeepSeek V4 Flash Free execution rules
+
+Use these rules when running this prompt in a fast/free model:
+
+1. **Inspect before editing.** Read only the minimum files required for the current pass.
+2. **Split work into passes.** Do not attempt all backend, frontend, docs, Docker, and CI changes in one response if context is limited.
+3. **Patch small.** Limit each pass to a cohesive area: backend, frontend, AI Trader, docs, validation, or Makefile/CI.
+4. **Avoid speculative rewrites.** Do not rewrite large files just to reorganize them.
+5. **Prefer existing abstractions.** Reuse existing services, components, hooks, API clients, tests, and Makefile targets.
+6. **No paid/external assumptions.** Do not require paid APIs, paid models, external ML dependencies, broker credentials, Stripe keys, Supabase, or Cloudflare secrets.
+7. **No background promises.** Complete the current pass immediately, then report what remains.
+8. **Validation after each pass.** Run the smallest relevant validation first, then full validation only after the patch set is stable.
+9. **Do not hide uncertainty.** If a file or dependency is missing, report it and continue with the safest available local path.
+10. **Keep safety copy visible.** Trading, AI Trader, marketplace, billing, enterprise export, and content publish flows must keep visible safety messaging.
+
+Recommended pass order for DeepSeek V4 Flash Free:
+
+```text
+Pass 35.0 · Repo sync and safety scan
+Pass 35.1 · Backend release hardening
+Pass 35.2 · AI Trader final polish
+Pass 35.3 · Frontend dashboard/UI polish
+Pass 35.4 · Docs/runbooks/API examples
+Pass 35.5 · Makefile/CI/maintenance validation
+Pass 35.6 · Final report and release handoff
+```
+
+For each pass, produce:
+
+```text
+- inspected files
+- files changed
+- tests run
+- result
+- safety status
+- next pass recommendation
+```
+
+---
+
+## DeepSeek V4 Flash Free prompt splitter
+
+If this prompt is too large for the active model, use one of these smaller prompts instead.
+
+### Pass 35.0 · Repo sync and safety scan
+
+```text
+Execute only Phase 35.0 for cvsz/zdash. Inspect git status, Makefile, .gitignore, .codex/config.toml, and docs/prompt. Ensure docs/prompt/codex-runs/ is untracked and ignored. Do not change app code. Run make safety-scan. Fix only safety-scan false positives or tracked local-only files. Report exact commands and results.
+```
+
+### Pass 35.1 · Backend release hardening
+
+```text
+Execute only Phase 35.1 backend release hardening for cvsz/zdash. Inspect backend/app/main.py, backend/app/core/config.py, backend/app/api, backend/app/trading, backend/app/ai_trader, backend/app/risk, backend/app/content, backend/app/billing, backend/app/marketplace, backend/app/enterprise, and backend tests. Fix duplicate router registration, stale imports, response envelope inconsistencies, missing RBAC on sensitive routes, and obvious test failures only. Do not enable live trading or external broker execution. Run python -m ruff check app tests and python -B -m pytest -q with development env overrides.
+```
+
+### Pass 35.2 · AI Trader final polish
+
+```text
+Execute only Phase 35.2 AI Trader final polish for cvsz/zdash. Inspect backend/app/ai_trader, backend/app/api/ai_trader.py, backend/tests/test_ai_trader*, frontend/src/api/aiTrader.ts, frontend/src/components/trading/AITraderSimulationCard.tsx, and relevant frontend tests. Ensure AI Trader remains simulation-only, paper-trade forces dry_run=true, status reports live_execution_allowed=false, all metadata includes simulation_only=true, and no live trading button exists. Run targeted backend and frontend tests, then report.
+```
+
+### Pass 35.3 · Frontend dashboard/UI polish
+
+```text
+Execute only Phase 35.3 frontend dashboard/UI polish for cvsz/zdash. Inspect frontend/src/App.tsx, frontend/src/pages, frontend/src/components, frontend/src/api, and frontend/src/tests. Fix broken imports, route render failures, missing empty/loading/error states, unclear dry-run labels, duplicate UI code, and responsive issues. Do not change backend contracts unless required by failing tests. Run npm test and npm run build.
+```
+
+### Pass 35.4 · Docs/runbooks/API examples
+
+```text
+Execute only Phase 35.4 docs and runbooks for cvsz/zdash. Update README and docs only. API examples must use port 8005. Document Phase 35 release status, AI Trader simulation-only behavior, production safety notes, validation commands, common non-blocking warnings, and Cloudflare operator handoff to cvsz/zeaz-platform. Do not edit source code. Run make safety-scan.
+```
+
+### Pass 35.5 · Makefile/CI/maintenance validation
+
+```text
+Execute only Phase 35.5 Makefile, CI, and maintenance validation for cvsz/zdash. Inspect Makefile, .github/workflows, .codex/cloud/maintenance.sh, .gitignore, and env examples. Ensure scans check tracked runtime/source files only and do not fail on ignored caches. Keep .env and local Codex run artifacts untracked. Run make safety-scan, make validate-fast, and if Docker is available make validate.
+```
+
+### Pass 35.6 · Final report and release handoff
+
+```text
+Execute only Phase 35.6 final report for cvsz/zdash. Do not edit files unless validation reveals a critical small issue. Summarize repository inspection, files changed across Phase 35, validation results, safety checklist, AI Trader status, billing/mock/Stripe status, marketplace safety, enterprise export safety, Cloudflare operator handoff, known warnings, known limitations, and next phase recommendation.
+```
 
 ---
 
@@ -61,6 +157,8 @@ docs/
 
 Identify what is already complete, what is duplicated, what is stale, and what still needs release polish.
 
+For DeepSeek V4 Flash Free, do not inspect all files in one context if the model is running out of room. Inspect one scope at a time and keep a short inspection log.
+
 ---
 
 ## Scope A · Backend finalization
@@ -83,7 +181,17 @@ Expected backend checks:
 ```bash
 cd backend
 source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
 python -m ruff check app tests
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
 python -B -m pytest -q
 ```
 
@@ -211,11 +319,60 @@ make validate
 
 ---
 
+## DeepSeek V4 Flash Free validation fallback
+
+If full validation is too slow or the free model/session is unstable, validate in this order and stop at the first real failure:
+
+```bash
+make safety-scan
+```
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -m ruff check app tests
+```
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -B -m pytest -q
+```
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```
+
+Treat these as non-blocking if final summaries pass:
+
+```text
+- passlib crypt deprecation warning from dependency
+- React act(...) warnings in existing hook tests
+- intentional ErrorBoundary test Error: fail
+```
+
+---
+
 ## Required final report
 
 Return a final report with:
 
 - Repository inspection summary.
+- DeepSeek V4 Flash Free pass number used.
 - Files created.
 - Files updated.
 - Tests added/updated.
@@ -250,4 +407,14 @@ If many unrelated fixes are required, split commits by area:
 git commit -m "phase35: harden backend release checks"
 git commit -m "phase35: polish frontend release dashboard"
 git commit -m "phase35: update final release documentation"
+```
+
+For DeepSeek V4 Flash Free pass-split execution, use pass-specific commits:
+
+```bash
+git commit -m "phase35.1: harden backend release checks"
+git commit -m "phase35.2: finalize ai trader simulation polish"
+git commit -m "phase35.3: polish frontend dashboard release ui"
+git commit -m "phase35.4: update release documentation"
+git commit -m "phase35.5: harden validation and maintenance checks"
 ```
