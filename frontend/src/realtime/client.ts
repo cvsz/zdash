@@ -33,10 +33,10 @@ export function isRealtimeTestRuntime(): boolean {
 }
 
 const CHANNEL_PATHS: Record<RealtimeChannel, string> = {
-  events: "/ws/events",
-  risk: "/ws/risk",
-  scheduler: "/ws/scheduler",
-  content: "/ws/content",
+  events: "/api/realtime/ws/events",
+  risk: "/api/realtime/ws/risk",
+  scheduler: "/api/realtime/ws/scheduler",
+  content: "/api/realtime/ws/content",
 };
 
 type RealtimeClientOptions = {
