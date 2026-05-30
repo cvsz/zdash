@@ -9,3 +9,7 @@
 | 2026-05-30 | 4f8ff68 | make frontend-build | PASSED | 2332 modules, 14.19s |
 | 2026-05-30 | 4f8ff68 | docker compose config | PASSED | Config valid, backend/frontend/nginx services |
 | 2026-05-30 | 4f8ff68 | make validate-fast | PASSED | All sub-commands passed |
+| 2026-05-30 | 206baed | make safety-scan | PASSED | log: safety-scan-20260530T185000Z.log |
+| 2026-05-30 | 206baed | make validate-fast | PASSED | log: validate-fast-20260530T185512Z.log |
+| 2026-05-30 | 206baed | make validate | PASSED | log: validate-20260530T185646Z.log (codex-maintenance: port 8000 in archived prompt files only) |
+| 2026-05-30 | 206baed | docker compose config | PASSED | log: docker-compose-config-20260530T190205Z.log |
