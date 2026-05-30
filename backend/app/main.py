@@ -53,7 +53,11 @@ from app.core.logging import configure_logging
 from app.core.responses import fail
 from app.db.migrations import run_migrations
 from app.observability.middleware import install_observability_middleware
-from app.realtime import bind_realtime_loop, get_realtime_heartbeat, stop_realtime_heartbeat
+from app.realtime import (
+    bind_realtime_loop,
+    get_realtime_heartbeat,
+    stop_realtime_heartbeat,
+)
 from app.scheduler.scheduler_service import get_scheduler_service
 
 settings = get_settings()
@@ -88,7 +92,7 @@ async def lifespan(_: FastAPI):
     await stop_realtime_heartbeat()
 
 
-app = FastAPI(title="Janie Server", version="2.0.0-phase8.3", lifespan=lifespan)
+app = FastAPI(title="Janie Server", version="2.0.0-phase35", lifespan=lifespan)
 
 origins = [o.strip() for o in settings.cors_allow_origins.split(",") if o.strip()]
 app.add_middleware(

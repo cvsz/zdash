@@ -966,7 +966,7 @@ export const runPluginAction = async (installationId: string, action: string, pa
 
 // Enterprise API
 export const getEnterpriseStatus = async () => {
-  return apiClient.get<{ license: EnterpriseLicense, branding: BrandingSettings }>("/status", {
+  return apiClient.get<{ license: EnterpriseLicense, branding: BrandingSettings }>("/api/enterprise/status", {
     license: {
       organization_id: "org-1",
       status: "active",
@@ -991,7 +991,7 @@ export const getEnterpriseStatus = async () => {
 };
 
 export const getLicenseStatus = async () => {
-  return apiClient.get<EnterpriseLicense>("/license", {
+  return apiClient.get<EnterpriseLicense>("/api/enterprise/license", {
     organization_id: "org-1",
     status: "active",
     tier: "enterprise",
@@ -1004,15 +1004,15 @@ export const getLicenseStatus = async () => {
 };
 
 export const applyLicense = async (licenseKey: string) => {
-  return apiClient.post<{ ok: boolean }>("/license/apply", { license_key: licenseKey }, { ok: true });
+  return apiClient.post<{ ok: boolean }>("/api/enterprise/license/apply", { license_key: licenseKey }, { ok: true });
 };
 
 export const revokeLicense = async () => {
-  return apiClient.post<{ ok: boolean }>("/license/revoke", {}, { ok: true });
+  return apiClient.post<{ ok: boolean }>("/api/enterprise/license/revoke", {}, { ok: true });
 };
 
 export const getBrandingSettings = async () => {
-  return apiClient.get<BrandingSettings>("/branding", {
+  return apiClient.get<BrandingSettings>("/api/enterprise/branding", {
     organization_id: "org-1",
     workspace_id: "ws-1",
     brand_name: "zDash",
@@ -1025,7 +1025,7 @@ export const getBrandingSettings = async () => {
 };
 
 export const updateBrandingSettings = async (settings: Partial<BrandingSettings>) => {
-  return apiClient.patch<BrandingSettings>("/branding", settings, {
+  return apiClient.patch<BrandingSettings>("/api/enterprise/branding", settings, {
     organization_id: "org-1",
     workspace_id: "ws-1",
     brand_name: settings.brand_name ?? "zDash",
@@ -1038,7 +1038,7 @@ export const updateBrandingSettings = async (settings: Partial<BrandingSettings>
 };
 
 export const resetBrandingSettings = async () => {
-  return apiClient.post<BrandingSettings>("/branding/reset", {}, {
+  return apiClient.post<BrandingSettings>("/api/enterprise/branding/reset", {}, {
     organization_id: "org-1",
     workspace_id: "ws-1",
     brand_name: "zDash",
@@ -1051,7 +1051,7 @@ export const resetBrandingSettings = async () => {
 };
 
 export const listExportBundles = async () => {
-  const data = await apiClient.get<{ exports: ExportBundle[] }>("/exports", {
+  const data = await apiClient.get<{ exports: ExportBundle[] }>("/api/enterprise/exports", {
     exports: [
       {
         id: "exp-001",
@@ -1081,8 +1081,9 @@ export const createExportBundle = async (req: {
   include_backtests: boolean;
   include_scheduler: boolean;
   include_secrets: boolean;
+  secret_export_confirmation?: string;
 }) => {
-  return apiClient.post<ExportBundle>("/exports", req, {
+  return apiClient.post<ExportBundle>("/api/enterprise/exports", req, {
     id: "exp-new",
     organization_id: "org-1",
     workspace_id: "ws-1",
@@ -1101,7 +1102,7 @@ export const createExportBundle = async (req: {
 };
 
 export const getExportBundle = async (bundleId: string) => {
-  return apiClient.get<ExportBundle>("/exports/" + bundleId, {
+  return apiClient.get<ExportBundle>("/api/enterprise/exports/" + bundleId, {
     id: bundleId,
     organization_id: "org-1",
     workspace_id: "ws-1",
@@ -1120,7 +1121,7 @@ export const getExportBundle = async (bundleId: string) => {
 };
 
 export const getOnboardingChecklist = async () => {
-  return apiClient.get<OnboardingChecklist>("/onboarding", {
+  return apiClient.get<OnboardingChecklist>("/api/enterprise/onboarding", {
     organization_id: "org-1",
     workspace_id: "ws-1",
     completed_steps: ["create organization", "create workspace"],
@@ -1139,15 +1140,15 @@ export const getOnboardingChecklist = async () => {
 };
 
 export const completeOnboardingStep = async (step: string) => {
-  return apiClient.post<{ ok: boolean }>("/onboarding/complete-step", { step }, { ok: true });
+  return apiClient.post<{ ok: boolean }>("/api/enterprise/onboarding/complete-step", { step }, { ok: true });
 };
 
 export const resetOnboardingChecklist = async () => {
-  return apiClient.post<{ ok: boolean }>("/onboarding/reset", {}, { ok: true });
+  return apiClient.post<{ ok: boolean }>("/api/enterprise/onboarding/reset", {}, { ok: true });
 };
 
 export const getCustomerHealth = async () => {
-  return apiClient.get<CustomerHealth>("/customer-health", {
+  return apiClient.get<CustomerHealth>("/api/enterprise/customer-health", {
     health_score: 20.0,
     status: "poor",
     active_users: 1,
@@ -1230,4 +1231,3 @@ export const runAITraderPaperTrade = (payload: AITraderSignalRequest & { snapsho
     },
   );
 };
-

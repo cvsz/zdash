@@ -10,6 +10,7 @@ interface ExportImportPanelProps {
     include_backtests: boolean;
     include_scheduler: boolean;
     include_secrets: boolean;
+    secret_export_confirmation?: string;
   }) => Promise<any>;
 }
 
@@ -45,6 +46,7 @@ export function ExportImportPanel({ exportsList, onCreateExport }: ExportImportP
         include_backtests: includeBacktests,
         include_scheduler: includeScheduler,
         include_secrets: includeSecrets,
+        secret_export_confirmation: includeSecrets ? secretConfirmInput : undefined,
       });
       setSuccessMsg("System configuration bundle generated successfully.");
       setSecretConfirmInput("");

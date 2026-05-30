@@ -114,6 +114,7 @@ export function useEnterprise() {
     include_backtests: boolean;
     include_scheduler: boolean;
     include_secrets: boolean;
+    secret_export_confirmation?: string;
   }) => {
     setError(null);
     try {

@@ -3,7 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 from app.ai_trader.features import AITraderFeatures, calculate_features
-from app.ai_trader.registry import AITraderStrategy, get_strategy, list_strategies, resolve_strategy
+from app.ai_trader.registry import (
+    AITraderStrategy,
+    get_strategy,
+    list_strategies,
+    resolve_strategy,
+)
 from app.core.events import event_bus
 from app.risk.models import AccountSnapshot
 from app.trading.models import (
@@ -15,7 +20,7 @@ from app.trading.models import (
 )
 from app.trading.trading_service import TradingService
 
-MODEL_VERSION = "ai-trader-phase34"
+MODEL_VERSION = "ai-trader-phase35"
 SAFETY_NOTICE = "Simulation only. Not financial advice. No live execution."
 RISK_POLICY = {
     "dry_run_forced": True,
@@ -85,9 +90,15 @@ class AITraderService:
             abs(features.momentum_3) + abs(features.momentum_7) * 0.5
         ) / max(features.atr_proxy, 0.01)
         volatility_factor = 0.85 if features.volatility_state == "high" else 1.0
-        return self._clamp((0.35 + trend_strength * 0.12 + momentum_strength * 0.05) * multiplier * volatility_factor)
+        return self._clamp(
+            (0.35 + trend_strength * 0.12 + momentum_strength * 0.05)
+            * multiplier
+            * volatility_factor
+        )
 
-    def _trend_momentum(self, features: AITraderFeatures) -> tuple[str, float, list[str]]:
+    def _trend_momentum(
+        self, features: AITraderFeatures
+    ) -> tuple[str, float, list[str]]:
         confidence = self._confidence(features)
         if features.fast_ma > features.slow_ma and features.momentum_3 > 0:
             return "buy", confidence, []
@@ -95,7 +106,9 @@ class AITraderService:
             return "sell", confidence, []
         return "hold", min(confidence, 0.5), ["trend and momentum are not aligned"]
 
-    def _mean_reversion(self, features: AITraderFeatures) -> tuple[str, float, list[str]]:
+    def _mean_reversion(
+        self, features: AITraderFeatures
+    ) -> tuple[str, float, list[str]]:
         warnings: list[str] = []
         if features.volatility_state == "high":
             return "hold", 0.35, ["volatility too high for mean reversion simulation"]
@@ -105,9 +118,15 @@ class AITraderService:
             return "buy", confidence, warnings
         if distance > features.atr_proxy and features.momentum_3 <= 0:
             return "sell", confidence, warnings
-        return "hold", min(confidence, 0.52), ["price extension is not sufficient for mean reversion"]
+        return (
+            "hold",
+            min(confidence, 0.52),
+            ["price extension is not sufficient for mean reversion"],
+        )
 
-    def _volatility_breakout(self, features: AITraderFeatures) -> tuple[str, float, list[str]]:
+    def _volatility_breakout(
+        self, features: AITraderFeatures
+    ) -> tuple[str, float, list[str]]:
         if features.volatility_state not in {"normal", "high"}:
             return "hold", 0.3, ["volatility is too low for breakout simulation"]
         confidence = self._confidence(features, 1.05)
@@ -117,7 +136,9 @@ class AITraderService:
             return "sell", confidence, []
         return "hold", min(confidence, 0.55), ["volatility and momentum do not agree"]
 
-    def _conservative_guarded(self, features: AITraderFeatures) -> tuple[str, float, list[str]]:
+    def _conservative_guarded(
+        self, features: AITraderFeatures
+    ) -> tuple[str, float, list[str]]:
         warnings: list[str] = []
         if features.volatility_state == "high":
             return "hold", 0.25, ["conservative strategy blocks high volatility"]
@@ -185,7 +206,9 @@ class AITraderService:
             features=features,
             warnings=all_warnings,
         )
-        metadata = self.build_safety_metadata(strategy, features, all_warnings, explanation)
+        metadata = self.build_safety_metadata(
+            strategy, features, all_warnings, explanation
+        )
         return TradingSignal(
             symbol=symbol,
             timeframe=timeframe,
@@ -208,7 +231,11 @@ class AITraderService:
         strategy_id: str | None = None,
     ) -> TradingSignal:
         strategy = self.resolve_strategy(strategy_id)
-        threshold = min_confidence if min_confidence is not None else strategy.default_min_confidence
+        threshold = (
+            min_confidence
+            if min_confidence is not None
+            else strategy.default_min_confidence
+        )
         features = calculate_features(candles, min_candles=strategy.min_candles)
         direction, confidence, warnings = self._strategy_decision(strategy, features)
         signal = self._build_signal(
@@ -277,7 +304,10 @@ class AITraderService:
         ]
         ranked = sorted(
             decisions,
-            key=lambda item: (item["signal"].direction != "hold", item["signal"].confidence),
+            key=lambda item: (
+                item["signal"].direction != "hold",
+                item["signal"].confidence,
+            ),
             reverse=True,
         )
         event_bus.emit(
@@ -311,7 +341,13 @@ class AITraderService:
         snapshot: AccountSnapshot | None = None,
     ) -> dict[
         str,
-        TradingSignal | SignalValidationResult | ExecutionResult | dict[str, Any] | str | bool | list[str],
+        TradingSignal
+        | SignalValidationResult
+        | ExecutionResult
+        | dict[str, Any]
+        | str
+        | bool
+        | list[str],
     ]:
         decision = self.generate_decision(
             candles=candles,
@@ -329,7 +365,9 @@ class AITraderService:
         )
         request_payload: dict[str, Any] | ExecutionRequest
         if snapshot is None:
-            request_payload = ExecutionRequest(signal=signal, dry_run=True, confirmation=False)
+            request_payload = ExecutionRequest(
+                signal=signal, dry_run=True, confirmation=False
+            )
         else:
             request_payload = {
                 "signal": signal,

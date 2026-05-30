@@ -210,9 +210,7 @@ class Settings(BaseSettings):
     workspace_header_name: str = Field(
         default="X-ZDash-Workspace", alias="WORKSPACE_HEADER_NAME"
     )
-    worker_queue_backend: str = Field(
-        default="memory", alias="WORKER_QUEUE_BACKEND"
-    )
+    worker_queue_backend: str = Field(default="memory", alias="WORKER_QUEUE_BACKEND")
     worker_max_retries: int = Field(default=3, alias="WORKER_MAX_RETRIES")
 
     cloudflare_dry_run: bool = Field(default=True, alias="CLOUDFLARE_DRY_RUN")
@@ -271,7 +269,9 @@ class Settings(BaseSettings):
 
     # Usage Metering and Quotas
     usage_metering_enabled: bool = Field(default=True, alias="USAGE_METERING_ENABLED")
-    usage_enforcement_enabled: bool = Field(default=True, alias="USAGE_ENFORCEMENT_ENABLED")
+    usage_enforcement_enabled: bool = Field(
+        default=True, alias="USAGE_ENFORCEMENT_ENABLED"
+    )
     usage_reset_mode: str = Field(default="monthly", alias="USAGE_RESET_MODE")
 
     stripe_enabled: bool = Field(default=False, alias="STRIPE_ENABLED")
@@ -281,30 +281,48 @@ class Settings(BaseSettings):
     stripe_price_pro: str = Field(default="", alias="STRIPE_PRICE_PRO")
     stripe_price_enterprise: str = Field(default="", alias="STRIPE_PRICE_ENTERPRISE")
 
-    usage_metering_enabled: bool = Field(default=True, alias="USAGE_METERING_ENABLED")
-    usage_enforcement_enabled: bool = Field(default=True, alias="USAGE_ENFORCEMENT_ENABLED")
-    usage_reset_mode: str = Field(default="monthly", alias="USAGE_RESET_MODE")
-
     marketplace_enabled: bool = Field(default=True, alias="MARKETPLACE_ENABLED")
-    marketplace_install_enabled: bool = Field(default=True, alias="MARKETPLACE_INSTALL_ENABLED")
-    marketplace_review_required: bool = Field(default=True, alias="MARKETPLACE_REVIEW_REQUIRED")
+    marketplace_install_enabled: bool = Field(
+        default=True, alias="MARKETPLACE_INSTALL_ENABLED"
+    )
+    marketplace_review_required: bool = Field(
+        default=True, alias="MARKETPLACE_REVIEW_REQUIRED"
+    )
     plugin_runtime_mode: str = Field(default="sandbox", alias="PLUGIN_RUNTIME_MODE")
-    plugin_allow_external_network: bool = Field(default=False, alias="PLUGIN_ALLOW_EXTERNAL_NETWORK")
-    plugin_allow_secret_access: bool = Field(default=False, alias="PLUGIN_ALLOW_SECRET_ACCESS")
+    plugin_allow_external_network: bool = Field(
+        default=False, alias="PLUGIN_ALLOW_EXTERNAL_NETWORK"
+    )
+    plugin_allow_secret_access: bool = Field(
+        default=False, alias="PLUGIN_ALLOW_SECRET_ACCESS"
+    )
 
-    enterprise_license_enabled: bool = Field(default=True, alias="ENTERPRISE_LICENSE_ENABLED")
-    enterprise_offline_license_enabled: bool = Field(default=True, alias="ENTERPRISE_OFFLINE_LICENSE_ENABLED")
-    enterprise_export_enabled: bool = Field(default=True, alias="ENTERPRISE_EXPORT_ENABLED")
-    enterprise_import_enabled: bool = Field(default=True, alias="ENTERPRISE_IMPORT_ENABLED")
+    enterprise_license_enabled: bool = Field(
+        default=True, alias="ENTERPRISE_LICENSE_ENABLED"
+    )
+    enterprise_offline_license_enabled: bool = Field(
+        default=True, alias="ENTERPRISE_OFFLINE_LICENSE_ENABLED"
+    )
+    enterprise_export_enabled: bool = Field(
+        default=True, alias="ENTERPRISE_EXPORT_ENABLED"
+    )
+    enterprise_import_enabled: bool = Field(
+        default=True, alias="ENTERPRISE_IMPORT_ENABLED"
+    )
 
     white_label_enabled: bool = Field(default=True, alias="WHITE_LABEL_ENABLED")
     default_brand_name: str = Field(default="zDash", alias="DEFAULT_BRAND_NAME")
     default_brand_logo_url: str = Field(default="", alias="DEFAULT_BRAND_LOGO_URL")
-    default_brand_primary_color: str = Field(default="#7c3aed", alias="DEFAULT_BRAND_PRIMARY_COLOR")
-    default_brand_accent_color: str = Field(default="#22c55e", alias="DEFAULT_BRAND_ACCENT_COLOR")
+    default_brand_primary_color: str = Field(
+        default="#7c3aed", alias="DEFAULT_BRAND_PRIMARY_COLOR"
+    )
+    default_brand_accent_color: str = Field(
+        default="#22c55e", alias="DEFAULT_BRAND_ACCENT_COLOR"
+    )
 
     onboarding_enabled: bool = Field(default=True, alias="ONBOARDING_ENABLED")
-    customer_success_enabled: bool = Field(default=True, alias="CUSTOMER_SUCCESS_ENABLED")
+    customer_success_enabled: bool = Field(
+        default=True, alias="CUSTOMER_SUCCESS_ENABLED"
+    )
 
     frontend_origin: str = Field(
         default="http://localhost:5173", alias="FRONTEND_ORIGIN"
@@ -555,9 +573,7 @@ def get_settings() -> Settings:
                 "postgresql+psycopg2://",
             )
         ):
-            raise RuntimeError(
-                "DATABASE_URL must use PostgreSQL in production mode."
-            )
+            raise RuntimeError("DATABASE_URL must use PostgreSQL in production mode.")
         if settings.jwt_secret_key.strip() in {"", default_unsafe_secret}:
             raise RuntimeError(
                 "JWT_SECRET_KEY must be set to a non-default value in production mode."
@@ -572,5 +588,5 @@ def get_settings() -> Settings:
             )
     return settings
 
-settings = get_settings()
 
+settings = get_settings()

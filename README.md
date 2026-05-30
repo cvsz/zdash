@@ -963,6 +963,54 @@ Provider adapters must fail safely when:
 
 ---
 
+## Phase 35 Release Candidate Notes
+
+Phase 35 is the final release-candidate polish pass across backend routing, frontend safety copy, AI Trader simulation controls, documentation, and validation. It does not enable live execution.
+
+Release candidate defaults:
+
+- Backend API remains on port `8005`.
+- `PRODUCTION_SAFETY_LOCK=true` remains the default and enterprise licensing must not disable it.
+- `DRY_RUN=true` and `LIVE_TRADING_ACK=false` are the safe local validation defaults.
+- AI Trader reports `simulation_only=true`, `dry_run_forced=true`, and `live_execution_allowed=false`.
+- AI Trader paper trades route through the existing `TradingService` / `ExecutionEngine` path and remain dry-run only.
+- Billing uses the mock provider by default; Stripe remains disabled unless explicitly configured outside this phase.
+- Marketplace review is required by default and plugin runtime remains sandboxed without external network or secret access.
+- Enterprise exports require RBAC, tenant scope, and typed confirmation before including secrets.
+- Cloudflare DNS, routing, edge security, and operator handoff remain owned by `cvsz/zeaz-platform`.
+
+Recommended final validation:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+When Docker is available, run the full release check:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate
+```
+
+Known non-blocking warnings:
+
+- `passlib` may emit a Python `crypt` deprecation warning from a dependency on Python 3.12.
+- React tests may emit `act(...)` warnings when exercising async fallback behavior.
+- ErrorBoundary tests intentionally trigger a handled render error to prove fallback behavior.
+
+---
+
 ## Current Known Notes
 
 - `README.md` is the project overview; `AGENTS.md` is the detailed agent policy.

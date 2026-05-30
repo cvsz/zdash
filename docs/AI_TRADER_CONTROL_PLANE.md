@@ -123,7 +123,7 @@ Every generated signal includes:
 
 ```json
 {
-  "model_version": "ai-trader-phase34",
+  "model_version": "ai-trader-phase35",
   "strategy_id": "trend_momentum_v1",
   "simulation_only": true,
   "safety_notice": "Simulation only. Not financial advice. No live execution.",

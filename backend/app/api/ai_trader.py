@@ -5,7 +5,12 @@ from typing import Any
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from app.ai_trader.service import AITraderService, MODEL_VERSION, RISK_POLICY, SAFETY_NOTICE
+from app.ai_trader.service import (
+    AITraderService,
+    MODEL_VERSION,
+    RISK_POLICY,
+    SAFETY_NOTICE,
+)
 from app.auth.dependencies import require_permission
 from app.auth.rbac import Permission
 from app.core.responses import ok
@@ -61,7 +66,9 @@ def ai_trader_status(
             "live_execution_allowed": False,
             "dry_run_forced": True,
             "model_version": MODEL_VERSION,
-            "strategies": [strategy.as_dict() for strategy in service.list_strategies()],
+            "strategies": [
+                strategy.as_dict() for strategy in service.list_strategies()
+            ],
             "safety_policy": dict(RISK_POLICY),
             "safety_notice": SAFETY_NOTICE,
         }
@@ -74,7 +81,9 @@ def list_ai_trader_strategies(
 ) -> dict[str, Any]:
     return ok(
         {
-            "strategies": [strategy.as_dict() for strategy in service.list_strategies()],
+            "strategies": [
+                strategy.as_dict() for strategy in service.list_strategies()
+            ],
             "simulation_only": True,
             "model_version": MODEL_VERSION,
             "safety_notice": SAFETY_NOTICE,
@@ -120,7 +129,7 @@ def compare_ai_trader_strategies(
     )
 
 
-@router.post("/paper-" "trade")
+@router.post("/paper-trade")
 def run_ai_trader_paper_simulation(
     req: AITraderPaperRequest,
     _: object = Depends(require_permission(Permission.RUN_DRY_RUN_TRADING)),

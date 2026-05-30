@@ -145,7 +145,7 @@ function mockAITraderDecision(payload: AITraderSignalRequest): AITraderSignalRes
     take_profit: close,
     reason: "Mock AI trader fallback remains simulation-only.",
     metadata: {
-      model_version: "ai-trader-phase34",
+      model_version: "ai-trader-phase35",
       strategy_id: payload.strategy_id,
       simulation_only: true,
       safety_notice: "Simulation only. Not financial advice. No live execution.",
@@ -174,7 +174,7 @@ function mockAITraderDecision(payload: AITraderSignalRequest): AITraderSignalRes
     feature_summary: { close, mock: true },
     warnings: ["mock fallback"],
     explanation: "Mock fallback decision generated safely.",
-    model_version: "ai-trader-phase34",
+    model_version: "ai-trader-phase35",
     simulation_only: true,
     safety_notice: "Simulation only. Not financial advice. No live execution.",
     risk_policy: {
@@ -191,7 +191,7 @@ export const getAITraderStatus = () =>
     simulation_only: true,
     live_execution_allowed: false,
     dry_run_forced: true,
-    model_version: "ai-trader-phase34",
+    model_version: "ai-trader-phase35",
     strategies: mockStrategies,
     safety_policy: {
       dry_run_forced: true,
@@ -204,7 +204,7 @@ export const getAITraderStatus = () =>
 export const listAITraderStrategies = () =>
   apiClient.get<{ strategies: AITraderStrategy[]; simulation_only: boolean; model_version: string }>(
     "/api/ai-trader/strategies",
-    { strategies: mockStrategies, simulation_only: true, model_version: "ai-trader-phase34" },
+    { strategies: mockStrategies, simulation_only: true, model_version: "ai-trader-phase35" },
   );
 
 export const generateAITraderSignal = (payload: AITraderSignalRequest) =>
@@ -216,7 +216,7 @@ export const compareAITraderStrategies = (payload: AITraderCompareRequest) => {
   );
   return apiClient.post<AITraderCompareResponse>("/api/ai-trader/compare", payload, {
     ranked_decisions,
-    model_version: "ai-trader-phase34",
+    model_version: "ai-trader-phase35",
     simulation_only: true,
     safety_notice: "Simulation only. Not financial advice. No live execution.",
   });

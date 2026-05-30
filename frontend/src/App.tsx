@@ -92,15 +92,15 @@ export default function App() {
       }}
     >
       <ErrorBoundary>
-      <RealtimeProvider>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<ProtectedDashboardRoutes />} />
-        </Routes>
-      </AuthProvider>
-      </RealtimeProvider>
-    </ErrorBoundary>
+        <RealtimeProvider>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="*" element={<ProtectedDashboardRoutes />} />
+            </Routes>
+          </AuthProvider>
+        </RealtimeProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from fastapi.testclient import TestClient
-
 from app.ai_trader.service import AITraderService
-from app.main import app
+from app.api import ai_trader as ai_trader_api
 from app.risk.models import AccountSnapshot
 from app.trading.models import Candle
 
@@ -33,12 +31,16 @@ def _candles(direction: str = "up", count: int = 34) -> list[Candle]:
     return items
 
 
-def _payload(direction: str = "up", count: int = 34, strategy_id: str = "trend_momentum_v1") -> dict:
+def _payload(
+    direction: str = "up", count: int = 34, strategy_id: str = "trend_momentum_v1"
+) -> dict:
     return {
         "symbol": "XAUUSD",
         "timeframe": "M5",
         "strategy_id": strategy_id,
-        "candles": [candle.model_dump(mode="json") for candle in _candles(direction, count)],
+        "candles": [
+            candle.model_dump(mode="json") for candle in _candles(direction, count)
+        ],
         "min_confidence": 0.55,
     }
 
@@ -56,14 +58,13 @@ def _snapshot() -> AccountSnapshot:
 
 
 def test_status_endpoint_reports_simulation_only() -> None:
-    client = TestClient(app)
-    response = client.get("/api/ai-trader/status")
-    assert response.status_code in {200, 401, 403}
-    if response.status_code == 200:
-        data = response.json()["data"]
-        assert data["simulation_only"] is True
-        assert data["live_execution_allowed"] is False
-        assert data["dry_run_forced"] is True
+    response = ai_trader_api.ai_trader_status(object())
+
+    assert response["ok"] is True
+    data = response["data"]
+    assert data["simulation_only"] is True
+    assert data["live_execution_allowed"] is False
+    assert data["dry_run_forced"] is True
 
 
 def test_strategies_endpoint_returns_default_registry() -> None:
@@ -80,7 +81,9 @@ def test_strategies_endpoint_returns_default_registry() -> None:
 
 def test_insufficient_candles_returns_hold() -> None:
     service = AITraderService()
-    signal = service.generate_signal(_candles("up", count=5), strategy_id="trend_momentum_v1")
+    signal = service.generate_signal(
+        _candles("up", count=5), strategy_id="trend_momentum_v1"
+    )
     assert signal.direction == "hold"
     assert signal.metadata["simulation_only"] is True
     assert signal.metadata["risk_policy"]["live_execution_allowed"] is False
