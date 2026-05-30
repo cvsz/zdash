@@ -27,6 +27,7 @@ from app.api import (
     trading,
     ops,
     integrations,
+    google_finance,
     managed,
     developer,
     partner,
@@ -139,6 +140,7 @@ app.include_router(marketplace.router)
 app.include_router(enterprise.router)
 app.include_router(ops.router)
 app.include_router(integrations.router)
+app.include_router(google_finance.router)
 app.include_router(managed.router)
 
 app.include_router(developer.router)
