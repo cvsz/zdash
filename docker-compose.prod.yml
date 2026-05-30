@@ -23,6 +23,9 @@ services:
     build:
       context: .
       dockerfile: infra/docker/backend.Dockerfile
+    env_file:
+      - path: .env.production
+        required: false
     environment:
       APP_ENV: ${APP_ENV:-production}
       BACKEND_HOST: 0.0.0.0
@@ -82,12 +85,15 @@ services:
 
   postgres:
     image: postgres:16-alpine
+    env_file:
+      - path: .env.production
+        required: false
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-zdash}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zdash_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-zdash}
     ports:
-      - "5436:5436"
+      - "5436:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
@@ -104,7 +110,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "16379:16379"
+      - "16379:6379"
     volumes:
       - redisdata_prod:/data
     restart: unless-stopped
