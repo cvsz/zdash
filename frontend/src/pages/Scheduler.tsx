@@ -162,34 +162,34 @@ export default function Scheduler() {
         <MetricCard label="Run History" value={runs.length} />
       </div>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Default Jobs</h3>
-        <p className="mt-1 text-xs text-slate-400">Baseline jobs exposed by scheduler and safety policy.</p>
+        <p className="mt-1 text-xs text-text-dim">Baseline jobs exposed by scheduler and safety policy.</p>
         <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
           {defaultJobs.map((job) => (
-            <div key={job.id} className="rounded-md border border-slate-800 bg-slate-950/60 p-3">
-              <p className="text-sm font-semibold text-slate-100">{job.id}</p>
-              <p className="mt-1 text-xs text-slate-400">{job.note}</p>
+            <div key={job.id} className="rounded-md border border-border bg-canvas-lighter/60 p-3">
+              <p className="text-sm font-semibold text-text-primary">{job.id}</p>
+              <p className="mt-1 text-xs text-text-dim">{job.note}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Create Job</h3>
         <form className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4" onSubmit={(event) => void onCreateJob(event)}>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Name
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobName}
               onChange={(event) => setNewJobName(event.target.value)}
             />
           </label>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Job type
             <select
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobType}
               onChange={(event) => setNewJobType(event.target.value as (typeof jobTypes)[number])}
             >
@@ -200,10 +200,10 @@ export default function Scheduler() {
               ))}
             </select>
           </label>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Schedule
             <select
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobScheduleType}
               onChange={(event) => setNewJobScheduleType(event.target.value)}
             >
@@ -212,12 +212,12 @@ export default function Scheduler() {
               <option value="cron">cron</option>
             </select>
           </label>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Interval (sec)
             <input
               type="number"
               min={10}
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobIntervalSeconds}
               onChange={(event) => setNewJobIntervalSeconds(Number(event.target.value))}
             />
@@ -228,12 +228,12 @@ export default function Scheduler() {
             </Button>
           </div>
         </form>
-        {message ? <p className="mt-2 text-sm text-slate-300">{message}</p> : null}
+        {message ? <p className="mt-2 text-sm text-text-secondary">{message}</p> : null}
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Job Table</h3>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-text-dim">
           `trading_scan` is risk-guarded, `content_pipeline` is approval/no-auto-publish, `iot_power_cycle` requires confirmation.
         </p>
         <div className="mt-3">
@@ -353,7 +353,7 @@ export default function Scheduler() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Job Run History</h3>
         <div className="mt-3">
           <DataTable<JobRunResult>

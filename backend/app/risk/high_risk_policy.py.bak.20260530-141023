@@ -1,0 +1,204 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Any
+
+from fastapi import Depends, HTTPException, status
+
+from app.auth.dependencies import get_current_user
+from app.auth.models import AuthSession
+from app.core.config import get_settings
+
+
+class HighRiskActionClass(str, Enum):
+    trading = "trading"
+    broker = "broker"
+    iot = "iot"
+    social_publish = "social_publish"
+    infrastructure = "infrastructure"
+    plugin_execute = "plugin_execute"
+    support_bundle = "support_bundle"
+    deployment_pack = "deployment_pack"
+    update_apply = "update_apply"
+    raw_shell = "raw_shell"
+    credential_export = "credential_export"
+
+
+@dataclass
+class HighRiskActionRequest:
+    action_class: HighRiskActionClass
+    action_name: str
+    actor_role: str
+    actor_tenant: str = ""
+    dry_run_setting: bool = True
+    confirmation_provided: bool = False
+    risk_check_passed: bool = True
+    resource_id: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class HighRiskActionDecision:
+    allowed: bool
+    reason: str
+    blocked_by: list[str] = field(default_factory=list)
+    requires_dry_run: bool = True
+    requires_approval: bool = False
+    requires_rollback_plan: bool = False
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
+
+
+def check_high_risk_action(req: HighRiskActionRequest) -> HighRiskActionDecision:
+    """Central policy enforcement for high-risk actions.
+
+    Every action class must satisfy:
+    - auth: Valid JWT session required (caller responsibility)
+    - RBAC: Appropriate role required (caller responsibility)
+    - tenant scope: Action scoped to current tenant
+    - risk policy: Risk/Guardian check passes
+    - typed confirmation: Operator explicitly types confirmation
+    - dry-run default: Action defaults to dry-run
+    - audit event: Action logged to audit trail (caller responsibility)
+    - rollback metadata: Rollback plan documented
+    """
+    settings = get_settings()
+    blocked_by: list[str] = []
+
+    # -- RBAC gate --
+    if req.action_class in (
+        HighRiskActionClass.trading,
+        HighRiskActionClass.broker,
+        HighRiskActionClass.infrastructure,
+        HighRiskActionClass.raw_shell,
+        HighRiskActionClass.credential_export,
+    ):
+        if req.actor_role not in ("admin", "operator"):
+            blocked_by.append(f"Role '{req.actor_role}' lacks permission for {req.action_class.value}")
+        if req.actor_role not in ("admin",) and req.action_class in (
+            HighRiskActionClass.infrastructure,
+            HighRiskActionClass.raw_shell,
+            HighRiskActionClass.credential_export,
+        ):
+            blocked_by.append(f"Role '{req.actor_role}' requires admin for {req.action_class.value}")
+
+    # -- Tenant scope gate --
+    if not req.actor_tenant.strip():
+        blocked_by.append("Tenant scope is required for high-risk actions")
+
+    # -- Risk policy gate --
+    if req.action_class in (
+        HighRiskActionClass.trading,
+        HighRiskActionClass.broker,
+        HighRiskActionClass.social_publish,
+    ):
+        if settings.risk_guardian_enabled and not req.risk_check_passed:
+            blocked_by.append("Risk/Guardian check did not pass")
+
+    # -- Typed confirmation gate --
+    if req.action_class in (
+        HighRiskActionClass.trading,
+        HighRiskActionClass.broker,
+        HighRiskActionClass.iot,
+        HighRiskActionClass.social_publish,
+        HighRiskActionClass.infrastructure,
+        HighRiskActionClass.support_bundle,
+        HighRiskActionClass.deployment_pack,
+        HighRiskActionClass.update_apply,
+        HighRiskActionClass.raw_shell,
+        HighRiskActionClass.credential_export,
+    ):
+        if not req.confirmation_provided:
+            blocked_by.append("Typed confirmation is required for this action")
+
+    # -- Dry-run default gate --
+    if req.action_class in (
+        HighRiskActionClass.trading,
+        HighRiskActionClass.broker,
+        HighRiskActionClass.iot,
+        HighRiskActionClass.social_publish,
+        HighRiskActionClass.infrastructure,
+        HighRiskActionClass.plugin_execute,
+        HighRiskActionClass.update_apply,
+    ):
+        if not settings.dry_run and not req.dry_run_setting:
+            blocked_by.append("Action must run in dry-run mode by default")
+
+    # -- Rollback metadata --
+    requires_rollback = req.action_class in (
+        HighRiskActionClass.infrastructure,
+        HighRiskActionClass.update_apply,
+        HighRiskActionClass.raw_shell,
+    )
+
+    if blocked_by:
+        return HighRiskActionDecision(
+            allowed=False,
+            reason=f"High-risk action blocked by {len(blocked_by)} gate(s)",
+            blocked_by=blocked_by,
+            requires_dry_run=settings.dry_run,
+            requires_rollback_plan=requires_rollback,
+        )
+
+    return HighRiskActionDecision(
+        allowed=True,
+        reason=f"All gates passed for {req.action_class.value}:{req.action_name}",
+        requires_dry_run=settings.dry_run,
+        requires_rollback_plan=requires_rollback,
+        requires_approval=not settings.dry_run,
+    )
+
+
+def require_high_risk_action_policy(
+    action_class: HighRiskActionClass,
+    action_name: str = "",
+    require_confirmation: bool = True,
+    require_risk_check: bool = True,
+    require_tenant: bool = True,
+):
+    """FastAPI dependency factory for high-risk action policy enforcement.
+
+    Returns 403 if the action is blocked by policy gates.
+    Usage::
+
+        @router.post("/trade")
+        def execute_trade(
+            policy: None = Depends(
+                require_high_risk_action_policy(
+                    HighRiskActionClass.trading,
+                    action_name="execute_trade",
+                )
+            ),
+        ):
+            ...
+    """
+
+    async def _dependency(
+        user: AuthSession = Depends(get_current_user),
+    ) -> None:
+        req = HighRiskActionRequest(
+            action_class=action_class,
+            action_name=action_name or action_class.value,
+            actor_role=user.role,
+            actor_tenant="",
+            confirmation_provided=not require_confirmation,
+            risk_check_passed=not require_risk_check,
+            dry_run_setting=True,
+        )
+        decision = check_high_risk_action(req)
+        if not decision.allowed:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail={
+                    "reason": decision.reason,
+                    "blocked_by": decision.blocked_by,
+                    "requires_dry_run": decision.requires_dry_run,
+                    "requires_approval": decision.requires_approval,
+                    "requires_rollback_plan": decision.requires_rollback_plan,
+                },
+            )
+
+    return _dependency

@@ -12,6 +12,7 @@ from app.api import (
     admin,
     agents,
     ai_trader,
+    audit,
     auth,
     backtesting,
     billing,
@@ -45,6 +46,12 @@ from app.api import (
     lessons,
     collaboration,
     workspaces,
+    edge,
+    global_ops,
+    notifications,
+    sovereign,
+    tenancy,
+    workers,
 )
 from app.api.routes import incidents
 
@@ -52,6 +59,7 @@ from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging
 from app.core.responses import fail
+from app.core.safety import validate_production_config
 from app.db.migrations import run_migrations
 from app.observability.middleware import install_observability_middleware
 from app.realtime import (
@@ -68,6 +76,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    validate_production_config()
     bind_realtime_loop(asyncio.get_running_loop())
     heartbeat = get_realtime_heartbeat()
     heartbeat.start()
@@ -162,3 +171,11 @@ app.include_router(long_horizon.router)
 app.include_router(lessons.router)
 app.include_router(collaboration.router)
 app.include_router(workspaces.router)
+
+app.include_router(audit.router)
+app.include_router(notifications.router)
+app.include_router(workers.router)
+app.include_router(tenancy.router)
+app.include_router(sovereign.router)
+app.include_router(edge.router)
+app.include_router(global_ops.router)

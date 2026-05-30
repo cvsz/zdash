@@ -1,1 +1,0 @@
-export default function SelfEvolution() { return <div className='p-4'><h1 className='text-xl font-semibold'>SelfEvolution</h1><p>Advisory-only planning surface. Human approval required for all changes.</p></div>; }

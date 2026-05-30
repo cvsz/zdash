@@ -87,14 +87,14 @@ export default function IoTControl() {
         <MetricCard label="Device Mode" value={dryRun ? "MOCK / SIMULATED" : "REAL / GUARDED"} />
       </div>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Safety Conditions</h3>
-        <p className="mt-2 text-sm text-slate-300">{confirmationRequired}</p>
+        <p className="mt-2 text-sm text-text-secondary">{confirmationRequired}</p>
         {!dryRun ? (
-          <label className="mt-3 block text-xs text-slate-300">
+          <label className="mt-3 block text-xs text-text-secondary">
             Required confirmation text
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={typedConfirmation}
               onChange={(event) => setTypedConfirmation(event.target.value)}
               placeholder={REQUIRED_TEXT}
@@ -103,9 +103,9 @@ export default function IoTControl() {
         ) : null}
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Actions</h3>
-        <p className="mt-1 text-xs text-slate-400">Available actions: status, turn_on, turn_off, power_cycle.</p>
+        <p className="mt-1 text-xs text-text-dim">Available actions: status, turn_on, turn_off, power_cycle.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {actionOrder.map((action) => {
             const busy = busyAction === action;
@@ -139,20 +139,20 @@ export default function IoTControl() {
       </section>
 
       {activeResult ? (
-        <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+        <section className="rounded-card border border-border bg-panel p-4">
           <h3 className="text-sm font-semibold text-white">Latest Result</h3>
-          <p className="mt-2 text-sm text-slate-300">
-            Action: <span className="font-semibold text-slate-100">{activeResult.action}</span>
+          <p className="mt-2 text-sm text-text-secondary">
+            Action: <span className="font-semibold text-text-primary">{activeResult.action}</span>
           </p>
-          <p className="mt-1 text-sm text-slate-300">Message: {activeResult.message}</p>
-          <p className="mt-1 text-sm text-slate-300">
+          <p className="mt-1 text-sm text-text-secondary">Message: {activeResult.message}</p>
+          <p className="mt-1 text-sm text-text-secondary">
             Simulation state: {activeResult.dry_run ? "Simulated output" : "Real mode output"}
           </p>
         </section>
       ) : null}
 
-      {message ? <p className="text-sm text-emerald-200">{message}</p> : null}
-      {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+      {message ? <p className="text-sm text-state-success">{message}</p> : null}
+      {error ? <p className="text-sm text-state-danger">{error}</p> : null}
 
       <ConfirmDialog
         open={powerCycleConfirmOpen}

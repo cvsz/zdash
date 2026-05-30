@@ -11,13 +11,15 @@ function renderAt(path: string) {
 describe("App routing", () => {
   it("app renders", () => {
     renderAt("/");
-    expect(screen.getByText("zDash")).toBeTruthy();
+    const heading = screen.getByRole("heading", { name: (name) => name.replace(/\s/g, "").toLowerCase() === "zdash" });
+    expect(heading).toBeTruthy();
   });
 
   it("sidebar navigation exists", () => {
     renderAt("/");
     expect(screen.getAllByText("Team Roster").length).toBeGreaterThan(0);
-    expect(screen.getByText("Session Logs")).toBeTruthy();
+    const sessionLogsLinks = screen.getAllByText("Session Logs");
+    expect(sessionLogsLinks.length).toBeGreaterThan(0);
   });
 
   it("dashboard route works", () => {

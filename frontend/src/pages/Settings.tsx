@@ -104,13 +104,13 @@ export default function Settings() {
         subtitle="Read-only runtime and safety configuration summary."
       />
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Configuration Summary</h3>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-text-dim">
           This view is read-only and intentionally excludes API keys, tokens, or secret values.
         </p>
         {user?.username === DEFAULT_ADMIN_USERNAME && (
-          <p className="mt-2 rounded-md border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+          <p className="mt-2 rounded-md border border-state-warning/30 bg-state-warning/10 px-3 py-2 text-xs text-state-warning">
             Warning: default admin username detected. Rotate credentials before production use.
           </p>
         )}

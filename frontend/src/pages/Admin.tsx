@@ -92,24 +92,24 @@ export default function Admin() {
         subtitle="Role-gated user management and audit review surfaces."
       />
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Admin Session</h3>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-text-dim">
           Current user: {user?.username} ({user?.role})
         </p>
         {safetyCheck && (
-          <p className="mt-2 text-xs text-slate-300">
+          <p className="mt-2 text-xs text-text-secondary">
             Safety status: {safetyCheck.status.toUpperCase()} · Score {safetyCheck.score}
           </p>
         )}
         {hasDefaultAdminWarning && (
-          <p className="mt-2 rounded-md border border-amber-400/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+          <p className="mt-2 rounded-md border border-state-warning/30 bg-state-warning/10 px-3 py-2 text-xs text-state-warning">
             Warning: default admin credentials may still be in use. Rotate credentials
             before production use.
           </p>
         )}
         {safetyCheck?.blockers && safetyCheck.blockers.length > 0 && (
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-rose-200">
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-state-danger">
             {safetyCheck.blockers.map((blocker) => (
               <li key={blocker}>{blocker}</li>
             ))}

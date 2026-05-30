@@ -190,15 +190,15 @@ export default function XauDashboard() {
         subtitle="Validation checks run before dry-run execution and risk approval."
         actions={<Badge variant={validationVariant}>{validation ? (validation.valid ? "VALID" : "INVALID") : "PENDING"}</Badge>}
       >
-        <div className="space-y-3 text-sm text-slate-300">
+        <div className="space-y-3 text-sm text-text-secondary">
           <p>
-            <span className="font-semibold text-slate-100">AI summary:</span> {scanSummary}
+            <span className="font-semibold text-text-primary">AI summary:</span> {scanSummary}
           </p>
           <p>
-            <span className="font-semibold text-slate-100">Latest scan:</span> {scanTimestamp}
+            <span className="font-semibold text-text-primary">Latest scan:</span> {scanTimestamp}
           </p>
           <p>
-            <span className="font-semibold text-slate-100">Validation reason:</span> {validation?.reason ?? "No signal selected."}
+            <span className="font-semibold text-text-primary">Validation reason:</span> {validation?.reason ?? "No signal selected."}
           </p>
           {validation?.warnings?.length ? (
             <ul className="list-disc space-y-1 pl-5 text-amber-200">
@@ -230,7 +230,7 @@ export default function XauDashboard() {
           <Badge variant={riskVariant}>
             {riskDecision ? (riskDecision.approved ? "APPROVED" : "NOT APPROVED") : "NOT CHECKED"}
           </Badge>
-          {riskDecision ? <span className="text-sm text-slate-300">{riskDecision.reason}</span> : null}
+          {riskDecision ? <span className="text-sm text-text-secondary">{riskDecision.reason}</span> : null}
         </div>
       </SectionCard>
 
@@ -246,17 +246,17 @@ export default function XauDashboard() {
           <Badge variant={executionStatus === "failed" ? "danger" : executionStatus === "idle" ? "muted" : "success"}>
             {executionStatus.toUpperCase()}
           </Badge>
-          {executionMessage ? <span className="text-sm text-slate-300">{executionMessage}</span> : null}
+          {executionMessage ? <span className="text-sm text-text-secondary">{executionMessage}</span> : null}
         </div>
       </SectionCard>
 
       {lastError ? (
-        <div className="rounded-lg border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+        <div className="rounded-card border border-state-danger/20 bg-state-danger/10 px-4 py-3 text-sm text-state-danger">
           {lastError}
         </div>
       ) : null}
 
-      <p className="rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-3 text-xs text-slate-300">
+      <p className="rounded-card border border-border bg-panel/50 px-4 py-3 text-xs text-text-secondary">
         Disclaimer: This dashboard is not financial advice. Signals, approvals, and execution controls are for
         simulation and risk-reviewed workflows.
       </p>

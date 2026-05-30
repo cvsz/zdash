@@ -106,13 +106,13 @@ export default function SessionLogs() {
         emptyMessage="No websocket activity yet."
       />
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Filters</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Category
             <select
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={categoryFilter}
               onChange={(event) => setCategoryFilter(event.target.value)}
             >
@@ -124,10 +124,10 @@ export default function SessionLogs() {
             </select>
           </label>
 
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Event type
             <select
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.typeFilter}
               onChange={(event) => logsState.setTypeFilter(event.target.value)}
             >
@@ -139,10 +139,10 @@ export default function SessionLogs() {
             </select>
           </label>
 
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Source
             <select
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.sourceFilter}
               onChange={(event) => logsState.setSourceFilter(event.target.value)}
             >
@@ -154,10 +154,10 @@ export default function SessionLogs() {
             </select>
           </label>
 
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Search
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.searchTerm}
               onChange={(event) => logsState.setSearchTerm(event.target.value)}
               placeholder="Search logs"
@@ -178,7 +178,7 @@ export default function SessionLogs() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Event Logs Table</h3>
         <div className="mt-3">
           <DataTable<EventLog>
@@ -222,23 +222,23 @@ export default function SessionLogs() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">JSON Payload Viewer</h3>
-        <pre className="mt-3 overflow-x-auto rounded-md border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-200">
+        <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-canvas/80 p-3 text-xs text-text-secondary">
           {selectedLog?.payload ? JSON.stringify(selectedLog.payload, null, 2) : "No payload selected."}
         </pre>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Recent Errors</h3>
         {recentErrors.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-400">No recent errors in current filter set.</p>
+          <p className="mt-2 text-sm text-text-dim">No recent errors in current filter set.</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {recentErrors.map((entry) => (
-              <li key={`error-${entry.id}`} className="rounded-md border border-rose-500/40 bg-rose-500/10 p-3">
-                <p className="text-sm font-semibold text-rose-100">{entry.message}</p>
-                <p className="mt-1 text-xs text-rose-200">
+              <li key={`error-${entry.id}`} className="rounded-md border border-state-danger/20 bg-state-danger/10 p-3">
+                <p className="text-sm font-semibold text-state-danger">{entry.message}</p>
+                <p className="mt-1 text-xs text-state-danger">
                   {String(entry.category ?? entry.type ?? "system")} · {entry.source}
                 </p>
               </li>

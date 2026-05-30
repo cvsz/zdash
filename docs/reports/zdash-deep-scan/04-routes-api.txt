@@ -1,0 +1,604 @@
+# zDash Routes/API Index
+
+## FastAPI decorators
+backend/app/api/admin.py:155:@router.get("/safety-check")
+backend/app/api/admin.py:165:@router.get("/audit-logs")
+backend/app/api/admin.py:181:@router.get("/users")
+backend/app/api/admin.py:194:@router.post("/users")
+backend/app/api/admin.py:232:@router.patch("/users/{user_id}")
+backend/app/api/admin.py:272:@router.delete("/users/{user_id}")
+backend/app/api/agents.py:28:@router.get("")
+backend/app/api/agents.py:37:@router.post("/message")
+backend/app/api/ai_trader.py:58:@router.get("/status")
+backend/app/api/ai_trader.py:78:@router.get("/strategies")
+backend/app/api/ai_trader.py:94:@router.post("/signal")
+backend/app/api/ai_trader.py:109:@router.post("/compare")
+backend/app/api/ai_trader.py:132:@router.post("/paper-trade")
+backend/app/api/audit.py:11:@router.get("")
+backend/app/api/auth.py:37:@router.post("/login")
+backend/app/api/auth.py:80:@router.post("/refresh")
+backend/app/api/auth.py:110:@router.post("/logout")
+backend/app/api/auth.py:127:@router.get("/me")
+backend/app/api/auth.py:132:@router.post("/bootstrap-admin")
+backend/app/api/backtesting.py:37:@router.get("/status")
+backend/app/api/backtesting.py:42:@router.get("/strategies")
+backend/app/api/backtesting.py:47:@router.post("/run")
+backend/app/api/backtesting.py:80:@router.get("/results")
+backend/app/api/backtesting.py:92:@router.get("/results/{result_id}")
+backend/app/api/backtesting.py:103:@router.post("/optimize")
+backend/app/api/backtesting.py:136:@router.get("/optimizations")
+backend/app/api/backtesting.py:148:@router.post("/results/{result_id}/promotion-check")
+backend/app/api/backtesting.py:172:@router.get("/results/{result_id}/report")
+backend/app/api/billing.py:92:@router.get("/status")
+backend/app/api/billing.py:105:@router.get("/plans")
+backend/app/api/billing.py:114:@router.get("/subscription")
+backend/app/api/billing.py:127:@router.post("/checkout")
+backend/app/api/billing.py:146:@router.post("/portal")
+backend/app/api/billing.py:161:@router.post("/cancel")
+backend/app/api/billing.py:179:@router.post("/mock/apply-plan")
+backend/app/api/billing.py:198:@router.get("/usage")
+backend/app/api/billing.py:213:@router.get("/usage/{metric}")
+backend/app/api/billing.py:229:@router.get("/invoices")
+backend/app/api/billing.py:243:@router.post("/webhooks/provider")
+backend/app/api/content.py:49:@router.get("/status")
+backend/app/api/content.py:54:@router.post("/create")
+backend/app/api/content.py:87:@router.post("/edit")
+backend/app/api/content.py:98:@router.post("/generate-graphic")
+backend/app/api/content.py:110:@router.post("/schedule")
+backend/app/api/content.py:122:@router.post("/approve")
+backend/app/api/content.py:146:@router.post("/post")
+backend/app/api/content.py:170:@router.post("/pipeline/run")
+backend/app/api/content.py:182:@router.get("/items")
+backend/app/api/content.py:191:@router.get("/items/{content_id}")
+backend/app/api/content.py:202:@router.get("/runs")
+backend/app/api/content.py:208:@router.get("/items/{content_id}/report")
+backend/app/api/continuous_planning.py:7:@router.get("/status")
+backend/app/api/developer.py:13:@router.get("/status")
+backend/app/api/developer.py:18:@router.get("/api-keys")
+backend/app/api/developer.py:25:@router.post("/api-keys")
+backend/app/api/digital_twin.py:19:@router.get('/status')
+backend/app/api/digital_twin.py:25:@router.post('/entities')
+backend/app/api/digital_twin.py:27:@router.get('/entities')
+backend/app/api/digital_twin.py:29:@router.get('/entities/{entity_id}')
+backend/app/api/digital_twin.py:31:@router.patch('/entities/{entity_id}')
+backend/app/api/digital_twin.py:33:@router.post('/relationships')
+backend/app/api/digital_twin.py:35:@router.get('/relationships')
+backend/app/api/digital_twin.py:37:@router.delete('/relationships/{relationship_id}')
+backend/app/api/digital_twin.py:39:@router.get('/graph')
+backend/app/api/digital_twin.py:41:@router.get('/graph/summary')
+backend/app/api/digital_twin.py:43:@router.get('/graph/neighbors/{entity_id}')
+backend/app/api/digital_twin.py:45:@router.post('/impact/simulate')
+backend/app/api/digital_twin.py:47:@router.get('/impact/results')
+backend/app/api/digital_twin.py:49:@router.post('/blast-radius/analyze')
+backend/app/api/digital_twin.py:51:@router.get('/blast-radius/results')
+backend/app/api/digital_twin.py:53:@router.post('/snapshots')
+backend/app/api/digital_twin.py:55:@router.get('/snapshots')
+backend/app/api/digital_twin.py:57:@router.post('/reports')
+backend/app/api/digital_twin.py:59:@router.get('/reports')
+backend/app/api/digital_twin.py:61:@router.get('/reports/{report_id}/markdown')
+backend/app/api/edge.py:8:@router.get("/status")
+backend/app/api/enterprise.py:66:@router.get("/status")
+backend/app/api/enterprise.py:80:@router.get("/license")
+backend/app/api/enterprise.py:87:@router.post("/license/apply")
+backend/app/api/enterprise.py:97:@router.post("/license/revoke")
+backend/app/api/enterprise.py:106:@router.get("/branding")
+backend/app/api/enterprise.py:113:@router.patch("/branding")
+backend/app/api/enterprise.py:125:@router.post("/branding/reset")
+backend/app/api/enterprise.py:134:@router.get("/exports")
+backend/app/api/enterprise.py:141:@router.post("/exports")
+backend/app/api/enterprise.py:170:@router.get("/exports/{bundle_id}")
+backend/app/api/enterprise.py:178:@router.get("/onboarding")
+backend/app/api/enterprise.py:185:@router.post("/onboarding/complete-step")
+backend/app/api/enterprise.py:197:@router.post("/onboarding/reset")
+backend/app/api/enterprise.py:208:@router.get("/customer-health")
+backend/app/api/enterprise_os.py:8:@router.get("/report")
+backend/app/api/global_ops.py:8:@router.get("/status")
+backend/app/api/google_finance.py:11:@router.get("/status")
+backend/app/api/google_finance.py:25:@router.get("/overview")
+backend/app/api/google_finance.py:30:@router.get("/sections/{section}")
+backend/app/api/google_finance.py:35:@router.get("/search")
+backend/app/api/governance_refinement.py:8:@router.get("/report")
+backend/app/api/health.py:11:@router.get("/health")
+backend/app/api/health.py:24:@router.get("/api/health")
+backend/app/api/integrations.py:7:@router.get("/status")
+backend/app/api/integrations.py:12:@router.get("/catalog")
+backend/app/api/iot.py:36:@router.get("/status")
+backend/app/api/iot.py:45:@router.post("/action")
+backend/app/api/iot.py:67:@router.post("/power-cycle")
+backend/app/api/launch.py:22:@router.get("/public/status")
+backend/app/api/launch.py:27:@router.post("/waitlist/join")
+backend/app/api/launch.py:38:@router.post("/invites/validate")
+backend/app/api/launch.py:43:@router.get("/readiness")
+backend/app/api/launch.py:48:@router.post("/release-notes/generate")
+backend/app/api/launch.py:57:@router.post("/docs/publish")
+backend/app/api/launch.py:62:@router.post("/telemetry")
+backend/app/api/lessons.py:8:@router.get("/memory")
+backend/app/api/logs.py:10:@router.get("")
+backend/app/api/long_horizon.py:8:@router.get("/report")
+backend/app/api/macro_simulation.py:7:@router.get("/status")
+backend/app/api/managed.py:7:@router.get("/status")
+backend/app/api/managed.py:12:@router.get("/overview")
+backend/app/api/marketplace.py:33:@router.get("/plugins")
+backend/app/api/marketplace.py:43:@router.get("/plugins/{plugin_id}")
+backend/app/api/marketplace.py:54:@router.get("/installations")
+backend/app/api/marketplace.py:78:@router.post("/install")
+backend/app/api/marketplace.py:105:@router.post("/installations/{installation_id}/enable")
+backend/app/api/marketplace.py:120:@router.post("/installations/{installation_id}/disable")
+backend/app/api/marketplace.py:135:@router.delete("/installations/{installation_id}")
+backend/app/api/marketplace.py:150:@router.post("/installations/{installation_id}/run")
+backend/app/api/metrics.py:52:@router.get("/metrics", response_class=PlainTextResponse)
+backend/app/api/mobile.py:7:@router.get("/status")
+backend/app/api/mobile.py:12:@router.get("/home")
+backend/app/api/notifications.py:44:@router.get("/status")
+backend/app/api/notifications.py:64:@router.get("/rules")
+backend/app/api/notifications.py:82:@router.post("/rules")
+backend/app/api/notifications.py:99:@router.patch("/rules/{rule_id}")
+backend/app/api/notifications.py:123:@router.delete("/rules/{rule_id}")
+backend/app/api/notifications.py:146:@router.get("/events")
+backend/app/api/notifications.py:163:@router.get("/channels")
+backend/app/api/notifications.py:181:@router.post("/channels")
+backend/app/api/notifications.py:198:@router.patch("/channels/{channel_id}")
+backend/app/api/notifications.py:222:@router.delete("/channels/{channel_id}")
+backend/app/api/notifications.py:245:@router.post("/test")
+backend/app/api/ops.py:11:@router.get("/status")
+backend/app/api/ops.py:16:@router.post("/evaluate")
+backend/app/api/ops.py:21:@router.get("/health")
+backend/app/api/ops.py:26:@router.get("/autopilot/status")
+backend/app/api/partner.py:17:@router.get("/health")
+backend/app/api/partner.py:23:@router.get("/me")
+backend/app/api/predictive_sre.py:24:@router.get("/status")
+backend/app/api/predictive_sre.py:35:@router.post("/anomalies/forecast")
+backend/app/api/predictive_sre.py:40:@router.get("/anomalies")
+backend/app/api/realtime.py:19:@router.websocket("/ws")
+backend/app/api/realtime.py:58:@router.websocket("/ws/events")
+backend/app/api/realtime.py:62:@router.get("/status")
+backend/app/api/realtime.py:67:@router.get("/events")
+backend/app/api/realtime.py:73:@router.post("/mock-event")
+backend/app/api/risk.py:48:@router.get("/status")
+backend/app/api/risk.py:54:@router.post("/check")
+backend/app/api/risk.py:64:@router.get("/drawdown")
+backend/app/api/risk.py:85:@router.post("/halt")
+backend/app/api/risk.py:118:@router.post("/resume")
+backend/app/api/risk.py:151:@router.post("/approve-execution")
+backend/app/api/routes/incidents.py:13:@router.get("")
+backend/app/api/routes/incidents.py:19:@router.post("")
+backend/app/api/routes/incidents.py:27:@router.post("/{incident_id}/ack")
+backend/app/api/routes/incidents.py:34:@router.post("/{incident_id}/resolve")
+backend/app/api/scheduler.py:41:@router.get("/status")
+backend/app/api/scheduler.py:46:@router.get("/jobs")
+backend/app/api/scheduler.py:52:@router.post("/jobs")
+backend/app/api/scheduler.py:86:@router.post("/jobs/{job_id}/run")
+backend/app/api/scheduler.py:114:@router.post("/jobs/{job_id}/pause")
+backend/app/api/scheduler.py:129:@router.post("/jobs/{job_id}/resume")
+backend/app/api/scheduler.py:144:@router.delete("/jobs/{job_id}")
+backend/app/api/scheduler.py:169:@router.get("/runs")
+backend/app/api/scheduler.py:175:@router.get("/runs/{job_id}")
+backend/app/api/self_evolution.py:8:@router.get("/queue")
+backend/app/api/sovereign.py:43:@router.get("/status")
+backend/app/api/sovereign.py:48:@router.get("/regions")
+backend/app/api/sovereign.py:53:@router.post("/regions")
+backend/app/api/sovereign.py:58:@router.get("/residency/rules")
+backend/app/api/sovereign.py:63:@router.post("/residency/rules")
+backend/app/api/sovereign.py:68:@router.post("/residency/evaluate")
+backend/app/api/sovereign.py:80:@router.post("/residency/enforce")
+backend/app/api/sovereign.py:95:@router.get("/profiles")
+backend/app/api/sovereign.py:100:@router.post("/profiles")
+backend/app/api/sovereign.py:105:@router.post("/profiles/{profile_id}/activate")
+backend/app/api/sovereign.py:110:@router.post("/profiles/{profile_id}/disable")
+backend/app/api/sovereign.py:115:@router.get("/kms/status")
+backend/app/api/sovereign.py:126:@router.post("/kms/register-key-ref")
+backend/app/api/sovereign.py:139:@router.post("/kms/test")
+backend/app/api/sovereign.py:144:@router.get("/policy-bundles")
+backend/app/api/sovereign.py:149:@router.post("/policy-bundles")
+backend/app/api/sovereign.py:154:@router.get("/compliance/dashboard")
+backend/app/api/sovereign.py:159:@router.get("/compliance/report")
+backend/app/api/tenancy.py:37:@router.get("/context")
+backend/app/api/tenancy.py:44:@router.get("/organizations")
+backend/app/api/tenancy.py:50:@router.post("/organizations")
+backend/app/api/tenancy.py:60:@router.get("/organizations/{organization_id}")
+backend/app/api/tenancy.py:73:@router.patch("/organizations/{organization_id}")
+backend/app/api/tenancy.py:87:@router.get("/organizations/{organization_id}/workspaces")
+backend/app/api/tenancy.py:101:@router.post("/organizations/{organization_id}/workspaces")
+backend/app/api/tenancy.py:116:@router.get("/workspaces/{workspace_id}")
+backend/app/api/tenancy.py:129:@router.patch("/workspaces/{workspace_id}")
+backend/app/api/tenancy.py:146:@router.post("/organizations/{organization_id}/members")
+backend/app/api/tenancy.py:165:@router.post("/workspaces/{workspace_id}/members")
+backend/app/api/trading.py:22:@router.get("/status")
+backend/app/api/trading.py:27:@router.post("/scan")
+backend/app/api/trading.py:36:@router.post("/validate-signal")
+backend/app/api/trading.py:45:@router.post("/dry-run-execute")
+backend/app/api/trading.py:56:@router.post("/dry-run")
+backend/app/api/workers.py:39:@router.get("/status")
+backend/app/api/workers.py:52:@router.get("/tasks")
+backend/app/api/workers.py:61:@router.post("/tasks")
+backend/app/api/workers.py:89:@router.get("/tasks/{task_id}")
+backend/app/api/workers.py:103:@router.post("/tasks/{task_id}/cancel")
+backend/app/api/workers.py:126:@router.post("/tasks/{task_id}/retry")
+backend/app/api/workspaces.py:25:@router.get("/status")
+backend/app/api/workspaces.py:30:@router.get("/peers")
+backend/app/api/workspaces.py:35:@router.post("/register")
+backend/app/collaboration/router.py:18:@router.get("/presence")
+backend/app/collaboration/router.py:23:@router.post("/presence")
+backend/app/collaboration/router.py:28:@router.get("/notes")
+backend/app/collaboration/router.py:33:@router.post("/notes")
+backend/app/collaboration/router.py:38:@router.patch("/notes/{note_id}/resolve")
+backend/app/collaboration/router.py:46:@router.get("/timeline")
+backend/app/collaboration/router.py:111:@router.websocket("/ws/collaboration/{workspace_id}")
+
+## API strings
+backend/app/api/admin.py:20:router = APIRouter(prefix="/api/admin", tags=["admin"])
+backend/app/api/agents.py:8:router = APIRouter(prefix="/api/agents", tags=["agents"])
+backend/app/api/ai_trader.py:20:router = APIRouter(prefix="/api/ai-trader", tags=["ai-trader"])
+backend/app/api/audit.py:8:router = APIRouter(prefix="/api/audit", tags=["audit"])
+backend/app/api/auth.py:24:router = APIRouter(prefix="/api/auth", tags=["auth"])
+backend/app/api/backtesting.py:22:router = APIRouter(prefix="/api/backtesting", tags=["backtesting"])
+backend/app/api/billing.py:4:  GET  /api/billing/status
+backend/app/api/billing.py:5:  GET  /api/billing/plans
+backend/app/api/billing.py:6:  GET  /api/billing/subscription
+backend/app/api/billing.py:7:  POST /api/billing/checkout
+backend/app/api/billing.py:8:  POST /api/billing/portal
+backend/app/api/billing.py:9:  POST /api/billing/cancel
+backend/app/api/billing.py:10:  POST /api/billing/mock/apply-plan
+backend/app/api/billing.py:11:  GET  /api/billing/usage
+backend/app/api/billing.py:12:  GET  /api/billing/usage/{metric}
+backend/app/api/billing.py:13:  GET  /api/billing/invoices
+backend/app/api/billing.py:14:  POST /api/billing/webhooks/provider
+backend/app/api/billing.py:49:router = APIRouter(prefix="/api/billing", tags=["billing"])
+backend/app/api/content.py:30:router = APIRouter(prefix="/api/content", tags=["content"])
+backend/app/api/continuous_planning.py:4:router = APIRouter(prefix="/api/continuous-planning", tags=["continuous-planning"])
+backend/app/api/developer.py:6:router = APIRouter(prefix="/api/developer", tags=["developer"])
+backend/app/api/digital_twin.py:13:router = APIRouter(prefix='/api/digital-twin', tags=['digital-twin'])
+backend/app/api/edge.py:5:router = APIRouter(prefix="/api/edge", tags=["edge"])
+backend/app/api/enterprise.py:33:router = APIRouter(prefix="/api/enterprise", tags=["enterprise"])
+backend/app/api/enterprise_os.py:5:router = APIRouter(prefix="/api/enterprise-os", tags=["enterprise-os"])
+backend/app/api/global_ops.py:5:router = APIRouter(prefix="/api/global-ops", tags=["global-ops"])
+backend/app/api/google_finance.py:8:router = APIRouter(prefix="/api/integrations/google-finance", tags=["integrations", "google-finance"])
+backend/app/api/governance_refinement.py:5:router = APIRouter(prefix="/api/governance-refinement", tags=["governance-refinement"])
+backend/app/api/health.py:24:@router.get("/api/health")
+backend/app/api/integrations.py:4:router = APIRouter(prefix="/api/integrations", tags=["integrations"])
+backend/app/api/iot.py:18:router = APIRouter(prefix="/api/iot", tags=["iot"])
+backend/app/api/launch.py:12:router = APIRouter(prefix="/api/launch", tags=["launch"])
+backend/app/api/lessons.py:5:router = APIRouter(prefix="/api/lessons", tags=["lessons"])
+backend/app/api/logs.py:7:router = APIRouter(prefix="/api/logs", tags=["logs"])
+backend/app/api/long_horizon.py:5:router = APIRouter(prefix="/api/long-horizon", tags=["long-horizon"])
+backend/app/api/macro_simulation.py:4:router = APIRouter(prefix="/api/macro-simulation", tags=["macro-simulation"])
+backend/app/api/managed.py:4:router = APIRouter(prefix="/api/managed", tags=["managed"])
+backend/app/api/marketplace.py:22:router = APIRouter(prefix="/api/marketplace", tags=["marketplace"])
+backend/app/api/mobile.py:4:router = APIRouter(prefix="/api/mobile", tags=["mobile"])
+backend/app/api/notifications.py:20:router = APIRouter(prefix="/api/notifications", tags=["notifications"])
+backend/app/api/ops.py:6:router = APIRouter(prefix="/api/ops", tags=["ops"])
+backend/app/api/predictive_sre.py:13:router = APIRouter(prefix="/api/predictive-sre", tags=["predictive_sre"])
+backend/app/api/realtime.py:16:router = APIRouter(prefix="/api/realtime", tags=["realtime"])
+backend/app/api/risk.py:20:router = APIRouter(prefix="/api/risk", tags=["risk"])
+backend/app/api/routes/incidents.py:10:router = APIRouter(prefix="/api/incidents", tags=["incidents"])
+backend/app/api/scheduler.py:23:router = APIRouter(prefix="/api/scheduler", tags=["scheduler"])
+backend/app/api/self_evolution.py:5:router = APIRouter(prefix="/api/self-evolution", tags=["self-evolution"])
+backend/app/api/sovereign.py:27:router = APIRouter(prefix="/api/sovereign", tags=["sovereign"])
+backend/app/api/tenancy.py:19:router = APIRouter(prefix="/api/tenancy", tags=["tenancy"])
+backend/app/api/trading.py:12:router = APIRouter(prefix="/api/trading", tags=["trading"])
+backend/app/api/workers.py:14:router = APIRouter(prefix="/api/workers", tags=["workers"])
+backend/app/api/workspaces.py:9:router = APIRouter(prefix="/api/workspaces/federation", tags=["workspaces-federation"])
+backend/app/collaboration/router.py:15:router = APIRouter(prefix="/api/collaboration", tags=["collaboration"])
+backend/app/core/auth.py:17:oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+backend/app/tests/test_workspaces_federation_api.py:21:        if getattr(route, "path", "") == f"/api/workspaces/federation{path}" and method in methods:
+backend/run_test.py:43:        "/api/marketplace/install",
+frontend/src/api/aiTrader.ts:189:  apiClient.get<AITraderStatus>("/api/ai-trader/status", {
+frontend/src/api/aiTrader.ts:206:    "/api/ai-trader/strategies",
+frontend/src/api/aiTrader.ts:211:  apiClient.post<AITraderSignalResponse>("/api/ai-trader/signal", payload, mockAITraderDecision(payload));
+frontend/src/api/aiTrader.ts:217:  return apiClient.post<AITraderCompareResponse>("/api/ai-trader/compare", payload, {
+frontend/src/api/aiTrader.ts:228:    "/api/ai-trader/paper-" + "trade",
+frontend/src/api/auth.ts:52:  const tokenPair = await apiClient.post<AuthTokenPair>("/api/auth/login", {
+frontend/src/api/auth.ts:67:  const tokenPair = await apiClient.post<AuthTokenPair>("/api/auth/refresh", {
+frontend/src/api/auth.ts:83:      await apiClient.post<{ revoked: boolean }>("/api/auth/logout", {
+frontend/src/api/auth.ts:94:  return apiClient.get<AuthUser>("/api/auth/me");
+frontend/src/api/client.ts:4:const DEFAULT_API_BASE_URL = "http://localhost:8005";
+frontend/src/api/client.ts:8:const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+frontend/src/api/client.ts:144:    const response = await fetch(url, {
+frontend/src/api/client.ts:265:    return request("/api/logs", {}, { fallback: { events: mockLogs } });
+frontend/src/api/endpoints.ts:75:  const data = await apiClient.get<{ events: EventLog[] }>("/api/logs", {
+frontend/src/api/endpoints.ts:82:  const data = await apiClient.get<{ agents: Agent[] }>("/api/agents", {
+frontend/src/api/endpoints.ts:89:  apiClient.post<Record<string, unknown>>("/api/agents/message", payload, {
+frontend/src/api/endpoints.ts:97:  apiClient.get<Record<string, unknown>>("/api/trading/status", {
+frontend/src/api/endpoints.ts:106:    "/api/trading/scan",
+frontend/src/api/endpoints.ts:137:    "/api/trading/validate-signal",
+frontend/src/api/endpoints.ts:150:    "/api/trading/dry-run-execute",
+frontend/src/api/endpoints.ts:164:  apiClient.get<Record<string, unknown>>("/api/risk/status", {
+frontend/src/api/endpoints.ts:174:    "/api/risk/check",
+frontend/src/api/endpoints.ts:190:    "/api/risk/drawdown",
+frontend/src/api/endpoints.ts:198:    "/api/risk/halt",
+frontend/src/api/endpoints.ts:213:    "/api/risk/resume",
+frontend/src/api/endpoints.ts:229:    "/api/risk/approve-execution",
+frontend/src/api/endpoints.ts:245:    "/api/scheduler/status",
+frontend/src/api/endpoints.ts:254:  const data = await apiClient.get<{ jobs: ScheduledJob[] }>("/api/scheduler/jobs", {
+frontend/src/api/endpoints.ts:262:    "/api/scheduler/jobs",
+frontend/src/api/endpoints.ts:271:    `/api/scheduler/jobs/${jobId}/run`,
+frontend/src/api/endpoints.ts:291:  const data = await apiClient.get<{ users: AdminUser[] }>("/api/admin/users", {
+frontend/src/api/endpoints.ts:299:    "/api/admin/users",
+frontend/src/api/endpoints.ts:321:    `/api/admin/users/${userId}`,
+frontend/src/api/endpoints.ts:340:    `/api/admin/users/${userId}`,
+frontend/src/api/endpoints.ts:352:    `/api/admin/audit-logs?${query.toString()}`,
+frontend/src/api/endpoints.ts:359:  apiClient.get<AdminSafetyCheck>("/api/admin/safety-check", {
+frontend/src/api/endpoints.ts:368:    `/api/scheduler/jobs/${jobId}/pause`,
+frontend/src/api/endpoints.ts:377:    `/api/scheduler/jobs/${jobId}/resume`,
+frontend/src/api/endpoints.ts:386:    `/api/scheduler/jobs/${jobId}`,
+frontend/src/api/endpoints.ts:391:  const path = jobId ? `/api/scheduler/runs/${jobId}` : "/api/scheduler/runs";
+frontend/src/api/endpoints.ts:397:  apiClient.get<Record<string, unknown>>("/api/backtesting/status", {
+frontend/src/api/endpoints.ts:406:    "/api/backtesting/strategies",
+frontend/src/api/endpoints.ts:420:    "/api/backtesting/run",
+frontend/src/api/endpoints.ts:429:    "/api/backtesting/results",
+frontend/src/api/endpoints.ts:437:    `/api/backtesting/results/${resultId}`,
+frontend/src/api/endpoints.ts:445:    "/api/backtesting/optimize",
+frontend/src/api/endpoints.ts:466:    "/api/backtesting/optimizations",
+frontend/src/api/endpoints.ts:474:    `/api/backtesting/results/${resultId}/promotion-check`,
+frontend/src/api/endpoints.ts:488:    `/api/backtesting/results/${resultId}/report`,
+frontend/src/api/endpoints.ts:499:  apiClient.get<Record<string, unknown>>("/api/content/status", {
+frontend/src/api/endpoints.ts:508:    "/api/content/create",
+frontend/src/api/endpoints.ts:517:    "/api/content/edit",
+frontend/src/api/endpoints.ts:526:    "/api/content/generate-graphic",
+frontend/src/api/endpoints.ts:535:    "/api/content/schedule",
+frontend/src/api/endpoints.ts:544:    "/api/content/approve",
+frontend/src/api/endpoints.ts:560:    "/api/content/post",
+frontend/src/api/endpoints.ts:578:    "/api/content/pipeline/run",
+frontend/src/api/endpoints.ts:598:  const data = await apiClient.get<{ items: ContentItem[] }>("/api/content/items", {
+frontend/src/api/endpoints.ts:606:    `/api/content/items/${contentId}`,
+frontend/src/api/endpoints.ts:614:    "/api/content/runs",
+frontend/src/api/endpoints.ts:622:    `/api/content/items/${contentId}/report`,
+frontend/src/api/endpoints.ts:633:  const data = await apiClient.get<{ result: IoTActionResult }>("/api/iot/status", {
+frontend/src/api/endpoints.ts:653:    "/api/iot/action",
+frontend/src/api/endpoints.ts:671:    "/api/iot/power-cycle",
+frontend/src/api/endpoints.ts:691:  const data = await apiClient.get<{ organizations: Organization[] }>("/api/tenancy/organizations", {
+frontend/src/api/endpoints.ts:698:  const data = await apiClient.get<{ workspaces: Workspace[] }>(`/api/tenancy/organizations/${orgId}/workspaces`, {
+frontend/src/api/endpoints.ts:705:  const data = await apiClient.get<{ status: QueueStatus[] }>("/api/workers/queues", {
+frontend/src/api/endpoints.ts:712:  const data = await apiClient.get<{ tasks: TaskItem[] }>("/api/workers/tasks", {
+frontend/src/api/endpoints.ts:719:  const data = await apiClient.post<{ task: TaskItem }>("/api/workers/enqueue", payload, {
+frontend/src/api/endpoints.ts:726:  const data = await apiClient.get<{ rules: AlertRule[] }>("/api/alerts/rules", {
+frontend/src/api/endpoints.ts:733:  const data = await apiClient.get<{ events: AlertEvent[] }>("/api/alerts/events", {
+frontend/src/api/endpoints.ts:740:  const data = await apiClient.get<{ channels: NotificationChannel[] }>("/api/alerts/channels", {
+frontend/src/api/endpoints.ts:747:  const data = await apiClient.post<{ ok: boolean }>("/api/alerts/channels/" + channelId + "/test", {}, { ok: true });
+frontend/src/api/endpoints.ts:753:  return apiClient.get<BillingStatus>("/api/billing/status", {
+frontend/src/api/endpoints.ts:766:  const data = await apiClient.get<{ plans: BillingPlan[] }>("/api/billing/plans", {
+frontend/src/api/endpoints.ts:814:  return apiClient.post<{ checkout_url: string }>("/api/billing/checkout", { plan_id: planId }, {
+frontend/src/api/endpoints.ts:820:  return apiClient.post<{ portal_url: string }>("/api/billing/portal", {}, {
+frontend/src/api/endpoints.ts:826:  return apiClient.post<{ ok: boolean }>("/api/billing/cancel", {}, { ok: true });
+frontend/src/api/endpoints.ts:830:  return apiClient.post<{ ok: boolean }>("/api/billing/mock/apply-plan", { plan_tier: planTier }, { ok: true });
+frontend/src/api/endpoints.ts:834:  return apiClient.get<UsageSummary>("/api/billing/usage", {
+frontend/src/api/endpoints.ts:846:  const data = await apiClient.get<{ invoices: Invoice[] }>("/api/billing/invoices", {
+frontend/src/api/endpoints.ts:857:  const data = await apiClient.get<{ plugins: PluginManifest[] }>("/api/marketplace/plugins", {
+frontend/src/api/endpoints.ts:899:  const data = await apiClient.get<{ plugin: PluginManifest }>("/api/marketplace/plugins/" + pluginId, {
+frontend/src/api/endpoints.ts:922:  const data = await apiClient.get<{ installations: PluginInstallation[] }>("/api/marketplace/installations", {
+frontend/src/api/endpoints.ts:942:  return apiClient.post<{ ok: boolean, id: string }>("/api/marketplace/install", { plugin_id: pluginId, workspace_id: workspaceId, config }, {
+frontend/src/api/endpoints.ts:949:  return apiClient.post<{ ok: boolean }>("/api/marketplace/installations/" + installationId + "/enable", {}, { ok: true });
+frontend/src/api/endpoints.ts:953:  return apiClient.post<{ ok: boolean }>("/api/marketplace/installations/" + installationId + "/disable", {}, { ok: true });
+frontend/src/api/endpoints.ts:957:  return apiClient.delete<{ ok: boolean }>("/api/marketplace/installations/" + installationId, { ok: true });
+frontend/src/api/endpoints.ts:961:  return apiClient.post<{ ok: boolean, output: any }>("/api/marketplace/installations/" + installationId + "/run", { action, payload }, {
+frontend/src/api/endpoints.ts:969:  return apiClient.get<{ license: EnterpriseLicense, branding: BrandingSettings }>("/api/enterprise/status", {
+frontend/src/api/endpoints.ts:994:  return apiClient.get<EnterpriseLicense>("/api/enterprise/license", {
+frontend/src/api/endpoints.ts:1007:  return apiClient.post<{ ok: boolean }>("/api/enterprise/license/apply", { license_key: licenseKey }, { ok: true });
+frontend/src/api/endpoints.ts:1011:  return apiClient.post<{ ok: boolean }>("/api/enterprise/license/revoke", {}, { ok: true });
+frontend/src/api/endpoints.ts:1015:  return apiClient.get<BrandingSettings>("/api/enterprise/branding", {
+frontend/src/api/endpoints.ts:1028:  return apiClient.patch<BrandingSettings>("/api/enterprise/branding", settings, {
+frontend/src/api/endpoints.ts:1041:  return apiClient.post<BrandingSettings>("/api/enterprise/branding/reset", {}, {
+frontend/src/api/endpoints.ts:1054:  const data = await apiClient.get<{ exports: ExportBundle[] }>("/api/enterprise/exports", {
+frontend/src/api/endpoints.ts:1086:  return apiClient.post<ExportBundle>("/api/enterprise/exports", req, {
+frontend/src/api/endpoints.ts:1105:  return apiClient.get<ExportBundle>("/api/enterprise/exports/" + bundleId, {
+frontend/src/api/endpoints.ts:1124:  return apiClient.get<OnboardingChecklist>("/api/enterprise/onboarding", {
+frontend/src/api/endpoints.ts:1143:  return apiClient.post<{ ok: boolean }>("/api/enterprise/onboarding/complete-step", { step }, { ok: true });
+frontend/src/api/endpoints.ts:1147:  return apiClient.post<{ ok: boolean }>("/api/enterprise/onboarding/reset", {}, { ok: true });
+frontend/src/api/endpoints.ts:1151:  return apiClient.get<CustomerHealth>("/api/enterprise/customer-health", {
+frontend/src/api/endpoints.ts:1198:  apiClient.get<AITraderStatus>("/api/ai-trader/status", {
+frontend/src/api/endpoints.ts:1209:    "/api/ai-trader/signal",
+frontend/src/api/endpoints.ts:1217:    "/api/ai-trader/paper-trade",
+frontend/src/components/admin/AuditLogTable.tsx:3:import type { AuditLogEntry } from "../../api/types";
+frontend/src/components/admin/UserTable.tsx:3:import type { AdminUser } from "../../api/types";
+frontend/src/components/alerts/AlertEventTable.tsx:2:import type { AlertEvent } from "../../api/types";
+frontend/src/components/alerts/AlertRuleTable.tsx:2:import type { AlertRule } from "../../api/types";
+frontend/src/components/auth/LoginForm.tsx:7:} from "../../api/auth";
+frontend/src/components/billing/InvoiceTable.tsx:2:import { Invoice } from "../../api/types";
+frontend/src/components/billing/PlanCard.tsx:2:import { BillingPlan } from "../../api/types";
+frontend/src/components/billing/PricingTable.tsx:2:import { BillingPlan } from "../../api/types";
+frontend/src/components/billing/SubscriptionStatusCard.tsx:2:import { BillingStatus } from "../../api/types";
+frontend/src/components/billing/UsageMeterCard.tsx:2:import { UsageSummary } from "../../api/types";
+frontend/src/components/enterprise/BrandingEditor.tsx:2:import { BrandingSettings } from "../../api/types";
+frontend/src/components/enterprise/CustomerHealthCard.tsx:2:import { CustomerHealth } from "../../api/types";
+frontend/src/components/enterprise/ExportImportPanel.tsx:2:import { ExportBundle } from "../../api/types";
+frontend/src/components/enterprise/LicenseStatusCard.tsx:2:import { EnterpriseLicense } from "../../api/types";
+frontend/src/components/enterprise/OnboardingChecklist.tsx:2:import { OnboardingChecklist as OnboardingType } from "../../api/types";
+frontend/src/components/layout/Topbar.tsx:11:import { getBrandingSettings } from "../../api/endpoints";
+frontend/src/components/layout/Topbar.tsx:12:import { BrandingSettings } from "../../api/types";
+frontend/src/components/marketplace/InstalledPluginTable.tsx:2:import { PluginInstallation, PluginManifest } from "../../api/types";
+frontend/src/components/marketplace/PluginCard.tsx:2:import { PluginManifest } from "../../api/types";
+frontend/src/components/marketplace/PluginDetailPanel.tsx:2:import { PluginManifest } from "../../api/types";
+frontend/src/components/marketplace/PluginGrid.tsx:2:import { PluginManifest, PluginInstallation } from "../../api/types";
+frontend/src/components/tenancy/OrganizationTable.tsx:2:import type { Organization } from "../../api/types";
+frontend/src/components/tenancy/WorkspaceTable.tsx:2:import type { Workspace } from "../../api/types";
+frontend/src/components/trading/AITraderSimulationCard.tsx:13:} from "../../api/aiTrader";
+frontend/src/components/workers/QueueStatusCard.tsx:2:import type { QueueStatus } from "../../api/types";
+frontend/src/components/workers/WorkerRunTable.tsx:2:import type { TaskItem } from "../../api/types";
+frontend/src/hooks/useAgents.ts:1:import { getAgents, sendAgentMessage } from "../api/endpoints";
+frontend/src/hooks/useAgents.ts:2:import type { Agent } from "../api/types";
+frontend/src/hooks/useAuth.tsx:19:} from "../api/auth";
+frontend/src/hooks/useAuth.tsx:20:import { setUnauthorizedHandler } from "../api/client";
+frontend/src/hooks/useAuth.tsx:21:import { ApiError, type AuthUser, type StoredAuthSession } from "../api/types";
+frontend/src/hooks/useBilling.ts:10:} from "../api/endpoints";
+frontend/src/hooks/useBilling.ts:11:import { BillingStatus, BillingPlan, Invoice } from "../api/types";
+frontend/src/hooks/useCollaboration.ts:3:import { readStoredSession } from "../api/auth";
+frontend/src/hooks/useCollaboration.ts:5:const DEFAULT_API_BASE_URL = "http://localhost:8005";
+frontend/src/hooks/useCollaboration.ts:26:  const apiBaseFromEnv = options?.apiBaseUrl?.trim() || String(import.meta.env.VITE_API_BASE_URL ?? "").trim();
+frontend/src/hooks/useCollaboration.ts:28:  return `${toWsBaseUrl(baseSource)}/api/collaboration/ws/collaboration/${workspaceId}`;
+frontend/src/hooks/useEnterprise.ts:16:} from "../api/endpoints";
+frontend/src/hooks/useEnterprise.ts:23:} from "../api/types";
+frontend/src/hooks/useLogs.ts:3:import { getLogs } from "../api/endpoints";
+frontend/src/hooks/useLogs.ts:4:import type { EventLog } from "../api/types";
+frontend/src/hooks/useMarketplace.ts:10:} from "../api/endpoints";
+frontend/src/hooks/useMarketplace.ts:11:import { PluginManifest, PluginInstallation } from "../api/types";
+frontend/src/hooks/useNotifications.ts:2:import { listAlertRules, listAlertEvents, listNotificationChannels, testNotificationChannel } from "../api/endpoints";
+frontend/src/hooks/useNotifications.ts:3:import type { AlertRule, AlertEvent, NotificationChannel } from "../api/types";
+frontend/src/hooks/useRealtimeEvents.ts:2:import { getLogs } from "../api/endpoints";
+frontend/src/hooks/useRealtimeEvents.ts:3:import type { EventLog } from "../api/types";
+frontend/src/hooks/useRealtimeEvents.ts:16:    const baseUrl = import.meta.env.VITE_WS_BASE_URL || import.meta.env.VITE_API_BASE_URL?.replace("http", "ws") || "ws://localhost:8005";
+frontend/src/hooks/useRealtimeEvents.ts:17:    const wsUrl = baseUrl + "/api/realtime/ws";
+frontend/src/hooks/useSystemStatus.ts:9:} from "../api/endpoints";
+frontend/src/hooks/useSystemStatus.ts:10:import type { Agent, HealthStatus, IoTActionResult } from "../api/types";
+frontend/src/hooks/useTenancy.ts:2:import { listOrganizations, listWorkspaces } from "../api/endpoints";
+frontend/src/hooks/useTenancy.ts:3:import { setTenant, setWorkspace } from "../api/client";
+frontend/src/hooks/useTenancy.ts:4:import type { Organization, Workspace } from "../api/types";
+frontend/src/hooks/useUsage.ts:2:import { getUsageSummary } from "../api/endpoints";
+frontend/src/hooks/useUsage.ts:3:import { UsageSummary } from "../api/types";
+frontend/src/hooks/useWorkers.ts:2:import { getQueueStatus, listTasks, enqueueTask } from "../api/endpoints";
+frontend/src/hooks/useWorkers.ts:3:import type { QueueStatus, TaskItem } from "../api/types";
+frontend/src/pages/Admin.tsx:3:import { DEFAULT_ADMIN_USERNAME } from "../api/auth";
+frontend/src/pages/Admin.tsx:11:} from "../api/endpoints";
+frontend/src/pages/Admin.tsx:12:import type { AdminSafetyCheck, AdminUser, AuditLogEntry } from "../api/types";
+frontend/src/pages/Backtests.tsx:19:} from "../api/endpoints";
+frontend/src/pages/Backtests.tsx:20:import type { BacktestResult, OptimizationResult } from "../api/types";
+frontend/src/pages/ContentPipeline.tsx:13:} from "../api/endpoints";
+frontend/src/pages/ContentPipeline.tsx:14:import type { ContentItem } from "../api/types";
+frontend/src/pages/ContentPipeline.tsx:123:      await itemsState.refetch();
+frontend/src/pages/Dashboard.tsx:1:import { mockFallbackActive } from "../api/client";
+frontend/src/pages/Dashboard.tsx:2:import { getBacktestingStatus, getLogs, listBacktestResults } from "../api/endpoints";
+frontend/src/pages/IncidentCenter.tsx:5:import { apiClient } from "../api/client";
+frontend/src/pages/IncidentCenter.tsx:9:  const load = () => apiClient.get<any[]>("/api/incidents", []).then(setIncidents).catch(() => setIncidents([]));
+frontend/src/pages/IncidentCenter.tsx:11:  return <div className="space-y-4"><h1 className="text-xl font-semibold">Incident Ops</h1><WebsocketHealthCard /><PresencePanel /><ul>{incidents.map((i)=><li key={i.id}>{i.title} [{i.status}] <button onClick={()=>apiClient.post(`/api/incidents/${i.id}/ack`,{}).then(load)}>Ack</button> <button onClick={()=>{ if(confirm('Resolve incident?')) apiClient.post(`/api/incidents/${i.id}/resolve`,{notes:'resolved from dashboard'}).then(load); }}>Resolve</button></li>)}</ul><ActivityTimeline /></div>;
+frontend/src/pages/IoTControl.tsx:3:import { getIoTStatus, powerCycleIoT, runIoTAction } from "../api/endpoints";
+frontend/src/pages/IoTControl.tsx:4:import type { IoTActionResult } from "../api/types";
+frontend/src/pages/Marketplace.tsx:6:import { PluginManifest } from "../api/types";
+frontend/src/pages/RiskPanel.tsx:3:import { getDrawdown, getLogs, getRiskStatus, haltRisk, resumeRisk } from "../api/endpoints";
+frontend/src/pages/RiskPanel.tsx:4:import type { EventLog } from "../api/types";
+frontend/src/pages/RiskPanel.tsx:94:      await Promise.all([riskStatus.refetch(), drawdownState.refetch(), logsState.refetch()]);
+frontend/src/pages/RiskPanel.tsx:114:      await Promise.all([riskStatus.refetch(), drawdownState.refetch(), logsState.refetch()]);
+frontend/src/pages/Scheduler.tsx:12:} from "../api/endpoints";
+frontend/src/pages/Scheduler.tsx:13:import type { JobRunResult, ScheduledJob } from "../api/types";
+frontend/src/pages/SessionLogs.tsx:3:import type { EventLog } from "../api/types";
+frontend/src/pages/SessionLogs.tsx:36:    void logsState.refetch();
+frontend/src/pages/Settings.tsx:1:import { apiClientConfig } from "../api/client";
+frontend/src/pages/Settings.tsx:2:import { DEFAULT_ADMIN_USERNAME } from "../api/auth";
+frontend/src/pages/Settings.tsx:10:} from "../api/endpoints";
+frontend/src/pages/SystemHealth.tsx:3:import { apiClientConfig, mockFallbackActive } from '../api/client';
+frontend/src/pages/SystemHealth.tsx:4:import { getHealth } from '../api/endpoints';
+frontend/src/pages/XauDashboard.tsx:9:} from "../api/endpoints";
+frontend/src/pages/XauDashboard.tsx:10:import type { RiskDecision, TradingScanResult, TradingSignal } from "../api/types";
+frontend/src/realtime/client.ts:1:import { apiClientConfig } from "../api/client";
+frontend/src/tests/Admin.test.tsx:12:} from "../api/endpoints";
+frontend/src/tests/Admin.test.tsx:19:vi.mock("../api/endpoints", () => ({
+frontend/src/tests/AuthClient.test.ts:9:} from "../api/auth";
+frontend/src/tests/AuthClient.test.ts:10:import { apiClient, setSession } from "../api/client";
+frontend/src/tests/AuthClient.test.ts:45:    await apiClient.get<{ ok: boolean }>("/api/secure");
+frontend/src/tests/Billing.test.tsx:7:vi.mock("../api/endpoints", () => {
+frontend/src/tests/Dashboard.test.tsx:4:import { resetMockFallbackState, setMockFallbackState } from "../api/client";
+frontend/src/tests/Enterprise.test.tsx:7:vi.mock("../api/endpoints", () => {
+frontend/src/tests/Marketplace.test.tsx:7:vi.mock("../api/endpoints", () => {
+frontend/src/tests/Onboarding.test.tsx:7:vi.mock("../api/endpoints", () => {
+frontend/src/tests/Usage.test.tsx:7:vi.mock("../api/endpoints", () => {
+frontend/src/tests/apiClient.test.ts:2:import { apiClient, mockFallbackActive, resetMockFallbackState } from "../api/client";
+frontend/src/tests/apiClient.test.ts:3:import { ApiError } from "../api/types";
+frontend/src/tests/useApi.test.tsx:10:    await result.current.refetch();
+frontend/src/tests/useCollaboration.test.ts:5:import { readStoredSession } from "../api/auth";
+frontend/src/tests/useCollaboration.test.ts:7:vi.mock("../api/auth", () => ({
+frontend/src/tests/useCollaboration.test.ts:56:      apiBaseUrl: "http://localhost:8005/",
+frontend/src/tests/useCollaboration.test.ts:59:    expect(url).toBe("ws://localhost:8005/api/collaboration/ws/collaboration/w1");
+frontend/src/tests/useCollaboration.test.ts:67:    expect(url).toBe("wss://zdash.zeaz.dev/api/collaboration/ws/collaboration/w1");
+frontend/src/tests/useCollaboration.test.ts:72:      apiBaseUrl: "http://localhost:8005",
+frontend/src/tests/useCollaboration.test.ts:75:    expect(url).toBe("wss://realtime.example.com/api/collaboration/ws/collaboration/w1");
+frontend/src/tests/useCollaboration.test.ts:79:    const configuredApiBase = String(import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8005")
+frontend/src/tests/useCollaboration.test.ts:91:    expect(url).toBe(`${expectedBase}/api/collaboration/ws/collaboration/w1`);
+frontend/src/tests/useCollaboration.test.ts:105:    expect(socket.url.endsWith("/api/collaboration/ws/collaboration/workspace-a")).toBe(
+run_test.py:43:        "/api/marketplace/install",
+
+## Frontend routes/links
+frontend/src/App.tsx:1:import { BrowserRouter, Route, Routes } from "react-router-dom";
+frontend/src/App.tsx:4:import ProtectedRoute from "./components/auth/ProtectedRoute";
+frontend/src/App.tsx:40:function ProtectedDashboardRoutes() {
+frontend/src/App.tsx:42:    <ProtectedRoute>
+frontend/src/App.tsx:44:        <Routes>
+frontend/src/App.tsx:45:          <Route path="/" element={<Dashboard />} />
+frontend/src/App.tsx:46:          <Route path="/team" element={<TeamRoster />} />
+frontend/src/App.tsx:47:          <Route path="/xau" element={<XauDashboard />} />
+frontend/src/App.tsx:48:          <Route path="/risk" element={<RiskPanel />} />
+frontend/src/App.tsx:49:          <Route path="/alerts" element={<Alerts />} />
+frontend/src/App.tsx:50:          <Route path="/incidents" element={<IncidentCenter />} />
+frontend/src/App.tsx:51:          <Route path="/scheduler" element={<Scheduler />} />
+frontend/src/App.tsx:52:          <Route path="/backtests" element={<Backtests />} />
+frontend/src/App.tsx:53:          <Route path="/content" element={<ContentPipeline />} />
+frontend/src/App.tsx:54:          <Route path="/iot" element={<IoTControl />} />
+frontend/src/App.tsx:55:          <Route path="/org" element={<OrgMapPage />} />
+frontend/src/App.tsx:56:          <Route path="/organizations" element={<Organizations />} />
+frontend/src/App.tsx:57:          <Route path="/workspace" element={<Workspace />} />
+frontend/src/App.tsx:58:          <Route path="/workers" element={<Workers />} />
+frontend/src/App.tsx:59:          <Route path="/logs" element={<SessionLogs />} />
+frontend/src/App.tsx:60:          <Route path="/settings" element={<Settings />} />
+frontend/src/App.tsx:61:          <Route path="/billing" element={<Billing />} />
+frontend/src/App.tsx:62:          <Route path="/usage" element={<Usage />} />
+frontend/src/App.tsx:63:          <Route path="/marketplace" element={<Marketplace />} />
+frontend/src/App.tsx:64:          <Route path="/enterprise" element={<Enterprise />} />
+frontend/src/App.tsx:65:          <Route path="/onboarding" element={<Onboarding />} />
+frontend/src/App.tsx:66:          <Route path="/zfinance" element={<ZFinance />} />
+frontend/src/App.tsx:67:          <Route path="/system/health" element={<SystemHealth />} />
+frontend/src/App.tsx:68:          <Route path="/events" element={<EventTimeline />} />
+frontend/src/App.tsx:69:          <Route path="/notifications" element={<Notifications />} />
+frontend/src/App.tsx:70:          <Route path="/workspace/live" element={<WorkspaceLive />} />
+frontend/src/App.tsx:71:          <Route path="/workspace/timeline" element={<WorkspaceTimeline />} />
+frontend/src/App.tsx:72:          <Route path="/workspace/notes" element={<WorkspaceNotes />} />
+frontend/src/App.tsx:73:          <Route
+frontend/src/App.tsx:74:            path="/admin"
+frontend/src/App.tsx:76:              <ProtectedRoute allowRoles={["admin"]}>
+frontend/src/App.tsx:78:              </ProtectedRoute>
+frontend/src/App.tsx:81:          <Route path="*" element={<NotFound />} />
+frontend/src/App.tsx:82:        </Routes>
+frontend/src/App.tsx:84:    </ProtectedRoute>
+frontend/src/App.tsx:90:    <BrowserRouter
+frontend/src/App.tsx:99:            <Routes>
+frontend/src/App.tsx:100:              <Route path="/login" element={<Login />} />
+frontend/src/App.tsx:101:              <Route path="*" element={<ProtectedDashboardRoutes />} />
+frontend/src/App.tsx:102:            </Routes>
+frontend/src/App.tsx:106:    </BrowserRouter>
+frontend/src/components/Layout.tsx:38:              <Link key={href} to={href} className="rounded bg-panel px-3 py-1 text-sm hover:bg-slate-700">
+frontend/src/components/auth/ProtectedRoute.tsx:6:type ProtectedRouteProps = {
+frontend/src/components/auth/ProtectedRoute.tsx:11:export default function ProtectedRoute({
+frontend/src/components/auth/ProtectedRoute.tsx:14:}: ProtectedRouteProps) {
+frontend/src/components/auth/ProtectedRoute.tsx:27:    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+frontend/src/components/auth/ProtectedRoute.tsx:31:    return <Navigate to="/" replace />;
+frontend/src/components/billing/InvoiceTable.tsx:53:                    href={inv.hosted_invoice_url || inv.pdf_url}
+frontend/src/components/billing/QuotaBanner.tsx:39:            href="/billing"
+frontend/src/components/billing/QuotaBanner.tsx:57:            href="/billing"
+frontend/src/components/enterprise/ExportImportPanel.tsx:204:                        href={bundle.file_path}
+frontend/src/components/layout/Sidebar.tsx:66:            to={item.to}
+frontend/src/pages/Login.tsx:6:type LoginRouteState = {
+frontend/src/pages/Login.tsx:16:    const from = (location.state as LoginRouteState | null)?.from ?? "/";
+frontend/src/pages/Login.tsx:17:    return <Navigate to={from} replace />;
+frontend/src/pages/NotFound.tsx:11:        to="/"
+frontend/src/pages/Onboarding.tsx:103:                href="/risk"
+frontend/src/pages/Onboarding.tsx:110:                href="/billing"
+frontend/src/pages/SystemHealth.tsx:26:          <li>Router status: <strong>BrowserRouter active</strong></li>
+frontend/src/tests/ProtectedRoute.test.tsx:2:import { MemoryRouter, Route, Routes } from "react-router-dom";
+frontend/src/tests/ProtectedRoute.test.tsx:5:import ProtectedRoute from "../components/auth/ProtectedRoute";
+frontend/src/tests/ProtectedRoute.test.tsx:14:describe("ProtectedRoute", () => {
+frontend/src/tests/ProtectedRoute.test.tsx:29:      <MemoryRouter
+frontend/src/tests/ProtectedRoute.test.tsx:36:        <Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:37:          <Route
+frontend/src/tests/ProtectedRoute.test.tsx:38:            path="/secure"
+frontend/src/tests/ProtectedRoute.test.tsx:40:              <ProtectedRoute>
+frontend/src/tests/ProtectedRoute.test.tsx:42:              </ProtectedRoute>
+frontend/src/tests/ProtectedRoute.test.tsx:45:        </Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:46:      </MemoryRouter>,
+frontend/src/tests/ProtectedRoute.test.tsx:66:      <MemoryRouter
+frontend/src/tests/ProtectedRoute.test.tsx:73:        <Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:74:          <Route
+frontend/src/tests/ProtectedRoute.test.tsx:75:            path="/secure"
+frontend/src/tests/ProtectedRoute.test.tsx:77:              <ProtectedRoute>
+frontend/src/tests/ProtectedRoute.test.tsx:79:              </ProtectedRoute>
+frontend/src/tests/ProtectedRoute.test.tsx:82:          <Route path="/login" element={<div>Login Page</div>} />
+frontend/src/tests/ProtectedRoute.test.tsx:83:        </Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:84:      </MemoryRouter>,
+frontend/src/tests/ProtectedRoute.test.tsx:104:      <MemoryRouter
+frontend/src/tests/ProtectedRoute.test.tsx:111:        <Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:112:          <Route path="/" element={<div>Home</div>} />
+frontend/src/tests/ProtectedRoute.test.tsx:113:          <Route
+frontend/src/tests/ProtectedRoute.test.tsx:114:            path="/admin"
+frontend/src/tests/ProtectedRoute.test.tsx:116:              <ProtectedRoute allowRoles={["admin"]}>
+frontend/src/tests/ProtectedRoute.test.tsx:118:              </ProtectedRoute>
+frontend/src/tests/ProtectedRoute.test.tsx:121:        </Routes>
+frontend/src/tests/ProtectedRoute.test.tsx:122:      </MemoryRouter>,
+frontend/src/tests/SystemHealth.test.tsx:2:import { MemoryRouter } from 'react-router-dom';
+frontend/src/tests/SystemHealth.test.tsx:12:    render(<RealtimeContext.Provider value={{ state: 'connected', events: [], unread: 0, clearUnread: () => {} }}><MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><SystemHealth /></MemoryRouter></RealtimeContext.Provider>);
+frontend/src/tests/SystemHealthRealtime.test.tsx:1:import { MemoryRouter } from "react-router-dom";
+frontend/src/tests/SystemHealthRealtime.test.tsx:11:  render(<RealtimeContext.Provider value={{ state: "connected", events: [], unread: 0, clearUnread: () => {} }}><MemoryRouter><SystemHealth /></MemoryRouter></RealtimeContext.Provider>);

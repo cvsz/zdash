@@ -215,6 +215,12 @@ class Settings(BaseSettings):
 
     cloudflare_dry_run: bool = Field(default=True, alias="CLOUDFLARE_DRY_RUN")
     notification_dry_run: bool = Field(default=True, alias="NOTIFICATION_DRY_RUN")
+    support_bundle_include_secrets: bool = Field(
+        default=False, alias="SUPPORT_BUNDLE_INCLUDE_SECRETS"
+    )
+    deployment_pack_include_secrets: bool = Field(
+        default=False, alias="DEPLOYMENT_PACK_INCLUDE_SECRETS"
+    )
 
     backtesting_enabled: bool = Field(default=True, alias="BACKTESTING_ENABLED")
     backtest_dataset_source: str = Field(

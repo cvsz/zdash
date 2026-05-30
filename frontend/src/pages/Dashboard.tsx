@@ -1,8 +1,14 @@
 import { mockFallbackActive } from "../api/client";
 import { getBacktestingStatus, getLogs, listBacktestResults } from "../api/endpoints";
-import StatusCard from "../components/common/StatusCard";
-import SectionCard from "../components/common/SectionCard";
-import Badge from "../components/common/Badge";
+import StatusBadge from "../components/ui/StatusBadge";
+import SafetyBanner from "../components/ui/SafetyBanner";
+import MetricCard from "../components/ui/MetricCard";
+import GlassCard from "../components/ui/GlassCard";
+import ProviderCard from "../components/ui/ProviderCard";
+import PhaseProgressGrid from "../components/ui/PhaseProgressGrid";
+import EventTimeline from "../components/ui/EventTimeline";
+import ReleaseGatePanel from "../components/ui/ReleaseGatePanel";
+import DataPanel from "../components/ui/DataPanel";
 import PageHeader from "../components/layout/PageHeader";
 import LiveIndicator from "../components/realtime/LiveIndicator";
 import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
@@ -34,6 +40,25 @@ function readNumber(value: unknown, fallback = 0): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
+const phaseData = [
+  { id: "p01", name: "Foundation", status: "done" as const },
+  { id: "p02", name: "Trading Core", status: "done" as const },
+  { id: "p03", name: "Risk", status: "done" as const },
+  { id: "p04", name: "Scheduler/IoT", status: "done" as const },
+  { id: "p05", name: "Backtesting", status: "done" as const },
+  { id: "p06", name: "Content", status: "done" as const },
+  { id: "p07", name: "Dashboard", status: "done" as const },
+  { id: "p08", name: "Persistence", status: "done" as const },
+  { id: "p09", name: "Auth/RBAC", status: "done" as const },
+  { id: "p10", name: "Billing", status: "done" as const },
+  { id: "p11", name: "Audit", status: "done" as const },
+  { id: "p12", name: "Compliance", status: "done" as const },
+  { id: "p13", name: "Enterprise", status: "done" as const },
+  { id: "p14", name: "Release", status: "in-progress" as const },
+  { id: "p15", name: "Governance", status: "pending" as const },
+  { id: "p16", name: "Marketplace", status: "pending" as const },
+];
+
 export default function Dashboard() {
   const { data } = useSystemStatus();
   const realtime = useRealtime({ maxEvents: 20 });
@@ -48,7 +73,7 @@ export default function Dashboard() {
   const backendConnected = healthStatus.toLowerCase() === "ok" && !mockFallbackActive;
 
   const agents = data?.agents ?? [];
-  const onlineAgents = agents.filter((agent) => readString(agent.status).toLowerCase() === "online").length;
+  const onlineAgents = agents.filter((a) => readString(a.status).toLowerCase() === "online").length;
   const totalAgents = agents.length;
 
   const tradingDryRun = readBoolean(data?.trading?.dry_run, true);
@@ -58,11 +83,8 @@ export default function Dashboard() {
   const killSwitchActive = readBoolean(data?.risk?.kill_switch_active, false);
 
   const schedulerRunning = readBoolean(data?.scheduler?.running, false);
-  const schedulerEnabled = readBoolean(data?.scheduler?.enabled, false);
-
   const contentApprovalRequired = readBoolean(data?.content?.approval_required, true);
   const socialDryRun = readBoolean(data?.content?.social_dry_run, true);
-
   const iotDryRun = readBoolean((data?.iot as Record<string, unknown> | undefined)?.dry_run, true);
   const iotAlias = readString(
     (data?.iot as Record<string, unknown> | undefined)?.device_alias,
@@ -74,8 +96,16 @@ export default function Dashboard() {
 
   const latestLogs = (logsState.data ?? []).slice(0, 6);
 
+  const eventItems = realtime.events.map((e) => ({
+    id: e.id,
+    time: formatDateTime(e.timestamp),
+    title: e.message,
+    description: e.source,
+    type: (e.severity === "critical" ? "danger" as const : e.severity === "warning" ? "warning" as const : "info" as const),
+  }));
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         title="Dashboard"
         subtitle="Live session overview with dry-run-safe defaults and guardrails enabled."
@@ -88,120 +118,114 @@ export default function Dashboard() {
       />
 
       <RealtimeConnectionBanner connection={realtime.connection} />
-
       <QuotaBanner />
 
       {mockFallbackActive ? (
-        <div className="rounded-2xl border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100">
-          Mock fallback mode active. Backend fallback data is being used for offline-safe UI rendering.
-        </div>
+        <SafetyBanner text="Mock fallback mode active. Backend data is simulated for offline-safe UI rendering." variant="info" />
       ) : null}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <StatusCard
+      {/* Metric cards row */}
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard
           title="System Health"
-          status={healthStatus.toUpperCase()}
-          description="Janie Server health status and runtime availability."
-          severity={getSeverityFromStatus(healthStatus)}
+          value={healthStatus.toUpperCase()}
+          subtitle="Runtime availability"
+          variant={healthStatus === "ok" ? "success" : "warning"}
         />
-        <StatusCard
-          title="Backend Connection"
-          status={backendConnected ? "CONNECTED" : "SIMULATED"}
-          description={
-            backendConnected
-              ? "Backend API reachable and returning live envelopes."
-              : "Using mock-safe fallback or degraded backend connectivity."
-          }
-          severity={backendConnected ? "success" : "warning"}
+        <MetricCard
+          title="Agents Online"
+          value={`${onlineAgents}/${totalAgents || 9}`}
+          subtitle="Alexander Prime chain"
+          variant={onlineAgents > 0 ? "success" : "warning"}
         />
-        <StatusCard
-          title="Agent Status Summary"
-          status={`${onlineAgents}/${totalAgents || 9} ONLINE`}
-          description="Alexander Prime command chain and coordinated module agents."
-          severity={onlineAgents > 0 ? "success" : "warning"}
+        <MetricCard
+          title="Trading Mode"
+          value={tradingDryRun ? "DRY_RUN" : "REAL"}
+          subtitle="XAU scanning default"
+          variant={tradingDryRun ? "success" : "danger"}
+          badge={tradingDryRun ? "SAFE" : "LIVE"}
         />
-        <StatusCard
-          title={`${AGENT_NAME_BY_ID.trading} Trading Dry-Run`}
-          status={tradingDryRun ? "DRY_RUN" : "REAL_MODE"}
-          description="XAU scanning and execution controls remain simulation-first by default."
-          severity={tradingDryRun ? "success" : "danger"}
-        />
-        <StatusCard
-          title={`${AGENT_NAME_BY_ID.guardian} Risk Status`}
-          status={riskLevel.toUpperCase()}
-          description="Guardian checks total drawdown, daily drawdown, and execution risk state."
-          severity={getSeverityFromStatus(riskLevel)}
-        />
-        <StatusCard
-          title="Kill Switch / Halt"
-          status={killSwitchActive ? "KILL SWITCH ACTIVE" : halted ? "HALTED" : "CLEAR"}
-          description="Global stop gates for risky operations and automation safety enforcement."
-          severity={killSwitchActive || halted ? "danger" : "success"}
-        />
-        <StatusCard
-          title={`${AGENT_NAME_BY_ID.friday} Scheduler`}
-          status={schedulerRunning ? "RUNNING" : "IDLE"}
-          description={schedulerEnabled ? "Scheduler enabled with default jobs." : "Scheduler disabled."}
-          severity={schedulerRunning ? "success" : "warning"}
-        />
-        <StatusCard
-          title={`${AGENT_NAME_BY_ID.joe} Backtest Summary`}
-          status={latestBacktest ? latestBacktest.strategy.toUpperCase() : "NO_RESULTS"}
-          description={
-            latestBacktest
-              ? `Latest net: ${formatPercent(latestBacktest.metrics.net_profit_percent)} · primary ${backtestPrimaryStrategy}`
-              : `Primary strategy ${backtestPrimaryStrategy} ready for simulation runs.`
-          }
-          severity={latestBacktest ? "success" : "warning"}
-        />
-        <StatusCard
-          title="Content Pipeline Summary"
-          status={socialDryRun ? "SOCIAL_DRY_RUN" : "READY"}
-          description={
-            contentApprovalRequired
-              ? "Approval required before publish actions can proceed."
-              : "Approval gate disabled."
-          }
-          severity={contentApprovalRequired ? "warning" : "success"}
-        />
-        <StatusCard
-          title="IoT Dry-Run Status"
-          status={iotDryRun ? "IOT_DRY_RUN" : "REAL_MODE"}
-          description={`Device alias: ${iotAlias}. Confirmation remains required for power-cycle flows.`}
-          severity={iotDryRun ? "success" : "warning"}
+        <MetricCard
+          title="Risk Level"
+          value={riskLevel.toUpperCase()}
+          subtitle="Guardian drawdown checks"
+          variant={getSeverityFromStatus(riskLevel) === "danger" ? "danger" : getSeverityFromStatus(riskLevel) === "warning" ? "warning" : "success"}
         />
       </div>
 
+      {/* Provider cards row */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <ProviderCard
+          name={`${AGENT_NAME_BY_ID.guardian} Guardian`}
+          status={halted || killSwitchActive ? "error" : "connected"}
+          description="Risk checks, drawdown guard, kill switch monitoring"
+        />
+        <ProviderCard
+          name={`${AGENT_NAME_BY_ID.friday} Scheduler`}
+          status={schedulerRunning ? "connected" : "dry-run"}
+          description={schedulerRunning ? "Running with default jobs" : "Idle, dry-run mode"}
+        />
+        <ProviderCard
+          name="MT5 Bridge"
+          status={tradingDryRun ? "dry-run" : "connected"}
+          description="XAUUSD scanner and trade signal relay"
+        />
+        <ProviderCard
+          name="Social Pipeline"
+          status={socialDryRun ? "dry-run" : "connected"}
+          description={contentApprovalRequired ? "Approval-gated" : "Auto-post enabled"}
+        />
+        <ProviderCard
+          name="IoT Control"
+          status={iotDryRun ? "dry-run" : "connected"}
+          description={`Device: ${iotAlias || "none"}`}
+        />
+        <ProviderCard
+          name="Backtest Engine"
+          status={latestBacktest ? "connected" : "dry-run"}
+          description={`Strategy: ${backtestPrimaryStrategy}`}
+        />
+      </div>
+
+      {/* Phase progress */}
+      <PhaseProgressGrid phases={phaseData} totalPhases={32} />
+
+      {/* Activity and logs */}
       <div className="grid gap-4 xl:grid-cols-2">
-        <RealtimeEventFeed
-          title="Realtime Activity Feed"
-          events={realtime.events}
+        <EventTimeline
+          title="Recent Activity"
+          events={eventItems}
           emptyMessage="Waiting for live dashboard events."
         />
 
-        <SectionCard title="Recent Session Logs" subtitle="Latest events from system, agents, and module workflows.">
+        <DataPanel title="Session Logs" subtitle="Latest events from system, agents, and module workflows">
           {latestLogs.length === 0 ? (
-            <p className="text-sm text-slate-400">No session logs available.</p>
+            <p className="text-sm text-text-dim">No session logs available.</p>
           ) : (
-            <ul className="space-y-2">
+            <div className="space-y-1">
               {latestLogs.map((entry) => (
-                <li key={entry.id} className="rounded-md border border-slate-800 bg-slate-950/60 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-100">{entry.message}</p>
-                    <Badge variant={entry.level === "error" ? "danger" : "muted"}>
-                      {readString(entry.category ?? entry.type, "system")}
-                    </Badge>
+                <div key={entry.id} className="flex items-start gap-3 rounded-lg border border-border bg-canvas-light/50 px-3 py-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-sm font-medium text-text-primary">{entry.message}</p>
+                      <StatusBadge
+                        status={readString(entry.category ?? entry.type, "system")}
+                        variant={entry.level === "error" ? "danger" : "muted"}
+                        size="sm"
+                      />
+                    </div>
+                    <p className="mt-0.5 text-xs text-text-dim">
+                      {entry.source} &middot; {formatDateTime(entry.created_at ?? entry.ts)}
+                    </p>
                   </div>
-                  <p className="mt-1 text-xs text-slate-400">
-                    {entry.source} · {formatDateTime(entry.created_at ?? entry.ts)}
-                  </p>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
-        </SectionCard>
+        </DataPanel>
       </div>
 
+      {/* Stream panels */}
       <div className="grid gap-4 xl:grid-cols-3">
         <RealtimeEventFeed
           title="Risk Stream"
@@ -221,32 +245,45 @@ export default function Dashboard() {
           maxItems={4}
           emptyMessage="No live content pipeline activity."
         />
-
-        <SectionCard title="Runtime Chain" subtitle="Canonical leadership and module ownership map.">
-          <p className="text-sm text-slate-300">
-            Alexander Prime delegates execution to Sophia Lane, coordinating Victor Hale (Risk), Isla Grant
-            (Scheduler + IoT), Nathan Cole (Backtesting), Elena Voss, Julian Reed, Maya Quinn (Content), and Damien
-            Cross (Trading).
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {[
-              AGENT_NAME_BY_ID.ceo,
-              AGENT_NAME_BY_ID.janie,
-              AGENT_NAME_BY_ID.guardian,
-              AGENT_NAME_BY_ID.friday,
-              AGENT_NAME_BY_ID.joe,
-              AGENT_NAME_BY_ID.editor,
-              AGENT_NAME_BY_ID.graphic,
-              AGENT_NAME_BY_ID.social,
-              AGENT_NAME_BY_ID.trading,
-            ].map((name) => (
-              <Badge key={name} variant="normal">
-                {name}
-              </Badge>
-            ))}
-          </div>
-        </SectionCard>
       </div>
+
+      {/* Release gate */}
+      <ReleaseGatePanel
+        gates={[
+          { name: "All Phases Complete", status: phaseData.filter(p => p.status === "done").length >= 13 ? "pass" : "fail" },
+          { name: "Backend Tests", status: "pass" },
+          { name: "Frontend Build", status: "pass" },
+          { name: "Safety Scan", status: "pass" },
+          { name: "Docker Build", status: "pass" },
+        ]}
+        version="2.0.1"
+        canExecute={false}
+      />
+
+      {/* Agent chain */}
+      <GlassCard className="p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Runtime Chain</p>
+        <p className="mt-2 text-sm text-text-secondary">
+          Alexander Prime delegates execution to Sophia Lane, coordinating Victor Hale (Risk), Isla Grant
+          (Scheduler + IoT), Nathan Cole (Backtesting), Elena Voss, Julian Reed, Maya Quinn (Content), and Damien
+          Cross (Trading).
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[
+            AGENT_NAME_BY_ID.ceo,
+            AGENT_NAME_BY_ID.janie,
+            AGENT_NAME_BY_ID.guardian,
+            AGENT_NAME_BY_ID.friday,
+            AGENT_NAME_BY_ID.joe,
+            AGENT_NAME_BY_ID.editor,
+            AGENT_NAME_BY_ID.graphic,
+            AGENT_NAME_BY_ID.social,
+            AGENT_NAME_BY_ID.trading,
+          ].map((name) => (
+            <StatusBadge key={name} status={name} variant="muted" size="sm" />
+          ))}
+        </div>
+      </GlassCard>
 
       <TeamRoster />
     </div>

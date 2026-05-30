@@ -137,7 +137,7 @@ export default function RiskPanel() {
       <RealtimeConnectionBanner connection={realtime.connection} />
 
       {emergencyState ? (
-        <div className="rounded-lg border border-rose-500/60 bg-rose-500/20 px-4 py-3 text-sm font-semibold text-rose-100">
+        <div className="rounded-card border border-state-danger/20 bg-state-danger/20 px-4 py-3 text-sm font-semibold text-state-danger">
           Emergency state active. Kill switch or halt protection is engaged.
         </div>
       ) : null}
@@ -167,11 +167,11 @@ export default function RiskPanel() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+        <section className="rounded-card border border-border bg-panel p-4">
           <h3 className="text-sm font-semibold text-white">Manual Halt</h3>
-          <p className="mt-1 text-xs text-slate-400">Immediately halt execution paths using Guardian controls.</p>
+          <p className="mt-1 text-xs text-text-dim">Immediately halt execution paths using Guardian controls.</p>
           <input
-            className="mt-3 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-500/60 focus:ring"
+            className="mt-3 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
             value={haltReason}
             onChange={(event) => setHaltReason(event.target.value)}
             placeholder="Halt reason"
@@ -183,11 +183,11 @@ export default function RiskPanel() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+        <section className="rounded-card border border-border bg-panel p-4">
           <h3 className="text-sm font-semibold text-white">Manual Resume</h3>
-          <p className="mt-1 text-xs text-slate-400">Resume requires explicit reason and confirmation dialog.</p>
+          <p className="mt-1 text-xs text-text-dim">Resume requires explicit reason and confirmation dialog.</p>
           <input
-            className="mt-3 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 outline-none ring-cyan-500/60 focus:ring"
+            className="mt-3 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
             value={resumeReason}
             onChange={(event) => setResumeReason(event.target.value)}
             placeholder="Resume reason"
@@ -204,12 +204,12 @@ export default function RiskPanel() {
         </section>
       </div>
 
-      {actionMessage ? <p className="text-sm text-emerald-200">{actionMessage}</p> : null}
-      {actionError ? <p className="text-sm text-rose-200">{actionError}</p> : null}
+      {actionMessage ? <p className="text-sm text-state-success">{actionMessage}</p> : null}
+      {actionError ? <p className="text-sm text-state-danger">{actionError}</p> : null}
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Risk Event Log (Subset)</h3>
-        <p className="mt-1 text-xs text-slate-400">Recent events related to risk, Guardian, halt, and kill-switch state.</p>
+        <p className="mt-1 text-xs text-text-dim">Recent events related to risk, Guardian, halt, and kill-switch state.</p>
         <div className="mt-3">
           <DataTable<EventLog>
             rows={riskEvents}

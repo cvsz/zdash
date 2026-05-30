@@ -9,16 +9,15 @@ describe("Dashboard", () => {
     resetMockFallbackState();
   });
 
-  it("renders system cards and keeps team roster reachable", () => {
+  it("renders metric cards and key sections", () => {
     render(<Dashboard />);
 
-    expect(screen.getByText("System Health")).toBeTruthy();
-    expect(screen.getByText("Backend Connection")).toBeTruthy();
-    expect(screen.getByText("Agent Status Summary")).toBeTruthy();
-    expect(screen.getByText("Victor Hale Risk Status")).toBeTruthy();
-    expect(screen.getByText("Content Pipeline Summary")).toBeTruthy();
-    expect(screen.getByText("Recent Session Logs")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Team Roster", level: 1 })).toBeTruthy();
+    expect(screen.getByText((t) => t.includes("System Health"))).toBeTruthy();
+    expect(screen.getByText((t) => t.includes("Agents Online"))).toBeTruthy();
+    expect(screen.getByText((t) => t.includes("Trading Mode"))).toBeTruthy();
+    expect(screen.getByText((t) => t.includes("Risk Level"))).toBeTruthy();
+    expect(screen.getByText("Phase Progress")).toBeTruthy();
+    expect(screen.getByText((t) => t.includes("Session Logs"))).toBeTruthy();
   });
 
   it("renders mock fallback banner when fallback is active", () => {

@@ -39,7 +39,7 @@ export default function Onboarding() {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl text-sm font-semibold">
+        <div className="p-4 bg-state-danger/10 border border-state-danger/20 text-state-danger rounded-xl text-sm font-semibold">
           Error: {error}
         </div>
       )}
@@ -49,8 +49,8 @@ export default function Onboarding() {
       ) : (
         <div className="space-y-8">
           {/* Safety Checklist Column */}
-          <section className="p-6 rounded-xl border border-rose-500/20 bg-rose-500/5 space-y-4">
-            <h3 className="text-lg font-bold text-rose-400 flex items-center gap-2">
+          <section className="p-6 rounded-xl border border-state-danger/20 bg-rose-500/5 space-y-4">
+            <h3 className="text-lg font-bold text-state-danger flex items-center gap-2">
               <span>🛡</span> Safety Guidelines & Sandbox Rules
             </h3>
             <p className="text-xs text-neutral-400">
@@ -59,8 +59,8 @@ export default function Onboarding() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               {safetyItems.map((item, idx) => (
-                <div key={idx} className="p-3 rounded-lg bg-neutral-950/40 border border-neutral-850 flex items-start gap-3">
-                  <span className="text-emerald-400 text-sm font-bold">✔</span>
+                <div key={idx} className="p-3 rounded-card bg-neutral-950/40 border border-neutral-850 flex items-start gap-3">
+                  <span className="text-state-success text-sm font-bold">✔</span>
                   <span className="text-xs text-neutral-300 leading-relaxed font-medium">{item.text}</span>
                 </div>
               ))}
@@ -78,7 +78,7 @@ export default function Onboarding() {
               <button
                 onClick={() => handleQuickAction("Signal Scan", "run first dry-run scan")}
                 disabled={!!dryRunRunning}
-                className="py-2 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
+                className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
                 <span>🔍</span> Run Dry-Run Scan
               </button>
@@ -86,7 +86,7 @@ export default function Onboarding() {
               <button
                 onClick={() => handleQuickAction("Backtest Run", "run first backtest")}
                 disabled={!!dryRunRunning}
-                className="py-2 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
+                className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
                 <span>📊</span> Run Backtest
               </button>
@@ -94,34 +94,34 @@ export default function Onboarding() {
               <button
                 onClick={() => handleQuickAction("Content Creation", "create first content item")}
                 disabled={!!dryRunRunning}
-                className="py-2 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
+                className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
                 <span>✏</span> Create Content Item
               </button>
 
               <a
                 href="/risk"
-                className="py-2 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
+                className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
               >
                 <span>🛡</span> Review Risk Panel
               </a>
 
               <a
                 href="/billing"
-                className="py-2 px-4 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
+                className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
               >
                 <span>💳</span> Review Billing
               </a>
             </div>
 
             {dryRunRunning && (
-              <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-lg text-xs font-mono text-violet-400 animate-pulse">
+              <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-card text-xs font-mono text-violet-400 animate-pulse">
                 ⏳ Simulating {dryRunRunning} action. Please wait...
               </div>
             )}
 
             {dryRunOutput && (
-              <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-lg text-xs font-mono text-emerald-400">
+              <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-card text-xs font-mono text-state-success">
                 {dryRunOutput}
               </div>
             )}

@@ -18,9 +18,9 @@ export default function OrgMapPage() {
         subtitle="Canonical zDash command structure and module ownership."
       />
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Command Chain</h3>
-        <pre className="mt-3 overflow-x-auto rounded-md border border-slate-800 bg-slate-950/70 p-3 text-sm text-slate-200">
+        <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-canvas/80 p-3 text-sm text-text-secondary">
 {`Alexander Prime
 └── Sophia Lane
     ├── Victor Hale
@@ -33,19 +33,19 @@ export default function OrgMapPage() {
         </pre>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Module Ownership</h3>
         <div className="mt-3 grid gap-2 md:grid-cols-2">
           {ownership.map((item) => (
-            <div key={item.owner} className="rounded-md border border-slate-800 bg-slate-950/70 p-3">
-              <p className="text-sm font-semibold text-slate-100">{item.owner}</p>
-              <p className="mt-1 text-xs text-slate-400">{item.module}</p>
+            <div key={item.owner} className="rounded-md border border-border bg-canvas/80 p-3">
+              <p className="text-sm font-semibold text-text-primary">{item.owner}</p>
+              <p className="mt-1 text-xs text-text-dim">{item.module}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Roles</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {[

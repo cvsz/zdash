@@ -37,7 +37,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <header
-      className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur"
+      className="sticky top-0 z-30 border-b border-border bg-canvas/90 backdrop-blur"
       style={branding ? { borderTop: `3px solid ${branding.primary_color}` } : undefined}
     >
       <div className="flex h-14 items-center justify-between gap-3 px-4 md:px-6">
@@ -45,25 +45,25 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <button
             type="button"
             onClick={onMenuClick}
-            className="rounded-md p-2 text-slate-200 transition hover:bg-slate-800 md:hidden"
+            className="rounded-button p-2 text-text-secondary transition hover:bg-panel-hover md:hidden"
             aria-label="Toggle navigation"
           >
             <Menu className="h-5 w-5" />
           </button>
           <div>
-            <p className="text-sm font-semibold text-white">
+            <p className="text-sm font-semibold text-text-primary">
               {branding?.brand_name || "Operational Dashboard"}
             </p>
-            <p className="text-xs text-slate-400">Dry-run safe defaults active</p>
+            <p className="text-[11px] text-text-dim">Dry-run safe defaults active</p>
           </div>
-          <div className="hidden md:flex items-center space-x-4 ml-6 border-l border-slate-800 pl-6">
+          <div className="ml-6 hidden items-center gap-4 border-l border-border pl-6 md:flex">
             <OrganizationSwitcher />
             <WorkspaceSwitcher />
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="hidden text-xs text-slate-400 md:inline">
+          <span className="hidden text-xs text-text-dim md:inline">
             {user?.username} ({user?.role})
           </span>
           <Badge variant="success">{systemLabel}</Badge>
@@ -75,7 +75,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             onClick={() => {
               void logout();
             }}
-            className="rounded-md border border-slate-700 px-3 py-1 text-xs text-slate-200 transition hover:bg-slate-800"
+            className="rounded-button border border-border px-3 py-1 text-xs text-text-secondary transition hover:bg-panel-hover"
           >
             Logout
           </button>

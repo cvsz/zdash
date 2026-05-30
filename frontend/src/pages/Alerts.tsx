@@ -15,7 +15,7 @@ export default function Alerts() {
         subtitle="Configure monitoring rules, notification channels, and active events." 
       />
       {loading ? (
-        <div className="text-slate-400">Loading alerts data...</div>
+        <div className="text-text-dim">Loading alerts data...</div>
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -17,7 +17,7 @@ export default function SystemHealth() {
     <div className="space-y-6">
       <PageHeader title="System Health" subtitle="Frontend and backend diagnostic summary (safe, no secrets)." />
       <SectionCard title="Diagnostics">
-        <ul className="space-y-2 text-sm text-slate-200">
+        <ul className="space-y-2 text-sm text-text-secondary">
           <li>Build mode: <strong>{mode}</strong></li>
           <li>API base URL: <strong>{apiClientConfig.baseUrl}</strong></li>
           <li>Mock fallback enabled: <strong>{String(apiClientConfig.mockFallbackEnabled)}</strong></li>

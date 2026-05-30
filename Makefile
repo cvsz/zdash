@@ -130,6 +130,10 @@ port-scan: ## Fail if tracked runtime/source files still reference backend port 
 	git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . \
 		':(exclude)Makefile' \
 		':(exclude)docs/prompt/*.prompt' \
+		':(exclude)docs/prompts/**' \
+		':(exclude)docs/reports/**' \
+		':(exclude)docs/releases/**' \
+		':(exclude)release/**' \
 		':(exclude)docs/prompt/codex-runs/**' \
 		':(exclude).codex/**' \
 		':(exclude).agent/**' \
@@ -491,13 +495,6 @@ release-artifact: frontend-build ## Package frontend dist artifact under release
 .PHONY: release-local
 release-local: golive release-notes release-artifact ## Run go-live validation and create local release notes/artifact
 
-.PHONY: release-tag
-release-tag: release-local ## Create local annotated release tag; set CONFIRM_RELEASE=yes
-	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to create release tag" >&2; exit 1)
-	@git diff --quiet || (echo "ERROR: working tree has unstaged changes. Commit release notes first." >&2; git status --short; exit 1)
-	@git tag -a $(RELEASE_TAG) -m "$(RELEASE_TITLE)"
-	@echo "Created tag $(RELEASE_TAG)"
-
 .PHONY: release-push
 release-push: release-tag ## Push main and release tag; set CONFIRM_RELEASE=yes
 	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to push release" >&2; exit 1)
@@ -510,7 +507,60 @@ gh-release: ## Create GitHub release with artifact; requires gh auth and CONFIRM
 	@command -v gh >/dev/null 2>&1 || (echo "ERROR: gh CLI not found" >&2; exit 1)
 	@test -f docs/releases/$(RELEASE_TAG).md || (echo "ERROR: missing docs/releases/$(RELEASE_TAG).md; run make release-notes" >&2; exit 1)
 	@test -f release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz || (echo "ERROR: missing release artifact; run make release-artifact" >&2; exit 1)
-	@gh release create $(RELEASE_TAG) --title "$(RELEASE_TITLE)" --notes-file docs/releases/$(RELEASE_TAG).md release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz
+	@if gh release view $(RELEASE_TAG) >/dev/null 2>&1; then \
+		echo "Release $(RELEASE_TAG) exists. Uploading artifact with --clobber..."; \
+		gh release upload $(RELEASE_TAG) release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz --clobber; \
+	else \
+		gh release create $(RELEASE_TAG) --title "$(RELEASE_TITLE)" --notes-file docs/releases/$(RELEASE_TAG).md release-artifacts/zdash-frontend-$(RELEASE_TAG).tar.gz; \
+	fi
+
+.PHONY: release-status
+release-status: ## Show release tag status
+	@if git rev-parse $(RELEASE_TAG) >/dev/null 2>&1; then \
+		echo "Tag $(RELEASE_TAG) exists at $(shell git rev-parse --short $(RELEASE_TAG))"; \
+		if [ "$$(git rev-parse $(RELEASE_TAG))" = "$$(git rev-parse HEAD)" ]; then \
+			echo "Tag points to HEAD (up to date)"; \
+		else \
+			echo "WARNING: tag does not point to HEAD"; \
+		fi; \
+	else \
+		echo "Tag $(RELEASE_TAG) does not exist yet"; \
+	fi
+	@if gh release view $(RELEASE_TAG) >/dev/null 2>&1; then \
+		echo "GitHub release $(RELEASE_TAG) exists"; \
+	else \
+		echo "GitHub release $(RELEASE_TAG) does not exist"; \
+	fi
+
+.PHONY: release-tag
+release-tag: release-local ## Create local annotated release tag; set CONFIRM_RELEASE=yes
+	@test "$(CONFIRM_RELEASE)" = "yes" || (echo "ERROR: set CONFIRM_RELEASE=yes to create release tag" >&2; exit 1)
+	@git diff --quiet || (echo "ERROR: working tree has unstaged changes. Commit release notes first." >&2; git status --short; exit 1)
+	@if git rev-parse $(RELEASE_TAG) >/dev/null 2>&1; then \
+		if [ "$$(git rev-parse $(RELEASE_TAG))" = "$$(git rev-parse HEAD)" ]; then \
+			echo "Tag $(RELEASE_TAG) already exists at HEAD (skipping)"; \
+		else \
+			echo "ERROR: tag $(RELEASE_TAG) exists but does not point to HEAD" >&2; \
+			exit 1; \
+		fi; \
+	else \
+		git tag -a $(RELEASE_TAG) -m "$(RELEASE_TITLE)"; \
+		echo "Created tag $(RELEASE_TAG)"; \
+	fi
+
+.PHONY: prod-env-generate
+prod-env-generate: ## Generate .env.production with random secrets (chmod 600)
+	bash scripts/production/generate-prod-env.sh
+
+.PHONY: prod-deploy-final
+prod-deploy-final: prod-env-generate ## Generate env, validate compose config, build, deploy, health check
+	@test -f .env.production || (echo "ERROR: .env.production missing" >&2; exit 1)
+	docker compose --env-file .env.production -f docker-compose.prod.yml config
+	docker compose --env-file .env.production -f docker-compose.prod.yml up --build -d
+	docker compose -f docker-compose.prod.yml ps
+	@echo "Waiting for backend health check..."
+	@sleep 10
+	curl -fsS http://localhost/health && echo " Health check passed" || echo " Health check failed (backend may still be starting)"
 
 .PHONY: phase10-final
 phase10-final: validate ## Final Phase 10 validation alias

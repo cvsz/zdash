@@ -15,7 +15,7 @@ export default function Organizations() {
         subtitle="Manage your enterprise organizations, workspaces, and team members." 
       />
       {loading ? (
-        <div className="text-slate-400">Loading tenancy data...</div>
+        <div className="text-text-dim">Loading tenancy data...</div>
       ) : (
         <>
           <OrganizationTable organizations={organizations} />

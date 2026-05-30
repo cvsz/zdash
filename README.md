@@ -28,7 +28,7 @@ Use this repository for application code, local configuration defaults, backend/
 | Frontend | React/Vite on `0.0.0.0:5173` |
 | Node/npm | Use `nvm`, Node 20 LTS. Do **not** install Ubuntu `apt npm`. |
 | Python | Python 3.11+ / 3.12 tested in Ubuntu VM |
-| Trading | Simulation/dry-run only by default |
+| TradingPro | RealSimulation/dry-run only by default |
 | IoT | Dry-run + confirmation-gated by default |
 | Social posting | Dry-run + approval-gated by default |
 | Strategy promotion | Disabled by default |
@@ -376,7 +376,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 - mock fallback keeps dashboard pages renderable offline
 - UI surfaces show simulated mode banners and dry-run status
 
-### Page List
+### Page Drop Down List
 
 - `/` Dashboard
 - `/team` Team Roster
@@ -463,6 +463,9 @@ phase29.prompt
 phase30.prompt
 phase31.prompt
 phase32.prompt
+phase33.prompt
+phase34.prompt
+phase35.prompt
 agent-roster.prompt
 ```
 
@@ -471,7 +474,7 @@ Run one phase at a time unless explicitly doing a batch:
 ```bash
 FROM=1 TO=1 ./scripts/run-prompt-phases.sh
 FROM=2 TO=2 ./scripts/run-prompt-phases.sh
-FROM=1 TO=32 ./scripts/run-prompt-phases.sh
+FROM=1 TO=35 ./scripts/run-prompt-phases.sh
 ```
 
 Recommended batch chunks:
@@ -482,7 +485,7 @@ FROM=6 TO=10 ./scripts/run-prompt-phases.sh
 FROM=11 TO=15 ./scripts/run-prompt-phases.sh
 FROM=16 TO=20 ./scripts/run-prompt-phases.sh
 FROM=21 TO=25 ./scripts/run-prompt-phases.sh
-FROM=26 TO=32 ./scripts/run-prompt-phases.sh
+FROM=26 TO=35 ./scripts/run-prompt-phases.sh
 ```
 
 ---

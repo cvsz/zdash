@@ -36,6 +36,7 @@ const navItems: NavItem[] = [
   { to: "/enterprise", label: "Enterprise", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/onboarding", label: "Onboarding", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/system/health", label: "System Health", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/zfinance", label: "zFinance", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/notifications", label: "Notifications", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace/live", label: "Workspace Live", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace/timeline", label: "Workspace Timeline", roles: ["admin", "operator", "analyst", "viewer"] },
@@ -49,12 +50,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-slate-800 px-4 py-4">
-        <h1 className="text-lg font-bold text-white">zDash</h1>
-        <p className="text-xs text-slate-400">Safety-first Operations Dashboard</p>
+      <div className="border-b border-border px-4 py-5">
+        <h1 className="text-lg font-bold tracking-tight text-text-primary">
+          <span className="text-accent-cyan">z</span>Dash
+        </h1>
+        <p className="mt-0.5 text-[11px] text-text-dim">AI Operations Control Panel</p>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-auto px-3 py-4" aria-label="Primary navigation">
+      <nav className="flex-1 space-y-0.5 overflow-auto px-2 py-3" aria-label="Primary navigation">
         {navItems
           .filter((item) => item.roles.includes(activeRole))
           .map((item) => (
@@ -65,8 +68,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             className={({ isActive }) =>
               `block rounded-lg px-3 py-2 text-sm transition ${
                 isActive
-                  ? "bg-cyan-500/20 text-cyan-100"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-slate-100"
+                  ? "bg-accent-cyan/10 text-accent-cyan font-semibold"
+                  : "text-text-secondary hover:bg-panel-hover hover:text-text-primary"
               }`
             }
           >
@@ -74,6 +77,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </NavLink>
           ))}
       </nav>
+
+      <div className="border-t border-border px-4 py-3">
+        <p className="text-[10px] text-text-dim">
+          DRY_RUN_ACTIVE
+        </p>
+      </div>
     </div>
   );
 }
@@ -81,7 +90,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
-      <aside className="hidden w-64 shrink-0 border-r border-slate-800 bg-slate-950/70 backdrop-blur md:block">
+      <aside className="hidden w-64 shrink-0 border-r border-border bg-canvas/80 backdrop-blur md:block">
         <SidebarContent />
       </aside>
 
@@ -90,10 +99,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute inset-0 bg-slate-950/70"
+            className="absolute inset-0 bg-canvas/80"
             aria-label="Close navigation"
           />
-          <aside className="relative z-50 h-full w-72 border-r border-slate-800 bg-slate-950">
+          <aside className="relative z-50 h-full w-72 border-r border-border bg-canvas">
             <SidebarContent onNavigate={onClose} />
           </aside>
         </div>

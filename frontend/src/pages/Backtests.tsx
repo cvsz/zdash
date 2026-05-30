@@ -170,9 +170,9 @@ export default function Backtests() {
         <MetricCard label="Stored Results" value={results.length} />
       </div>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Strategy List</h3>
-        <p className="mt-1 text-xs text-slate-400">Available strategies for simulation runs.</p>
+        <p className="mt-1 text-xs text-text-dim">Available strategies for simulation runs.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {strategyNames.length === 0 ? (
             <Badge variant="muted">No strategies</Badge>
@@ -187,29 +187,29 @@ export default function Backtests() {
       </section>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <form className="rounded-lg border border-slate-800 bg-slate-900/70 p-4" onSubmit={(event) => void onRunBacktest(event)}>
+        <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunBacktest(event)}>
           <h3 className="text-sm font-semibold text-white">Run Backtest</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-text-secondary">
               Strategy
               <input
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runStrategy}
                 onChange={(event) => setRunStrategy(event.target.value)}
               />
             </label>
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-text-secondary">
               Symbol
               <input
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runSymbol}
                 onChange={(event) => setRunSymbol(event.target.value)}
               />
             </label>
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-text-secondary">
               Timeframe
               <input
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runTimeframe}
                 onChange={(event) => setRunTimeframe(event.target.value)}
               />
@@ -222,13 +222,13 @@ export default function Backtests() {
           </div>
         </form>
 
-        <form className="rounded-lg border border-slate-800 bg-slate-900/70 p-4" onSubmit={(event) => void onRunOptimization(event)}>
+        <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunOptimization(event)}>
           <h3 className="text-sm font-semibold text-white">Optimization</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
-            <label className="text-xs text-slate-300">
+            <label className="text-xs text-text-secondary">
               Sort metric
               <select
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+                className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={optimizationMetric}
                 onChange={(event) => setOptimizationMetric(event.target.value)}
               >
@@ -247,7 +247,7 @@ export default function Backtests() {
       </div>
 
       {selectedResult ? (
-        <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+        <section className="rounded-card border border-border bg-panel p-4">
           <h3 className="text-sm font-semibold text-white">Backtest Results and Metrics</h3>
           <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             <MetricCard label="Win Rate" value={formatPercent(selectedResult.metrics.win_rate)} />
@@ -257,7 +257,7 @@ export default function Backtests() {
             <MetricCard label="Total Trades" value={selectedResult.metrics.total_trades} />
           </div>
 
-          <div className="mt-4 h-64 rounded-md border border-slate-800 bg-slate-950/60 p-2">
+          <div className="mt-4 h-64 rounded-md border border-border bg-canvas-lighter/60 p-2">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={selectedResult.equity_curve ?? []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
@@ -283,7 +283,7 @@ export default function Backtests() {
         </section>
       ) : null}
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Result History</h3>
         <div className="mt-3">
           <DataTable<BacktestResult>
@@ -315,11 +315,11 @@ export default function Backtests() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Ranked Optimization Results</h3>
         {optimization ? (
           <div className="mt-3 space-y-2">
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-text-secondary">
               Best metric: {optimization.sort_metric}. Executed {optimization.executed_combinations}/
               {optimization.total_combinations} combinations.
             </p>
@@ -335,13 +335,13 @@ export default function Backtests() {
             />
           </div>
         ) : (
-          <p className="mt-2 text-sm text-slate-400">Run optimization to view ranked results.</p>
+          <p className="mt-2 text-sm text-text-dim">Run optimization to view ranked results.</p>
         )}
       </section>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Promotion Check Panel</h3>
-        <p className="mt-1 text-xs text-slate-400">Promotion never enables live trading automatically.</p>
+        <p className="mt-1 text-xs text-text-dim">Promotion never enables live trading automatically.</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
@@ -354,10 +354,10 @@ export default function Backtests() {
         </div>
       </section>
 
-      {message ? <p className="text-sm text-emerald-200">{message}</p> : null}
-      {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+      {message ? <p className="text-sm text-state-success">{message}</p> : null}
+      {error ? <p className="text-sm text-state-danger">{error}</p> : null}
 
-      <div className="rounded-lg border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
+      <div className="rounded-card border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-state-warning">
         Backtest results are not guaranteed future performance. Promotion checks only qualify strategies for additional
         simulation workflows and do not enable live trading.
       </div>

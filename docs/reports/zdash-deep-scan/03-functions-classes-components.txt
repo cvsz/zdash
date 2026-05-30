@@ -1,0 +1,3944 @@
+# zDash Function/Class/Component Index
+
+## .codex/cloud/maintenance.sh
+26:tracked_grep() {
+40:tracked_source_grep() {
+54:record_failure() {
+77:run_step() {
+
+## .codex/cloud/repair-backend-deps.sh
+
+## .codex/cloud/setup.sh
+11:step() {
+
+## .codex/healthcheck.sh
+
+## .codex/maintenance.sh
+
+## .codex/run-phase.sh
+
+## backend/alembic/env.py
+24:def run_migrations_offline() -> None:
+32:def run_migrations_online() -> None:
+
+## backend/alembic/versions/20260524_0003_phase8_persistence.py
+18:def upgrade() -> None:
+174:def downgrade() -> None:
+
+## backend/alembic/versions/7054888e2a84_phase10_models.py
+21:def upgrade() -> None:
+48:def downgrade() -> None:
+
+## backend/app/__init__.py
+
+## backend/app/agents/__init__.py
+
+## backend/app/agents/base.py
+13:class AgentMessage(BaseModel):
+20:class BaseAgent(ABC):
+21:    def __init__(
+34:    def emit_event(
+45:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+49:    def run_task(
+54:    def health_check(self) -> dict[str, Any]:
+
+## backend/app/agents/ceo.py
+8:class CEOAgent(BaseAgent):
+9:    def __init__(self) -> None:
+17:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+25:    def run_task(
+37:    def create_message(
+
+## backend/app/agents/editor.py
+11:class EditorAgent(BaseAgent):
+12:    def __init__(self, pipeline: ContentPipeline | None = None) -> None:
+21:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+26:    def run_task(
+52:    def create_draft(self, request: CreateContentRequest):
+65:    def edit_content(self, request: EditContentRequest):
+78:    def generate_variants(self, content_id: str, count: int = 3) -> list[str]:
+94:    def health_check(self) -> dict[str, Any]:
+99:    def _emit_received(
+109:    def _emit_completed(
+119:    def _emit_failed(self, command: str, exc: Exception) -> None:
+
+## backend/app/agents/friday.py
+10:class FridayAgent(BaseAgent):
+11:    def __init__(self) -> None:
+20:    def scheduler(self):
+23:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+31:    def run_task(
+84:    def list_jobs(self):
+87:    def create_job(self, request: CreateJobRequest | dict[str, Any]):
+95:    def run_job(self, job_id: str):
+98:    def pause_job(self, job_id: str):
+101:    def resume_job(self, job_id: str):
+104:    def delete_job(self, job_id: str) -> bool:
+107:    def health_check(self) -> dict[str, Any]:
+
+## backend/app/agents/graphic.py
+11:class GraphicAgent(BaseAgent):
+12:    def __init__(self, pipeline: ContentPipeline | None = None) -> None:
+21:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+26:    def run_task(
+44:    def create_graphic_prompt(self, request: GraphicRequest):
+57:    def generate_graphic(self, request: GraphicRequest):
+70:    def health_check(self) -> dict[str, Any]:
+75:    def _emit_received(
+85:    def _emit_completed(
+95:    def _emit_failed(self, command: str, exc: Exception) -> None:
+
+## backend/app/agents/guardian.py
+13:class GuardianAgent(BaseAgent):
+14:    def __init__(
+31:    def receive_message(self, message):
+36:    def run_task(
+46:    def evaluate_risk(self, snapshot: AccountSnapshot) -> RiskDecision:
+221:    def approve_execution(
+229:    def manual_halt(self, reason: str) -> HaltState:
+232:    def manual_resume(self, reason: str) -> HaltState:
+238:    def health_check(self) -> dict[str, Any]:
+
+## backend/app/agents/janie.py
+9:class JanieAgent(BaseAgent):
+10:    def __init__(self, ai_adapter: AIAdapter) -> None:
+19:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+33:    def run_task(
+
+## backend/app/agents/joe.py
+11:class JoeAgent(BaseAgent):
+12:    def __init__(self, service: BacktestService | None = None) -> None:
+22:    def service(self) -> BacktestService:
+25:    def list_strategies(self) -> list[dict[str, Any]]:
+38:    def run_backtest(self, request: BacktestRequest):
+53:    def optimize(self, request: OptimizationRequest):
+73:    def evaluate_promotion(self, result_id: str):
+93:    def health_check(self):
+99:    def receive_message(self, message: AgentMessage):
+103:    def run_task(
+131:    def _emit_received(
+141:    def _emit_completed(
+151:    def _emit_failed(self, command: str, exc: Exception) -> None:
+
+## backend/app/agents/registry.py
+82:class MessageRequest(BaseModel):
+89:class AgentRegistry:
+90:    def __init__(self) -> None:
+93:    def register(self, agent: BaseAgent) -> None:
+96:    def get(self, agent_id: str) -> BaseAgent | None:
+99:    def list(self) -> list[BaseAgent]:
+102:    def clear(self) -> None:
+105:    def send_message(self, request: MessageRequest) -> dict[str, Any]:
+148:def _find_related_events(msg_id: str, base_event: Event) -> list[Event]:
+159:def build_default_ai_adapter():
+169:def bootstrap_agents() -> None:
+237:def reset_registry() -> None:
+
+## backend/app/agents/social.py
+15:class SocialAgent(BaseAgent):
+16:    def __init__(self, pipeline: ContentPipeline | None = None) -> None:
+25:    def receive_message(self, message: AgentMessage) -> dict[str, Any]:
+30:    def run_task(
+58:    def schedule_content(self, request: ScheduleContentRequest):
+71:    def approve_content(self, request: ApproveContentRequest):
+84:    def publish_content(self, request: PublishContentRequest):
+100:    def health_check(self) -> dict[str, Any]:
+105:    def _emit_received(
+115:    def _emit_completed(
+125:    def _emit_failed(self, command: str, exc: Exception) -> None:
+
+## backend/app/ai/__init__.py
+
+## backend/app/ai/base.py
+9:class AIResponse(BaseModel):
+16:class AIAdapter(ABC):
+18:    def generate_response(
+
+## backend/app/ai/claude_adapter.py
+13:class ClaudeAdapter(AIAdapter):
+25:    def __init__(self) -> None:
+29:    def _should_fallback(self) -> bool:
+34:    def generate_response(
+
+## backend/app/ai/mock_adapter.py
+8:class MockAIAdapter(AIAdapter):
+9:    def generate_response(
+
+## backend/app/ai_trader/__init__.py
+
+## backend/app/ai_trader/features.py
+10:class AITraderFeatures:
+26:    def as_dict(self) -> dict[str, Any]:
+44:def _safe_float(value: object, default: float = 0.0) -> float:
+54:def _mean(values: list[float]) -> float:
+59:def _safe_range(candle: Candle) -> float:
+67:def _trend_state(ma_delta: float, atr_proxy: float) -> str:
+76:def _volatility_state(volatility_pct: float) -> str:
+84:def calculate_features(
+
+## backend/app/ai_trader/registry.py
+7:class AITraderStrategy:
+18:    def as_dict(self) -> dict[str, object]:
+76:def list_strategies() -> list[AITraderStrategy]:
+80:def get_strategy(strategy_id: str) -> AITraderStrategy | None:
+84:def resolve_strategy(strategy_id: str | None) -> AITraderStrategy:
+
+## backend/app/ai_trader/service.py
+32:class AITraderService:
+35:    def __init__(self, trading_service: TradingService | None = None) -> None:
+39:    def list_strategies(self) -> list[AITraderStrategy]:
+42:    def get_strategy(self, strategy_id: str) -> AITraderStrategy | None:
+45:    def resolve_strategy(self, strategy_id: str | None) -> AITraderStrategy:
+49:    def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
+52:    def build_safety_metadata(
+70:    def explain_decision(
+87:    def _confidence(self, features: AITraderFeatures, multiplier: float = 1.0) -> float:
+99:    def _trend_momentum(
+109:    def _mean_reversion(
+127:    def _volatility_breakout(
+139:    def _conservative_guarded(
+152:    def _strategy_decision(
+165:    def _build_signal(
+225:    def generate_signal(
+259:    def generate_decision(
+288:    def compare_strategies(
+334:    def paper_trade(
+406:    def _event_payload(signal: TradingSignal) -> dict[str, Any]:
+
+## backend/app/api/__init__.py
+
+## backend/app/api/admin.py
+23:class CreateUserRequest(BaseModel):
+30:class UpdateUserRequest(BaseModel):
+36:def _require_admin(user: AuthSession) -> None:
+41:def _sanitize_user(row: User) -> dict[str, Any]:
+53:def _safety_check_payload() -> dict[str, Any]:
+156:def safety_check(current_user: AuthSession = Depends(get_current_user)):
+166:def audit_logs(
+182:def users(
+195:def create_user(
+233:def update_user(
+273:def delete_user(
+
+## backend/app/api/agents.py
+11:def _trading_specialist_health() -> dict:
+29:def list_agents(_: object = Depends(require_authenticated)) -> dict:
+38:def send_message(
+
+## backend/app/api/ai_trader.py
+24:class AITraderSignalRequest(BaseModel):
+32:class AITraderCompareRequest(BaseModel):
+39:class AITraderPaperRequest(AITraderSignalRequest):
+43:def _decision_payload(decision: dict[str, Any]) -> dict[str, Any]:
+59:def ai_trader_status(
+79:def list_ai_trader_strategies(
+95:def generate_ai_trader_signal(
+110:def compare_ai_trader_strategies(
+133:def run_ai_trader_paper_simulation(
+
+## backend/app/api/audit.py
+12:def list_audit(
+
+## backend/app/api/auth.py
+30:def _auth_service(session: Session) -> AuthService:
+38:def login(req: LoginRequest, session: Session = Depends(get_db_session)):
+81:def refresh(req: RefreshRequest, session: Session = Depends(get_db_session)):
+111:def logout(req: LogoutRequest, session: Session = Depends(get_db_session)):
+128:def me(current_user=Depends(get_current_user)):
+133:def bootstrap_admin(
+
+## backend/app/api/backtesting.py
+26:def _actor_email(current_user: object) -> str:
+32:def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+38:def status(_: object = Depends(require_authenticated)):
+43:def strategies(_: object = Depends(require_authenticated)):
+48:def run(
+81:def results(_: object = Depends(require_authenticated)):
+93:def result(
+104:def optimize(
+137:def optimizations(_: object = Depends(require_authenticated)):
+149:def promotion(
+173:def report(
+
+## backend/app/api/billing.py
+57:class CheckoutRequest(BaseModel):
+61:class ApplyMockPlanRequest(BaseModel):
+70:def _org_id(user: AuthSession) -> str:
+74:def _ws_id(user: AuthSession) -> str | None:
+78:def _audit(action: str, user: AuthSession, extra: dict[str, Any] | None = None) -> None:
+93:def api_get_status(
+106:def api_list_plans() -> dict:
+115:def api_get_subscription(
+128:def api_checkout(
+147:def api_portal(
+162:def api_cancel(
+180:def api_apply_mock_plan(
+199:def api_get_usage(
+214:def api_get_metric_usage(
+230:def api_get_invoices(
+244:async def api_webhook(request: Request) -> dict:
+
+## backend/app/api/collaboration.py
+
+## backend/app/api/content.py
+34:def _pipeline():
+38:def _actor_email(current_user: object) -> str:
+44:def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+50:def status(_: object = Depends(require_authenticated)):
+55:def create(
+88:def edit(
+99:def generate_graphic(
+111:def schedule(
+123:def approve(
+147:def post(
+171:def run(
+183:def items(
+192:def item(
+203:def runs(_: object = Depends(require_authenticated)):
+209:def report(
+
+## backend/app/api/continuous_planning.py
+8:def status():
+
+## backend/app/api/developer.py
+9:def _tenant():
+14:def status():
+19:def list_api_keys():
+26:def create_api_key(request: ApiKeyCreateRequest):
+
+## backend/app/api/digital_twin.py
+17:def _org_ws(): return 'org-default','ws-default'
+20:def status():
+26:def create_entity(entity:TwinEntity): return ok(_registry.create_entity(entity).model_dump())
+28:def list_entities(): o,w=_org_ws(); return ok({'items':[e.model_dump() for e in _registry.list_entities(o,w)]})
+30:def get_entity(entity_id:str): o,w=_org_ws(); e=_registry.get_entity(o,w,entity_id); return ok(e.model_dump()) if e else fail('TWIN_ENTITY_NOT_FOUND','Entity not found')
+32:def patch_entity(entity_id:str, patch:dict): o,w=_org_ws(); e=_registry.update_entity(o,w,entity_id,patch); return ok(e.model_dump()) if e else fail('TWIN_ENTITY_NOT_FOUND','Entity not found')
+34:def create_rel(rel:TwinRelationship): return ok(_rels.create_relationship(rel).model_dump())
+36:def list_rel(): o,w=_org_ws(); return ok({'items':[r.model_dump() for r in _rels.list_relationships(o,w)]})
+38:def del_rel(relationship_id:str): o,w=_org_ws(); return ok({'deleted':_rels.delete_relationship(o,w,relationship_id)})
+40:def graph(): o,w=_org_ws(); return ok(_graph.build_graph(o,w))
+42:def graph_summary(): o,w=_org_ws(); return ok(_graph.summarize_graph(o,w))
+44:def neighbors(entity_id:str): o,w=_org_ws(); return ok({'items':[n.model_dump() for n in _graph.get_neighbors(o,w,entity_id)]})
+46:def impact(body:dict): o,w=_org_ws(); return ok(_prop.simulate_impact(o,w,body['source_entity_id'],body.get('impact_type','generic'),body.get('assumptions',[])).model_dump())
+48:def impact_results(): o,w=_org_ws(); return ok({'items':[r.model_dump() for r in _prop.list_propagation_results(o,w)]})
+50:def blast(body:dict): o,w=_org_ws(); return ok(_blast.analyze_blast_radius(o,w,body['target_entity_id'],body.get('severity','medium')).model_dump())
+52:def blast_results(): o,w=_org_ws(); return ok({'items':[r.model_dump() for r in _blast.list_blast_radius_results(o,w)]})
+54:def snapshot(body:dict): o,w=_org_ws(); return ok(_snap.create_snapshot(o,w,body.get('name','snapshot')).model_dump())
+56:def snapshots(): o,w=_org_ws(); return ok({'items':[s.model_dump() for s in _snap.list_snapshots(o,w)]})
+58:def reports(body:dict): o,w=_org_ws(); return ok(_report.generate_twin_report(o,w,body.get('name','report')))
+60:def reports_list(): o,w=_org_ws(); return ok({'items':_report.list_reports(o,w)})
+62:def report_md(report_id:str): o,w=_org_ws(); r=next((x for x in _report.list_reports(o,w) if x['id']==report_id),None); return ok({'markdown':_report.build_markdown_report(r)}) if r else fail('SCENARIO_PACK_NOT_FOUND','Report not found')
+
+## backend/app/api/edge.py
+9:def status():
+
+## backend/app/api/enterprise.py
+36:class ApplyLicenseRequest(BaseModel):
+40:class ExportRequest(BaseModel):
+50:class OnboardingStepRequest(BaseModel):
+54:def _org_id(current_user: Any) -> str:
+62:def _ws_id(current_user: Any) -> str | None:
+67:def api_status(
+81:def api_license_status(
+88:def api_license_apply(
+98:def api_license_revoke(
+107:def api_branding(
+114:def api_branding_patch(
+126:def api_branding_reset(
+135:def api_exports(
+142:def api_create_export(
+171:def api_export_get(
+179:def api_onboarding(
+186:def api_onboarding_step(
+198:def api_onboarding_reset(
+209:def api_health(
+
+## backend/app/api/enterprise_os.py
+9:def report():
+
+## backend/app/api/global_ops.py
+9:def status():
+
+## backend/app/api/google_finance.py
+12:def status():
+26:def overview():
+31:def section(section: str):
+36:def search(q: str = Query(..., min_length=1, max_length=80)):
+
+## backend/app/api/governance_refinement.py
+9:def report():
+
+## backend/app/api/health.py
+12:def health() -> dict:
+25:def health_api_alias() -> dict:
+
+## backend/app/api/integrations.py
+8:def status():
+13:def catalog():
+
+## backend/app/api/iot.py
+21:def _service() -> IoTService:
+25:def _actor_email(current_user: object) -> str:
+31:def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+37:def status(
+46:def action(
+68:def power_cycle(
+
+## backend/app/api/launch.py
+23:def public_status():
+28:def waitlist_join(request: dict):
+39:def invite_validate(request: dict):
+44:def get_readiness():
+49:def generate_release_notes(request: dict):
+58:def publish_docs(request: dict):
+63:def record_telemetry(request: dict):
+
+## backend/app/api/lessons.py
+9:def memory():
+
+## backend/app/api/logs.py
+11:def list_logs(
+
+## backend/app/api/long_horizon.py
+9:def report():
+
+## backend/app/api/macro_simulation.py
+8:def status():
+
+## backend/app/api/managed.py
+8:def status():
+13:def overview():
+
+## backend/app/api/marketplace.py
+24:class InstallPluginRequest(BaseModel):
+29:class RunPluginRequest(BaseModel):
+34:def api_plugins(current_user: Any = Depends(require_permissions([Permission.marketplace_read]))):
+44:def api_plugin(plugin_id: str, current_user: Any = Depends(require_permissions([Permission.marketplace_read]))):
+55:def api_installations(
+79:def api_install(
+106:def api_enable(
+121:def api_disable(
+136:def api_uninstall(
+151:def api_run(
+
+## backend/app/api/metrics.py
+15:def _require_metrics_access(
+53:def metrics(_: None = Depends(_require_metrics_access)):
+
+## backend/app/api/mobile.py
+8:def status():
+13:def home():
+
+## backend/app/api/notifications.py
+23:def _require_read_access(user: AuthSession) -> None:
+29:def _require_manage_access(user: AuthSession) -> None:
+35:def _audit(action: str, actor: AuthSession, metadata: dict) -> None:
+45:def status(
+65:def rules(
+83:def create_rule(
+100:def patch_rule(
+124:def delete_rule(
+147:def events(
+164:def channels(
+182:def create_channel(
+199:def patch_channel(
+223:def delete_channel(
+246:def test_notification(
+
+## backend/app/api/ops.py
+12:def status():
+17:def evaluate():
+22:def health():
+27:def auto_status():
+
+## backend/app/api/partner.py
+8:def _require_key(x_zdash_api_key: str | None = Header(default=None)):
+18:def health(x_zdash_api_key: str | None = Header(default=None)):
+24:def me(x_zdash_api_key: str | None = Header(default=None)):
+
+## backend/app/api/predictive_sre.py
+25:def status():
+36:def forecast_anomalies():
+41:def list_anomalies():
+
+## backend/app/api/realtime.py
+20:async def ws_realtime(websocket: WebSocket) -> None:
+59:async def ws_events_compat(websocket: WebSocket) -> None:
+63:def realtime_status() -> dict:
+68:def realtime_events(limit: int = Query(default=100, ge=1, le=500)) -> dict:
+74:async def mock_event(payload: dict) -> dict:
+86:def _parse_message_type(raw_message: str) -> str:
+
+## backend/app/api/risk.py
+23:def _actor_email(current_user: object) -> str:
+29:def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+34:class HaltRequest(BaseModel):
+38:class ResumeRequest(BaseModel):
+43:class ApproveExecutionRequest(BaseModel):
+49:def status(_: object = Depends(require_authenticated)) -> dict:
+55:def check(
+65:def drawdown(_: object = Depends(require_authenticated)) -> dict:
+86:def halt(
+119:def resume(
+152:def approve_execution(
+
+## backend/app/api/routes/__init__.py
+
+## backend/app/api/routes/incidents.py
+14:async def list_incidents(user: AuthSession = Depends(get_current_user)) -> dict:
+20:async def create_incident(payload: dict, user: AuthSession = Depends(get_current_user)) -> dict:
+28:async def ack_incident(incident_id: str, user: AuthSession = Depends(get_current_user)) -> dict:
+35:async def resolve_incident(incident_id: str, payload: dict, user: AuthSession = Depends(get_current_user)) -> dict:
+
+## backend/app/api/scheduler.py
+26:def _service():
+30:def _actor_email(current_user: object) -> str:
+36:def _maybe_audit(session: object, entry: AuditLogCreate) -> None:
+42:def status(_: object = Depends(require_authenticated)) -> dict:
+47:def list_jobs(_: object = Depends(require_authenticated)) -> dict:
+53:def create_job(
+87:def run_job(
+115:def pause_job(
+130:def resume_job(
+145:def delete_job(
+170:def list_runs(_: object = Depends(require_authenticated)) -> dict:
+176:def list_runs_for_job(
+
+## backend/app/api/self_evolution.py
+9:def queue():
+
+## backend/app/api/sovereign.py
+19:def ts():
+23:def ok(data):
+36:class EvalReq(BaseModel):
+44:def status():
+49:def list_regions():
+54:def create_region(region: RegionRecord):
+59:def list_rules():
+64:def create_rule(rule: DataResidencyRule):
+69:def evaluate(req: EvalReq):
+81:def enforce(req: EvalReq):
+96:def list_profiles():
+101:def create_profile(profile: SovereignDeploymentProfile):
+106:def activate(profile_id: str):
+111:def disable(profile_id: str):
+116:def kms_status():
+120:class KeyReq(BaseModel):
+127:def register_key(req: KeyReq):
+140:def test_kms():
+145:def list_bundles():
+150:def create_bundle(bundle: PolicyBundle):
+155:def compliance_dashboard():
+160:def compliance_report():
+
+## backend/app/api/tenancy.py
+22:def _audit(action: str, actor: AuthSession, metadata: dict) -> None:
+31:def _require_org_admin(organization_id: str, user: AuthSession) -> None:
+38:def context(
+45:def organizations(user: AuthSession = Depends(get_current_user)) -> dict:
+51:def create_organization(
+61:def get_organization(
+74:def patch_organization(
+88:def list_workspaces(
+102:def create_workspace(
+117:def get_workspace(
+130:def patch_workspace(
+147:def add_organization_member(
+166:def add_workspace_member(
+
+## backend/app/api/trading.py
+17:class ScanRequest(BaseModel):
+23:def trading_status(_: object = Depends(require_authenticated)) -> dict:
+28:def scan(
+37:def validate_signal(
+46:def dry_run_execute(
+57:def dry_run_execute_legacy(req: ExecutionRequest) -> dict:
+
+## backend/app/api/workers.py
+32:def _require_task_permission(task_type: str, user: AuthSession) -> None:
+40:def status(
+53:def tasks(
+62:def create(
+90:def task_detail(
+104:def cancel_task(
+127:def retry_task(
+
+## backend/app/api/workspaces.py
+13:class FederationRegisterRequest(BaseModel):
+18:    def validate_name(cls, value: str) -> str:
+26:def status():
+31:def peers(_: AuthSession = Depends(require_permission(Permission.READ_TENANCY))):
+36:def register(
+
+## backend/app/audit/__init__.py
+
+## backend/app/audit/audit_service.py
+11:class AuditService:
+12:    def __init__(self, session: Session):
+16:    def log(self, entry: AuditLogCreate) -> AuditLogItem:
+30:    def list(self, limit: int = 100, offset: int = 0) -> list[AuditLogItem]:
+41:    def _to_item(row: AuditLog) -> AuditLogItem:
+
+## backend/app/audit/models.py
+9:class AuditLogCreate(BaseModel):
+21:class AuditLogItem(BaseModel):
+
+## backend/app/auth/__init__.py
+
+## backend/app/auth/auth_service.py
+12:class AuthService:
+13:    def __init__(self, users: UserRepository, refresh_tokens: RefreshTokenRepository):
+19:    def _hash_token(token: str) -> str:
+22:    def _build_token_pair(self, username: str, role: str, user_id: str) -> TokenPair:
+33:    def login(self, username: str, password: str) -> TokenPair | None:
+41:    def refresh(self, refresh_token: str) -> TokenPair | None:
+58:    def logout(self, refresh_token: str) -> bool:
+62:    def bootstrap_admin(self, username: str | None, password: str | None) -> tuple[bool, str]:
+
+## backend/app/auth/dependencies.py
+14:def get_current_user(
+48:def require_authenticated(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+52:def require_permission(permission: Permission):
+53:    def _dependency(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+64:def require_permissions(permissions: list[Permission]):
+67:    def _dependency(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+
+## backend/app/auth/jwt.py
+9:def create_access_token(sub: str, role: str) -> str:
+21:def create_refresh_token(sub: str, role: str) -> str:
+31:def decode_token(token: str) -> dict:
+
+## backend/app/auth/models.py
+6:class AuthUser(BaseModel):
+11:class LoginRequest(BaseModel):
+16:class RefreshRequest(BaseModel):
+20:class LogoutRequest(BaseModel):
+24:class BootstrapAdminRequest(BaseModel):
+30:class AccessTokenPayload(BaseModel):
+37:class RefreshTokenPayload(BaseModel):
+45:class TokenPair(BaseModel):
+53:class AuthSession(BaseModel):
+
+## backend/app/auth/password.py
+6:def hash_password(password: str) -> str:
+10:def verify_password(password: str, hashed: str) -> bool:
+14:def mask_secret(_: str) -> str:
+
+## backend/app/auth/rbac.py
+6:class RoleName(str, Enum):
+13:class Permission(str, Enum):
+108:def normalize_role(role: str) -> str:
+114:def has_permission(role: str, permission: str | Permission) -> bool:
+
+## backend/app/backtesting/__init__.py
+
+## backend/app/backtesting/backtest_service.py
+16:class BacktestService:
+17:    def __init__(self) -> None:
+24:    def get_status(self) -> dict:
+35:    def list_strategies(self):
+38:    def run_backtest(self, request: BacktestRequest) -> BacktestResult:
+74:    def get_results(self):
+77:    def get_result(self, result_id: str):
+80:    def optimize(self, request: OptimizationRequest) -> OptimizationResult:
+126:    def get_optimization_results(self):
+129:    def evaluate_promotion(self, result_id: str):
+164:def get_backtest_service() -> BacktestService:
+171:def reset_backtest_service() -> None:
+
+## backend/app/backtesting/datasets.py
+12:class DatasetProvider:
+13:    def __init__(
+21:    def load(self, dataset: str, symbol: str, timeframe: str) -> list[Candle]:
+29:class MockDatasetProvider:
+30:    def __init__(self, candle_count: int = 360) -> None:
+33:    def load(self, dataset: str, symbol: str, timeframe: str) -> list[Candle]:
+62:class CsvDatasetProvider:
+65:    def load(self, dataset: str, symbol: str, timeframe: str) -> list[Candle]:
+104:def _iter_rows(reader: csv.DictReader) -> Iterable[dict[str, str]]:
+
+## backend/app/backtesting/metrics.py
+10:class BacktestMetricsCalculator:
+11:    def calculate(
+
+## backend/app/backtesting/models.py
+9:class Candle(BaseModel):
+19:    def _positive(cls, v: float) -> float:
+26:    def _volume_non_negative(cls, v: float) -> float:
+32:    def _validate_ranges(self) -> "Candle":
+40:class StrategySignal(BaseModel):
+54:    def _confidence_range(cls, v: float) -> float:
+61:    def _price_positive(cls, v: float) -> float:
+67:    def _validate_directional_levels(self) -> "StrategySignal":
+77:class SimulatedTrade(BaseModel):
+103:class BacktestRequest(BaseModel):
+117:    def _initial_balance_positive(cls, v: float) -> float:
+124:    def _risk_percent_positive(cls, v: float) -> float:
+131:    def _non_negative_costs(cls, v: float) -> float:
+137:class BacktestMetrics(BaseModel):
+155:class BacktestResult(BaseModel):
+172:class OptimizationRequest(BaseModel):
+184:    def _max_combinations_positive(cls, v: int) -> int:
+190:class OptimizationResult(BaseModel):
+204:class StrategyPromotionDecision(BaseModel):
+
+## backend/app/backtesting/optimizer.py
+16:class ParameterOptimizer:
+25:    def __init__(self, strategy_lab: StrategyLab | None = None) -> None:
+28:    def expand_grid(self, parameter_grid: dict) -> list[dict]:
+45:    def optimize(self, request: OptimizationRequest) -> OptimizationResult:
+
+## backend/app/backtesting/promotion.py
+9:class StrategyPromotionGate:
+10:    def evaluate(self, result: BacktestResult) -> StrategyPromotionDecision:
+
+## backend/app/backtesting/reports.py
+4:class BacktestReportBuilder:
+5:    def build_summary(self, result: BacktestResult) -> dict:
+23:    def build_markdown_report(self, result: BacktestResult) -> str:
+44:    def build_optimization_summary(self, result: OptimizationResult) -> dict:
+
+## backend/app/backtesting/strategies/__init__.py
+
+## backend/app/backtesting/strategies/ob_aggressive.py
+9:class OBAggressiveStrategy(BaseStrategy):
+18:    def validate_parameters(self, parameters: dict) -> dict:
+42:    def generate_signal(
+
+## backend/app/backtesting/strategies/ob_conservative.py
+9:class OBConservativeStrategy(BaseStrategy):
+18:    def validate_parameters(self, parameters: dict) -> dict:
+42:    def generate_signal(
+
+## backend/app/backtesting/strategies/trend_follow.py
+9:class TrendFollowStrategy(BaseStrategy):
+19:    def validate_parameters(self, parameters: dict) -> dict:
+47:    def generate_signal(
+
+## backend/app/backtesting/strategy_base.py
+10:class BaseStrategy(ABC):
+15:    def generate_signal(
+20:    def validate_parameters(self, parameters: dict) -> dict:
+24:    def get_description(self) -> str:
+27:    def hold_signal(
+50:    def build_signal(
+93:    def volatility(candles: list[Candle]) -> float:
+
+## backend/app/backtesting/strategy_lab.py
+24:class StrategyLab:
+25:    def __init__(self) -> None:
+34:    def list_strategies(self) -> list[dict]:
+44:    def get_strategy(self, name: str):
+49:    def run_backtest(self, request: BacktestRequest) -> BacktestResult:
+219:    def _find_exit(
+282:def _is_valid_signal(signal: StrategySignal) -> bool:
+298:def _points_to_price(points: float) -> float:
+
+## backend/app/billing/__init__.py
+
+## backend/app/billing/billing_adapters.py
+7:class BillingProviderAdapter(ABC):
+11:    def create_customer(self, organization: Any) -> str:
+19:    def create_checkout_session(self, organization_id: str, plan_id: str) -> str:
+27:    def get_subscription(
+34:    def cancel_subscription(self, provider_subscription_id: str) -> bool:
+42:    def create_billing_portal_session(self, organization_id: str) -> str:
+50:    def handle_webhook(
+
+## backend/app/billing/billing_webhooks.py
+12:def handle_webhook(payload: bytes, signature: str) -> dict[str, Any]:
+
+## backend/app/billing/entitlement_service.py
+17:def utc_now() -> datetime:
+21:def get_plan_for_org(organization_id: str) -> BillingPlan:
+52:def check_feature(organization_id: str, feature: str) -> EntitlementDecision:
+65:def check_quota(
+101:def require_feature(feature: str) -> Callable:
+102:    def _dependency(tenant: TenantContext = Depends(get_tenant_context)) -> str:
+118:def require_quota(metric: str, increment: float = 1.0) -> Callable:
+119:    def _dependency(tenant: TenantContext = Depends(get_tenant_context)) -> str:
+
+## backend/app/billing/invoice_service.py
+16:def _invoice_to_dict(inv: Invoice) -> dict[str, Any]:
+34:def get_invoices(organization_id: str, limit: int = 50) -> list[dict[str, Any]]:
+58:def create_mock_invoice(
+
+## backend/app/billing/mock_billing_adapter.py
+9:class MockBillingAdapter(BillingProviderAdapter):
+24:    def _stable_id(prefix: str, seed: str) -> str:
+33:    def create_customer(self, organization: Any) -> str:
+37:    def create_checkout_session(self, organization_id: str, plan_id: str) -> str:
+41:    def get_subscription(
+47:    def cancel_subscription(self, provider_subscription_id: str) -> bool:
+50:    def create_billing_portal_session(self, organization_id: str) -> str:
+54:    def handle_webhook(
+
+## backend/app/billing/models.py
+12:class PlanTier(str, Enum):
+19:class SubscriptionStatus(str, Enum):
+28:class BillingPlan(Base, Timestamped):
+42:class Subscription(Base, Timestamped):
+58:class UsageRecord(Base, Timestamped):
+71:class Invoice(Base, Timestamped):
+87:class EntitlementDecision(BaseModel):
+98:class UsageSummary(BaseModel):
+
+## backend/app/billing/plan_catalog.py
+103:def list_public_plans():
+107:def get_plan(plan_id: str):
+
+## backend/app/billing/quota_service.py
+11:def can_consume(organization_id: str, workspace_id: str, metric: str, quantity: float = 1.0) -> EntitlementDecision:
+24:def consume(
+85:def get_quota_status(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+## backend/app/billing/stripe_adapter.py
+11:class StripeAdapter(BillingProviderAdapter):
+24:    def __init__(self) -> None:
+44:    def _stripe_client(self) -> Any:
+57:    def _require_enabled(self) -> None:
+73:    def create_customer(self, organization: Any) -> str:
+86:    def create_checkout_session(self, organization_id: str, plan_id: str) -> str:
+103:    def get_subscription(
+116:    def cancel_subscription(self, provider_subscription_id: str) -> bool:
+129:    def create_billing_portal_session(self, organization_id: str) -> str:
+140:    def handle_webhook(
+
+## backend/app/billing/subscription_service.py
+30:def utc_now() -> datetime:
+34:def _get_adapter() -> BillingProviderAdapter:
+45:def _get_or_create_plan(db: Any, plan_tier: str) -> BillingPlan | None:
+75:def list_plans() -> list[dict[str, Any]]:
+102:def get_status(organization_id: str) -> dict[str, Any]:
+148:def start_checkout(organization_id: str, plan_id: str) -> dict[str, Any]:
+173:def open_billing_portal(organization_id: str) -> dict[str, Any]:
+188:def cancel_subscription(organization_id: str) -> dict[str, Any]:
+223:def sync_subscription_from_provider(organization_id: str) -> dict[str, Any]:
+254:def apply_mock_plan(organization_id: str, plan_tier: str) -> dict[str, Any]:
+
+## backend/app/billing/usage_meter.py
+11:def sanitize_metadata(metadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+22:def record_usage(
+70:def get_metric_summary(organization_id: str, workspace_id: str, metric: str) -> Dict[str, Any]:
+98:def get_usage_summary(organization_id: str, workspace_id: Optional[str] = None) -> List[Dict[str, Any]]:
+122:def reset_period_if_needed() -> Dict[str, Any]:
+
+## backend/app/boardroom/__init__.py
+
+## backend/app/boardroom/models.py
+7:class BoardRole(str, Enum):
+20:class BoardDecisionStatus(str, Enum):
+30:class BoardVoteValue(str, Enum):
+37:class BoardAgent(BaseModel):
+51:class BoardDebateSession(BaseModel):
+69:class BoardVote(BaseModel):
+79:class BoardDecision(BaseModel):
+99:class BoardMeeting(BaseModel):
+114:class DecisionMemo(BaseModel):
+
+## backend/app/collaboration/__init__.py
+
+## backend/app/collaboration/router.py
+19:def get_presence(workspace_id: str, _: AuthSession = Depends(get_current_user)):
+24:def post_presence(payload: PresenceUpdate, user: AuthSession = Depends(get_current_user)):
+29:def get_notes(workspace_id: str, _: AuthSession = Depends(get_current_user)):
+34:def post_notes(payload: NoteCreate, user: AuthSession = Depends(get_current_user)):
+39:def resolve_note(note_id: str, workspace_id: str, user: AuthSession = Depends(get_current_user)):
+47:def timeline(
+58:def _extract_token_from_subprotocol_header(raw_header: str | None) -> str | None:
+77:def _extract_websocket_token(websocket: WebSocket) -> str | None:
+86:def _authenticate_websocket(websocket: WebSocket) -> AuthSession | None:
+112:async def ws_collab(websocket: WebSocket, workspace_id: str):
+
+## backend/app/collaboration/schemas.py
+7:class PresenceUpdate(BaseModel):
+14:class PresenceRecord(PresenceUpdate):
+18:class NoteCreate(BaseModel):
+24:class NoteRecord(NoteCreate):
+32:class TimelineEvent(BaseModel):
+
+## backend/app/collaboration/service.py
+10:class CollaborationService:
+11:    def __init__(self):
+17:    def sanitize_markdown(self, text: str) -> str:
+21:    def upsert_presence(self, user_id: str, payload: PresenceUpdate) -> PresenceRecord:
+26:    def list_presence(self, workspace_id: str) -> list[PresenceRecord]:
+37:    def create_note(self, user_id: str, payload: NoteCreate) -> NoteRecord:
+44:    def resolve_note(self, workspace_id: str, note_id: str, actor: str) -> NoteRecord | None:
+53:    def list_notes(self, workspace_id: str) -> list[NoteRecord]:
+56:    def add_event(self, workspace_id: str, event_type: str, actor: str, message: str, metadata: dict | None = None) -> TimelineEvent:
+61:    def list_timeline(self, workspace_id: str, cursor: int = 0, limit: int = 50, event_type: str | None = None):
+
+## backend/app/content/__init__.py
+
+## backend/app/content/editor.py
+
+## backend/app/content/editor_service.py
+18:class EditorService:
+19:    def __init__(
+30:    def create_draft(self, request: CreateContentRequest):
+43:    def edit_content(self, request: EditContentRequest):
+64:    def generate_variants(self, content_id: str, count: int = 3) -> list[str]:
+83:    def _check_policy(self, content_id: str, text: str):
+116:    def _generate_draft_text(self, item: ContentItem) -> str:
+130:    def _ensure_trading_disclaimer(self, text: str) -> str:
+139:    def _emit_content_event(
+
+## backend/app/content/graphic.py
+
+## backend/app/content/graphic_service.py
+13:class GraphicService:
+14:    def __init__(
+21:    def create_graphic_prompt(self, request: GraphicRequest):
+50:    def generate_graphic(self, request: GraphicRequest):
+95:    def _emit_content_event(
+
+## backend/app/content/image_adapters.py
+10:class ImageGenerationAdapter(ABC):
+12:    def generate_image(
+17:class MockImageGenerationAdapter(ImageGenerationAdapter):
+18:    def __init__(self, provider_name: str = "mock") -> None:
+21:    def generate_image(
+36:def build_image_adapter(
+
+## backend/app/content/models.py
+10:class ContentStatus(str, Enum):
+22:class ContentPlatform(str, Enum):
+32:class ContentType(str, Enum):
+43:class ContentItem(BaseModel):
+70:    def _required_string_fields(cls, value: str) -> str:
+76:class CreateContentRequest(BaseModel):
+89:    def topic_not_empty(cls, value: str) -> str:
+96:    def platforms_not_empty(cls, value: list[ContentPlatform]) -> list[ContentPlatform]:
+102:class EditContentRequest(BaseModel):
+110:    def _content_id_not_empty(cls, value: str) -> str:
+116:class GraphicRequest(BaseModel):
+124:    def _graphic_content_id_not_empty(cls, value: str) -> str:
+130:class ScheduleContentRequest(BaseModel):
+137:    def _schedule_content_id_not_empty(cls, value: str) -> str:
+143:class ApproveContentRequest(BaseModel):
+150:    def _approve_required_fields(cls, value: str) -> str:
+156:class PublishContentRequest(BaseModel):
+163:    def _publish_content_id_not_empty(cls, value: str) -> str:
+169:class SocialPostResult(BaseModel):
+179:class PipelineRunResult(BaseModel):
+191:class ContentLogEntry(BaseModel):
+
+## backend/app/content/pipeline.py
+25:class ContentPipeline:
+26:    def __init__(self, store: InMemoryContentStore | None = None) -> None:
+33:    def run_full_pipeline(self, request: CreateContentRequest) -> PipelineRunResult:
+137:    def create_then_edit(self, request: CreateContentRequest) -> PipelineRunResult:
+181:    def generate_graphic(self, content_id: str) -> PipelineRunResult:
+223:    def schedule(
+249:    def approve(
+270:    def publish(
+297:    def get_status(self) -> dict:
+308:    def _record_step(
+332:    def _emit_pipeline_event(
+350:def get_content_pipeline() -> ContentPipeline:
+357:def reset_content_pipeline() -> None:
+
+## backend/app/content/policy.py
+6:class ContentPolicyChecker:
+36:    def check_text(self, text: str, context: dict | None = None) -> dict:
+
+## backend/app/content/reports.py
+4:class ContentReportBuilder:
+5:    def build_item_summary(self, item: ContentItem) -> dict:
+16:    def build_pipeline_summary(self, result: PipelineRunResult) -> dict:
+26:    def build_markdown_report(self, item: ContentItem) -> str:
+
+## backend/app/content/social.py
+
+## backend/app/content/social_adapters.py
+11:class SocialMediaAdapter(ABC):
+13:    def publish(
+22:class MockSocialMediaAdapter(SocialMediaAdapter):
+23:    def publish(
+42:class _CredentialGuardedStubAdapter(SocialMediaAdapter):
+43:    def __init__(self, platform_name: str, token: str = "") -> None:
+47:    def publish(
+71:class XAdapter(_CredentialGuardedStubAdapter):
+72:    def __init__(self, token: str = "") -> None:
+76:class TikTokAdapter(_CredentialGuardedStubAdapter):
+77:    def __init__(self, token: str = "") -> None:
+81:class FacebookAdapter(_CredentialGuardedStubAdapter):
+82:    def __init__(self, token: str = "") -> None:
+86:class InstagramAdapter(_CredentialGuardedStubAdapter):
+87:    def __init__(self, token: str = "") -> None:
+91:class LinkedInAdapter(_CredentialGuardedStubAdapter):
+92:    def __init__(self, token: str = "") -> None:
+96:def build_platform_adapters(
+
+## backend/app/content/social_service.py
+22:class SocialService:
+23:    def __init__(
+36:    def schedule_content(self, request: ScheduleContentRequest):
+53:    def approve_content(self, request: ApproveContentRequest):
+93:    def publish_content(self, request: PublishContentRequest):
+194:    def _require(self, content_id: str):
+200:    def _resolve_adapter(self, platform: ContentPlatform) -> SocialMediaAdapter:
+208:    def _emit_content_event(
+
+## backend/app/content/store.py
+16:class ContentNotFoundError(ValueError):
+20:class InMemoryContentStore:
+21:    def __init__(self) -> None:
+27:    def create_item(self, request: CreateContentRequest) -> ContentItem:
+47:    def get_item(self, content_id: str) -> ContentItem | None:
+51:    def list_items(self, status: ContentStatus | None = None) -> list[ContentItem]:
+57:    def update_item(self, content_id: str, patch: dict) -> ContentItem:
+69:    def delete_item(self, content_id: str) -> bool:
+74:    def record_pipeline_run(self, result: PipelineRunResult) -> PipelineRunResult:
+79:    def list_pipeline_runs(
+87:    def record_log(
+108:    def list_logs(self, content_id: str | None = None) -> list[ContentLogEntry]:
+
+## backend/app/continuous_planning/__init__.py
+
+## backend/app/continuous_planning/decision_lineage.py
+1:class DecisionLineage:
+
+## backend/app/continuous_planning/initiative_impact.py
+1:class InitiativeImpact:
+
+## backend/app/continuous_planning/models.py
+4:class PlanningCycleStatus(str, Enum):
+13:class RecommendationStatus(str, Enum):
+21:class DecisionLineageEventType(str, Enum):
+
+## backend/app/continuous_planning/planning_loop.py
+1:class PlanningLoop:
+
+## backend/app/continuous_planning/planning_memory.py
+1:class PlanningMemory:
+
+## backend/app/continuous_planning/planning_recommendation_service.py
+1:class PlanningRecommendationService:
+
+## backend/app/continuous_planning/roadmap_simulator.py
+1:class RoadmapSimulator:
+
+## backend/app/continuous_planning/strategic_tradeoff.py
+1:class StrategicTradeoff:
+
+## backend/app/continuous_planning/war_room_service.py
+1:class WarRoomService:
+
+## backend/app/core/__init__.py
+
+## backend/app/core/audit.py
+7:def audit(
+
+## backend/app/core/auth.py
+20:class TokenData(BaseModel):
+25:class CurrentUser(BaseModel):
+30:def verify_password(plain_password: str, hashed_password: str) -> bool:
+34:def get_password_hash(password: str) -> str:
+38:def create_access_token(username: str, role: str) -> str:
+49:def decode_access_token(token: str) -> TokenData:
+69:def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> CurrentUser:
+74:def require_roles(*roles: str):
+75:    def _dependency(
+85:def bootstrap_admin(session: Session) -> None:
+
+## backend/app/core/config.py
+7:class Settings(BaseSettings):
+379:    def _safe_positive_threshold(cls, value):
+397:    def _safe_positive_backtesting_float(cls, value):
+413:    def _safe_non_negative_backtesting_cost(cls, value):
+429:    def _safe_positive_backtesting_int(cls, value):
+440:    def _safe_non_negative_db_pool(cls, value):
+455:    def _safe_positive_auth_ttl(cls, value):
+465:    def is_production(self) -> bool:
+469:    def cors_origins_list(self) -> list[str]:
+476:def get_settings() -> Settings:
+
+## backend/app/core/database.py
+14:def session_scope():
+26:def init_db() -> None:
+32:def get_session():
+
+## backend/app/core/events.py
+126:class Event(BaseModel):
+137:class EventBus:
+138:    def __init__(self, max_events: int = 1000) -> None:
+142:    def emit(
+177:    def list_events(self, limit: int = 100) -> list[Event]:
+183:    def clear(self) -> None:
+
+## backend/app/core/logging.py
+7:class JsonFormatter(logging.Formatter):
+8:    def format(self, record: logging.LogRecord) -> str:
+23:def configure_logging(level: str = "INFO") -> None:
+
+## backend/app/core/middleware.py
+22:class SimpleRateLimiter:
+23:    def __init__(self, max_requests: int = 120, window_seconds: int = 60) -> None:
+28:    def allow(self, key: str) -> bool:
+42:def get_request_id() -> str:
+46:def install_middleware(app):
+50:    async def request_context_middleware(request: Request, call_next):
+
+## backend/app/core/observability.py
+32:def metrics_response() -> Response:
+
+## backend/app/core/responses.py
+5:def _timestamp() -> str:
+9:def ok(data: dict[str, Any]) -> dict[str, Any]:
+18:def fail(code: str, message: str) -> dict[str, Any]:
+31:def success_response(data: dict[str, Any]) -> dict[str, Any]:
+35:def error_response(code: str, message: str) -> dict[str, Any]:
+
+## backend/app/core/security.py
+4:def apply_security_headers(app: FastAPI) -> None:
+6:    async def security_headers(request, call_next):
+
+## backend/app/db/__init__.py
+
+## backend/app/db/base.py
+12:class Base(DeclarativeBase):
+
+## backend/app/db/migrations.py
+12:def create_all() -> None:
+16:def run_migrations() -> None:
+21:def check_database_connection() -> bool:
+
+## backend/app/db/models.py
+10:def _id() -> str:
+14:class Timestamped:
+23:class User(Base, Timestamped):
+33:class RefreshToken(Base, Timestamped):
+41:class AuditLog(Base, Timestamped):
+55:class EventLog(Base, Timestamped):
+64:class SchedulerJob(Base, Timestamped):
+77:class SchedulerRun(Base, Timestamped):
+92:class HaltState(Base, Timestamped):
+102:class BacktestResult(Base, Timestamped):
+113:class OptimizationResult(Base, Timestamped):
+123:class ContentItem(Base, Timestamped):
+135:class ContentPipelineRun(Base, Timestamped):
+147:class IoTActionLog(Base, Timestamped):
+
+## backend/app/db/repositories.py
+30:class UserRepositoryProtocol(Protocol):
+31:    def get_by_email(self, email: str) -> User | None: ...
+32:    def create(
+39:    def count(self) -> int: ...
+40:    def get_by_id(self, user_id: str) -> User | None: ...
+43:class AuditRepositoryProtocol(Protocol):
+44:    def create(self, **kwargs) -> AuditLog: ...
+47:class EventLogRepositoryProtocol(Protocol):
+48:    def create(self, event_type: str, source: str, message: str, payload: dict) -> EventLog: ...
+51:class SchedulerRepositoryProtocol(Protocol):
+52:    def upsert_job(self, job_id: str, **kwargs) -> SchedulerJob: ...
+53:    def add_run(self, job_id: str, status: str, message: str = "", output: dict | None = None) -> SchedulerRun: ...
+56:class BacktestRepositoryProtocol(Protocol):
+57:    def create_backtest_result(
+60:    def create_optimization_result(
+65:class ContentRepositoryProtocol(Protocol):
+66:    def create_content_item(self, **kwargs) -> ContentItem: ...
+67:    def create_pipeline_run(
+72:class HaltStateRepositoryProtocol(Protocol):
+73:    def set_state(self, halted: bool, reason: str, actor: str, locked: bool = False) -> HaltState: ...
+76:class IoTActionLogRepositoryProtocol(Protocol):
+77:    def create(self, **kwargs) -> IoTActionLog: ...
+80:class RefreshTokenRepositoryProtocol(Protocol):
+81:    def create(self, user_id: str, token_hash: str) -> RefreshToken: ...
+82:    def get(self, token_hash: str) -> RefreshToken | None: ...
+83:    def revoke(self, token_hash: str) -> bool: ...
+86:class UserRepository(UserRepositoryProtocol):
+87:    def __init__(self, db: Session):
+90:    def get_by_email(self, email: str) -> User | None:
+95:    def create(
+113:    def count(self) -> int:
+116:    def get_by_id(self, user_id: str) -> User | None:
+120:class AuditRepository(AuditRepositoryProtocol):
+121:    def __init__(self, db: Session):
+124:    def create(self, **kwargs) -> AuditLog:
+132:class EventLogRepository(EventLogRepositoryProtocol):
+133:    def __init__(self, db: Session):
+136:    def create(self, event_type: str, source: str, message: str, payload: dict) -> EventLog:
+149:class SchedulerRepository(SchedulerRepositoryProtocol):
+150:    def __init__(self, db: Session):
+153:    def upsert_job(self, job_id: str, **kwargs) -> SchedulerJob:
+165:    def add_run(
+180:class BacktestRepository(BacktestRepositoryProtocol):
+181:    def __init__(self, db: Session):
+184:    def create_backtest_result(
+198:    def create_optimization_result(
+213:class ContentRepository(ContentRepositoryProtocol):
+214:    def __init__(self, db: Session):
+217:    def create_content_item(self, **kwargs) -> ContentItem:
+224:    def create_pipeline_run(
+239:class HaltStateRepository(HaltStateRepositoryProtocol):
+240:    def __init__(self, db: Session):
+243:    def set_state(
+253:class IoTActionLogRepository(IoTActionLogRepositoryProtocol):
+254:    def __init__(self, db: Session):
+257:    def create(self, **kwargs) -> IoTActionLog:
+265:class RefreshTokenRepository(RefreshTokenRepositoryProtocol):
+266:    def __init__(self, db: Session):
+269:    def create(self, user_id: str, token_hash: str) -> RefreshToken:
+276:    def get(self, token_hash: str) -> RefreshToken | None:
+281:    def revoke(self, token_hash: str) -> bool:
+290:class BillingRepositoryProtocol(Protocol):
+291:    def get_subscription_by_org(self, organization_id: str) -> Subscription | None: ...
+292:    def create_subscription(self, **kwargs) -> Subscription: ...
+293:    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None: ...
+294:    def record_usage(self, **kwargs) -> UsageRecord: ...
+297:class MarketplaceRepositoryProtocol(Protocol):
+298:    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None: ...
+299:    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]: ...
+300:    def create_installation(self, **kwargs) -> PluginInstallation: ...
+301:    def update_installation(self, installation: PluginInstallation) -> PluginInstallation: ...
+302:    def delete_installation(self, installation: PluginInstallation) -> None: ...
+306:class BillingRepository(BillingRepositoryProtocol):
+307:    def __init__(self, db: Session):
+310:    def get_subscription_by_org(self, organization_id: str) -> Subscription | None:
+317:    def create_subscription(self, **kwargs) -> Subscription:
+324:    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None:
+333:    def record_usage(self, **kwargs) -> UsageRecord:
+341:class MarketplaceRepository(MarketplaceRepositoryProtocol):
+342:    def __init__(self, db: Session):
+345:    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None:
+352:    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]:
+358:    def create_installation(self, **kwargs) -> PluginInstallation:
+365:    def update_installation(self, installation: PluginInstallation) -> PluginInstallation:
+370:    def delete_installation(self, installation: PluginInstallation) -> None:
+
+## backend/app/db/session.py
+13:def _is_sqlite_url(url: str) -> bool:
+17:def _build_engine() -> Engine:
+35:def get_db_session() -> Generator[Session, None, None]:
+
+## backend/app/developer/__init__.py
+
+## backend/app/developer/api_key_service.py
+19:class ApiKeyService:
+20:    def __init__(self) -> None:
+23:    def _hash(self, raw: str) -> str:
+32:    def create_api_key(
+65:    def list_api_keys(self, tenant_context: dict) -> list[DeveloperApiKey]:
+73:    def authenticate_raw_key(self, raw_key: str) -> DeveloperApiKey | None:
+85:    def verify_scope(
+
+## backend/app/developer/models.py
+7:class ApiKeyStatus(StrEnum):
+14:class ApiKeyScope(StrEnum):
+33:class DeveloperApiKey(BaseModel):
+50:class ApiKeyCreateRequest(BaseModel):
+57:class ApiKeyCreatedResponse(BaseModel):
+
+## backend/app/digital_twin/__init__.py
+
+## backend/app/digital_twin/blast_radius.py
+4:class BlastRadiusService:
+5:    def __init__(self, graph):
+9:    def recommend_mitigations(self, severity):
+16:    def analyze_blast_radius(self, org, ws, target_entity_id, severity):
+33:    def list_blast_radius_results(self, org, ws):
+
+## backend/app/digital_twin/entity_registry.py
+2:class EntityRegistry:
+3:    def __init__(self): self._items:dict[str,TwinEntity]={}
+4:    def create_entity(self,e:TwinEntity)->TwinEntity: self._items[e.id]=e; return e
+5:    def list_entities(self,org:str,ws:str): return [v for v in self._items.values() if v.organization_id==org and v.workspace_id==ws]
+6:    def get_entity(self,org:str,ws:str,eid:str):
+8:    def update_entity(self,org:str,ws:str,eid:str,patch:dict):
+14:    def archive_entity(self,org:str,ws:str,eid:str)->bool:
+
+## backend/app/digital_twin/models.py
+7:def _now() -> datetime:
+11:class TwinEntityType(str, Enum):
+30:class TwinRelationshipType(str, Enum):
+44:class SimulationStatus(str, Enum):
+53:class _Base(BaseModel):
+59:class TwinEntity(_Base):
+72:    def _c(cls, v: float) -> float:
+76:class TwinRelationship(_Base):
+88:class TwinSnapshot(_Base):
+97:class ImpactPropagationResult(_Base):
+108:class BlastRadiusResult(_Base):
+
+## backend/app/digital_twin/propagation_engine.py
+4:class PropagationEngine:
+5:    def __init__(self, graph):
+9:    def simulate_impact(self, org, ws, source_entity_id, impact_type, assumptions):
+32:    def rank_affected_entities(self, result):
+37:    def list_propagation_results(self, org, ws):
+
+## backend/app/digital_twin/relationship_service.py
+4:class RelationshipService:
+5:    def __init__(self):
+8:    def validate_relationship(self, r: TwinRelationship) -> bool:
+11:    def create_relationship(self, r: TwinRelationship):
+17:    def list_relationships(self, org: str, ws: str):
+24:    def get_relationship(self, org: str, ws: str, rid: str):
+28:    def delete_relationship(self, org: str, ws: str, rid: str) -> bool:
+
+## backend/app/digital_twin/twin_graph.py
+1:class TwinGraphService:
+2:    def __init__(self,registry,rels,max_nodes=5000,max_edges=20000): self.registry=registry; self.rels=rels; self.max_nodes=max_nodes; self.max_edges=max_edges
+3:    def build_graph(self,org,ws):
+7:    def get_neighbors(self,org,ws,entity_id):
+9:    def get_dependency_path(self,org,ws,source_id,target_id): return [source_id,target_id] if self.get_neighbors(org,ws,source_id) else []
+10:    def summarize_graph(self,org,ws): g=self.build_graph(org,ws); return {'node_count':len(g['nodes']),'edge_count':len(g['edges'])}
+11:    def detect_orphans(self,org,ws):
+15:    def detect_cycles(self,org,ws):
+
+## backend/app/digital_twin/twin_report_service.py
+1:class TwinReportService:
+2:    def __init__(self, snap):
+6:    def generate_twin_report(self, org, ws, name="latest"):
+18:    def build_markdown_report(self, report):
+30:    def list_reports(self, org, ws):
+
+## backend/app/digital_twin/twin_snapshot_service.py
+6:class TwinSnapshotService:
+7:    def __init__(self, graph):
+11:    def create_snapshot(self, org, ws, name):
+27:    def list_snapshots(self, org, ws):
+32:    def compare_snapshots(self, a, b):
+38:    def verify_snapshot_checksum(self, snapshot, checksum):
+
+## backend/app/enterprise/__init__.py
+
+## backend/app/enterprise/branding_service.py
+8:def utc_now() -> datetime:
+11:def get_branding(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+30:def update_branding(organization_id: str, workspace_id: Optional[str], patch: Dict[str, Any]) -> Dict[str, Any]:
+69:def reset_branding(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+## backend/app/enterprise/customer_success.py
+
+## backend/app/enterprise/export_service.py
+8:def utc_now() -> datetime:
+11:def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
+40:def get_export_bundle(organization_id: str, bundle_id: str) -> Dict[str, Any]:
+50:def list_export_bundles(organization_id: str) -> List[Dict[str, Any]]:
+60:def import_bundle(file_path: str) -> Dict[str, Any]:
+
+## backend/app/enterprise/license_service.py
+9:def utc_now() -> datetime:
+12:def hash_license(key: str) -> str:
+15:def get_license_status(organization_id: str) -> Dict[str, Any]:
+30:def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
+55:def revoke_license(organization_id: str) -> Dict[str, Any]:
+64:def validate_license(organization_id: str) -> bool:
+
+## backend/app/enterprise/models.py
+6:class EnterpriseLicense(Base):
+24:class BrandingSettings(Base):
+41:class ExportBundle(Base):
+60:class OnboardingChecklist(Base):
+
+## backend/app/enterprise/models_enums.py
+3:class LicenseStatus(str, Enum):
+8:class ExportStatus(str, Enum):
+
+## backend/app/enterprise/onboarding_service.py
+7:def utc_now() -> datetime:
+23:def get_checklist(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+46:def mark_step_complete(organization_id: str, workspace_id: Optional[str], step: str) -> Dict[str, Any]:
+76:def reset_checklist(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+91:def get_customer_health(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+## backend/app/enterprise_os/__init__.py
+
+## backend/app/enterprise_os/capability_map.py
+4:def default_capability_map() -> list[Capability]:
+
+## backend/app/enterprise_os/enterprise_os_report_service.py
+5:def enterprise_os_report() -> dict:
+
+## backend/app/enterprise_os/enterprise_state_service.py
+1:def enterprise_state() -> dict:
+
+## backend/app/enterprise_os/maturity_model.py
+1:def policy_maturity_score(scores: list[int]) -> float:
+
+## backend/app/enterprise_os/models.py
+4:class Capability(BaseModel):
+
+## backend/app/enterprise_os/operating_cadence.py
+1:def cadence_cycles() -> list[str]:
+
+## backend/app/enterprise_os/operating_model_service.py
+5:def operating_model_snapshot() -> dict:
+
+## backend/app/enterprise_os/operating_review_service.py
+1:def operating_review() -> dict:
+
+## backend/app/governance_refinement/__init__.py
+
+## backend/app/governance_refinement/control_calibration.py
+1:def calibration_recommendations() -> list[dict]:
+
+## backend/app/governance_refinement/control_impact.py
+1:def control_impact() -> dict:
+
+## backend/app/governance_refinement/governance_drift.py
+1:def governance_drift() -> dict:
+
+## backend/app/governance_refinement/governance_refinement_report.py
+4:def governance_report() -> dict:
+
+## backend/app/governance_refinement/models.py
+4:class GovernanceDriftLevel(str, Enum):
+
+## backend/app/governance_refinement/policy_maturity.py
+1:def maturity() -> dict:
+
+## backend/app/governance_refinement/policy_simulator.py
+1:def simulate_policy_change() -> dict:
+
+## backend/app/governance_refinement/refinement_service.py
+5:def refinement_snapshot() -> dict:
+
+## backend/app/governance_refinement/risk_appetite.py
+1:def risk_appetite_model() -> dict:
+
+## backend/app/integrations/__init__.py
+
+## backend/app/integrations/integration_registry.py
+
+## backend/app/integrations/integration_service.py
+
+## backend/app/integrations/models.py
+
+## backend/app/integrations/scim_service.py
+
+## backend/app/integrations/siem_adapters.py
+
+## backend/app/integrations/sso_adapters.py
+
+## backend/app/integrations/ticketing_adapters.py
+
+## backend/app/integrations/webhook_service.py
+
+## backend/app/iot/__init__.py
+
+## backend/app/iot/base.py
+8:class IoTAdapter(ABC):
+10:    def get_status(self, device_alias: str) -> IoTActionResult:
+14:    def turn_on(self, device_alias: str) -> IoTActionResult:
+18:    def turn_off(self, device_alias: str) -> IoTActionResult:
+22:    def power_cycle(
+
+## backend/app/iot/iot_service.py
+9:class IoTService:
+10:    def __init__(self) -> None:
+14:    def get_status(self, device_alias: str | None = None) -> IoTActionResult:
+49:    def execute(self, action: IoTAction) -> IoTActionResult:
+140:    def turn_on(self, device_alias: str, confirmation: bool = False) -> IoTActionResult:
+147:    def turn_off(
+156:    def power_cycle(
+167:    def _blocked(self, action: IoTAction, message: str, reason: str) -> IoTActionResult:
+
+## backend/app/iot/models.py
+11:class IoTAction(BaseModel):
+18:class IoTActionResult(BaseModel):
+28:class IoTActionRequest(IoTAction):
+32:class IoTPowerCycleRequest(BaseModel):
+
+## backend/app/iot/tapo_adapter.py
+8:class TapoAdapter(IoTAdapter):
+15:    def __init__(self) -> None:
+18:    def _credentials_present(self) -> bool:
+25:    def _simulated(
+37:    def _blocked(
+49:    def get_status(self, device_alias: str) -> IoTActionResult:
+71:    def turn_on(self, device_alias: str) -> IoTActionResult:
+95:    def turn_off(self, device_alias: str) -> IoTActionResult:
+119:    def power_cycle(
+154:    def connectivity_test(self) -> dict:
+
+## backend/app/launch/__init__.py
+
+## backend/app/launch/docs_publish_service.py
+1:class DocsPublishService:
+2:    def publish_docs(self, dry_run: bool = True) -> dict:
+
+## backend/app/launch/invite_service.py
+8:class InviteService:
+9:    def __init__(self) -> None:
+12:    def _hash(self, code: str) -> str:
+15:    def create_invite_code(self, request: dict) -> tuple[InviteCode, str]:
+
+## backend/app/launch/launch_readiness.py
+4:class LaunchReadinessService:
+5:    def run_all_checks(self) -> dict:
+
+## backend/app/launch/models.py
+8:class WaitlistStatus(str, Enum):
+15:class InviteStatus(str, Enum):
+22:class LaunchMode(str, Enum):
+29:class PublicServiceStatus(str, Enum):
+37:class WaitlistEntry(BaseModel):
+51:class InviteCode(BaseModel):
+64:class PublicStatusComponent(BaseModel):
+72:class PublicStatusIncident(BaseModel):
+86:class LaunchReadinessCheck(BaseModel):
+98:class TelemetryEvent(BaseModel):
+
+## backend/app/launch/public_status_service.py
+4:class PublicStatusService:
+5:    def __init__(self) -> None:
+9:    def get_public_status_summary(self) -> dict:
+
+## backend/app/launch/release_notes.py
+1:class ReleaseNotesService:
+2:    def generate_release_notes(self, from_version: str, to_version: str) -> dict:
+
+## backend/app/launch/telemetry_service.py
+1:class TelemetryService:
+4:    def redact_payload(self, payload: dict) -> dict:
+
+## backend/app/launch/waitlist_service.py
+7:class WaitlistService:
+8:    def __init__(self) -> None:
+11:    def join_waitlist(self, request: dict) -> WaitlistEntry:
+22:    def list_entries(self) -> list[WaitlistEntry]:
+25:    def update_status(self, entry_id: str, status: WaitlistStatus) -> WaitlistEntry:
+
+## backend/app/lessons/__init__.py
+
+## backend/app/lessons/decision_learning.py
+1:def decision_learning() -> dict:
+
+## backend/app/lessons/lessons_service.py
+4:def lessons_feed() -> list[Lesson]:
+
+## backend/app/lessons/models.py
+4:class Lesson(BaseModel):
+
+## backend/app/lessons/pattern_library.py
+1:def pattern_library() -> list[str]:
+
+## backend/app/lessons/postmortem_memory.py
+1:def postmortem_memory() -> dict:
+
+## backend/app/lessons/retrieval_service.py
+4:def retrieve_lessons() -> dict:
+
+## backend/app/long_horizon/__init__.py
+
+## backend/app/long_horizon/advantage_analysis.py
+1:def advantage_analysis() -> dict:
+
+## backend/app/long_horizon/horizon_report_service.py
+4:def horizon_report() -> dict:
+
+## backend/app/long_horizon/horizon_scanner.py
+1:def scan_horizon() -> dict:
+
+## backend/app/long_horizon/long_range_scenarios.py
+1:def scenarios() -> list[dict]:
+
+## backend/app/long_horizon/moat_service.py
+4:def moat_report() -> dict:
+
+## backend/app/long_horizon/models.py
+4:class StrategicThesis(BaseModel):
+
+## backend/app/long_horizon/strategic_option_service.py
+1:def strategic_options() -> list[dict]:
+
+## backend/app/long_horizon/strategic_thesis.py
+4:def thesis_tracker() -> list[StrategicThesis]:
+
+## backend/app/long_horizon/trend_radar.py
+1:def trend_radar() -> list[dict]:
+
+## backend/app/macro_simulation/__init__.py
+
+## backend/app/macro_simulation/macro_scenario_service.py
+1:class MacroScenarioService:
+
+## backend/app/macro_simulation/market_dynamics.py
+1:class MarketDynamics:
+
+## backend/app/macro_simulation/models.py
+6:def now():
+10:class MacroScenarioType(str, Enum):
+22:class ShockType(str, Enum):
+34:class MacroScenario(BaseModel):
+
+## backend/app/macro_simulation/policy_scenario_service.py
+1:class PolicyScenarioService:
+
+## backend/app/macro_simulation/regional_scenario_service.py
+1:class RegionalScenarioService:
+
+## backend/app/macro_simulation/scenario_pack_service.py
+1:class ScenarioPackService:
+
+## backend/app/macro_simulation/shock_simulator.py
+1:class ShockSimulator:
+
+## backend/app/macro_simulation/supply_demand_simulator.py
+1:class SupplyDemandSimulator:
+
+## backend/app/main.py
+77:async def lifespan(_: FastAPI):
+117:async def validation_exception_handler(request: Request, exc: RequestValidationError):
+
+## backend/app/managed/__init__.py
+
+## backend/app/managed/customer_health.py
+
+## backend/app/managed/managed_console_service.py
+
+## backend/app/managed/models.py
+
+## backend/app/managed/release_channel_service.py
+
+## backend/app/managed/service_review.py
+
+## backend/app/managed/support_service.py
+
+## backend/app/market_data/__init__.py
+
+## backend/app/market_data/google_finance_beta.py
+12:class FinanceInstrument:
+32:def utc_timestamp() -> str:
+36:def section_url(section: str = "home") -> str:
+45:def search_url(query: str) -> str:
+52:def instrument_payload(item: FinanceInstrument) -> dict[str, str]:
+62:def overview_payload() -> dict[str, object]:
+
+## backend/app/marketplace/__init__.py
+
+## backend/app/marketplace/builtins.py
+
+## backend/app/marketplace/models.py
+26:class PluginStatus(str, Enum):
+35:class PluginInstallStatus(str, Enum):
+48:class PluginManifest(Base, Timestamped):
+72:class PluginInstallation(Base, Timestamped):
+100:class PluginActionResult(BaseModel):
+112:def manifest_to_dict(m: PluginManifest) -> dict[str, Any]:
+133:def installation_to_dict(inst: PluginInstallation) -> dict[str, Any]:
+
+## backend/app/marketplace/plugin_registry.py
+4:def list_plugins():
+8:def get_plugin(plugin_id: str):
+
+## backend/app/marketplace/plugin_runtime.py
+1:def run_action(plugin_id: str, action: str, payload: dict | None = None):
+
+## backend/app/marketplace/plugin_service.py
+15:def utc_now() -> datetime:
+18:def list_installations(organization_id: str, workspace_id: str = None) -> List[PluginInstallation]:
+23:def install_plugin(organization_id: str, plugin_id: str, workspace_id: str, config: dict = None, installed_by: str = "system") -> Dict[str, Any]:
+68:def enable_plugin(organization_id: str, installation_id: str, actor_id: str = "system") -> Dict[str, Any]:
+86:def disable_plugin(organization_id: str, installation_id: str, actor_id: str = "system") -> Dict[str, Any]:
+104:def uninstall_plugin(organization_id: str, installation_id: str, actor_id: str = "system") -> Dict[str, Any]:
+120:def run_plugin_action(organization_id: str, installation_id: str, action: str, payload: dict, actor_id: str = "system") -> Dict[str, Any]:
+
+## backend/app/marketplace/plugin_store.py
+
+## backend/app/marketplace/safety.py
+1:def check_plugin_action(action: str, payload: dict | None = None):
+
+## backend/app/models/__init__.py
+
+## backend/app/models/entities.py
+12:def utc_now() -> datetime:
+16:class AgentRecord(SQLModel, table=True):
+26:class MessageRecord(SQLModel, table=True):
+37:class EventRecord(SQLModel, table=True):
+47:class TradingSignalRecord(SQLModel, table=True):
+60:class ExecutionAttemptRecord(SQLModel, table=True):
+71:class RiskDecisionRecord(SQLModel, table=True):
+82:class HaltFlagRecord(SQLModel, table=True):
+93:class SchedulerJobRecord(SQLModel, table=True):
+104:class BacktestRunRecord(SQLModel, table=True):
+114:class BacktestResultRecord(SQLModel, table=True):
+123:class ContentItemRecord(SQLModel, table=True):
+136:class AuditLogRecord(SQLModel, table=True):
+148:class UserRecord(SQLModel, table=True):
+159:class LiveModeApprovalRecord(SQLModel, table=True):
+
+## backend/app/notifications/__init__.py
+
+## backend/app/notifications/alert_rules.py
+
+## backend/app/notifications/channels.py
+8:def sanitize_payload(payload: dict[str, Any]) -> dict[str, Any]:
+19:def dispatch_dry_run(channel_name: str, title: str, message: str, payload: dict[str, Any]) -> dict:
+29:def dispatch_email(
+58:def dispatch_webhook(
+
+## backend/app/notifications/models.py
+14:def now_utc() -> str:
+18:class AlertRule(BaseModel):
+32:class AlertEvent(BaseModel):
+45:class NotificationChannel(BaseModel):
+57:class AlertRuleCreateRequest(BaseModel):
+66:class AlertRuleUpdateRequest(BaseModel):
+74:class NotificationChannelCreateRequest(BaseModel):
+81:class NotificationChannelUpdateRequest(BaseModel):
+87:class NotificationTestRequest(BaseModel):
+
+## backend/app/notifications/notification_service.py
+22:class NotificationService:
+23:    def __init__(self) -> None:
+28:    def reset(self) -> None:
+33:    def ensure_defaults(self, organization_id: str, workspace_id: str) -> None:
+68:    def rules_for_tenant(self, organization_id: str, workspace_id: str) -> list[AlertRule]:
+75:    def channels_for_tenant(
+85:    def events_for_tenant(self, organization_id: str, workspace_id: str) -> list[AlertEvent]:
+93:    def create_rule(
+113:    def update_rule(self, rule_id: str, payload: AlertRuleUpdateRequest) -> AlertRule | None:
+132:    def delete_rule(self, rule_id: str) -> bool:
+135:    def create_channel(
+152:    def update_channel(
+171:    def delete_channel(self, channel_id: str) -> bool:
+174:    def emit_alert(
+218:    def send_test_notification(
+258:    def status(self) -> dict:
+268:    def _dispatch_channels(
+304:def get_notification_service() -> NotificationService:
+311:def reset_notification_service() -> None:
+
+## backend/app/observability/__init__.py
+
+## backend/app/observability/metrics.py
+6:class MetricsStore:
+7:    def __init__(self) -> None:
+19:    def increment_requests(self, latency_ms: float) -> None:
+24:    def increment_errors(self) -> None:
+28:    def increment_events(self, count: int = 1) -> None:
+32:    def increment_scheduler_jobs(self, count: int = 1) -> None:
+36:    def set_risk_halt_active(self, active: bool) -> None:
+40:    def increment_backtests(self, count: int = 1) -> None:
+44:    def increment_content_items(self, count: int = 1) -> None:
+48:    def increment_iot_actions(self, count: int = 1) -> None:
+52:    def snapshot(self) -> dict[str, float]:
+66:    def reset(self) -> None:
+82:def render_metrics() -> str:
+
+## backend/app/observability/middleware.py
+16:def install_observability_middleware(app) -> None:
+18:    async def request_id_middleware(request: Request, call_next):
+26:    async def request_logging_middleware(request: Request, call_next):
+48:    async def error_logging_middleware(request: Request, call_next):
+
+## backend/app/ops/__init__.py
+
+## backend/app/ops/change_management.py
+
+## backend/app/ops/disaster_recovery.py
+
+## backend/app/ops/fleet_service.py
+
+## backend/app/ops/health_analyzer.py
+6:class HealthAnalyzer:
+7:    def __init__(self):
+10:    def collect_snapshot(
+23:    def calculate_health_score(self, snapshot: SystemHealthSnapshot) -> float:
+26:    def detect_anomalies(self, snapshot: SystemHealthSnapshot) -> list[dict]:
+29:    def classify_status(self, snapshot: SystemHealthSnapshot) -> EnvironmentStatus:
+
+## backend/app/ops/incident_service.py
+7:class IncidentService:
+8:    def __init__(self):
+11:    def create_incident(self, request: dict) -> Incident:
+16:    def list_incidents(self, filters: dict | None = None) -> list[Incident]:
+19:    def get_incident(self, incident_id: str) -> Incident:
+22:    def acknowledge_incident(self, incident_id: str, user_id: str) -> Incident:
+29:    def update_incident_status(
+38:    def resolve_incident(self, incident_id: str, notes: str = "") -> Incident:
+45:    def link_remediation(self, incident_id: str, remediation_id: str):
+
+## backend/app/ops/maintenance_service.py
+
+## backend/app/ops/models.py
+7:class OpsMode(str, Enum):
+13:class IncidentSeverity(str, Enum):
+20:class IncidentStatus(str, Enum):
+30:class RemediationStatus(str, Enum):
+40:class ChangeStatus(str, Enum):
+51:class EnvironmentStatus(str, Enum):
+59:class SystemHealthSnapshot(BaseModel):
+81:class Incident(BaseModel):
+100:class RemediationAction(BaseModel):
+120:class SLO(BaseModel):
+133:class SLAStatus(BaseModel):
+147:class MaintenanceWindow(BaseModel):
+163:class ChangeRequest(BaseModel):
+182:class FleetEnvironment(BaseModel):
+
+## backend/app/ops/ops_autopilot.py
+5:class OpsAutopilot:
+6:    def __init__(self, health_analyzer: HealthAnalyzer):
+9:    def evaluate_system(self, organization_id: str, workspace_id: str):
+18:    def create_incidents_from_health(self, snapshot):
+21:    def propose_remediations(self, incident_id: str):
+24:    def run_approved_remediations(self, incident_id: str):
+27:    def get_autopilot_status(self):
+
+## backend/app/ops/remediation_playbooks.py
+
+## backend/app/ops/sla_service.py
+
+## backend/app/predictive_sre/__init__.py
+
+## backend/app/predictive_sre/anomaly_detector.py
+5:class AnomalyDetector:
+6:    def __init__(self):
+9:    def score_anomaly(self, metric_series: list[float]) -> float:
+15:    def detect_metric_anomalies(self, tenant_context, metrics):
+18:    def forecast_anomalies(self, tenant_context, horizon: ForecastHorizon):
+41:    def list_forecasts(self):
+
+## backend/app/predictive_sre/capacity_planner.py
+5:class CapacityPlanner:
+6:    def __init__(self):
+9:    def estimate_resource_demand(self):
+12:    def estimate_cost_impact(self):
+15:    def generate_capacity_plan(
+36:    def list_capacity_plans(self):
+
+## backend/app/predictive_sre/error_budget_service.py
+5:class ErrorBudgetService:
+6:    def __init__(self):
+9:    def calculate_current_burn(self):
+12:    def forecast_burn(self, tenant_context, slo_name="availability"):
+29:    def list_error_budget_forecasts(self):
+32:    def generate_error_budget_report(self):
+
+## backend/app/predictive_sre/incident_predictor.py
+10:class IncidentPredictor:
+11:    def __init__(self):
+14:    def score_incident_risk(self, signals):
+17:    def predict_incidents(self, tenant_context, horizon: ForecastHorizon):
+38:    def list_predictions(self):
+41:    def convert_prediction_to_incident(self, prediction_id, has_permission=False):
+
+## backend/app/predictive_sre/models.py
+7:class PredictionStatus(str, Enum):
+15:class PredictionSeverity(str, Enum):
+22:class ForecastHorizon(str, Enum):
+30:class _Base(BaseModel):
+36:class AnomalyForecast(_Base):
+51:class IncidentPrediction(_Base):
+65:class SLOForecast(_Base):
+77:class ErrorBudgetForecast(_Base):
+88:class CapacityPlan(_Base):
+100:class ReliabilityRecommendation(_Base):
+
+## backend/app/predictive_sre/reliability_advisor.py
+5:class ReliabilityAdvisor:
+6:    def __init__(self):
+9:    def generate_recommendations(self, tenant_context):
+28:    def prioritize_recommendations(self):
+33:    def explain_recommendation(self):
+36:    def list_recommendations(self):
+
+## backend/app/predictive_sre/slo_forecaster.py
+5:class SLOForecaster:
+6:    def __init__(self):
+9:    def detect_breach_probability(self, current, target):
+12:    def forecast_slo(self, tenant_context, slo_id, horizon: ForecastHorizon):
+31:    def list_slo_forecasts(self):
+
+## backend/app/predictive_sre/sre_report_service.py
+4:class SREReportService:
+5:    def __init__(self):
+8:    def generate_sre_report(self, tenant_context):
+19:    def build_markdown_report(self, report_id):
+22:    def list_reports(self):
+
+## backend/app/realtime/__init__.py
+
+## backend/app/realtime/broadcast.py
+7:async def broadcast_event(event_type: str, source: str, payload: dict, severity: str = "info") -> dict:
+
+## backend/app/realtime/broadcaster.py
+20:class RealtimeBroadcaster:
+21:    def __init__(
+34:    def bind_loop(self, loop: asyncio.AbstractEventLoop) -> None:
+37:    def recent_events(self, channel: RealtimeChannel, limit: int = 100) -> list[dict[str, Any]]:
+43:    def publish(
+65:    async def apublish(
+81:    def publish_core_event(self, event: Any) -> dict[str, Any]:
+85:    def connection_snapshot(self) -> dict[str, int]:
+89:    def _consume_future_exception(future: asyncio.Future[Any]) -> None:
+100:def get_realtime_broadcaster() -> RealtimeBroadcaster:
+107:def reset_realtime_broadcaster() -> None:
+112:def bind_realtime_loop(loop: asyncio.AbstractEventLoop) -> None:
+116:def publish_event(event: Any) -> dict[str, Any]:
+120:def broadcast_risk_alert(payload: dict[str, Any], source: str = "guardian") -> dict[str, Any]:
+130:def broadcast_scheduler_run(payload: dict[str, Any], source: str = "scheduler") -> dict[str, Any]:
+142:def broadcast_content_update(payload: dict[str, Any], source: str = "content") -> dict[str, Any]:
+152:def broadcast_system_status(
+
+## backend/app/realtime/event_bus.py
+6:async def publish_event(event: RealtimeEvent) -> dict:
+
+## backend/app/realtime/event_stream.py
+9:def push(event: dict[str, Any]) -> None:
+14:def recent(limit: int = 100) -> list[dict[str, Any]]:
+
+## backend/app/realtime/events.py
+17:def normalize_event_type(event_type: str, payload: dict[str, Any] | None = None) -> str:
+21:def _category_for_event(event_type: str) -> RealtimeCategory:
+28:def severity_for_event(event_type: str, payload: dict[str, Any] | None = None) -> RealtimeSeverity:
+37:def channels_for_event(event_type: str) -> set[RealtimeChannel]:
+46:def build_event_envelope(*, event_type: str, source: str, payload: dict[str, Any] | None = None, severity: RealtimeSeverity | None = None, message: str | None = None, timestamp: str | None = None) -> RealtimeEventEnvelope:
+61:def envelope_from_core_event(event: Any) -> RealtimeEventEnvelope:
+
+## backend/app/realtime/heartbeat.py
+11:class RealtimeHeartbeat:
+12:    def __init__(
+24:    def start(self) -> None:
+29:    async def stop(self) -> None:
+37:    async def tick(self) -> int:
+47:    async def _run(self) -> None:
+56:def get_realtime_heartbeat() -> RealtimeHeartbeat:
+63:async def stop_realtime_heartbeat() -> None:
+
+## backend/app/realtime/hub.py
+12:def _utc_iso_timestamp() -> str:
+16:class EventHub:
+17:    def __init__(self, replay_limit: int = 250) -> None:
+21:    async def broadcast(self, event_type: str, source: str, payload: dict, severity: str = "info") -> dict:
+35:    def replay(self, limit: int = 100) -> list[dict]:
+42:def get_event_hub() -> EventHub:
+
+## backend/app/realtime/manager.py
+16:class ManagedConnection:
+25:class RealtimeConnectionManager:
+26:    def __init__(self) -> None:
+32:    async def connect(self, channel: RealtimeChannel, websocket: WebSocket) -> str:
+48:    async def disconnect(
+59:    async def mark_activity(self, channel: RealtimeChannel, client_id: str) -> None:
+65:    async def mark_pong(self, channel: RealtimeChannel, client_id: str) -> None:
+73:    async def broadcast(self, channel: RealtimeChannel, payload: dict) -> int:
+93:    async def broadcast_channels(
+101:    async def prune_stale(self, stale_after_seconds: float) -> int:
+117:    def snapshot(self) -> dict[str, int]:
+122:    def force_last_pong(self, channel: RealtimeChannel, client_id: str, epoch_seconds: float) -> None:
+131:def get_realtime_connection_manager() -> RealtimeConnectionManager:
+138:def reset_realtime_connection_manager() -> None:
+
+## backend/app/realtime/mock_streams.py
+21:async def _run() -> None:
+37:def start_mock_stream_if_enabled() -> None:
+46:async def stop_mock_stream() -> None:
+
+## backend/app/realtime/models.py
+10:class RealtimeEvent(BaseModel):
+19:class RealtimeEnvelope(BaseModel):
+28:class PresenceRecord(BaseModel):
+
+## backend/app/realtime/presence.py
+6:class PresenceStore:
+7:    def __init__(self) -> None:
+10:    def upsert(self, client_id: str, record: PresenceRecord) -> None:
+13:    def remove(self, client_id: str) -> None:
+16:    def list(self) -> list[PresenceRecord]:
+
+## backend/app/realtime/router.py
+
+## backend/app/realtime/schemas.py
+14:def utc_now_iso() -> str:
+18:class RealtimeEventEnvelope(BaseModel):
+29:    def model_post_init(self, __context: Any) -> None:
+38:class RealtimeControlMessage(BaseModel):
+
+## backend/app/realtime/websocket_manager.py
+
+## backend/app/realtime/ws_manager.py
+
+## backend/app/repositories/__init__.py
+
+## backend/app/repositories/store.py
+26:class Repository:
+27:    def __init__(self, session: Session) -> None:
+30:    def upsert_agent(self, name: str, role: str, status: str) -> AgentRecord:
+44:    def list_agents(self) -> list[AgentRecord]:
+47:    def add_message(
+57:    def add_event(
+65:    def list_events(self, limit: int = 100, offset: int = 0) -> list[EventRecord]:
+74:    def add_trading_signal(self, signal: dict[str, Any]) -> TradingSignalRecord:
+87:    def add_execution_attempt(self, result: dict[str, Any]) -> ExecutionAttemptRecord:
+98:    def add_risk_decision(
+115:    def latest_risk_decision(
+124:    def set_halt_flag(
+132:    def latest_halt_flag(self) -> HaltFlagRecord | None:
+136:    def upsert_scheduler_job(
+159:    def list_scheduler_jobs(self) -> list[SchedulerJobRecord]:
+168:    def add_backtest_run(
+180:    def add_backtest_result(
+188:    def list_backtest_results(self) -> list[BacktestResultRecord]:
+197:    def add_content_item(
+218:    def update_content_item(
+230:    def get_content_item(self, item_id: str) -> ContentItemRecord | None:
+233:    def list_content_items(self) -> list[ContentItemRecord]:
+240:    def add_audit_log(
+255:    def list_audit_logs(
+266:    def get_user_by_username(self, username: str) -> UserRecord | None:
+271:    def add_user(self, username: str, password_hash: str, role: str) -> UserRecord:
+277:    def add_live_mode_approval(
+285:    def latest_live_mode_approval(self) -> LiveModeApprovalRecord | None:
+
+## backend/app/risk/__init__.py
+
+## backend/app/risk/drawdown_guard.py
+9:class DrawdownGuard:
+10:    def __init__(self) -> None:
+14:    def calculate_total_drawdown(snapshot: AccountSnapshot) -> float:
+23:    def calculate_daily_drawdown(snapshot: AccountSnapshot) -> float:
+32:    def evaluate(self, snapshot: AccountSnapshot) -> DrawdownResult:
+
+## backend/app/risk/guardian_service.py
+11:class GuardianService:
+12:    def __init__(self) -> None:
+24:    def get_status(self) -> dict:
+44:    def check(self, snapshot: AccountSnapshot) -> RiskDecision:
+49:    def halt(self, reason: str, source: str = "manual") -> HaltState:
+52:    def resume(self, reason: str, approved: bool = False) -> HaltState:
+59:    def approve_execution(
+66:    def latest_drawdown(self) -> DrawdownResult | None:
+71:    def reset(self) -> None:
+79:def get_guardian_service() -> GuardianService:
+86:def reset_guardian_service() -> None:
+91:def get_guardian_agent() -> GuardianAgent:
+
+## backend/app/risk/halt_flag.py
+11:class HaltFlagStore:
+12:    def __init__(self) -> None:
+17:    def get_state(self) -> HaltState:
+21:    def is_halted(self) -> bool:
+24:    def halt(self, reason: str, source: str) -> HaltState:
+52:    def resume(self, reason: str) -> HaltState:
+78:    def clear(self) -> None:
+
+## backend/app/risk/kill_switch.py
+9:class KillSwitch:
+10:    def __init__(self) -> None:
+13:    def should_trigger(self, drawdown: DrawdownResult) -> bool:
+27:    def trigger(self, drawdown: DrawdownResult, halt_store: HaltFlagStore) -> HaltState:
+
+## backend/app/risk/models.py
+11:class AccountSnapshot(BaseModel):
+22:class DrawdownResult(BaseModel):
+34:class HaltState(BaseModel):
+43:class RiskDecision(BaseModel):
+
+## backend/app/scheduler/__init__.py
+
+## backend/app/scheduler/friday_agent.py
+8:def get_friday_agent() -> FridayAgent:
+15:def reset_friday_agent() -> None:
+
+## backend/app/scheduler/job_store.py
+16:class JobStoreError(ValueError):
+20:class JobNotFoundError(JobStoreError):
+24:class InMemoryJobStore:
+25:    def __init__(self) -> None:
+31:    def _next_run_at(
+38:    def list_jobs(self) -> list[ScheduledJob]:
+42:    def get_job(self, job_id: str) -> ScheduledJob | None:
+47:    def create_job(self, request: CreateJobRequest) -> ScheduledJob:
+70:    def update_job(self, job_id: str, patch: dict) -> ScheduledJob:
+83:    def delete_job(self, job_id: str) -> bool:
+90:    def pause_job(self, job_id: str) -> ScheduledJob:
+93:    def resume_job(self, job_id: str) -> ScheduledJob:
+106:    def record_run(self, job_id: str, result: JobRunResult) -> ScheduledJob:
+142:    def list_runs(self, job_id: str | None = None) -> list[JobRunResult]:
+
+## backend/app/scheduler/jobs.py
+9:def _job_type_value(job_type: Any) -> str:
+13:def _get_guardian_service():
+28:def _guardian_status() -> Any:
+56:def _status_to_dict(status: Any) -> dict[str, Any]:
+74:def _status_is_blocked(status: Any) -> bool:
+99:def _risk_level(status: Any) -> str:
+126:def default_jobs():
+205:def run_scheduled_job(job):
+
+## backend/app/scheduler/models.py
+9:class JobStatus(str, Enum):
+18:class JobType(str, Enum):
+28:class ScheduleType(str, Enum):
+34:class ScheduledJob(BaseModel):
+53:class JobRunResult(BaseModel):
+65:class CreateJobRequest(BaseModel):
+76:    def _validate_schedule_fields(self) -> "CreateJobRequest":
+
+## backend/app/scheduler/scheduler_service.py
+21:class SchedulerService:
+22:    def __init__(self, store: InMemoryJobStore | None = None) -> None:
+40:    def start(self) -> dict:
+60:    def stop(self) -> dict:
+68:    def get_status(self) -> dict:
+85:    def register_default_jobs(self) -> list[ScheduledJob]:
+104:    def list_jobs(self) -> list[ScheduledJob]:
+107:    def create_job(self, request: CreateJobRequest) -> ScheduledJob:
+122:    def run_job(self, job_id: str, manual: bool = True) -> JobRunResult:
+228:    def pause_job(self, job_id: str) -> ScheduledJob:
+247:    def resume_job(self, job_id: str) -> ScheduledJob:
+268:    def delete_job(self, job_id: str) -> bool:
+283:    def list_runs(self, job_id: str | None = None) -> list[JobRunResult]:
+286:    def _record_skipped_run(
+310:    def _sync_runtime_jobs(self) -> None:
+314:    def _schedule_job_if_needed(self, job: ScheduledJob) -> None:
+372:def get_scheduler_service() -> SchedulerService:
+379:def reset_scheduler_service() -> None:
+
+## backend/app/self_evolution/__init__.py
+
+## backend/app/self_evolution/api_evolution_service.py
+1:def api_evolution_proposals() -> list[dict]:
+
+## backend/app/self_evolution/architecture_drift.py
+1:def detect_architecture_drift() -> dict:
+
+## backend/app/self_evolution/change_proposal_service.py
+4:def change_proposals() -> dict:
+
+## backend/app/self_evolution/evolution_review_queue.py
+4:def review_queue() -> dict:
+
+## backend/app/self_evolution/improvement_scanner.py
+4:def scan_improvements() -> list[ImprovementProposal]:
+
+## backend/app/self_evolution/models.py
+4:class ImprovementProposal(BaseModel):
+
+## backend/app/self_evolution/safety_validator.py
+1:def validate_proposal_safety(_: dict) -> dict:
+
+## backend/app/self_evolution/schema_evolution_service.py
+1:def schema_evolution_proposals() -> list[dict]:
+
+## backend/app/self_evolution/tech_debt_service.py
+1:def tech_debt_overview() -> dict:
+
+## backend/app/self_evolution/test_coverage_advisor.py
+1:def coverage_advice() -> dict:
+
+## backend/app/services/incidents.py
+9:class IncidentService:
+10:    def __init__(self) -> None:
+13:    async def create_incident(self, title: str, severity: str, notes: str = "", actor: str = "system") -> dict:
+20:    def list_incidents(self) -> list[dict]:
+23:    async def acknowledge_incident(self, incident_id: str, actor: str) -> dict:
+31:    async def resolve_incident(self, incident_id: str, actor: str, notes: str = "") -> dict:
+44:def get_incident_service() -> IncidentService:
+51:def reset_incident_service() -> None:
+
+## backend/app/sovereign/__init__.py
+
+## backend/app/sovereign/compliance_dashboard.py
+1:class SovereignComplianceDashboard:
+2:    def __init__(self, region_registry, residency_engine, kms, bundles): self.region_registry=region_registry; self.residency_engine=residency_engine; self.kms=kms; self.bundles=bundles
+3:    def get_status(self): return {'enabled':True,'fail_closed':True}
+4:    def get_region_summary(self): return {'regions':len(self.region_registry.list_regions())}
+5:    def get_residency_violations(self): return []
+6:    def get_kms_summary(self): return self.kms.get_kms_status()
+7:    def get_policy_bundle_summary(self): return {'bundles':len(self.bundles.list_bundles())}
+8:    def generate_report(self): return {'status':self.get_status(),'kms':self.get_kms_summary()}
+
+## backend/app/sovereign/key_management_service.py
+6:class KeyManagementService:
+7:    def __init__(self):
+11:    def register_key_ref(self, record: KMSKeyRecord):
+15:    def validate_key_ref(self, key_ref: str):
+18:    def rotate_key_metadata(self, key_id: str):
+21:    def get_kms_status(self):
+24:    def test_kms_connection(self):
+28:    def hash_ref(key_ref: str):
+
+## backend/app/sovereign/kms_adapters.py
+1:class MockKMSAdapter:
+2:    def test(self):
+
+## backend/app/sovereign/models.py
+7:def now() -> datetime:
+11:class DataRegion(str, Enum):
+19:class ResidencyEnforcementMode(str, Enum):
+25:class SovereignProfileStatus(str, Enum):
+32:class KMSProvider(str, Enum):
+41:class RegionRecord(BaseModel):
+53:class DataResidencyRule(BaseModel):
+67:class ResidencyDecision(BaseModel):
+78:class SovereignDeploymentProfile(BaseModel):
+96:class KMSKeyRecord(BaseModel):
+111:class PolicyBundle(BaseModel):
+
+## backend/app/sovereign/policy_bundle_service.py
+1:class PolicyBundleService:
+2:    def __init__(self):
+5:    def create_bundle(self, b):
+9:    def list_bundles(self):
+12:    def get_bundle(self, bid):
+15:    def export_bundle(self, bid):
+
+## backend/app/sovereign/region_registry.py
+2:class RegionRegistry:
+3:    def __init__(self):
+5:    def list_regions(self): return list(self._regions.values())
+6:    def get_region(self, region_code:str): return self._regions.get(region_code)
+7:    def register_region(self, region:RegionRecord): self._regions[region.code.value]=region; return region
+8:    def update_region_status(self, region_code:str, allowed:bool): r=self._regions[region_code]; r.allowed=allowed; return r
+9:    def is_region_allowed(self, region_code:str): r=self.get_region(region_code); return bool(r and r.allowed)
+
+## backend/app/sovereign/residency_engine.py
+9:class ResidencyEngine:
+10:    def __init__(self):
+14:    def list_rules(self):
+17:    def create_rule(self, rule: DataResidencyRule):
+21:    def update_rule(self, rule_id: str, **fields):
+29:    def evaluate_transfer(
+49:    def enforce_residency(self, action, resource_type, target_region, tenant_context):
+57:    def explain_decision(self):
+
+## backend/app/sovereign/sovereign_profiles.py
+4:class SovereignProfileService:
+5:    def __init__(self):
+8:    def create_profile(self, p):
+12:    def list_profiles(self):
+15:    def activate_profile(self, pid):
+20:    def disable_profile(self, pid):
+26:    def get_active_profile(self):
+32:    def validate_profile(self, p):
+
+## backend/app/tenancy/__init__.py
+
+## backend/app/tenancy/dependencies.py
+9:def get_tenant_context(
+29:def require_workspace_access(
+
+## backend/app/tenancy/models.py
+14:def now_utc() -> str:
+18:def _new_id(prefix: str) -> str:
+22:def normalize_slug(value: str) -> str:
+27:class Organization(BaseModel):
+38:    def validate_slug(cls, value: str) -> str:
+45:class Workspace(BaseModel):
+57:    def validate_slug(cls, value: str) -> str:
+64:class OrganizationMember(BaseModel):
+74:class WorkspaceMember(BaseModel):
+84:class OrganizationCreateRequest(BaseModel):
+90:    def validate_slug(cls, value: str | None) -> str | None:
+96:class OrganizationUpdateRequest(BaseModel):
+101:class WorkspaceCreateRequest(BaseModel):
+108:    def validate_slug(cls, value: str | None) -> str | None:
+114:class WorkspaceUpdateRequest(BaseModel):
+120:class MemberCreateRequest(BaseModel):
+
+## backend/app/tenancy/repositories.py
+14:class TenancyRepository:
+15:    def __init__(self) -> None:
+24:    def reset(self) -> None:
+33:    def bootstrap_defaults(
+81:    def list_organizations(self) -> list[Organization]:
+85:    def get_organization(self, organization_id: str) -> Organization | None:
+89:    def create_organization(self, organization: Organization) -> Organization:
+95:    def update_organization(
+116:    def list_workspaces(self, organization_id: str) -> list[Workspace]:
+124:    def get_workspace(self, workspace_id: str) -> Workspace | None:
+128:    def create_workspace(self, workspace: Workspace) -> Workspace:
+134:    def update_workspace(
+158:    def add_organization_member(self, member: OrganizationMember) -> OrganizationMember:
+173:    def add_workspace_member(self, member: WorkspaceMember) -> WorkspaceMember:
+188:    def list_organization_members(self, organization_id: str) -> list[OrganizationMember]:
+192:    def list_workspace_members(self, workspace_id: str) -> list[WorkspaceMember]:
+196:    def user_organization_ids(self, user_id: str) -> set[str]:
+204:    def user_workspace_ids(self, user_id: str) -> set[str]:
+216:def get_tenancy_repository() -> TenancyRepository:
+223:def reset_tenancy_repository() -> None:
+
+## backend/app/tenancy/tenant_context.py
+5:class TenantContext:
+
+## backend/app/tenancy/tenant_service.py
+21:class TenantService:
+22:    def __init__(self) -> None:
+25:    def ensure_bootstrap(self, user_id: str = "dev-user") -> tuple[Organization, Workspace]:
+33:    def resolve_context(
+73:    def list_accessible_organizations(self, user: AuthSession) -> list[Organization]:
+84:    def get_organization(self, organization_id: str) -> Organization | None:
+87:    def create_organization(
+109:    def update_organization(
+120:    def list_workspaces(self, organization_id: str) -> list[Workspace]:
+123:    def create_workspace(
+149:    def update_workspace(
+161:    def get_workspace(self, workspace_id: str) -> Workspace | None:
+164:    def add_organization_member(
+181:    def add_workspace_member(
+198:    def is_organization_admin(self, organization_id: str, user: AuthSession) -> bool:
+210:    def can_access_workspace(self, workspace_id: str, user: AuthSession) -> bool:
+
+## backend/app/tests/conftest.py
+23:def reset_runtime_state() -> Generator[None, None, None]:
+
+## backend/app/tests/test_admin_api.py
+13:def _session_for_test(path: str) -> Session:
+23:def _assert_envelope(payload: dict) -> None:
+27:def test_admin_users_crud_does_not_expose_password_hash(tmp_path):
+74:def test_admin_cannot_deactivate_current_authenticated_admin(tmp_path):
+
+## backend/app/tests/test_alert_rules.py
+1:def test_placeholder():
+
+## backend/app/tests/test_audit_service.py
+11:def _session_for_test(path: str) -> Session:
+21:def test_audit_service_logs_and_lists_entries(tmp_path):
+
+## backend/app/tests/test_auth_api.py
+19:def _session_for_test(path: str) -> Session:
+29:def _assert_envelope(payload: dict) -> None:
+33:def test_auth_api_login_refresh_logout_and_me(tmp_path):
+74:def test_auth_api_bootstrap_admin(tmp_path):
+
+## backend/app/tests/test_auth_service.py
+12:def _session_for_test(path: str) -> Session:
+22:def test_auth_service_login_refresh_and_logout(tmp_path):
+48:def test_auth_service_bootstrap_admin_only_when_empty(tmp_path):
+
+## backend/app/tests/test_backtest_engine.py
+7:def test_run_mock_backtest_generates_result() -> None:
+14:def test_backtest_generates_trades_and_final_balance() -> None:
+24:def test_backtest_has_no_overlapping_trades() -> None:
+33:def test_invalid_strategy_returns_clean_error() -> None:
+
+## backend/app/tests/test_backtest_metrics.py
+7:def _trade(
+35:def test_zero_trades_safe() -> None:
+44:def test_win_rate_and_profit_factor_calculation() -> None:
+71:def test_drawdown_and_consecutive_losses_calculation() -> None:
+107:def test_monthly_return_table() -> None:
+
+## backend/app/tests/test_backtesting_api.py
+5:def _assert_envelope(payload: dict) -> None:
+9:def test_get_backtesting_status() -> None:
+15:def test_get_backtesting_strategies() -> None:
+22:def test_post_backtesting_run_and_results() -> None:
+39:def test_post_backtesting_optimize_and_optimizations() -> None:
+56:def test_promotion_check_and_report_endpoints() -> None:
+
+## backend/app/tests/test_backtesting_models.py
+14:def test_candle_validation_accepts_valid_ohlc() -> None:
+27:def test_candle_validation_rejects_invalid_ohlc() -> None:
+39:def test_strategy_signal_direction_validation() -> None:
+56:def test_backtest_request_defaults() -> None:
+65:def test_optimization_request_max_combinations_validation() -> None:
+
+## backend/app/tests/test_backtesting_smoke.py
+5:def test_backtesting_smoke() -> None:
+
+## backend/app/tests/test_billing_api.py
+11:class _MockRequest:
+12:    def __init__(self, body: bytes, headers: dict[str, str] | None = None) -> None:
+16:    async def body(self) -> bytes:
+20:def _user(username: str = "billing-admin") -> AuthSession:
+24:def test_plans_endpoint_returns_list() -> None:
+33:def test_plans_endpoint_no_auth_required() -> None:
+37:def test_status_endpoint_authenticated() -> None:
+44:def test_subscription_endpoint() -> None:
+50:def test_checkout_endpoint_valid_plan() -> None:
+61:def test_checkout_endpoint_invalid_plan() -> None:
+71:def test_portal_endpoint_returns_url() -> None:
+78:def test_cancel_no_subscription_returns_envelope() -> None:
+84:def test_apply_mock_plan_endpoint() -> None:
+94:def test_apply_mock_plan_invalid_tier() -> None:
+103:def test_usage_endpoint_returns_data() -> None:
+109:def test_metric_usage_endpoint() -> None:
+118:def test_invoices_endpoint_returns_list() -> None:
+126:def test_webhook_endpoint_mock_returns_ok() -> None:
+139:def test_webhook_endpoint_no_auth_required() -> None:
+
+## backend/app/tests/test_billing_models.py
+4:def test_plan_tier_enum():
+10:def test_subscription_status_enum():
+15:def test_billing_plan_defaults():
+23:def test_subscription_defaults():
+30:def test_usage_record_defaults():
+35:def test_invoice_defaults():
+41:def test_usage_summary_model():
+54:def test_entitlement_decision_model():
+
+## backend/app/tests/test_collaboration_ws_auth.py
+14:def _fake_websocket(
+28:def test_extract_token_from_query_string() -> None:
+33:def test_extract_token_from_subprotocol_header() -> None:
+38:def test_authenticate_websocket_requires_token_when_auth_enabled(
+47:def test_authenticate_websocket_accepts_valid_access_token(
+60:def test_authenticate_websocket_rejects_refresh_token(
+70:def test_authenticate_websocket_allows_dev_mode_when_auth_disabled(
+
+## backend/app/tests/test_content_api.py
+14:def _assert_envelope(payload: dict) -> None:
+18:def test_content_api_full_flow() -> None:
+75:def test_content_api_pipeline_run_and_runs_list() -> None:
+90:def test_content_api_not_found_paths() -> None:
+
+## backend/app/tests/test_content_models.py
+16:def test_content_status_enum_contains_phase06_values() -> None:
+24:def test_content_platform_enum_contains_required_values() -> None:
+29:def test_content_item_defaults() -> None:
+45:def test_create_content_request_validation() -> None:
+52:def test_publish_request_confirmation_defaults_false() -> None:
+57:def test_datetime_fields_are_timezone_aware() -> None:
+
+## backend/app/tests/test_content_pipeline.py
+13:def test_full_pipeline_runs_editor_and_graphic_without_auto_publish() -> None:
+33:def test_full_pipeline_records_steps() -> None:
+43:def test_pipeline_stops_on_policy_failure() -> None:
+55:def test_pipeline_schedule_approve_publish_wrappers() -> None:
+
+## backend/app/tests/test_content_policy.py
+4:def test_policy_rejects_empty_content() -> None:
+10:def test_policy_rejects_token_like_secret_pattern() -> None:
+16:def test_policy_rejects_guaranteed_profit_language() -> None:
+22:def test_policy_rejects_spam_hashtag_pattern() -> None:
+29:def test_policy_warns_trading_content_and_requires_disclaimer() -> None:
+36:def test_policy_accepts_safe_educational_trading_content() -> None:
+
+## backend/app/tests/test_content_store.py
+9:def test_store_create_get_list_update_delete_item() -> None:
+26:def test_store_update_missing_item_raises_domain_error() -> None:
+32:def test_store_records_pipeline_runs() -> None:
+51:def test_store_records_content_logs() -> None:
+
+## backend/app/tests/test_database_models.py
+21:def _build_engine(db_file: str):
+29:def test_database_models_create_expected_tables(tmp_path):
+52:def test_database_repositories_roundtrip(tmp_path):
+
+## backend/app/tests/test_dataset_provider.py
+12:def test_mock_dataset_returns_valid_candles() -> None:
+19:def test_mock_dataset_is_deterministic() -> None:
+27:def test_csv_path_traversal_is_rejected() -> None:
+33:def test_missing_csv_returns_clean_error() -> None:
+39:def test_csv_dataset_loads_known_sample() -> None:
+
+## backend/app/tests/test_developer_models.py
+4:def test_api_key_status_enum():
+8:def test_scope_enum():
+
+## backend/app/tests/test_editor_agent.py
+7:def test_editor_agent_is_registered() -> None:
+15:def test_editor_agent_can_create_draft() -> None:
+23:def test_editor_agent_emits_events() -> None:
+
+## backend/app/tests/test_editor_service.py
+6:def test_editor_create_draft_runs_policy_check() -> None:
+16:def test_editor_edit_content_updates_text_and_status() -> None:
+35:def test_editor_adds_disclaimer_for_trading_content() -> None:
+47:def test_editor_generate_variants() -> None:
+57:def test_editor_policy_failure_surfaces() -> None:
+
+## backend/app/tests/test_graphic_agent.py
+8:def test_graphic_agent_is_registered() -> None:
+16:def test_graphic_agent_can_generate_graphic_prompt() -> None:
+25:def test_graphic_agent_emits_events() -> None:
+
+## backend/app/tests/test_graphic_service.py
+9:def _seed_content(store: InMemoryContentStore) -> str:
+15:def test_graphic_prompt_created() -> None:
+25:def test_mock_image_generated() -> None:
+35:def test_missing_content_handled_cleanly() -> None:
+42:def test_dry_run_adapter_result_has_mock_provider() -> None:
+
+## backend/app/tests/test_joe_agent.py
+7:def test_joe_agent_is_registered() -> None:
+14:def test_joe_lists_strategies() -> None:
+23:def test_joe_can_run_backtest() -> None:
+30:def test_joe_emits_events() -> None:
+
+## backend/app/tests/test_marketplace_api.py
+14:def marketplace_guards():
+23:        class MockDecision:
+33:def _admin() -> AuthSession:
+37:def _tenant() -> TenantContext:
+41:def test_list_plugins_api() -> None:
+48:def test_get_plugin_api() -> None:
+56:def test_install_and_lifecycle_api() -> None:
+
+## backend/app/tests/test_marketplace_models.py
+12:def test_plugin_manifest_model():
+31:def test_plugin_installation_model():
+54:def test_plugin_action_result_schema():
+
+## backend/app/tests/test_metrics_api.py
+10:def test_metrics_api_returns_prometheus_lines():
+22:def test_metrics_auth_guard_blocks_when_required(monkeypatch):
+
+## backend/app/tests/test_mock_billing_adapter.py
+10:def adapter() -> MockBillingAdapter:
+14:class _Org:
+15:    def __init__(self, org_id: str, name: str = "Test Org") -> None:
+25:def test_create_customer_returns_string(adapter: MockBillingAdapter) -> None:
+31:def test_create_customer_is_deterministic(adapter: MockBillingAdapter) -> None:
+36:def test_create_customer_differs_per_org(adapter: MockBillingAdapter) -> None:
+45:def test_checkout_url_starts_with_base(adapter: MockBillingAdapter) -> None:
+50:def test_checkout_url_is_deterministic(adapter: MockBillingAdapter) -> None:
+56:def test_checkout_url_differs_per_plan(adapter: MockBillingAdapter) -> None:
+67:def test_portal_url_starts_with_base(adapter: MockBillingAdapter) -> None:
+72:def test_portal_url_is_deterministic(adapter: MockBillingAdapter) -> None:
+83:def test_get_subscription_returns_none(adapter: MockBillingAdapter) -> None:
+94:def test_cancel_subscription_returns_true(adapter: MockBillingAdapter) -> None:
+103:def test_webhook_returns_ok(adapter: MockBillingAdapter) -> None:
+109:def test_webhook_no_external_calls(adapter: MockBillingAdapter, monkeypatch) -> None:
+115:    def fail_connect(*args, **kwargs):  # type: ignore
+
+## backend/app/tests/test_notifications.py
+1:def test_placeholder():
+
+## backend/app/tests/test_ob_aggressive_strategy.py
+5:def test_ob_aggressive_returns_valid_signals() -> None:
+20:def test_ob_aggressive_parameters_validate() -> None:
+27:def test_ob_aggressive_confidence_range_and_levels() -> None:
+
+## backend/app/tests/test_ob_conservative_strategy.py
+6:def test_ob_conservative_returns_valid_signals() -> None:
+20:def test_ob_conservative_lower_frequency_than_aggressive() -> None:
+39:def test_ob_conservative_parameters_validate() -> None:
+
+## backend/app/tests/test_optimizer.py
+6:def test_grid_expansion() -> None:
+13:def test_max_combinations_cap() -> None:
+26:def test_optimization_ranks_results() -> None:
+40:def test_unsupported_sort_metric_defaults_safely() -> None:
+
+## backend/app/tests/test_phase10_tenant_isolation.py
+8:def setup_teardown():
+18:        class MockDecision:
+24:def test_tenant_isolation():
+
+## backend/app/tests/test_phase7_dashboard_api.py
+7:def _assert_envelope(payload: dict) -> None:
+11:def test_agents_api_includes_all_stable_agents() -> None:
+35:def test_logs_api_returns_recent_event_logs() -> None:
+53:def test_cors_default_origins_support_frontend_dev_server() -> None:
+
+## backend/app/tests/test_phase9_api.py
+1:def test_placeholder():
+
+## backend/app/tests/test_plan_catalog.py
+3:def test_plan_catalog_has_all_tiers():
+9:def test_free_plan_limits():
+18:def test_starter_plan_limits():
+24:def test_enterprise_plan_custom_quotas():
+31:def test_list_public_plans():
+
+## backend/app/tests/test_plugin_registry.py
+4:def test_list_plugins():
+9:def test_get_plugin():
+
+## backend/app/tests/test_plugin_safety.py
+3:def test_safety_check_plugin_action_allowed():
+11:def test_safety_check_plugin_action_blocked():
+
+## backend/app/tests/test_plugin_service.py
+15:def setup_teardown():
+25:        class MockDecision:
+31:def test_plugin_lifecycle():
+
+## backend/app/tests/test_production_safety.py
+17:def _set_prod_env(monkeypatch, **overrides):
+30:def test_production_safety_checker_detects_blockers(monkeypatch):
+59:def test_production_requires_auth_enabled(monkeypatch):
+71:def test_production_requires_metrics_auth(monkeypatch):
+83:def test_production_rejects_unsafe_live_trading_flags(monkeypatch):
+101:def test_production_rejects_unsafe_mt5_without_dry_run(monkeypatch):
+117:def test_production_allows_mt5_with_dry_run(monkeypatch):
+130:def test_production_rejects_unsafe_social_auto_post(monkeypatch):
+148:def test_support_bundle_excludes_secrets_by_default(monkeypatch):
+163:def test_deployment_pack_excludes_secrets_by_default(monkeypatch):
+178:def test_production_passes_with_safe_config(monkeypatch):
+205:def test_non_production_does_not_block(monkeypatch):
+
+## backend/app/tests/test_rbac.py
+4:def test_admin_has_all_permissions() -> None:
+9:def test_operator_permissions() -> None:
+15:def test_analyst_permissions() -> None:
+22:def test_viewer_permissions() -> None:
+
+## backend/app/tests/test_realtime_broadcast.py
+10:class FakeWebSocket:
+11:    def __init__(self) -> None:
+14:    async def accept(self) -> None:
+17:    async def send_json(self, payload: dict) -> None:
+20:    async def close(self, code: int = 1000) -> None:
+24:def test_realtime_broadcaster_buffers_and_delivers_by_channel() -> None:
+25:    async def scenario() -> None:
+46:def test_event_bus_emit_invokes_realtime_publish_hook() -> None:
+
+## backend/app/tests/test_realtime_events.py
+10:def test_normalize_event_type_maps_phase75_aliases() -> None:
+16:def test_channels_for_event_routes_by_domain() -> None:
+22:def test_envelope_from_core_event_preserves_payload_and_message() -> None:
+
+## backend/app/tests/test_realtime_heartbeat.py
+8:class FakeWebSocket:
+9:    def __init__(self) -> None:
+13:    async def accept(self) -> None:
+16:    async def send_json(self, payload: dict) -> None:
+19:    async def close(self, code: int = 1000) -> None:
+23:def test_heartbeat_sends_ping_and_prunes_stale_connections() -> None:
+24:    async def scenario() -> None:
+
+## backend/app/tests/test_realtime_manager.py
+6:class FakeWebSocket:
+7:    def __init__(self, *, fail_on_send: bool = False) -> None:
+14:    async def accept(self) -> None:
+17:    async def send_json(self, payload: dict) -> None:
+22:    async def close(self, code: int = 1000) -> None:
+27:def test_manager_tracks_connections_and_broadcasts() -> None:
+28:    async def scenario() -> None:
+47:def test_manager_cleans_up_dead_connections_on_broadcast() -> None:
+48:    async def scenario() -> None:
+
+## backend/app/tests/test_scheduler_backtest_integration.py
+6:def _find_job_id_by_name(name: str) -> str:
+14:def test_scheduler_backtest_job_calls_backtest_service() -> None:
+29:def test_scheduler_backtest_job_returns_result_summary() -> None:
+39:def test_scheduler_does_not_promote_strategy_automatically() -> None:
+
+## backend/app/tests/test_scheduler_content_integration.py
+6:def _find_job_id_by_name(name: str) -> str:
+14:def test_scheduler_content_job_calls_content_pipeline() -> None:
+29:def test_scheduler_content_job_returns_pipeline_summary() -> None:
+40:def test_scheduler_content_job_does_not_approve_or_publish_automatically() -> None:
+
+## backend/app/tests/test_social_agent.py
+18:def test_social_agent_is_registered() -> None:
+26:def test_social_agent_can_schedule_content() -> None:
+42:def test_social_agent_blocks_publish_without_approval() -> None:
+51:def test_social_agent_emits_events() -> None:
+
+## backend/app/tests/test_social_service.py
+18:def _seed_content(service: SocialService, *, topic: str = "zDash update"):
+26:def test_schedule_content() -> None:
+37:def test_approval_requires_policy_passed_true() -> None:
+46:def test_publish_blocked_before_approval() -> None:
+53:def test_dry_run_publish_simulated_after_approval() -> None:
+65:def test_real_publish_blocked_without_confirmation(monkeypatch: pytest.MonkeyPatch) -> None:
+78:def test_rejected_content_cannot_be_posted() -> None:
+
+## backend/app/tests/test_strategy_base.py
+7:class DummyStrategy(BaseStrategy):
+11:    def generate_signal(self, candles, index, parameters):
+21:def _candle() -> Candle:
+32:def test_strategy_interface_behavior() -> None:
+39:def test_parameter_validation_merges_defaults() -> None:
+45:def test_hold_signal_is_allowed() -> None:
+
+## backend/app/tests/test_strategy_promotion.py
+8:def _result_with_metrics(metrics: BacktestMetrics) -> BacktestResult:
+28:def _metrics(
+55:def test_promotion_disabled_blocks_approval(monkeypatch) -> None:
+63:def test_insufficient_trades_blocks_approval(monkeypatch) -> None:
+73:def test_high_drawdown_blocks_approval(monkeypatch) -> None:
+83:def test_valid_metrics_approve_only_when_enabled(monkeypatch) -> None:
+
+## backend/app/tests/test_subscription_service.py
+20:def test_list_plans_returns_list() -> None:
+26:def test_list_plans_includes_all_tiers() -> None:
+34:def test_list_plans_fields() -> None:
+47:def test_start_checkout_mock_returns_url() -> None:
+54:def test_start_checkout_invalid_plan_returns_error() -> None:
+65:def test_open_billing_portal_mock_returns_url() -> None:
+77:def test_get_status_no_subscription_returns_free() -> None:
+89:def test_apply_mock_plan_starter() -> None:
+97:def test_apply_mock_plan_pro() -> None:
+104:def test_apply_mock_plan_invalid_tier() -> None:
+110:def test_apply_mock_plan_updates_status() -> None:
+122:def test_cancel_subscription_no_active_returns_error() -> None:
+129:def test_cancel_subscription_after_apply() -> None:
+
+## backend/app/tests/test_tenant_context.py
+7:def test_context_defaults():
+
+## backend/app/tests/test_tenant_isolation.py
+1:def test_placeholder():
+
+## backend/app/tests/test_tenant_models.py
+1:def test_placeholder():
+
+## backend/app/tests/test_tenant_rbac.py
+1:def test_placeholder():
+
+## backend/app/tests/test_trend_follow_strategy.py
+9:def _build_cross_dataset() -> list[Candle]:
+34:def test_trend_follow_moving_average_windows_validate() -> None:
+40:def test_trend_follow_returns_hold_until_enough_candles() -> None:
+47:def test_trend_follow_cross_signals_are_valid() -> None:
+
+## backend/app/tests/test_worker_queue.py
+5:def test_queue_lifecycle():
+
+## backend/app/tests/test_worker_tasks.py
+1:def test_placeholder():
+
+## backend/app/tests/test_workspaces_federation_api.py
+14:def reset_peers() -> None:
+18:def _dependency_calls(path: str, method: str) -> list[object]:
+26:def _has_permission_dependency(calls: list[object], permission: Permission) -> bool:
+34:def _permission_dependency(path: str, method: str, permission: Permission):
+42:def test_federation_status_is_public() -> None:
+46:def test_federation_peers_and_register_require_tenancy_permissions() -> None:
+53:def test_register_permission_dependency_denies_viewer_role() -> None:
+60:def test_register_uses_typed_payload_and_persists_peer() -> None:
+72:def test_register_name_rejects_length_over_limit() -> None:
+
+## backend/app/trading/__init__.py
+
+## backend/app/trading/ai_analysis.py
+10:class TradingAIAnalysis:
+11:    def __init__(self, adapter: AIAdapter | None = None) -> None:
+15:    def _build_adapter(self) -> AIAdapter:
+21:    def _disclaimer() -> str:
+24:    def summarize_signal(self, signal: TradingSignal, context: dict | None = None) -> str:
+36:    def analyze_scanner_context(self, candles: list[Candle], signal: TradingSignal) -> str:
+
+## backend/app/trading/execution_engine.py
+16:class ExecutionEngine:
+17:    def __init__(
+27:    def _clamp_confidence(value: float) -> float:
+30:    def _normalize_signal(self, raw_signal: object) -> TradingSignal:
+96:    def _as_execution_request(
+116:    def _resolve_snapshot(self, provided_snapshot: object | None) -> AccountSnapshot:
+155:    def _blocked_by_risk_result(
+167:    def execute(self, request: object) -> ExecutionResult:
+
+## backend/app/trading/funnel_filter.py
+10:class FunnelFilter:
+11:    def __init__(
+23:    def calculate_sma(values: list[float], period: int) -> list[float]:
+40:    def evaluate(self, candles: list[Candle]) -> dict:
+73:    def generate_signal(
+
+## backend/app/trading/market_data.py
+9:def generate_mock_xauusd_m5_candles(limit: int = 300) -> list[Candle]:
+
+## backend/app/trading/models.py
+12:class Candle(BaseModel):
+22:    def _positive_price(cls, value: float) -> float:
+28:    def _bounds_are_valid(self) -> "Candle":
+36:class TradingSignal(BaseModel):
+52:    def _confidence_range(cls, value: float) -> float:
+58:class SignalValidationResult(BaseModel):
+76:class ExecutionRequest(BaseModel):
+82:class ExecutionResult(BaseModel):
+93:class ScannerResult(BaseModel):
+
+## backend/app/trading/mt5_adapter.py
+13:class MT5Adapter:
+14:    def __init__(self) -> None:
+19:    def _try_import_mt5() -> Any | None:
+27:    def _credentials_present(self) -> bool:
+34:    def is_available(self) -> bool:
+41:    def connect(self) -> dict[str, Any]:
+92:    def get_candles(
+102:    def get_account_snapshot(self) -> dict[str, Any]:
+112:    def send_order(self, signal: TradingSignal) -> ExecutionResult:
+141:    def status(self) -> dict[str, Any]:
+150:    def diagnostics(self) -> dict[str, Any]:
+162:    def symbol_available(symbol: str) -> bool:
+
+## backend/app/trading/risk_models.py
+14:class Candle(TradingCandle):
+18:class Signal(BaseModel):
+35:    def to_trading_signal(self) -> TradingSignal:
+75:class ExecutionRequest(BaseModel):
+82:    def to_phase2_request(self) -> TradingExecutionRequest:
+
+## backend/app/trading/scanner_xau.py
+8:class XAUScanner:
+16:    def __init__(self, mt5=None) -> None:
+20:    def _to_legacy(signal: TradingSignal) -> LegacySignal:
+36:    def scan(self) -> LegacySignal:
+
+## backend/app/trading/signal_validation.py
+9:class SignalValidationService:
+10:    def __init__(self) -> None:
+13:    def validate(self, signal: TradingSignal) -> SignalValidationResult:
+
+## backend/app/trading/signal_validator.py
+8:class SignalValidator:
+11:    def __init__(self) -> None:
+15:    def _normalize(signal: LegacySignal | TradingSignal) -> TradingSignal:
+38:    def validate(self, signal: LegacySignal | TradingSignal) -> dict:
+
+## backend/app/trading/trading_service.py
+17:class TradingService:
+18:    def __init__(
+34:    def get_status(self) -> dict:
+44:    def scan_xau(self, symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult:
+47:    def validate_signal(self, signal: TradingSignal) -> SignalValidationResult:
+50:    def dry_run_execute(self, signal: TradingSignal) -> ExecutionResult:
+
+## backend/app/trading/xau_scanner.py
+12:class XAUScanner:
+13:    def __init__(
+26:    def scan(self, symbol: str = "XAUUSD", timeframe: str = "M5") -> ScannerResult:
+49:    def scan_with_candles(
+
+## backend/app/workers/__init__.py
+
+## backend/app/workers/models.py
+26:def now_utc() -> str:
+30:class WorkerTask(BaseModel):
+50:    def validate_priority(cls, value: int) -> int:
+55:    def validate_retries(cls, value: int) -> int:
+59:class WorkerStatus(BaseModel):
+69:class WorkerTaskCreateRequest(BaseModel):
+
+## backend/app/workers/queue.py
+15:class WorkerQueue:
+16:    def __init__(self) -> None:
+24:    def enqueue(
+44:    def dequeue(self, worker_id: str) -> WorkerTask | None:
+59:    def complete(self, task_id: str, result: dict) -> WorkerTask:
+71:    def fail(self, task_id: str, error: str) -> WorkerTask:
+82:    def retry(self, task_id: str) -> WorkerTask:
+98:    def cancel(self, task_id: str) -> WorkerTask:
+111:    def get_task(self, task_id: str) -> WorkerTask | None:
+115:    def list_tasks(
+128:    def status_snapshot(self) -> dict:
+146:    def reset(self) -> None:
+152:    def _touch_worker(
+167:    def _increment_worker_counts(
+
+## backend/app/workers/runner.py
+
+## backend/app/workers/tasks.py
+12:def run_task(task) -> dict:
+
+## backend/app/workers/worker_service.py
+8:def run_once(worker_id: str = "worker-local"):
+
+## backend/run_test.py
+34:    class MockDecision:
+
+## backend/tests/conftest.py
+16:def reset_risk_runtime_state() -> None:
+
+## backend/tests/realtime/test_incidents_api.py
+17:def reset_incident_service_fixture() -> None:
+23:def test_incident_rbac_flow() -> None:
+
+## backend/tests/test_agent_runtime.py
+6:def assert_envelope(payload: dict) -> None:
+10:def test_agents_are_registered() -> None:
+20:def test_event_logs_created() -> None:
+
+## backend/tests/test_ai_mock_fallback.py
+6:def test_missing_claude_key_falls_back_to_mock(monkeypatch) -> None:
+19:def test_mock_adapter_is_deterministic() -> None:
+
+## backend/tests/test_ai_trader_phase34.py
+11:def _candles(direction: str = "up", count: int = 34) -> list[Candle]:
+34:def _payload(
+48:def _snapshot() -> AccountSnapshot:
+60:def test_status_endpoint_reports_simulation_only() -> None:
+70:def test_strategies_endpoint_returns_default_registry() -> None:
+82:def test_insufficient_candles_returns_hold() -> None:
+92:def test_trend_up_generates_buy_or_hold() -> None:
+99:def test_trend_down_generates_sell_or_hold() -> None:
+106:def test_compare_returns_ranked_decisions() -> None:
+117:def test_paper_trade_always_returns_dry_run_and_never_live_execution() -> None:
+131:def test_malformed_candles_do_not_crash_service() -> None:
+141:def test_every_signal_metadata_has_simulation_only() -> None:
+
+## backend/tests/test_ai_trader_service.py
+10:def _candles(direction: str = "up", count: int = 30) -> list[Candle]:
+33:def _snapshot() -> AccountSnapshot:
+45:def test_upward_trend_can_generate_buy_or_hold_but_is_simulation_only() -> None:
+55:def test_downward_trend_can_generate_sell_or_hold() -> None:
+63:def test_insufficient_candles_returns_hold() -> None:
+72:def test_paper_trade_result_is_always_dry_run() -> None:
+
+## backend/tests/test_ceo_janie_flow.py
+5:def assert_envelope(payload: dict) -> None:
+9:def test_ceo_can_send_message_to_janie() -> None:
+
+## backend/tests/test_collaboration_api.py
+5:def test_collab_presence_endpoint() -> None:
+
+## backend/tests/test_drawdown_guard.py
+5:def _snapshot(**kwargs) -> AccountSnapshot:
+19:def test_total_drawdown_calculation() -> None:
+25:def test_daily_drawdown_calculation() -> None:
+33:def test_zero_peak_equity_safety() -> None:
+41:def test_no_negative_drawdown() -> None:
+50:def test_warning_threshold() -> None:
+57:def test_danger_threshold() -> None:
+64:def test_emergency_threshold() -> None:
+
+## backend/tests/test_dry_run_execution.py
+7:def _signal() -> TradingSignal:
+21:def test_dry_run_execution_simulates() -> None:
+36:def test_live_execution_blocked_by_config(monkeypatch) -> None:
+56:def test_invalid_signal_blocked() -> None:
+
+## backend/tests/test_execution_blocked_by_risk.py
+10:def _safe_snapshot() -> AccountSnapshot:
+22:def _breached_snapshot() -> AccountSnapshot:
+34:def _signal() -> Signal:
+44:def test_execution_blocked_when_halt_active() -> None:
+65:def test_execution_blocked_when_halt_active_without_explicit_snapshot() -> None:
+83:def test_execution_blocked_when_drawdown_breached() -> None:
+96:def test_dry_run_execution_allowed_when_risk_normal() -> None:
+110:def test_live_execution_blocked_unless_live_trading_ack(monkeypatch) -> None:
+
+## backend/tests/test_friday_agent.py
+7:def _assert_envelope(payload: dict) -> None:
+11:def test_friday_agent_is_registered() -> None:
+19:def test_friday_lists_jobs() -> None:
+29:def test_friday_can_run_manual_job() -> None:
+47:def test_friday_emits_events() -> None:
+
+## backend/tests/test_funnel_filter.py
+7:def _build_candles(start: float, step: float, count: int = 60) -> list[Candle]:
+25:def test_sma_calculation() -> None:
+33:def test_generate_signal_buy_sell_hold() -> None:
+55:def test_confidence_in_range() -> None:
+
+## backend/tests/test_guardian_service.py
+5:def _snapshot(equity: float = 10000.0) -> AccountSnapshot:
+17:def test_normal_risk_approves() -> None:
+24:def test_active_halt_blocks() -> None:
+34:def test_emergency_drawdown_blocks() -> None:
+41:def test_manual_halt_blocks() -> None:
+48:def test_resume_allows_again_if_risk_normal() -> None:
+
+## backend/tests/test_halt_flag.py
+6:def test_initial_state_not_halted() -> None:
+12:def test_halt_activates() -> None:
+20:def test_resume_clears_halt() -> None:
+28:def test_reason_required() -> None:
+34:def test_source_required() -> None:
+
+## backend/tests/test_health.py
+4:def assert_envelope(payload: dict) -> None:
+8:def test_health_endpoint_works() -> None:
+
+## backend/tests/test_iot_service.py
+7:def test_status_returns_dry_run_result() -> None:
+14:def test_power_cycle_simulates_in_dry_run() -> None:
+21:def test_real_action_blocked_without_confirmation(monkeypatch) -> None:
+38:def test_disabled_iot_blocks_action(monkeypatch) -> None:
+53:def test_iot_events_are_emitted() -> None:
+
+## backend/tests/test_kill_switch.py
+6:def _drawdown(total: float, daily: float, risk_level: str = "danger") -> DrawdownResult:
+20:def test_does_not_trigger_below_threshold() -> None:
+25:def test_triggers_at_emergency_threshold() -> None:
+33:def test_activates_halt_state_and_reason_includes_drawdown() -> None:
+
+## backend/tests/test_mt5_adapter_mock.py
+5:def test_mt5_mock_mode_when_disabled(monkeypatch) -> None:
+18:def test_missing_mt5_package_does_not_crash(monkeypatch) -> None:
+35:def test_mock_candles_are_returned() -> None:
+
+## backend/tests/test_phase10.py
+17:def clean_db():
+22:def test_billing_models():
+26:def test_plan_catalog():
+32:def test_entitlements():
+38:def test_usage_meter():
+45:def test_quota_service():
+52:def test_subscription_service():
+55:def test_mock_billing_adapter():
+56:    class MockOrg:
+75:def test_marketplace_models():
+78:def test_plugin_registry():
+83:def test_plugin_service():
+90:def test_plugin_safety():
+94:def test_enterprise_license():
+100:def test_branding_service():
+107:def test_export_service():
+113:def test_phase10_tenant_isolation():
+
+## backend/tests/test_predictive_sre_models.py
+10:def test_anomaly_model_validation():
+
+## backend/tests/test_presence.py
+4:def test_presence_lifecycle():
+
+## backend/tests/test_realtime_bus.py
+4:def test_realtime_event_model_defaults() -> None:
+
+## backend/tests/test_risk_api.py
+6:def assert_envelope(payload: dict) -> None:
+10:def _snapshot_payload() -> dict:
+22:def test_get_risk_status() -> None:
+30:def test_post_risk_check() -> None:
+37:def test_post_halt_and_resume() -> None:
+50:def test_post_resume_requires_explicit_approval() -> None:
+62:def test_post_approve_execution() -> None:
+
+## backend/tests/test_scheduler_api.py
+5:def _assert_envelope(payload: dict) -> None:
+9:def test_get_scheduler_status() -> None:
+15:def test_get_scheduler_jobs() -> None:
+21:def test_post_scheduler_jobs() -> None:
+35:def test_post_scheduler_run_pause_resume_delete() -> None:
+56:def test_get_scheduler_runs() -> None:
+62:def test_get_scheduler_runs_for_job() -> None:
+
+## backend/tests/test_scheduler_models.py
+6:def test_valid_interval_job() -> None:
+16:def test_invalid_interval_job_rejects_missing_interval_seconds() -> None:
+26:def test_cron_job_requires_cron_string() -> None:
+36:def test_manual_job_accepts_no_schedule() -> None:
+46:def test_status_enum_values() -> None:
+
+## backend/tests/test_scheduler_risk_integration.py
+6:def _job_id_by_name(name: str) -> str:
+14:def test_risk_check_job_calls_guardian_service() -> None:
+29:def test_trading_scan_job_does_not_bypass_halt_flag() -> None:
+42:def test_scheduler_emits_risk_related_job_output() -> None:
+
+## backend/tests/test_scheduler_service.py
+5:def _find_job_id_by_name(name: str) -> str:
+12:def test_register_default_jobs() -> None:
+21:def test_create_custom_job() -> None:
+36:def test_list_jobs() -> None:
+42:def test_pause_job() -> None:
+49:def test_resume_job() -> None:
+57:def test_delete_job() -> None:
+69:def test_run_health_check_job() -> None:
+77:def test_failed_job_is_captured_as_job_run_result() -> None:
+
+## backend/tests/test_signal_validation.py
+8:def _base_signal() -> TradingSignal:
+22:def test_valid_buy_passes() -> None:
+29:def test_invalid_sl_tp_fails() -> None:
+39:def test_old_signal_fails() -> None:
+48:def test_hold_signal_does_not_execute() -> None:
+
+## backend/tests/test_tapo_adapter_dry_run.py
+5:def test_missing_credentials_do_not_crash(monkeypatch) -> None:
+20:def test_dry_run_turn_on_returns_simulated() -> None:
+28:def test_dry_run_turn_off_returns_simulated() -> None:
+36:def test_dry_run_power_cycle_returns_simulated() -> None:
+
+## backend/tests/test_timeline.py
+3:def test_timeline_replay():
+
+## backend/tests/test_trading_api.py
+5:def _assert_envelope(payload: dict) -> None:
+9:def _signal() -> TradingSignal:
+23:def test_get_trading_status() -> None:
+30:def test_post_scan() -> None:
+38:def test_post_validate_signal() -> None:
+45:def test_post_dry_run_execute() -> None:
+
+## backend/tests/test_trading_models.py
+8:def test_candle_validation() -> None:
+20:def test_candle_invalid_bounds() -> None:
+32:def test_trading_signal_direction_validation() -> None:
+47:def test_execution_request_defaults_to_dry_run() -> None:
+
+## backend/tests/test_ws_manager.py
+4:def test_ws_manager_alias_import() -> None:
+
+## backend/tests/test_xau_scanner.py
+5:def test_scan_returns_scanner_result() -> None:
+15:def test_scan_includes_latest_signal() -> None:
+24:def test_scan_includes_ai_summary() -> None:
+
+## frontend/postcss.config.js
+
+## frontend/src/App.tsx
+40:function ProtectedDashboardRoutes() {
+
+## frontend/src/api/aiTrader.ts
+134:function mockAITraderDecision(payload: AITraderSignalRequest): AITraderSignalResponse {
+188:export const getAITraderStatus = () =>
+204:export const listAITraderStrategies = () =>
+210:export const generateAITraderSignal = (payload: AITraderSignalRequest) =>
+213:export const compareAITraderStrategies = (payload: AITraderCompareRequest) => {
+225:export const runAITraderPaperTrade = (payload: AITraderPaperTradeRequest) => {
+
+## frontend/src/api/auth.ts
+9:export function readStoredSession(): StoredAuthSession | null {
+35:export function writeStoredSession(session: StoredAuthSession): void {
+39:export function clearStoredSession(): void {
+43:export function applyStoredSession(session: StoredAuthSession | null): void {
+47:export function isDefaultAdminCredentials(username: string, password: string): boolean {
+51:export async function loginWithPassword(username: string, password: string): Promise<AuthTokenPair> {
+66:export async function refreshSession(refreshToken: string): Promise<AuthTokenPair> {
+80:export async function logoutSession(refreshToken?: string): Promise<void> {
+93:export function getCurrentUser(): Promise<AuthUser> {
+
+## frontend/src/api/client.ts
+9:const baseUrl = (configuredBaseUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
+30:function buildRequestHeaders(headers?: HeadersInit): HeadersInit {
+45:function isApiErrorPayload(value: unknown): value is ApiErrorPayload {
+56:function isApiResponse<T>(value: unknown): value is ApiResponse<T> {
+70:function normalizeApiError(
+114:function shouldUseMockFallback<T>(
+133:async function request<T>(
+261:  getHealth() {
+264:  getLogs() {
+269:export function resetMockFallbackState() {
+273:export function setMockFallbackState(active: boolean) {
+280:export function setSession(token?: string) {
+284:export function setTenant(tenantId?: string) {
+288:export function setWorkspace(workspaceId?: string) {
+292:export function setUnauthorizedHandler(handler?: () => void) {
+
+## frontend/src/api/contracts.ts
+13:export function isEnvelope(value: unknown): value is ApiEnvelope<unknown> {
+
+## frontend/src/api/endpoints.ts
+72:export const getHealth = () => apiClient.getHealth() as Promise<HealthStatus>;
+74:export const getLogs = async () => {
+81:export const getAgents = async () => {
+88:export const sendAgentMessage = (payload: AgentMessagePayload) =>
+96:export const getTradingStatus = () =>
+104:export const runTradingScan = async (payload?: { symbol?: string; timeframe?: string }) => {
+129:export const validateSignal = (payload: TradingSignal) =>
+148:export const dryRunExecution = (payload: { signal: TradingSignal; dry_run?: boolean; confirmation?: boolean }) =>
+163:export const getRiskStatus = () =>
+172:export const checkRisk = async (snapshot: AccountSnapshot) => {
+188:export const getDrawdown = async () => {
+196:export const haltRisk = async (reason: string) => {
+211:export const resumeRisk = async (reason: string, approved = true) => {
+227:export const approveExecution = async (payload: { signal: Record<string, unknown>; snapshot: AccountSnapshot }) => {
+243:export const getSchedulerStatus = async () => {
+253:export const listJobs = async () => {
+260:export const createJob = async (payload: Record<string, unknown>) => {
+269:export const runJob = async (jobId: string) => {
+290:export const listAdminUsers = async () => {
+297:export const createAdminUser = async (payload: AdminUserCreateInput) => {
+316:export const updateAdminUser = async (
+338:export const deactivateAdminUser = async (userId: string) => {
+346:export const listAuditLogs = async (limit = 100, offset = 0) => {
+358:export const getAdminSafetyCheck = () =>
+366:export const pauseJob = async (jobId: string) => {
+375:export const resumeJob = async (jobId: string) => {
+384:export const deleteJob = (jobId: string) =>
+390:export const listRuns = async (jobId?: string) => {
+396:export const getBacktestingStatus = () =>
+404:export const listStrategies = async () => {
+418:export const runBacktest = async (payload: BacktestRequest) => {
+427:export const listBacktestResults = async () => {
+435:export const getBacktestResult = async (resultId: string) => {
+443:export const runOptimization = async (payload: Record<string, unknown>) => {
+464:export const listOptimizations = async () => {
+472:export const checkPromotion = async (resultId: string) => {
+486:export const getBacktestReport = async (resultId: string) => {
+498:export const getContentStatus = () =>
+506:export const createContent = async (payload: Record<string, unknown>) => {
+515:export const editContent = async (payload: { content_id: string; instructions?: string }) => {
+524:export const generateGraphic = async (payload: { content_id: string; style?: string; aspect_ratio?: string }) => {
+533:export const scheduleContent = async (payload: { content_id: string; scheduled_at: string; platforms?: string[] }) => {
+542:export const approveContent = async (payload: { content_id: string; approved_by?: string; notes?: string }) => {
+558:export const publishContent = async (payload: { content_id: string; platforms?: string[]; confirmation?: boolean }) => {
+576:export const runContentPipeline = async (payload: Record<string, unknown>) => {
+597:export const listContentItems = async () => {
+604:export const getContentItem = async (contentId: string) => {
+612:export const listContentRuns = async () => {
+620:export const getContentReport = async (contentId: string) => {
+632:export const getIoTStatus = async () => {
+646:export const runIoTAction = async (payload: {
+669:export const powerCycleIoT = async (deviceAlias = "zdash-power-node", confirmation = false) => {
+690:export const listOrganizations = async () => {
+697:export const listWorkspaces = async (orgId: string) => {
+704:export const getQueueStatus = async () => {
+711:export const listTasks = async () => {
+718:export const enqueueTask = async (payload: { type: string; payload?: Record<string, unknown> }) => {
+725:export const listAlertRules = async () => {
+732:export const listAlertEvents = async () => {
+739:export const listNotificationChannels = async () => {
+746:export const testNotificationChannel = async (channelId: string) => {
+752:export const getBillingStatus = async () => {
+765:export const getBillingPlans = async () => {
+813:export const startCheckout = async (planId: string) => {
+819:export const openBillingPortal = async () => {
+825:export const cancelSubscription = async () => {
+829:export const applyMockPlan = async (planTier: string) => {
+833:export const getUsageSummary = async () => {
+845:export const getInvoices = async () => {
+856:export const listMarketplacePlugins = async () => {
+898:export const getMarketplacePlugin = async (pluginId: string) => {
+921:export const listPluginInstallations = async () => {
+941:export const installMarketplacePlugin = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
+948:export const enablePluginInstallation = async (installationId: string) => {
+952:export const disablePluginInstallation = async (installationId: string) => {
+956:export const uninstallPluginInstallation = async (installationId: string) => {
+960:export const runPluginAction = async (installationId: string, action: string, payload: Record<string, any> = {}) => {
+968:export const getEnterpriseStatus = async () => {
+993:export const getLicenseStatus = async () => {
+1006:export const applyLicense = async (licenseKey: string) => {
+1010:export const revokeLicense = async () => {
+1014:export const getBrandingSettings = async () => {
+1027:export const updateBrandingSettings = async (settings: Partial<BrandingSettings>) => {
+1040:export const resetBrandingSettings = async () => {
+1053:export const listExportBundles = async () => {
+1077:export const createExportBundle = async (req: {
+1104:export const getExportBundle = async (bundleId: string) => {
+1123:export const getOnboardingChecklist = async () => {
+1142:export const completeOnboardingStep = async (step: string) => {
+1146:export const resetOnboardingChecklist = async () => {
+1150:export const getCustomerHealth = async () => {
+1160:function mockAITraderDecision(payload: AITraderSignalRequest): AITraderDecision {
+1197:export const getAITraderStatus = () =>
+1207:export const generateAITraderSignal = (payload: AITraderSignalRequest) =>
+1214:export const runAITraderPaperTrade = (payload: AITraderSignalRequest & { snapshot?: AccountSnapshot }) => {
+
+## frontend/src/api/mockData.ts
+12:const nowIso = () => new Date().toISOString();
+
+## frontend/src/api/types.ts
+
+## frontend/src/components/AgentsPagination.tsx
+
+## frontend/src/components/BuildInfo.tsx
+
+## frontend/src/components/EnvBadge.tsx
+2:  const env = (import.meta.env.VITE_APP_ENV || 'development').toLowerCase()
+
+## frontend/src/components/ErrorBoundary.tsx
+
+## frontend/src/components/Layout.tsx
+
+## frontend/src/components/LiveModeBanner.tsx
+
+## frontend/src/components/LogStream.tsx
+
+## frontend/src/components/OfflineBanner.tsx
+
+## frontend/src/components/RoleGate.tsx
+
+## frontend/src/components/StatusCard.tsx
+
+## frontend/src/components/admin/AuditLogTable.tsx
+
+## frontend/src/components/admin/UserTable.tsx
+35:  const handleCreateUser = async (event: FormEvent<HTMLFormElement>) => {
+
+## frontend/src/components/agents/AgentCard.tsx
+
+## frontend/src/components/agents/AgentRoster.tsx
+
+## frontend/src/components/alerts/AlertEventTable.tsx
+
+## frontend/src/components/alerts/AlertRuleTable.tsx
+
+## frontend/src/components/alerts/NotificationChannelForm.tsx
+12:  const handleTest = () => {
+
+## frontend/src/components/auth/LoginForm.tsx
+22:  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+
+## frontend/src/components/auth/ProtectedRoute.tsx
+
+## frontend/src/components/backtesting/BacktestResultTable.tsx
+
+## frontend/src/components/backtesting/BacktestSummary.tsx
+
+## frontend/src/components/backtesting/OptimizationPanel.tsx
+
+## frontend/src/components/backtesting/StrategyList.tsx
+
+## frontend/src/components/billing/InvoiceHistory.tsx
+3:export function InvoiceHistory() {
+
+## frontend/src/components/billing/InvoiceTable.tsx
+8:export function InvoiceTable({ invoices }: InvoiceTableProps) {
+
+## frontend/src/components/billing/PlanCard.tsx
+12:export function PlanCard({ plan, isCurrent, isMock, onSelect, onApplyMock }: PlanCardProps) {
+
+## frontend/src/components/billing/PlanCards.tsx
+3:export function PlanCards() {
+
+## frontend/src/components/billing/PricingTable.tsx
+10:export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps) {
+22:  const checkFeature = (plan: BillingPlan, item: any) => {
+
+## frontend/src/components/billing/QuotaBanner.tsx
+4:export function QuotaBanner() {
+
+## frontend/src/components/billing/SubscriptionStatusCard.tsx
+11:export function SubscriptionStatusCard({ status, onCancel, onPortal, isMock }: SubscriptionStatusCardProps) {
+
+## frontend/src/components/billing/UsageMeter.tsx
+3:export function UsageMeter() {
+
+## frontend/src/components/billing/UsageMeterCard.tsx
+15:export function UsageMeterCard({ summary, getMetricProgress }: UsageMeterCardProps) {
+
+## frontend/src/components/collaboration/CollaborationStatus.tsx
+
+## frontend/src/components/collaboration/LiveWorkspaceBanner.tsx
+
+## frontend/src/components/collaboration/PresenceBar.tsx
+
+## frontend/src/components/collaboration/UserPresenceAvatar.tsx
+
+## frontend/src/components/common/Badge.tsx
+
+## frontend/src/components/common/Button.tsx
+
+## frontend/src/components/common/ConfirmDialog.tsx
+
+## frontend/src/components/common/DataTable.tsx
+
+## frontend/src/components/common/EmptyState.tsx
+
+## frontend/src/components/common/ErrorState.tsx
+
+## frontend/src/components/common/LoadingState.tsx
+
+## frontend/src/components/common/MetricCard.tsx
+
+## frontend/src/components/common/SectionCard.tsx
+
+## frontend/src/components/common/StatusCard.tsx
+
+## frontend/src/components/content/ContentBoard.tsx
+
+## frontend/src/components/content/ContentCreateForm.tsx
+
+## frontend/src/components/content/ContentItemCard.tsx
+
+## frontend/src/components/content/PublishPanel.tsx
+
+## frontend/src/components/enterprise-os/CapabilityMapPanel.tsx
+
+## frontend/src/components/enterprise-os/CapabilityMaturityCard.tsx
+
+## frontend/src/components/enterprise-os/EnterpriseOSReportPanel.tsx
+
+## frontend/src/components/enterprise-os/EnterpriseStatePanel.tsx
+
+## frontend/src/components/enterprise-os/OperatingCadencePanel.tsx
+
+## frontend/src/components/enterprise-os/OperatingReviewPanel.tsx
+
+## frontend/src/components/enterprise/BrandingEditor.tsx
+10:export function BrandingEditor({ settings, onUpdate, onReset }: BrandingEditorProps) {
+32:  const sanitizeText = (text: string) => {
+41:  const handleSave = async (e: React.FormEvent) => {
+65:  const handleReset = async () => {
+
+## frontend/src/components/enterprise/CustomerHealthCard.tsx
+8:export function CustomerHealthCard({ health }: CustomerHealthCardProps) {
+18:  const getStatusColor = (status: string) => {
+
+## frontend/src/components/enterprise/ExportImportPanel.tsx
+17:export function ExportImportPanel({ exportsList, onCreateExport }: ExportImportPanelProps) {
+29:  const handleGenerate = async (e: React.FormEvent) => {
+
+## frontend/src/components/enterprise/ExportManager.tsx
+3:export function ExportManager() {
+
+## frontend/src/components/enterprise/LicenseStatus.tsx
+3:export function LicenseStatus() {
+
+## frontend/src/components/enterprise/LicenseStatusCard.tsx
+10:export function LicenseStatusCard({ license, onApply, onRevoke }: LicenseStatusCardProps) {
+15:  const handleApply = async (e: React.FormEvent) => {
+36:  const handleRevoke = async () => {
+
+## frontend/src/components/enterprise/OnboardingChecklist.tsx
+11:export function OnboardingChecklist({
+26:  const handleToggle = async (step: string, isCompleted: boolean) => {
+
+## frontend/src/components/governance-refinement/ControlCalibrationPanel.tsx
+
+## frontend/src/components/governance-refinement/ControlImpactPanel.tsx
+
+## frontend/src/components/governance-refinement/GovernanceDriftPanel.tsx
+
+## frontend/src/components/governance-refinement/GovernanceRefinementReportPanel.tsx
+
+## frontend/src/components/governance-refinement/PolicyMaturityPanel.tsx
+
+## frontend/src/components/governance-refinement/PolicySimulationPanel.tsx
+
+## frontend/src/components/governance-refinement/RiskAppetitePanel.tsx
+
+## frontend/src/components/iot/IoTActionPanel.tsx
+
+## frontend/src/components/iot/IoTStatusPanel.tsx
+
+## frontend/src/components/layout/AppLayout.tsx
+
+## frontend/src/components/layout/PageHeader.tsx
+
+## frontend/src/components/layout/Sidebar.tsx
+47:function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+
+## frontend/src/components/layout/Topbar.tsx
+
+## frontend/src/components/long-horizon/HorizonScannerPanel.tsx
+
+## frontend/src/components/long-horizon/LongRangeScenarioPanel.tsx
+
+## frontend/src/components/long-horizon/StrategicThesisTable.tsx
+
+## frontend/src/components/long-horizon/TrendRadarPanel.tsx
+
+## frontend/src/components/marketplace/InstalledPluginTable.tsx
+13:export function InstalledPluginTable({
+29:  const getPluginName = (pluginId: string) => {
+34:  const getPluginManifest = (pluginId: string) => {
+
+## frontend/src/components/marketplace/InstalledPlugins.tsx
+3:export function InstalledPlugins() {
+
+## frontend/src/components/marketplace/PluginCard.tsx
+11:export function PluginCard({ plugin, isInstalled, onInstall, onViewDetails }: PluginCardProps) {
+12:  const getSafetyBadgeStyle = (level: string) => {
+
+## frontend/src/components/marketplace/PluginDetailPanel.tsx
+12:export function PluginDetailPanel({
+28:  const handleRun = async (e: React.FormEvent) => {
+
+## frontend/src/components/marketplace/PluginDirectory.tsx
+3:export function PluginDirectory() {
+
+## frontend/src/components/marketplace/PluginGrid.tsx
+12:export function PluginGrid({ plugins, installations, onInstall, onViewDetails }: PluginGridProps) {
+26:  const isPluginInstalled = (pluginId: string) => {
+
+## frontend/src/components/org/OrgMap.tsx
+
+## frontend/src/components/realtime/ActivityTimeline.tsx
+
+## frontend/src/components/realtime/LiveIndicator.tsx
+
+## frontend/src/components/realtime/PresencePanel.tsx
+
+## frontend/src/components/realtime/RealtimeConnectionBanner.tsx
+7:function formatRetryMs(ms: number | null): string {
+
+## frontend/src/components/realtime/RealtimeEventFeed.tsx
+18:function readMessage(event: RealtimeEnvelope): string {
+
+## frontend/src/components/realtime/RealtimeStatusBadge.tsx
+
+## frontend/src/components/risk/DrawdownGauge.tsx
+
+## frontend/src/components/risk/HaltControlPanel.tsx
+
+## frontend/src/components/risk/KillSwitchBanner.tsx
+
+## frontend/src/components/risk/RiskStatusCard.tsx
+
+## frontend/src/components/scheduler/CreateJobForm.tsx
+
+## frontend/src/components/scheduler/JobRunHistory.tsx
+
+## frontend/src/components/scheduler/JobTable.tsx
+
+## frontend/src/components/self-evolution/APIEvolutionPanel.tsx
+
+## frontend/src/components/self-evolution/ArchitectureDriftPanel.tsx
+
+## frontend/src/components/self-evolution/ChangeProposalDetail.tsx
+
+## frontend/src/components/self-evolution/EvolutionSafetyGatePanel.tsx
+
+## frontend/src/components/self-evolution/ImprovementProposalQueue.tsx
+
+## frontend/src/components/self-evolution/SchemaEvolutionPanel.tsx
+
+## frontend/src/components/self-evolution/TechDebtPanel.tsx
+
+## frontend/src/components/self-evolution/TestCoverageAdvisorPanel.tsx
+
+## frontend/src/components/system/ConnectionStatus.tsx
+
+## frontend/src/components/system/DiagnosticsOverlay.tsx
+
+## frontend/src/components/system/ErrorBoundary.tsx
+
+## frontend/src/components/system/NotificationCenter.tsx
+
+## frontend/src/components/system/WebsocketHealthCard.tsx
+
+## frontend/src/components/tenancy/InviteUserForm.tsx
+8:  const handleSubmit = (e: React.FormEvent) => {
+
+## frontend/src/components/tenancy/OrganizationSwitcher.tsx
+
+## frontend/src/components/tenancy/OrganizationTable.tsx
+
+## frontend/src/components/tenancy/WorkspaceSwitcher.tsx
+
+## frontend/src/components/tenancy/WorkspaceTable.tsx
+
+## frontend/src/components/trading/AITraderSimulationCard.tsx
+19:function buildDemoCandles(): Candle[] {
+51:  async function onGenerateSignal() {
+71:  async function onCompareStrategies() {
+89:  async function onPaperTrade() {
+
+## frontend/src/components/trading/DryRunBanner.tsx
+
+## frontend/src/components/trading/SignalTable.tsx
+
+## frontend/src/components/trading/XauScannerPanel.tsx
+
+## frontend/src/components/workers/QueueStatusCard.tsx
+
+## frontend/src/components/workers/TaskDispatchPanel.tsx
+10:  const handleDispatch = () => {
+
+## frontend/src/components/workers/WorkerRunTable.tsx
+
+## frontend/src/constants/agents.ts
+
+## frontend/src/hooks/useAgents.ts
+12:export const useAgents = () => {
+
+## frontend/src/hooks/useAgentsPagination.ts
+9:export function getInitialAgentsPageSize(): AgentsPageSize {
+18:export function useAgentsPagination<T>(items: T[]) {
+36:    const start = (currentPage - 1) * agentsPerPage;
+43:  function setAgentsPerPage(value: number) {
+52:  function goToPage(page: number) {
+
+## frontend/src/hooks/useApi.ts
+16:export function useApi<T>(
+
+## frontend/src/hooks/useAuth.tsx
+42:function clearAuthState(
+54:export function AuthProvider({ children }: { children: ReactNode }) {
+102:    const bootstrap = async () => {
+179:export function useAuth(): AuthContextValue {
+
+## frontend/src/hooks/useBilling.ts
+13:export function useBilling() {
+20:  const fetchAll = async () => {
+43:  const checkout = async (planId: string) => {
+57:  const portal = async () => {
+71:  const cancel = async () => {
+83:  const applyMock = async (planTier: string) => {
+
+## frontend/src/hooks/useCollaboration.ts
+7:function toWsBaseUrl(rawBaseUrl: string): string {
+21:export function buildCollaborationWsUrl(
+31:export function useCollaboration(workspaceId: string) {
+
+## frontend/src/hooks/useEnterprise.ts
+25:export function useEnterprise() {
+34:  const fetchEnterpriseData = async () => {
+60:  const applyLicense = async (licenseKey: string) => {
+73:  const revokeLicense = async () => {
+86:  const updateBranding = async (settings: Partial<BrandingSettings>) => {
+98:  const resetBranding = async () => {
+110:  const createExport = async (req: {
+131:  const completeStep = async (step: string) => {
+146:  const resetOnboarding = async () => {
+
+## frontend/src/hooks/useLogs.ts
+7:export const useLogs = () => {
+
+## frontend/src/hooks/useMarketplace.ts
+13:export function useMarketplace() {
+19:  const fetchMarketplace = async () => {
+40:  const install = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
+52:  const enable = async (installationId: string) => {
+64:  const disable = async (installationId: string) => {
+76:  const uninstall = async (installationId: string) => {
+88:  const runAction = async (
+
+## frontend/src/hooks/useNotifications.ts
+5:export function useNotifications() {
+13:    const fetchAlerts = async () => {
+37:  const testChannel = async (id: string) => {
+
+## frontend/src/hooks/usePolling.ts
+10:export function usePolling(callback: () => void, intervalMs = 5000): UsePollingResult {
+
+## frontend/src/hooks/useRealtimeEvents.ts
+5:export function useRealtimeEvents() {
+21:    const startPolling = () => {
+25:      const poll = async () => {
+
+## frontend/src/hooks/useSystemStatus.ts
+23:export const useSystemStatus = () =>
+
+## frontend/src/hooks/useTenancy.ts
+6:export function useTenancy() {
+15:    const fetchOrgs = async () => {
+46:  const switchOrganization = async (orgId: string) => {
+63:  const switchWorkspace = (wsId: string) => {
+
+## frontend/src/hooks/useUsage.ts
+5:export function useUsage() {
+10:  const fetchUsage = async () => {
+27:  const getMetricProgress = (key: string) => {
+
+## frontend/src/hooks/useWorkers.ts
+5:export function useWorkers() {
+13:    const fetchData = async () => {
+34:  const refresh = () => setRefreshKey((k) => k + 1);
+36:  const enqueue = async (type: string, payload?: Record<string, unknown>) => {
+
+## frontend/src/main.tsx
+
+## frontend/src/pages/Admin.tsx
+
+## frontend/src/pages/Alerts.tsx
+
+## frontend/src/pages/ArchitectureDrift.tsx
+
+## frontend/src/pages/AuditLogs.tsx
+
+## frontend/src/pages/Backtests.tsx
+30:function getMonthlyRows(result: BacktestResult): Array<{ month: string; value: number }> {
+82:  async function onRunBacktest(event: React.FormEvent) {
+106:  async function onRunOptimization(event: React.FormEvent) {
+129:  async function onCheckPromotion() {
+
+## frontend/src/pages/Billing.tsx
+11:  const handleSelectPlan = async (planId: string) => {
+19:  const handleApplyMockPlan = async (planTier: string) => {
+
+## frontend/src/pages/CapabilityMap.tsx
+
+## frontend/src/pages/ContentPipeline.tsx
+74:  function updateItemInState(nextItem: ContentItem) {
+81:  async function withItemAction(itemId: string, action: () => Promise<ContentItem | void>) {
+98:  async function onCreateContent(event: React.FormEvent) {
+116:  async function onRunPipeline() {
+
+## frontend/src/pages/Dashboard.tsx
+31:function readBoolean(value: unknown, fallback = false): boolean {
+35:function readString(value: unknown, fallback = "unknown"): string {
+39:function readNumber(value: unknown, fallback = 0): number {
+97:  const latestLogs = (logsState.data ?? []).slice(0, 6);
+
+## frontend/src/pages/Enterprise.tsx
+
+## frontend/src/pages/EnterpriseOS.tsx
+
+## frontend/src/pages/EventTimeline.tsx
+
+## frontend/src/pages/GovernanceRefinement.tsx
+
+## frontend/src/pages/IncidentCenter.tsx
+9:  const load = () => apiClient.get<any[]>("/api/incidents", []).then(setIncidents).catch(() => setIncidents([]));
+
+## frontend/src/pages/IoTControl.tsx
+46:  async function performAction(action: IoTActionResult["action"]) {
+
+## frontend/src/pages/LessonsMemory.tsx
+
+## frontend/src/pages/Login.tsx
+16:    const from = (location.state as LoginRouteState | null)?.from ?? "/";
+
+## frontend/src/pages/LongHorizon.tsx
+
+## frontend/src/pages/Marketplace.tsx
+23:  const handleInstall = async (pluginId: string) => {
+31:  const handleRunAction = async (action: string, payload: Record<string, any>, dryRun: boolean) => {
+38:  const isPluginInstalled = (pluginId: string) => {
+
+## frontend/src/pages/NotFound.tsx
+
+## frontend/src/pages/Notifications.tsx
+
+## frontend/src/pages/Onboarding.tsx
+10:  const handleQuickAction = async (actionKey: string, stepToComplete: string) => {
+
+## frontend/src/pages/OperatingCadence.tsx
+
+## frontend/src/pages/OrgMap.tsx
+
+## frontend/src/pages/OrgMapPage.tsx
+
+## frontend/src/pages/Organizations.tsx
+
+## frontend/src/pages/PolicySimulation.tsx
+
+## frontend/src/pages/RiskPanel.tsx
+20:function readBoolean(value: unknown, fallback = false): boolean {
+24:function readString(value: unknown, fallback = "unknown"): string {
+28:function readNumber(value: unknown, fallback = 0): number {
+84:  async function onManualHalt() {
+103:  async function onConfirmResume() {
+
+## frontend/src/pages/Scheduler.tsx
+90:  async function withJobAction(jobId: string, action: () => Promise<void>) {
+101:  async function onCreateJob(event: React.FormEvent) {
+
+## frontend/src/pages/SelfEvolution.tsx
+
+## frontend/src/pages/SessionLogs.tsx
+18:function matchesCategory(log: EventLog, category: string): boolean {
+
+## frontend/src/pages/Settings.tsx
+
+## frontend/src/pages/SystemHealth.tsx
+
+## frontend/src/pages/TeamRoster.tsx
+63:  async function onSendMessage(event: FormEvent) {
+
+## frontend/src/pages/TrendRadar.tsx
+
+## frontend/src/pages/Usage.tsx
+
+## frontend/src/pages/Workers.tsx
+
+## frontend/src/pages/Workspace.tsx
+
+## frontend/src/pages/WorkspaceLive.tsx
+
+## frontend/src/pages/WorkspaceNotes.tsx
+
+## frontend/src/pages/WorkspaceTimeline.tsx
+
+## frontend/src/pages/XauDashboard.tsx
+56:  async function performScan() {
+88:  async function onSelectSignal(signal: TradingSignal) {
+104:  async function onCheckRiskApproval() {
+122:  async function onDryRunExecute() {
+
+## frontend/src/realtime/client.ts
+11:function isTestRuntime(): boolean {
+16:  const processEnv = (
+31:export function isRealtimeTestRuntime(): boolean {
+63:function toWsBaseUrl(rawBaseUrl: string): string {
+84:function nowIso(): string {
+88:function cloneState(state: RealtimeConnectionState): RealtimeConnectionState {
+464:export function getRealtimeClientManager(): RealtimeClientManager {
+471:export function resetRealtimeClientManager(): void {
+476:export function createRealtimeClientManager(
+
+## frontend/src/realtime/context.tsx
+13:export function RealtimeProvider({ children }: { children: ReactNode }) {
+39:export function useRealtimeContext() {
+
+## frontend/src/realtime/events.ts
+
+## frontend/src/realtime/hooks.ts
+4:export function useRealtimeChannel() { return useRealtime(); }
+5:export function useIncidentFeed() {
+9:export function useOperatorPresence() {
+13:export function useLiveMetrics() {
+
+## frontend/src/realtime/mockRealtime.ts
+3:export function getMockRealtimeEvents(): RealtimeEnvelope[] {
+
+## frontend/src/realtime/reconnect.ts
+7:export function computeReconnectDelay(
+
+## frontend/src/realtime/store.ts
+
+## frontend/src/realtime/types.ts
+
+## frontend/src/realtime/useRealtime.ts
+10:function defaultEnabled(enabled?: boolean): boolean {
+17:export function useRealtime(options: UseRealtimeOptions = {}) {
+24:export function useRiskRealtime(options: UseRealtimeOptions = {}) {
+32:export function useSchedulerRealtime(options: UseRealtimeOptions = {}) {
+40:export function useContentRealtime(options: UseRealtimeOptions = {}) {
+
+## frontend/src/realtime/useRealtimeChannel.ts
+29:export function useRealtimeChannel(
+
+## frontend/src/tests/AITrader.test.tsx
+
+## frontend/src/tests/Admin.test.tsx
+
+## frontend/src/tests/Alerts.test.tsx
+
+## frontend/src/tests/App.test.tsx
+6:function renderAt(path: string) {
+
+## frontend/src/tests/AuthClient.test.ts
+47:    const requestInit = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1] as
+
+## frontend/src/tests/Billing.test.tsx
+
+## frontend/src/tests/ContentPipeline.test.tsx
+21:    const publishButtons = (await screen.findAllByText(
+
+## frontend/src/tests/Dashboard.test.tsx
+
+## frontend/src/tests/Enterprise.test.tsx
+
+## frontend/src/tests/ErrorBoundary.test.tsx
+5:function Broken() {
+
+## frontend/src/tests/ErrorBoundaryRealtime.test.tsx
+
+## frontend/src/tests/Login.test.tsx
+
+## frontend/src/tests/Marketplace.test.tsx
+
+## frontend/src/tests/NotificationCenter.test.tsx
+
+## frontend/src/tests/Onboarding.test.tsx
+
+## frontend/src/tests/Organizations.test.tsx
+
+## frontend/src/tests/ProtectedRoute.test.tsx
+
+## frontend/src/tests/RealtimeClient.test.ts
+6:class MockWebSocket {
+
+## frontend/src/tests/RealtimeFeed.test.tsx
+
+## frontend/src/tests/RealtimeHooks.test.tsx
+8:class MockWebSocket {
+47:function RealtimeHarness({ manager }: { manager: ReturnType<typeof createRealtimeClientManager> }) {
+
+## frontend/src/tests/RealtimeReconnect.test.ts
+
+## frontend/src/tests/RiskPanel.test.tsx
+
+## frontend/src/tests/Scheduler.test.tsx
+
+## frontend/src/tests/Storage.test.ts
+
+## frontend/src/tests/SystemHealth.test.tsx
+
+## frontend/src/tests/SystemHealthRealtime.test.tsx
+
+## frontend/src/tests/Usage.test.tsx
+
+## frontend/src/tests/Workers.test.tsx
+
+## frontend/src/tests/Workspace.test.tsx
+
+## frontend/src/tests/WorkspaceLive.test.tsx
+
+## frontend/src/tests/WorkspaceNotes.test.tsx
+
+## frontend/src/tests/WorkspaceTimeline.test.tsx
+
+## frontend/src/tests/apiClient.test.ts
+
+## frontend/src/tests/setup.ts
+30:class ResizeObserverMock {
+
+## frontend/src/tests/useApi.test.tsx
+
+## frontend/src/tests/useCollaboration.test.ts
+11:class MockWebSocket {
+
+## frontend/src/tests/useRealtime.test.tsx
+
+## frontend/src/utils/format.ts
+1:export function formatDateTime(value: string | Date | null | undefined): string {
+14:export function formatPercent(value: number, digits = 2): string {
+21:export function formatCurrency(
+36:export function formatDurationMs(value: number): string {
+46:export function truncateText(value: string, maxLength = 80): string {
+
+## frontend/src/utils/safety.ts
+6:export function isLiveTradingBlocked(liveTradingEnabled = false): boolean {
+10:export function requiresApproval(item: ApprovalLike): boolean {
+14:export function canPublishContent(item: ApprovalLike): boolean {
+21:export function canRunIoTAction(
+31:export function getSafetyBannerText(): string {
+
+## frontend/src/utils/status.ts
+3:export function getSeverityFromStatus(status: string): StatusSeverity {
+41:export function getBadgeVariant(status: string): StatusSeverity {
+45:export function isDangerStatus(status: string): boolean {
+
+## frontend/src/utils/storage.ts
+3:function createMemoryStorage(): StorageLike {
+30:function resolveStorage(kind: 'localStorage' | 'sessionStorage', fallback: StorageLike): StorageLike {
+50:export function safeLocalStorage(): StorageLike {
+54:export function safeSessionStorage(): StorageLike {
+
+## frontend/tailwind.config.js
+
+## frontend/vite.config.ts
+
+## frontend/vitest.config.ts
+
+## gh-set-env.sh
+
+## infra/scripts/backup-postgres.sh
+
+## infra/scripts/cloudflare-dry-run.sh
+
+## infra/scripts/deploy-dev.sh
+
+## infra/scripts/deploy-prod.sh
+
+## infra/scripts/k8s-smoke-test.sh
+
+## infra/scripts/production-smoke-test.sh
+8:wait_for_http() {
+
+## infra/scripts/release.sh
+
+## infra/scripts/restore-postgres.sh
+
+## infra/scripts/rollback.sh
+
+## infra/scripts/wait-for-service.sh
+
+## run_test.py
+34:    class MockDecision:
+
+## scripts/backup-config.sh
+
+## scripts/backup-db.sh
+
+## scripts/enable_agents.py
+
+## scripts/export-json-to-prompt.sh
+65:def is_skipped(path: Path) -> bool:
+69:def stringify(value: Any) -> str:
+96:def extract_openai_like(data: dict) -> str:
+144:def extract_text(data: Any) -> str:
+184:def unique_output_path(src: Path) -> Path:
+
+## scripts/github/bootstrap-env-from-env.sh
+47:usage(){
+74:log(){ printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+75:warn(){ log "WARN: $*" >&2; }
+76:die(){ log "ERROR: $*" >&2; exit 1; }
+77:has(){ command -v "$1" >/dev/null 2>&1; }
+131:key_in_list(){
+140:is_secret_key(){
+147:is_managed_key(){
+158:parse_rows(){
+173:def normalize(raw: str) -> str:
+264:delete_stale_key(){
+
+## scripts/integrate-ecc.sh
+29:require_file() {
+
+## scripts/migrate-db.sh
+
+## scripts/restore-db.sh
+
+## scripts/rollback-db.sh
+
+## scripts/run-backend.sh
+
+## scripts/run-frontend.sh
+
+## scripts/run-prompt-phases.sh
+50:run_validate() {
+103:run_phase() {
+
+## scripts/run-scheduler-smoke-test.sh
+
+## scripts/setup-dev.sh
+
+## scripts/smoke-test.sh
+
+## scripts/sync-ecc-to-codex.sh
+
+## scripts/verify-backup.sh
+

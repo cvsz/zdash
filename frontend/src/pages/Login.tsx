@@ -18,7 +18,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 py-10">
       <LoginForm onAuthenticated={() => navigate("/", { replace: true })} />
     </div>
   );

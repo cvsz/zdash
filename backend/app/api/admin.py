@@ -57,6 +57,12 @@ def _safety_check_payload() -> dict[str, Any]:
     default_secret = "dev-only-change-before-production"
 
     if settings.is_production:
+        if not settings.auth_enabled:
+            blockers.append("AUTH_ENABLED must be true in production mode.")
+
+        if not settings.metrics_auth_required:
+            blockers.append("METRICS_AUTH_REQUIRED must be true in production mode.")
+
         if not settings.dry_run:
             if settings.production_safety_lock:
                 blockers.append(
@@ -67,8 +73,23 @@ def _safety_check_payload() -> dict[str, Any]:
                     "Live mode requires PRODUCTION_ALLOW_LIVE_ACTIONS=true when DRY_RUN=false."
                 )
 
-        if settings.live_trading_ack and settings.jwt_secret_key.strip() == default_secret:
-            blockers.append("LIVE_TRADING_ACK cannot be enabled with default JWT secret.")
+        if settings.live_trading_ack:
+            if settings.jwt_secret_key.strip() == default_secret:
+                blockers.append(
+                    "LIVE_TRADING_ACK cannot be enabled with default JWT secret."
+                )
+            if not settings.risk_guardian_enabled:
+                blockers.append(
+                    "LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true."
+                )
+
+        if settings.mt5_enabled:
+            if settings.dry_run:
+                warnings.append("MT5 enabled in dry-run mode — no real execution.")
+            else:
+                blockers.append(
+                    "MT5_ENABLED=true with DRY_RUN=false requires explicit gate."
+                )
 
         if not settings.social_dry_run and (
             not settings.social_approval_required
@@ -76,6 +97,11 @@ def _safety_check_payload() -> dict[str, Any]:
         ):
             blockers.append(
                 "Real social posting requires approval-required mode and SOCIAL_REAL_POSTING_APPROVED=true."
+            )
+
+        if settings.social_auto_post_enabled and not settings.social_approval_required:
+            blockers.append(
+                "SOCIAL_AUTO_POST_ENABLED=true requires SOCIAL_APPROVAL_REQUIRED=true."
             )
 
         if not settings.iot_dry_run and (
@@ -92,9 +118,24 @@ def _safety_check_payload() -> dict[str, Any]:
         if settings.default_admin_password.strip() in {"", default_secret}:
             blockers.append("DEFAULT_ADMIN_PASSWORD must not be default in production.")
 
+        if settings.bootstrap_admin_password.strip() in {"", default_secret}:
+            blockers.append(
+                "BOOTSTRAP_ADMIN_PASSWORD must not be default in production."
+            )
+
         if "*" in settings.cors_origins_list and settings.cors_allow_credentials:
             blockers.append(
                 "CORS wildcard cannot be used when credentials are allowed in production."
+            )
+
+        if settings.support_bundle_include_secrets:
+            blockers.append(
+                "SUPPORT_BUNDLE_INCLUDE_SECRETS must be false in production."
+            )
+
+        if settings.deployment_pack_include_secrets:
+            blockers.append(
+                "DEPLOYMENT_PACK_INCLUDE_SECRETS must be false in production."
             )
     else:
         if not settings.auth_enabled:

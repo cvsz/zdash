@@ -24,6 +24,7 @@ import TeamRoster from "./pages/TeamRoster";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
 import EventTimeline from "./pages/EventTimeline";
+import ZFinance from "./pages/ZFinance";
 import Notifications from "./pages/Notifications";
 import WorkspaceLive from "./pages/WorkspaceLive";
 import WorkspaceTimeline from "./pages/WorkspaceTimeline";
@@ -62,6 +63,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/enterprise" element={<Enterprise />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/zfinance" element={<ZFinance />} />
           <Route path="/system/health" element={<SystemHealth />} />
           <Route path="/events" element={<EventTimeline />} />
           <Route path="/notifications" element={<Notifications />} />

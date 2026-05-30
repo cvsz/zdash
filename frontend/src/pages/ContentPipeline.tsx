@@ -155,37 +155,37 @@ export default function ContentPipeline() {
         <MetricCard label="Content Items" value={items.length} />
       </div>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Workflow</h3>
-        <p className="mt-2 text-sm text-slate-300">
+        <p className="mt-2 text-sm text-text-secondary">
           Elena Voss drafts and edits content, Julian Reed prepares graphics, and Maya Quinn handles scheduling and
           approval-gated dry-run publishing.
         </p>
       </section>
 
-      <form className="rounded-lg border border-slate-800 bg-slate-900/70 p-4" onSubmit={(event) => void onCreateContent(event)}>
+      <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onCreateContent(event)}>
         <h3 className="text-sm font-semibold text-white">Create Content</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Title
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newTitle}
               onChange={(event) => setNewTitle(event.target.value)}
             />
           </label>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Topic
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newTopic}
               onChange={(event) => setNewTopic(event.target.value)}
             />
           </label>
-          <label className="text-xs text-slate-300">
+          <label className="text-xs text-text-secondary">
             Type
             <input
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100"
+              className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newType}
               onChange={(event) => setNewType(event.target.value)}
             />
@@ -201,17 +201,17 @@ export default function ContentPipeline() {
         </div>
       </form>
 
-      <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
+      <section className="rounded-card border border-border bg-panel p-4">
         <h3 className="text-sm font-semibold text-white">Content Board</h3>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-text-dim">
           Grouped by status: draft, edited, graphic_ready, scheduled, approved, posted, failed, rejected.
         </p>
 
         <div className="mt-4 space-y-4">
           {boardStatuses.map((status) => (
-            <div key={status} className="rounded-md border border-slate-800 bg-slate-950/60 p-3">
+            <div key={status} className="rounded-md border border-border bg-canvas-lighter/60 p-3">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <h4 className="text-sm font-semibold text-slate-100">{status}</h4>
+                <h4 className="text-sm font-semibold text-text-primary">{status}</h4>
                 <Badge variant="muted">{grouped[status]?.length ?? 0}</Badge>
               </div>
 
@@ -222,9 +222,9 @@ export default function ContentPipeline() {
                     const allowedToPublish = canPublishContent(item);
 
                     return (
-                      <article key={item.id} className="rounded-md border border-slate-800 bg-slate-900/80 p-3">
+                      <article key={item.id} className="rounded-md border border-border bg-panel-hover p-3">
                         <p className="text-sm font-semibold text-white">{item.title}</p>
-                        <p className="mt-1 text-xs text-slate-400">{item.topic}</p>
+                        <p className="mt-1 text-xs text-text-dim">{item.topic}</p>
                         <div className="mt-2 flex flex-wrap gap-2">
                           <Badge variant={item.approval_required ? "warning" : "muted"}>
                             {item.approval_required ? "Approval required" : "Approval optional"}
@@ -308,18 +308,18 @@ export default function ContentPipeline() {
                         </div>
 
                         <div className="mt-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">Policy notes</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-text-dim">Policy notes</p>
                           {item.policy_notes?.length ? (
-                            <ul className="mt-1 list-disc space-y-1 pl-4 text-xs text-amber-100">
+                            <ul className="mt-1 list-disc space-y-1 pl-4 text-xs text-state-warning">
                               {item.policy_notes.map((note) => (
                                 <li key={note}>{note}</li>
                               ))}
                             </ul>
                           ) : (
-                            <p className="mt-1 text-xs text-slate-400">No policy notes.</p>
+                            <p className="mt-1 text-xs text-text-dim">No policy notes.</p>
                           )}
                           {item.policy_passed === false ? (
-                            <p className="mt-1 text-xs font-semibold text-rose-200">Policy failed: action blocked until resolved.</p>
+                            <p className="mt-1 text-xs font-semibold text-state-danger">Policy failed: action blocked until resolved.</p>
                           ) : null}
                         </div>
                       </article>
@@ -327,15 +327,15 @@ export default function ContentPipeline() {
                   })}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500">No items in this status.</p>
+                <p className="text-xs text-text-dim">No items in this status.</p>
               )}
             </div>
           ))}
         </div>
       </section>
 
-      {message ? <p className="text-sm text-emerald-200">{message}</p> : null}
-      {error ? <p className="text-sm text-rose-200">{error}</p> : null}
+      {message ? <p className="text-sm text-state-success">{message}</p> : null}
+      {error ? <p className="text-sm text-state-danger">{error}</p> : null}
 
       <RealtimeEventFeed
         title="Live Content Stream"
@@ -344,7 +344,7 @@ export default function ContentPipeline() {
         emptyMessage="No live content websocket events yet."
       />
 
-      <div className="rounded-lg border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-amber-100">
+      <div className="rounded-card border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-state-warning">
         Publishing remains approval-required and dry-run by default. Mock publishing does not create real social posts.
       </div>
     </div>

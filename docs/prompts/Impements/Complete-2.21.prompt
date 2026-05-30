@@ -1,0 +1,137 @@
+You are working in repo cvsz/zdash.
+
+Goal:
+Complete zDash v2.0.1 production deployment hardening after final release.
+
+Current verified state:
+- GitHub Release v2.0.1 exists.
+- Release commit: 3f40b8c release: v2.0.1 final go-live.
+- make golive passes.
+- Backend pytest passes.
+- Frontend vitest passes: 36 files / 62 tests.
+- Frontend production build passes.
+- Safety scans pass.
+- Docker prod build succeeds.
+- Frontend, Postgres, Redis containers become healthy.
+- Backend container is unhealthy/restarting in production compose.
+
+Important current facts:
+- docker-compose.prod.yml defaults APP_ENV=production for backend.
+- Backend production config requires non-default JWT_SECRET_KEY, BOOTSTRAP_ADMIN_PASSWORD, and DEFAULT_ADMIN_PASSWORD.
+- docker-compose.prod.yml does not currently inject these required production secrets.
+- docker-compose.prod.yml maps Postgres 5436:5436 and Redis 16379:16379, but container defaults are 5432 and 6379.
+- Google Finance backend API and frontend API client exist.
+- Google Finance React page route and Sidebar item do not exist yet.
+- Release targets exist but release-tag and gh-release are not idempotent.
+- No .dockerignore exists; Docker context is too large.
+
+Required implementation:
+1. Production env/secrets:
+   - Add .env.production.example with placeholders only.
+   - Do not commit real secrets.
+   - Include required production keys:
+     APP_ENV=production
+     POSTGRES_USER=
+     POSTGRES_PASSWORD=
+     POSTGRES_DB=
+     DATABASE_URL=
+     JWT_SECRET_KEY=
+     BOOTSTRAP_ADMIN_USERNAME=
+     BOOTSTRAP_ADMIN_PASSWORD=
+     DEFAULT_ADMIN_PASSWORD=
+     API_KEY_HASH_PEPPER=
+     AUTH_ENABLED=true
+     PRODUCTION_SAFETY_LOCK=true
+     PRODUCTION_ALLOW_LIVE_ACTIONS=false
+     DRY_RUN=true
+     LIVE_TRADING_ACK=false
+   - Add scripts/production/generate-prod-env.sh that creates .env.production locally with chmod 600 and random secrets.
+   - Script must never print secret values.
+
+2. Compose production hardening:
+   - Update docker-compose.prod.yml to load env_file: .env.production for backend and postgres.
+   - Fix host port mappings:
+     postgres: 5436:5432
+     redis: 16379:6379
+   - Keep internal DATABASE_URL using postgres:5432.
+   - Keep safety defaults dry-run and locked.
+   - Ensure nginx/prometheus depend on healthy backend only as intended.
+
+3. Makefile production targets:
+   - Add make prod-env-generate.
+   - Add make prod-up using --env-file .env.production.
+   - Add make prod-down.
+   - Add make prod-ps.
+   - Add make prod-logs.
+   - Add make prod-health.
+   - Add make prod-deploy-final that runs prod-env validation, compose config, build/up, ps, and health checks.
+   - Do not require committing .env.production.
+
+4. Release target idempotency:
+   - Add make release-status.
+   - Update release-tag to skip if tag already exists and points to HEAD, otherwise fail with clear message.
+   - Update gh-release or add gh-release-upsert:
+     - If release exists, upload artifact with --clobber when supported or print exact command.
+     - If not exists, create release.
+   - Do not delete existing releases automatically.
+
+5. Docker context optimization:
+   - Add .dockerignore excluding:
+     .git
+     .venv
+     backend/.venv
+     node_modules
+     frontend/node_modules
+     frontend/dist
+     dist
+     .cache
+     .pytest_cache
+     .ruff_cache
+     logs
+     *.log
+     backups
+     release-artifacts
+     .agent
+     .agents
+     .gemini
+     .claude
+     .mcp
+     .env
+     .env.*
+     !.env.example
+     !.env.production.example
+
+6. Google Finance UI:
+   - Add frontend/src/pages/GoogleFinance.tsx.
+   - Use getGoogleFinanceOverview and getGoogleFinanceSearch.
+   - Show provider mode, warning badges, sections, watchlist, and search form.
+   - All actions must open Google Finance Beta in a new tab.
+   - Display “read-only / no scraping / not financial advice”.
+   - Register route /google-finance in App.tsx.
+   - Add Sidebar item “Google Finance”.
+   - Add frontend test verifying page renders and read-only warning exists.
+
+7. Tests and validation:
+   - Add backend test for /api/integrations/google-finance/status and /overview.
+   - Add frontend test for /google-finance route or page component.
+   - Run:
+     make golive
+     docker compose --env-file .env.production -f docker-compose.prod.yml config
+     make prod-deploy-final
+     curl -fsS http://localhost/health
+   - Report exact pass/fail results.
+
+8. Safety rules:
+   - Do not commit .env, .env.production, generated secrets, database dumps, logs, or release artifacts.
+   - Do not print token or password values.
+   - Keep live trading disabled by default.
+   - Keep Google Finance integration read-only.
+   - Do not scrape Google Finance or use private endpoints.
+
+Final output required:
+- Summary of changed files.
+- Validation command results.
+- Docker service health table.
+- Release status.
+- Remaining warnings.
+- Exact next command for operator.

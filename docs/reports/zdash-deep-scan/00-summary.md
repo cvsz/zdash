@@ -1,0 +1,102 @@
+# zDash Deep Scan Summary
+
+Sat May 30 01:12:52 PM UTC 2026
+
+## Git
+4f8ff68
+main
+ M .env.example
+D  .gnupg/gpg-agent.conf
+D  .gnupg/gpg.conf
+D  .gnupg/pubring.kbx
+D  .gnupg/trustdb.gpg
+ M backend/app/api/edge.py
+ M backend/app/api/global_ops.py
+ M backend/app/main.py
+ M frontend/.env.example
+ D frontend/src/components/ErrorBoundary.tsx
+ D frontend/src/components/StatusCard.tsx
+ M frontend/src/components/layout/AppLayout.tsx
+ M frontend/src/components/layout/PageHeader.tsx
+ M frontend/src/components/layout/Sidebar.tsx
+ M frontend/src/components/layout/Topbar.tsx
+ M frontend/src/index.css
+ M frontend/src/pages/Admin.tsx
+ M frontend/src/pages/Alerts.tsx
+ D frontend/src/pages/ArchitectureDrift.tsx
+ D frontend/src/pages/AuditLogs.tsx
+ M frontend/src/pages/Backtests.tsx
+ M frontend/src/pages/Billing.tsx
+ D frontend/src/pages/CapabilityMap.tsx
+ M frontend/src/pages/ContentPipeline.tsx
+ M frontend/src/pages/Dashboard.tsx
+ M frontend/src/pages/Enterprise.tsx
+ D frontend/src/pages/EnterpriseOS.tsx
+ D frontend/src/pages/GovernanceRefinement.tsx
+ M frontend/src/pages/IoTControl.tsx
+ D frontend/src/pages/LessonsMemory.tsx
+ M frontend/src/pages/Login.tsx
+ D frontend/src/pages/LongHorizon.tsx
+ M frontend/src/pages/Marketplace.tsx
+ M frontend/src/pages/NotFound.tsx
+ M frontend/src/pages/Onboarding.tsx
+ D frontend/src/pages/OperatingCadence.tsx
+ D frontend/src/pages/OrgMap.tsx
+ M frontend/src/pages/OrgMapPage.tsx
+ M frontend/src/pages/Organizations.tsx
+ D frontend/src/pages/PolicySimulation.tsx
+ M frontend/src/pages/RiskPanel.tsx
+ M frontend/src/pages/Scheduler.tsx
+ D frontend/src/pages/SelfEvolution.tsx
+ M frontend/src/pages/SessionLogs.tsx
+ M frontend/src/pages/Settings.tsx
+ M frontend/src/pages/SystemHealth.tsx
+ M frontend/src/pages/TeamRoster.tsx
+ D frontend/src/pages/TrendRadar.tsx
+ M frontend/src/pages/Usage.tsx
+ M frontend/src/pages/Workers.tsx
+ M frontend/src/pages/Workspace.tsx
+ M frontend/src/pages/XauDashboard.tsx
+ M frontend/src/tests/App.test.tsx
+ M frontend/src/tests/Dashboard.test.tsx
+ M frontend/tailwind.config.js
+D  install-zdash-fullstack.sh
+?? .dockerignore
+?? backend/app/risk/high_risk_policy.py
+?? backend/app/services/__init__.py
+?? backend/app/tests/__init__.py
+?? backend/app/tests/test_auth_security.py
+?? backend/app/tests/test_enterprise_api.py
+?? backend/app/tests/test_google_finance_api.py
+?? backend/app/tests/test_high_risk_action_policy.py
+?? backend/app/tests/test_provider_contract_skeletons.py
+?? backend/app/tests/test_tenancy_workspace.py
+?? docker-compose.prod.secrets.yml
+?? docs/audits/README.md
+?? docs/prompt/Impements/Complete-2.21.prompt
+?? docs/prompt/deepseek-meta-master-final-release-prompt.md
+?? docs/prompt/phase33-ai-trader.prompt
+?? docs/prompt/zdash-dashboard-figma-community-final-prompt-pack.md
+?? docs/prompt/zdash-deep-dive-audit-prompt.md
+?? docs/prompts/
+?? docs/release/
+?? docs/reports/
+?? docs/runbooks/final-release-runbook.md
+?? docs/runbooks/incident-response-runbook.md
+?? docs/runbooks/rollback-runbook.md
+?? docs/security/production-fail-closed-policy.md
+?? frontend/src/api/zFinance.ts
+?? frontend/src/components/ui/
+?? frontend/src/pages/ZFinance.tsx
+?? frontend/src/tests/EventTimeline.test.tsx
+?? frontend/src/tests/IncidentCenter.test.tsx
+?? frontend/src/tests/SafetyState.test.tsx
+?? frontend/src/tests/SessionLogs.test.tsx
+?? frontend/src/tests/Settings.test.tsx
+?? frontend/src/tests/TeamRoster.test.tsx
+?? frontend/src/tests/XauDashboard.test.tsx
+?? frontend/src/tests/ZFinance.test.tsx
+?? scripts/dash.html
+?? scripts/deep-scan-zdash.sh
+?? scripts/production/
+?? scripts/validate.sh
