@@ -1,0 +1,2 @@
+name = "reviewer"
+description = "zDash reviewer focused on correctness, security regressions, test gaps, release safety, and policy compliance."
