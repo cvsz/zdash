@@ -20,14 +20,23 @@ RELEASE_TAG ?= v2.0.0
 RELEASE_TITLE ?= zDash Final Release
 CONFIRM_RELEASE ?= no
 
+ZDASH_DOMAIN ?= localhost
+ZDASH_PROD_RUNTIME ?= /opt/zdash/runtime
+ZDASH_PROD_ENV ?= $(ZDASH_PROD_RUNTIME)/.env.production
+ZDASH_PROD_COMPOSE ?= $(ZDASH_PROD_RUNTIME)/docker-compose.yml
+ZDASH_PROD_HEALTH ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-health.sh
+ZDASH_PROD_LOGS ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-logs.sh
+ZDASH_PROD_BACKUP ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-backup.sh
+ZDASH_PROD_UPDATE ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-update.sh
+
 BACKEND_ACTIVATE := source $(BACKEND_DIR)/.venv/bin/activate
 NVM_LOAD := source $$HOME/.nvm/nvm.sh >/dev/null 2>&1 || true; nvm use $(NODE_VERSION) >/dev/null 2>&1 || true
 FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|^\.gemini/|^\.claude/|^\.mcp/|^docs/prompt/codex-runs/|^skill\.sh$$|^scripts/skill\.sh$$)
 
 .PHONY: help
 help: ## Show available targets
-	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-30s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
-	@printf "\nCommon flows:\n  make golive\n  make release-local RELEASE_TAG=v2.0.0\n  make release-push RELEASE_TAG=v2.0.0 CONFIRM_RELEASE=yes\n  make validate-fast\n  make validate\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
+	@awk 'BEGIN {FS = ":.*##"; printf "\nzDash Master Makefile\n\nUsage:\n  make <target>\n\nTargets:\n"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-34s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@printf "\nCommon flows:\n  make install-local\n  make install-local-start\n  make validate-fast\n  make validate\n  make install-prod ZDASH_DOMAIN=zdash.zeaz.dev\n  make prod-health\n  make prod-logs SERVICE=backend\n  make gh-env-dry GH_ENV=dev\n  make gh-env-sync GH_ENV=dev\n  make run-backend\n  make run-frontend\n\n"
 
 .PHONY: info
 info: ## Print local project/runtime info
@@ -258,12 +267,182 @@ compose-ps: ## Show compose services
 	docker compose ps
 
 .PHONY: compose-logs
-compose-logs: ## Tail compose logs
+compose-logs: ## Follow compose logs
 	docker compose logs -f --tail=200
 
-.PHONY: maintenance
-maintenance: ## Run Codex Cloud maintenance validation
+.PHONY: scripts-list
+scripts-list: ## List executable script files known to the repo/worktree
+	@echo "Tracked shell/python/powershell scripts:"; \
+	git ls-files '*.sh' '*.py' '*.ps1' | sort | sed 's/^/  /'; \
+	echo; \
+	echo "Installer-generated local helpers if present:"; \
+	for f in run-backend.sh run-frontend.sh healthcheck-zdash.sh validate-zdash.sh repair-zdash.sh; do [ ! -f "$$f" ] || echo "  $$f"; done
+
+.PHONY: scripts-chmod
+scripts-chmod: ## chmod +x tracked shell scripts and root installers
+	@chmod +x install-zdash-fullstack.sh install-zdash-prod.sh 2>/dev/null || true
+	@find scripts infra/scripts .codex -type f -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
+	@for f in run-backend.sh run-frontend.sh healthcheck-zdash.sh validate-zdash.sh repair-zdash.sh; do [ ! -f "$$f" ] || chmod +x "$$f"; done
+	@echo "Script executable bits refreshed."
+
+.PHONY: install-local
+install-local: scripts-chmod ## Run local/VM full-stack installer
+	bash install-zdash-fullstack.sh
+
+.PHONY: install-local-start
+install-local-start: scripts-chmod ## Run local installer and start backend/frontend via nohup
+	START_SERVICES=true bash install-zdash-fullstack.sh
+
+.PHONY: install-local-pull
+install-local-pull: scripts-chmod ## Pull when clean, then run local installer
+	DO_PULL=true bash install-zdash-fullstack.sh
+
+.PHONY: install-local-fast
+install-local-fast: scripts-chmod ## Run local installer without tests/build for quick repair
+	RUN_BACKEND_TESTS=false RUN_FRONTEND_TESTS=false RUN_FRONTEND_BUILD=false bash install-zdash-fullstack.sh
+
+.PHONY: install-local-docker
+install-local-docker: scripts-chmod ## Run local installer plus Docker validation builds
+	RUN_DOCKER_BUILDS=true INSTALL_DOCKER=true bash install-zdash-fullstack.sh
+
+.PHONY: install-repair
+install-repair: scripts-chmod ## Run generated repair helper if present, else force backend reinstall through installer
+	@if [ -x ./repair-zdash.sh ]; then ./repair-zdash.sh; else FORCE_BACKEND_REINSTALL=true bash install-zdash-fullstack.sh; fi
+
+.PHONY: install-validate
+install-validate: scripts-chmod ## Run generated validate helper if present, else run make validate-fast
+	@if [ -x ./validate-zdash.sh ]; then ./validate-zdash.sh; else $(MAKE) validate-fast; fi
+
+.PHONY: install-health
+install-health: ## Run generated local healthcheck if present
+	@if [ -x ./healthcheck-zdash.sh ]; then ./healthcheck-zdash.sh; else $(MAKE) health; fi
+
+.PHONY: install-prod
+install-prod: scripts-chmod ## Run production installer with sudo; set ZDASH_DOMAIN=domain
+	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) ./install-zdash-prod.sh
+
+.PHONY: install-prod-tests
+install-prod-tests: scripts-chmod ## Run production installer with backend/frontend host tests enabled
+	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) RUN_TESTS=true RUN_FRONTEND_TESTS=true ./install-zdash-prod.sh
+
+.PHONY: install-prod-no-firewall
+install-prod-no-firewall: scripts-chmod ## Run production installer without changing UFW
+	sudo ZDASH_DOMAIN=$(ZDASH_DOMAIN) ENABLE_UFW=false ./install-zdash-prod.sh
+
+.PHONY: prod-ps
+prod-ps: ## Show production Docker Compose services
+	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) ps
+
+.PHONY: prod-health
+prod-health: ## Run production health helper
+	sudo $(ZDASH_PROD_HEALTH)
+
+.PHONY: prod-logs
+prod-logs: ## Follow production logs; set SERVICE=backend/nginx/frontend/postgres/redis
+	@if [ -n "$${SERVICE:-}" ]; then sudo $(ZDASH_PROD_LOGS) "$$SERVICE"; else sudo $(ZDASH_PROD_LOGS); fi
+
+.PHONY: prod-backend-logs
+prod-backend-logs: ## Follow production backend logs
+	sudo $(ZDASH_PROD_LOGS) backend
+
+.PHONY: prod-nginx-logs
+prod-nginx-logs: ## Follow production nginx logs
+	sudo $(ZDASH_PROD_LOGS) nginx
+
+.PHONY: prod-backup
+prod-backup: ## Run production backup helper
+	sudo $(ZDASH_PROD_BACKUP)
+
+.PHONY: prod-update
+prod-update: ## Run production update/rebuild helper
+	sudo $(ZDASH_PROD_UPDATE)
+
+.PHONY: prod-start
+prod-start: ## Start production systemd service
+	sudo systemctl start zdash
+
+.PHONY: prod-stop
+prod-stop: ## Stop production systemd service
+	sudo systemctl stop zdash
+
+.PHONY: prod-restart
+prod-restart: ## Restart production stack through systemd
+	sudo systemctl restart zdash
+
+.PHONY: prod-status
+prod-status: ## Show production systemd service status
+	sudo systemctl status zdash --no-pager
+
+.PHONY: prod-down
+prod-down: ## Stop production Docker Compose stack directly
+	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) down
+
+.PHONY: prod-up
+prod-up: ## Start production Docker Compose stack directly
+	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) up -d
+
+.PHONY: codex-setup
+codex-setup: ## Run Codex Cloud setup script
+	bash .codex/cloud/setup.sh
+
+.PHONY: codex-maintenance
+codex-maintenance: ## Run Codex Cloud maintenance script
 	bash .codex/cloud/maintenance.sh
+
+.PHONY: codex-repair-backend
+codex-repair-backend: ## Run Codex backend dependency repair script
+	bash .codex/cloud/repair-backend-deps.sh
+
+.PHONY: codex-healthcheck
+codex-healthcheck: ## Run Codex healthcheck if present
+	@if [ -x .codex/healthcheck.sh ]; then bash .codex/healthcheck.sh; else echo ".codex/healthcheck.sh not found/executable"; fi
+
+.PHONY: maintenance
+maintenance: codex-maintenance ## Run Codex Cloud maintenance validation
+
+.PHONY: script-run-phases
+script-run-phases: ## Run prompt phase runner; set PHASE_ARGS='...'
+	bash scripts/run-prompt-phases.sh $${PHASE_ARGS:-}
+
+.PHONY: script-export-json-prompt
+script-export-json-prompt: ## Run JSON-to-prompt export helper; set EXPORT_ARGS='...'
+	bash scripts/export-json-to-prompt.sh $${EXPORT_ARGS:-}
+
+.PHONY: script-integrate-ecc
+script-integrate-ecc: ## Run ECC integration script
+	bash scripts/integrate-ecc.sh
+
+.PHONY: script-sync-ecc-codex
+script-sync-ecc-codex: ## Run ECC-to-Codex sync script
+	bash scripts/sync-ecc-to-codex.sh
+
+.PHONY: script-setup-dev
+script-setup-dev: ## Run repository dev setup script
+	bash scripts/setup-dev.sh
+
+.PHONY: script-enable-agents
+script-enable-agents: ## Run agent enabling helper
+	$(PYTHON) scripts/enable_agents.py
+
+.PHONY: infra-deploy-dev
+infra-deploy-dev: ## Run infra development deploy script
+	bash infra/scripts/deploy-dev.sh
+
+.PHONY: infra-deploy-prod
+infra-deploy-prod: ## Run infra production deploy script
+	bash infra/scripts/deploy-prod.sh
+
+.PHONY: infra-rollback
+infra-rollback: ## Run infra rollback script
+	bash infra/scripts/rollback.sh
+
+.PHONY: windows-nssm-command
+windows-nssm-command: ## Print Windows NSSM install command for PowerShell
+	@echo 'PowerShell:'
+	@echo '  powershell -ExecutionPolicy Bypass -File scripts/install-nssm-service.ps1'
+
+.PHONY: all-scripts-check
+all-scripts-check: scripts-list scripts-chmod safety-scan ## List scripts, refresh executable bits, and run safety scan
 
 .PHONY: validate-fast
 validate-fast: safety-scan backend-check frontend-check ## Run safety scans + backend/frontend validation
