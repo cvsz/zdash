@@ -1,7 +1,15 @@
 # zDash · Safety-First AI Operations Dashboard
 
-**Version:** 0.42.0-rc1
-**Status:** RELEASE CANDIDATE (GO)
+<p align="center">
+  <img alt="Version" src="https://img.shields.io/badge/version-0.42.0--rc1-blue?style=flat-square">
+  <img alt="Status" src="https://img.shields.io/badge/status-release%20candidate-green?style=flat-square">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square">
+  <img alt="Node" src="https://img.shields.io/badge/node-20%20LTS-green?style=flat-square">
+  <img alt="CI" src="https://github.com/cvsz/zdash/actions/workflows/ci.yml/badge.svg?style=flat-square">
+  <img alt="Backend port" src="https://img.shields.io/badge/backend--port-8005-important?style=flat-square">
+  <img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square">
+</p>
 
 **Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
 
