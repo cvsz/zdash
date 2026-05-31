@@ -50,7 +50,7 @@ def test_get_plugin_api() -> None:
     plugin = res["data"]["plugin"]
 
     assert res["ok"] is True
-    assert getattr(plugin, "id", None) == BUILTINS[0].id
+    assert plugin["id"] == BUILTINS[0].id
 
 
 def test_install_and_lifecycle_api() -> None:
