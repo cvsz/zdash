@@ -7,7 +7,7 @@ against the plugin_manifests table.
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy import or_
@@ -167,7 +167,7 @@ def register_plugin_manifest(
         existing.source_type = manifest.source_type or "builtin"
         existing.source_ref = manifest.source_ref
         existing.checksum = manifest.checksum
-        existing.updated_at = datetime.utcnow()
+        existing.updated_at = datetime.now(timezone.utc)
         result = existing
     else:
         manifest.id = manifest.id or None  # let default _id fire
