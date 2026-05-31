@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional, cast
 from sqlalchemy import select
 from app.db.session import SessionLocal
 from app.enterprise.models import OnboardingChecklist
@@ -56,18 +56,26 @@ def mark_step_complete(organization_id: str, workspace_id: Optional[str], step: 
         if chk is None:
             return {"ok": False, "error": "checklist not found"}
             
-        if step in chk.pending_steps:
-            new_pending = list(chk.pending_steps)
+        pending_steps = cast(list[str], getattr(chk, "pending_steps", []) or [])
+        completed_steps = cast(list[str], getattr(chk, "completed_steps", []) or [])
+
+        if step in pending_steps:
+            new_pending = list(pending_steps)
             new_pending.remove(step)
             setattr(chk, "pending_steps", new_pending)
-            
-            new_completed = list(chk.completed_steps)
+
+            new_completed = list(completed_steps)
             if step not in new_completed:
                 new_completed.append(step)
             setattr(chk, "completed_steps", new_completed)
-            
-            total_steps = len(chk.completed_steps) + len(chk.pending_steps)
-            setattr(chk, "progress_percent", round((len(chk.completed_steps) / total_steps) * 100) if total_steps > 0 else 100.0)
+
+            total_steps = len(new_completed) + len(new_pending)
+            progress_percent = (
+                float(round((len(new_completed) / total_steps) * 100))
+                if total_steps > 0
+                else 100.0
+            )
+            setattr(chk, "progress_percent", progress_percent)
             setattr(chk, "updated_at", utc_now())
             db.commit()
             
