@@ -1,0 +1,244 @@
+# Phase 35.6 · Final Report and Release Handoff
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Produce the final Phase 35 release-candidate report and handoff after Phase 35.1–35.5 validation. Do not make code changes unless a critical, small, obvious validation blocker is discovered.
+
+---
+
+## Safety invariants
+
+- Do not enable live trading.
+- Do not add broker execution.
+- Do not bypass Guardian, TradingService, ExecutionEngine, SignalValidationService, RBAC, audit/event logging, dry-run mode, or safety policy.
+- AI Trader remains simulation-only.
+- Billing provider remains mock by default.
+- Stripe remains disabled by default.
+- Marketplace plugin runtime remains sandboxed by default.
+- Enterprise export remains safe by default and requires confirmation for secrets.
+- Do not commit secrets or local-only artifacts.
+- Backend port is `8005`.
+
+---
+
+## Inspect first
+
+Inspect final state:
+
+```text
+git status --short
+git log --oneline -20
+README.md
+Makefile
+.env.example
+frontend/.env.example
+docs/
+docs/prompt/
+docs/AI_TRADER_CONTROL_PLANE.md
+backend/app/main.py
+backend/app/ai_trader/
+backend/app/api/ai_trader.py
+frontend/src/api/aiTrader.ts
+frontend/src/components/trading/AITraderSimulationCard.tsx
+.github/workflows/
+.codex/cloud/maintenance.sh
+```
+
+Do not inspect massive directories unnecessarily. Focus on release evidence.
+
+---
+
+## Final validation commands
+
+Run or cite the most recent successful run. If no recent run exists, run:
+
+```bash
+cd ~/zdash
+make safety-scan
+```
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+If Docker is available and time permits:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate
+```
+
+If Docker is unavailable or too slow, report Docker validation as skipped with reason.
+
+---
+
+## Required report
+
+Produce this exact structure:
+
+```text
+# Phase 35 Final Release Candidate Report
+
+## Repository inspection summary
+- Repo:
+- Branch:
+- Latest commit:
+- Working tree status:
+- Prompt strategy used:
+
+## Phase 35 passes completed
+- 35.0 Repo sync and safety scan:
+- 35.1 Backend release hardening:
+- 35.2 AI Trader final polish:
+- 35.3 Frontend dashboard/UI polish:
+- 35.4 Docs/runbooks/API examples:
+- 35.5 Makefile/CI/maintenance validation:
+- 35.6 Final report/handoff:
+
+## Files created
+- ...
+
+## Files updated
+- ...
+
+## Tests added/updated
+- ...
+
+## Backend validation result
+- ruff:
+- pytest:
+- notes:
+
+## Frontend validation result
+- tests:
+- build:
+- notes:
+
+## Docker/compose validation result
+- backend image:
+- frontend image:
+- nginx image:
+- compose config:
+- prod compose config:
+- notes:
+
+## Makefile/maintenance validation result
+- safety-scan:
+- validate-fast:
+- maintenance:
+- validate:
+
+## Safety checklist
+- live trading disabled:
+- broker execution absent:
+- Guardian path preserved:
+- dry-run default preserved:
+- production safety lock preserved:
+- secrets not committed:
+- port 8005 preserved:
+- codex-runs untracked:
+
+## AI Trader simulation-only status
+- strategies:
+- signal endpoint:
+- compare endpoint:
+- paper-trade endpoint:
+- frontend card:
+- tests:
+
+## Billing/mock/Stripe safety status
+- billing provider default:
+- Stripe status:
+- UI safety:
+
+## Marketplace plugin safety status
+- sandbox default:
+- review required:
+- UI safety:
+
+## Enterprise export safety status
+- export default:
+- secret export confirmation:
+- branding sanitization:
+
+## Cloudflare operator handoff status
+- operator repo:
+- domain/TLS/tunnel responsibility:
+- zDash responsibility:
+
+## Known non-blocking warnings
+- passlib crypt deprecation:
+- React act warnings:
+- React Router future flags:
+- ErrorBoundary intentional error:
+- Vite chunk warnings:
+
+## Known limitations
+- ...
+
+## Release readiness verdict
+- READY / NOT READY:
+- reason:
+
+## Next phase recommendation
+- ...
+```
+
+---
+
+## Blocking vs non-blocking
+
+Blocking:
+
+```text
+failed ruff
+failed pytest
+failed frontend tests
+failed frontend build
+failed safety-scan
+tracked .env
+tracked secrets
+tracked local-only codex-runs
+live trading enabled
+port 8000 introduced in runtime/source files
+Docker/compose failure if Docker validation is required for the release
+```
+
+Non-blocking when summaries pass:
+
+```text
+passlib crypt deprecation warning from dependency
+React act(...) warnings in existing tests
+React Router future flag warnings
+intentional ErrorBoundary test Error: fail
+Vite chunk-size warning
+Docker skipped because unavailable
+```
+
+---
+
+## Commit
+
+If the report is written into docs, commit it:
+
+```bash
+git add docs
+
+git commit -m "phase35.6: add final release handoff report"
+```
+
+If no files changed, do not create an empty commit. Return the report only.
