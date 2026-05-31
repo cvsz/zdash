@@ -54,3 +54,19 @@ if (!globalThis.fetch) {
     throw new Error('fetch not mocked');
   }) as unknown as typeof fetch;
 }
+
+const originalConsoleWarn = console.warn.bind(console);
+
+console.warn = (...args: unknown[]) => {
+  const message = args.map((arg) => String(arg)).join(" ");
+
+  if (
+    message.includes("React Router Future Flag Warning") ||
+    message.includes("v7_startTransition") ||
+    message.includes("v7_relativeSplatPath")
+  ) {
+    return;
+  }
+
+  originalConsoleWarn(...args);
+};
