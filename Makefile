@@ -389,6 +389,50 @@ prod-down: ## Stop production Docker Compose stack directly
 prod-up: ## Start production Docker Compose stack directly
 	sudo docker compose --env-file $(ZDASH_PROD_ENV) -f $(ZDASH_PROD_COMPOSE) up -d
 
+.PHONY: prod-verify
+prod-verify: prod-verify-runtime prod-verify-health prod-verify-rollback prod-verify-observability ## Run full production deployment dry-run verification
+
+.PHONY: prod-verify-runtime
+prod-verify-runtime: ## Verify production runtime prerequisites
+	bash scripts/prod/verify-prod-runtime.sh
+
+.PHONY: prod-verify-health
+prod-verify-health: ## Verify production health endpoints
+	bash scripts/prod/verify-prod-health.sh
+
+.PHONY: prod-verify-rollback
+prod-verify-rollback: ## Verify production rollback readiness
+	bash scripts/prod/verify-prod-rollback-readiness.sh
+
+.PHONY: prod-verify-observability
+prod-verify-observability: ## Verify production observability
+	bash scripts/prod/verify-prod-observability.sh
+
+.PHONY: phase39-validate
+phase39-validate: ## Validate Phase 39 production dry-run deliverables
+	@echo "=== Phase 39 Validation ==="; \
+	echo ""; \
+	echo "--- Makefile Targets ---"; \
+	for t in prod-verify prod-verify-runtime prod-verify-health prod-verify-rollback prod-verify-observability phase39-validate; do \
+	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
+	done; \
+	echo ""; \
+	echo "--- Scripts ---"; \
+	for s in scripts/prod/verify-prod-runtime.sh scripts/prod/verify-prod-health.sh scripts/prod/verify-prod-rollback-readiness.sh scripts/prod/verify-prod-observability.sh; do \
+	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Docs ---"; \
+	for d in docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md; do \
+	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Duplicate Check ---"; \
+	DUPS=$$(grep -E '^prod-verify' Makefile | sort | uniq -d); \
+	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate prod-verify targets"; fi; \
+	echo ""; \
+	echo "Phase 39 validation complete."
+
 .PHONY: codex-setup
 codex-setup: ## Run Codex Cloud setup script
 	bash .codex/cloud/setup.sh
