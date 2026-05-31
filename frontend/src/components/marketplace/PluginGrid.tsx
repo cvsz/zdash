@@ -9,30 +9,40 @@ interface PluginGridProps {
   onViewDetails: (plugin: PluginManifest) => void;
 }
 
+function text(value: unknown, fallback = ""): string {
+  return typeof value === "string" ? value : fallback;
+}
+
 export function PluginGrid({ plugins, installations, onInstall, onViewDetails }: PluginGridProps) {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const categories = ["all", ...Array.from(new Set(plugins.map((p) => p.category)))];
+  const safePlugins = Array.isArray(plugins) ? plugins : [];
+  const safeInstallations = Array.isArray(installations) ? installations : [];
 
-  const filteredPlugins = plugins.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || p.category === selectedCategory;
+  const categories = [
+    "all",
+    ...Array.from(new Set(safePlugins.map((p) => text(p.category, "general")))),
+  ];
+
+  const filteredPlugins = safePlugins.filter((p) => {
+    const haystack = `${text(p.name)} ${text(p.description)} ${text(p.slug)} ${text(p.category)}`.toLowerCase();
+    const matchesSearch = haystack.includes(search.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || text(p.category, "general") === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const isPluginInstalled = (pluginId: string) => {
-    return installations.some((inst) => inst.plugin_id === pluginId);
+    return safeInstallations.some((inst) => inst.plugin_id === pluginId);
   };
 
   return (
     <div className="space-y-6">
-      {/* Search and Category Filters */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
         <div className="flex-1 max-w-md">
           <input
+            id="marketplace-plugin-search"
+            name="marketplace-plugin-search"
             type="text"
             placeholder="Search plugins by name or description..."
             value={search}

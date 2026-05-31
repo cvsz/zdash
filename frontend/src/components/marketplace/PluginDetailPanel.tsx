@@ -25,6 +25,16 @@ export function PluginDetailPanel({
 
   if (!plugin) return null;
 
+  const safetyLevel = typeof plugin.safety_level === "string" && plugin.safety_level.trim()
+    ? plugin.safety_level
+    : "sandbox";
+  const requiredFeatures = Array.isArray(plugin.required_features) ? plugin.required_features : [];
+  const requiredPermissions = Array.isArray(plugin.required_permissions) ? plugin.required_permissions : [];
+  const pluginName = plugin.name || plugin.id || "Plugin";
+  const pluginCategory = plugin.category || "general";
+  const pluginVersion = plugin.version || "0.0.0";
+  const pluginDescription = plugin.description || "No description provided.";
+
   const handleRun = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!onRunAction || !actionName) return;
@@ -52,9 +62,9 @@ export function PluginDetailPanel({
       {/* Header */}
       <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/30">
         <div>
-          <h3 className="text-xl font-bold text-white">{plugin.name}</h3>
+          <h3 className="text-xl font-bold text-white">{pluginName}</h3>
           <span className="text-neutral-500 text-xs mt-1 block">
-            Category: <span className="capitalize">{plugin.category}</span> • v{plugin.version}
+            Category: <span className="capitalize">{pluginCategory}</span> • v{pluginVersion}
           </span>
         </div>
         <button
@@ -69,7 +79,7 @@ export function PluginDetailPanel({
         {/* Description */}
         <section className="space-y-2">
           <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Description</h4>
-          <p className="text-sm text-neutral-300 leading-relaxed">{plugin.description}</p>
+          <p className="text-sm text-neutral-300 leading-relaxed">{pluginDescription}</p>
         </section>
 
         {/* Safety & Isolation Notes */}
@@ -78,16 +88,16 @@ export function PluginDetailPanel({
           <div className="flex items-center gap-2 mt-1">
             <span
               className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider ${
-                plugin.safety_level === "sandbox"
+                safetyLevel === "sandbox"
                   ? "text-green-400 bg-green-500/10 border border-green-500/20"
                   : "text-amber-400 bg-amber-500/10 border border-amber-500/20"
               }`}
             >
-              {plugin.safety_level}
+              {safetyLevel}
             </span>
           </div>
           <p className="text-xs text-neutral-400 leading-relaxed mt-2">
-            {plugin.safety_level === "sandbox"
+            {safetyLevel === "sandbox"
               ? "This plug-in executes in a secure sandboxed container. It does not have access to system secrets, files, or external networks. Actions are fully safe to simulate."
               : "This plug-in runs with restricted permissions. It requires access to specific integrations or tokens to communicate with external web services."}
           </p>
@@ -97,11 +107,11 @@ export function PluginDetailPanel({
         <section className="grid grid-cols-2 gap-4">
           <div>
             <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Required Features</h4>
-            {plugin.required_features.length === 0 ? (
+            {requiredFeatures.length === 0 ? (
               <span className="text-xs text-neutral-500">None required</span>
             ) : (
               <div className="flex flex-wrap gap-1.5">
-                {plugin.required_features.map((f, i) => (
+                {requiredFeatures.map((f, i) => (
                   <span key={i} className="px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 text-xs font-mono">
                     {f}
                   </span>
@@ -112,11 +122,11 @@ export function PluginDetailPanel({
 
           <div>
             <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Required Permissions</h4>
-            {plugin.required_permissions.length === 0 ? (
+            {requiredPermissions.length === 0 ? (
               <span className="text-xs text-neutral-500">None required</span>
             ) : (
               <div className="flex flex-wrap gap-1.5">
-                {plugin.required_permissions.map((p, i) => (
+                {requiredPermissions.map((p, i) => (
                   <span key={i} className="px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 text-xs font-mono">
                     {p}
                   </span>
@@ -136,8 +146,10 @@ export function PluginDetailPanel({
 
             <form onSubmit={handleRun} className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-1">Action Name</label>
+                <label htmlFor="plugin-action-name" className="block text-xs font-medium text-neutral-400 mb-1">Action Name</label>
                 <input
+                  id="plugin-action-name"
+                  name="plugin-action-name"
                   type="text"
                   required
                   placeholder="e.g. test_action"
@@ -148,8 +160,10 @@ export function PluginDetailPanel({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-1">Payload JSON (Optional)</label>
+                <label htmlFor="plugin-action-payload" className="block text-xs font-medium text-neutral-400 mb-1">Payload JSON (Optional)</label>
                 <textarea
+                  id="plugin-action-payload"
+                  name="plugin-action-payload"
                   placeholder='e.g. { "param": "value" }'
                   value={actionPayload}
                   onChange={(e) => setActionPayload(e.target.value)}

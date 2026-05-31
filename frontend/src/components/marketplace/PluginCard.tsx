@@ -8,7 +8,18 @@ interface PluginCardProps {
   onViewDetails: (plugin: PluginManifest) => void;
 }
 
+function safeText(value: unknown, fallback = ""): string {
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
 export function PluginCard({ plugin, isInstalled, onInstall, onViewDetails }: PluginCardProps) {
+  const safetyLevel = safeText(plugin.safety_level, "sandbox");
+  const category = safeText(plugin.category, "general");
+  const name = safeText(plugin.name, plugin.id || "Plugin");
+  const version = safeText(plugin.version, "0.0.0");
+  const author = safeText(plugin.author, "Unknown");
+  const description = safeText(plugin.description, "No description provided.");
+
   const getSafetyBadgeStyle = (level: string) => {
     switch (level.toLowerCase()) {
       case "sandbox":
@@ -25,28 +36,32 @@ export function PluginCard({ plugin, isInstalled, onInstall, onViewDetails }: Pl
       <div>
         <div className="flex justify-between items-start gap-2 mb-4">
           <div>
-            <h4 className="text-lg font-bold text-white">{plugin.name}</h4>
+            <h4 className="text-lg font-bold text-white">{name}</h4>
             <span className="text-neutral-500 text-xs mt-1 block">
-              v{plugin.version} • By {plugin.author}
+              v{version} • By {author}
             </span>
           </div>
           <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 capitalize">
-            {plugin.category}
+            {category}
           </span>
         </div>
 
-        <p className="text-sm text-neutral-400 mb-6 line-clamp-3">{plugin.description}</p>
+        <p className="text-sm text-neutral-400 mb-6 line-clamp-3">{description}</p>
 
         <div className="space-y-3 mb-6">
           <div className="flex items-center justify-between text-xs border-b border-neutral-900 pb-2">
             <span className="text-neutral-500 font-semibold uppercase tracking-wider">Safety Rating</span>
-            <span className={`px-2 py-0.5 rounded-full border text-[10px] uppercase font-bold tracking-wider ${getSafetyBadgeStyle(plugin.safety_level)}`}>
-              {plugin.safety_level}
+            <span
+              className={`px-2 py-0.5 rounded-full border text-[10px] uppercase font-bold tracking-wider ${getSafetyBadgeStyle(
+                safetyLevel,
+              )}`}
+            >
+              {safetyLevel}
             </span>
           </div>
 
           <div className="text-[11px] text-neutral-500 italic">
-            {plugin.safety_level === "sandbox"
+            {safetyLevel === "sandbox"
               ? "✔ Highly isolated runtime. No external network or secret access."
               : "⚠ Restricted runtime. Requires review of necessary API tokens."}
           </div>
@@ -55,7 +70,7 @@ export function PluginCard({ plugin, isInstalled, onInstall, onViewDetails }: Pl
 
       <div className="flex gap-2 pt-2 border-t border-neutral-900">
         <button
-          onClick={() => onViewDetails(plugin)}
+          onClick={() => onViewDetails({ ...plugin, safety_level: safetyLevel })}
           className="flex-1 py-2 px-3 rounded-lg bg-neutral-900 hover:bg-neutral-850 text-neutral-300 border border-neutral-800 text-xs font-semibold transition duration-150"
         >
           View Details
