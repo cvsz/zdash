@@ -26,6 +26,33 @@
 <a href="https://img.shields.io/github/forks/cvsz/zdash?style=social"><img src="https://img.shields.io/github/forks/cvsz/zdash?style=social" alt="Forks"></a>
 
 </p>
+---
+# zdash
+
+<!-- Build & Test -->
+![CI](https://github.com/cvsz/zdash/actions/workflows/ci.yml/badge.svg)
+![e2e](https://github.com/cvsz/zdash/actions/workflows/e2e.yml/badge.svg)
+![release-validate](https://github.com/cvsz/zdash/actions/workflows/release-validate.yml/badge.svg)
+![release](https://github.com/cvsz/zdash/actions/workflows/release.yml/badge.svg)
+
+<!-- Coverage & Quality -->
+![Coverage](https://img.shields.io/codecov/c/github/cvsz/zdash)
+![Lint](https://github.com/cvsz/zdash/actions/workflows/lint.yml/badge.svg)
+![Security](https://img.shields.io/snyk/vulnerabilities/github/cvsz/zdash)
+
+<!-- Dependencies -->
+![Dependencies](https://img.shields.io/librariesio/github/cvsz/zdash)
+![Node Version](https://img.shields.io/node/v/zdash)
+
+<!-- Metadata -->
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Release](https://img.shields.io/github/v/release/cvsz/zdash)
+![Issues](https://img.shields.io/github/issues/cvsz/zdash)
+![Pull Requests](https://img.shields.io/github/issues-pr/cvsz/zdash)
+![Stars](https://img.shields.io/github/stars/cvsz/zdash?style=social)
+![Forks](https://img.shields.io/github/forks/cvsz/zdash?style=social)
+
+---
 
 **Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
 
