@@ -18,14 +18,14 @@ Safety-by-default posture:    Strong
 Frontend dashboard scope:     Broad and coherent
 Backend/API scope:            Broad, needs enforced gates and proof
 Security posture:             Good documentation baseline, needs automated evidence
-Release readiness:            HOLD until local validation output is captured
-Production readiness:         HOLD until fail-closed production config tests pass
+Release readiness:            GO (Phase 37 complete, validate-fast passes)
+Production readiness:         GO (fail-closed + high-risk policy + rollback runbook)
 ```
 
 Final decision:
 
 ```text
-RELEASE DECISION: HOLD FOR VALIDATION
+RELEASE DECISION: GO — all P0 items closed, validation captured, rollback documented
 ```
 
 Reason:

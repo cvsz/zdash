@@ -11,9 +11,9 @@
 
 ## P1 — Required before production prep
 
-- [ ] Add phase traceability matrix (exists at docs/reports/phase-traceability-matrix.md — verify current)
-- [ ] Add release readiness report
-- [ ] Add rollback runbook
+- [x] Add phase traceability matrix — `docs/reports/PHASE_TRACEABILITY_MATRIX.md`
+- [x] Add release readiness report — `docs/releases/PHASE37_RELEASE_READINESS.md`
+- [x] Add rollback runbook — `docs/runbooks/ROLLBACK_RUNBOOK.md`
 - [x] Docker config validation in CI — docker compose config passes
 - [x] Frontend safety-state tests — existing tests validate dashboard
 - [x] Backend audit-event tests — enterprise tests cover audit
