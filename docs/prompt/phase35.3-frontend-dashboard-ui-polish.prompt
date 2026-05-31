@@ -1,0 +1,297 @@
+# Phase 35.3 · Frontend Dashboard / UI Polish
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Polish the zDash frontend dashboard and UI/UX for final release readiness while preserving existing backend contracts and all safety messaging.
+
+Do not redesign the whole app. Do not add new dependencies unless absolutely required. Use existing components and patterns.
+
+---
+
+## Safety invariants
+
+- Do not add any live trading button.
+- Do not hide dry-run or simulation-only labels.
+- Trading and AI Trader screens must say simulation-only / dry-run / not financial advice.
+- Billing pages must show mock provider state when using mock billing.
+- Marketplace must show plugin safety notes and review requirements.
+- Enterprise export with secrets must require typed confirmation.
+- Settings must never show secret values.
+- Do not change backend contracts unless a frontend test proves the contract is broken.
+- Do not commit `.env`, local caches, node_modules, dist, or Codex run artifacts.
+
+---
+
+## Inspect first
+
+Inspect only frontend files needed for UI polish:
+
+```text
+frontend/src/App.tsx
+frontend/src/api/
+frontend/src/components/common/
+frontend/src/components/layout/
+frontend/src/components/trading/
+frontend/src/components/billing/
+frontend/src/components/marketplace/
+frontend/src/components/enterprise/
+frontend/src/pages/
+frontend/src/tests/
+frontend/package.json
+frontend/tsconfig*.json
+```
+
+Create an inspection summary:
+
+```text
+- routes checked
+- dashboard pages checked
+- duplicate imports found
+- missing loading states
+- missing empty states
+- missing error states
+- safety-label gaps
+- test/build risks
+```
+
+---
+
+## Required UI areas
+
+### App routing
+
+Verify routes render and are reachable:
+
+```text
+/
+/login
+/risk
+/scheduler
+/content
+/xau
+/billing
+/usage
+/marketplace
+/enterprise
+/onboarding
+/admin
+/workspace
+```
+
+Do not remove existing routes.
+
+### Layout
+
+Verify:
+
+- Sidebar links match available routes.
+- Topbar renders tenant branding when available.
+- Mobile/responsive layout does not break core pages.
+- Loading/fallback UI is readable.
+
+### Dashboard
+
+Verify:
+
+- core system cards render
+- quota warnings show when relevant
+- fallback/mock banners are visible
+- safety state is clearly labelled
+- no raw backend errors are dumped without user-friendly context
+
+### XAU / Trading / AI Trader
+
+Verify:
+
+- dry-run banner is visible
+- Guardian/risk wording is visible
+- AI Trader card shows strategy selector
+- AI Trader card shows simulation-only banner
+- generated direction/confidence/validation/execution states render
+- compare table works
+- paper trade button says dry-run only
+- no live trading button exists
+
+### Billing / Usage
+
+Verify:
+
+- billing mock provider banner appears
+- subscription status appears
+- pricing/plan table appears
+- invoice table appears
+- quota warnings appear at >80%
+- exceeded quota banner appears
+- payment secrets are never shown
+
+### Marketplace
+
+Verify:
+
+- plugin grid renders
+- plugin safety level appears
+- install/enable/disable/uninstall actions are clearly dry-run/sandboxed unless explicitly allowed
+- installed plugin table renders
+- entitlement/quota warning appears where relevant
+
+### Enterprise
+
+Verify:
+
+- license status renders
+- branding editor escapes/sanitizes preview content
+- export/import panel requires typed confirmation for secrets
+- onboarding checklist renders
+- customer health score renders
+- white-label preview is safe
+
+### Onboarding
+
+Verify:
+
+- steps render
+- safety checklist appears
+- quick actions are dry-run labelled
+- billing/risk/content/trading links are clear
+
+---
+
+## UI/UX improvements allowed
+
+Allowed:
+
+- wording improvements
+- duplicate import cleanup
+- broken route fixes
+- missing fallback/empty/loading/error states
+- accessibility labels
+- safer button labels
+- small component extraction using existing style
+- test updates for clear assertions
+
+Not allowed:
+
+- major redesign
+- dependency churn
+- new state management framework
+- backend rewrites
+- removing safety banners
+- adding live-trading UI
+- exposing secrets
+
+---
+
+## Tests
+
+Add or update tests only for critical UI paths changed:
+
+```text
+frontend/src/tests/App.test.tsx
+frontend/src/tests/Dashboard.test.tsx
+frontend/src/tests/AITrader.test.tsx
+frontend/src/tests/Billing.test.tsx
+frontend/src/tests/Usage.test.tsx
+frontend/src/tests/Marketplace.test.tsx
+frontend/src/tests/Enterprise.test.tsx
+frontend/src/tests/Onboarding.test.tsx
+```
+
+Avoid ambiguous Testing Library assertions. If repeated text is expected, use `findAllByText` or scoped queries.
+
+---
+
+## Validation
+
+Targeted first:
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test -- AITrader.test.tsx Billing.test.tsx Usage.test.tsx Marketplace.test.tsx Enterprise.test.tsx Onboarding.test.tsx
+```
+
+Full frontend validation:
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```
+
+Full repo fast validation if frontend passes:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+---
+
+## Non-blocking known warnings
+
+These warnings are not blockers if final test summaries pass:
+
+```text
+React act(...) warnings in existing hook tests
+React Router future flag warnings
+intentional ErrorBoundary test Error: fail
+```
+
+---
+
+## Final report format
+
+```text
+Phase 35.3 Frontend Dashboard/UI Polish Report
+
+Inspection summary:
+- ...
+
+Files changed:
+- ...
+
+Tests added/updated:
+- ...
+
+Validation:
+- targeted frontend: pass/fail
+- full frontend test: pass/fail
+- frontend build: pass/fail
+- validate-fast: pass/fail/not run
+
+Safety checklist:
+- no live trading button: yes/no
+- dry-run labels visible: yes/no
+- AI Trader simulation banner visible: yes/no
+- billing mock banner visible: yes/no
+- marketplace safety visible: yes/no
+- enterprise export confirmation preserved: yes/no
+- secrets hidden: yes/no
+
+Known warnings:
+- ...
+
+Next pass:
+- Phase 35.4 Docs/runbooks/API examples
+```
+
+---
+
+## Commit
+
+```bash
+git add frontend/src
+
+git commit -m "phase35.3: polish frontend dashboard release ui"
+```
