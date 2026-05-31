@@ -539,6 +539,43 @@ validate-fast: safety-scan backend-check frontend-check ## Run safety scans + ba
 .PHONY: validate
 validate: validate-fast docker-build compose-check maintenance ## Run full validation including Docker and maintenance
 
+.PHONY: release-candidate
+release-candidate: ## Create release candidate (verify readiness + collect evidence + generate notes)
+	bash scripts/release/create-release-candidate.sh
+
+.PHONY: release-evidence
+release-evidence: ## Collect release evidence to docs/reports/generated/
+	bash scripts/release/collect-release-evidence.sh
+
+.PHONY: release-readiness
+release-readiness: ## Verify release readiness prerequisites
+	bash scripts/release/verify-release-readiness.sh
+
+.PHONY: phase41-validate
+phase41-validate: ## Validate Phase 41 release automation deliverables
+	@echo "=== Phase 41 Validation ==="; \
+	echo ""; \
+	echo "--- Makefile Targets ---"; \
+	for t in release-candidate release-evidence release-readiness phase41-validate; do \
+	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
+	done; \
+	echo ""; \
+	echo "--- Scripts ---"; \
+	for s in scripts/release/create-release-candidate.sh scripts/release/collect-release-evidence.sh scripts/release/verify-release-readiness.sh; do \
+	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Docs ---"; \
+	for d in docs/releases/PHASE41_RELEASE_CANDIDATE.md docs/runbooks/OPERATOR_HANDOFF.md docs/reports/PHASE41_RELEASE_EVIDENCE_ARCHIVE.md; do \
+	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Duplicate Check ---"; \
+	DUPS=$$(grep -E '^release-(candidate|evidence|readiness)' Makefile | sort | uniq -d); \
+	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate release-candidate/evidence/readiness targets"; fi; \
+	echo ""; \
+	echo "Phase 41 validation complete."
+
 .PHONY: golive
 golive: backend-install frontend-install validate-fast ## Go-live gate: install deps, safety scans, tests, and frontend build
 	@echo "GO LIVE READY: backend pytest, frontend tests, and frontend build passed."

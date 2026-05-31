@@ -1,0 +1,32 @@
+Implement Phase 38: Release Readiness Pack.
+
+Create:
+- docs/releases/PHASE37_RELEASE_READINESS.md
+- docs/runbooks/ROLLBACK_RUNBOOK.md
+- docs/reports/PHASE_TRACEABILITY_MATRIX.md
+- docs/runbooks/GO_LIVE_CHECKLIST.md
+
+Use current validation evidence:
+- make validate-fast passed
+- backend tests passed
+- frontend 44 files / 90 tests passed
+- frontend build passed
+- mypy passed
+- CI checks passed
+- Phase 36 server command center complete
+- Phase 37 realtime gateway stabilization complete
+
+Keep release safety:
+- DRY_RUN=true
+- LIVE_TRADING_ACK=false
+- MT5_ENABLED=false
+- PRODUCTION_ALLOW_LIVE_ACTIONS=false
+- RISK_GUARDIAN_ENABLED=true
+- no real social posting
+- no real IoT mutation
+- no secrets
+
+Update release decision from HOLD to GO only after documenting rollback and validation evidence.
+
+Run:
+make validate-fast

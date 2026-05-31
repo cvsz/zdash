@@ -1,0 +1,74 @@
+Implement Phase 39: Production Deployment Dry Run + Observability Verification.
+
+Context:
+Phase 38 completed release readiness pack:
+- release readiness report
+- rollback runbook
+- phase traceability matrix
+- go-live checklist
+- release decision GO
+
+Goal:
+Add a safe production deployment dry-run verification layer for zDash without enabling live trading or real external mutations.
+
+Hard safety:
+- Keep DRY_RUN=true.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not enable real broker execution.
+- Do not enable real social posting.
+- Do not enable real IoT mutation.
+- Do not commit secrets or .env files.
+
+Create:
+- scripts/prod/verify-prod-runtime.sh
+- scripts/prod/verify-prod-health.sh
+- scripts/prod/verify-prod-rollback-readiness.sh
+- scripts/prod/verify-prod-observability.sh
+- docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md
+- docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md
+
+Update Makefile with targets only if missing:
+- prod-verify
+- prod-verify-health
+- prod-verify-rollback
+- prod-verify-observability
+- phase39-validate
+
+Requirements:
+- If /opt/zdash/runtime is missing, fail clearly with:
+  “Production runtime not found. Run: sudo ./install-zdash-prod.sh”
+- Verify zdash.service exists.
+- Verify docker compose config exists.
+- Verify runtime .env.production exists but never print secret values.
+- Verify health helper exists.
+- Verify logs helper exists.
+- Verify backup helper exists.
+- Verify update helper exists.
+- Verify safety env values:
+  DRY_RUN=true
+  LIVE_TRADING_ACK=false
+  MT5_ENABLED=false
+  PRODUCTION_ALLOW_LIVE_ACTIONS=false
+  RISK_GUARDIAN_ENABLED=true
+- Verify frontend/backend ports:
+  backend 8005
+  frontend/nginx expected runtime exposure
+- Verify realtime endpoints are documented.
+- Verify rollback runbook exists.
+- Verify release readiness report exists.
+
+Validation:
+make validate-fast
+make scripts-list
+make phase39-validate || true
+
+Acceptance:
+- make validate-fast passes.
+- prod verification scripts fail safely when production runtime is absent.
+- no secrets printed.
+- no .env files tracked.
+- no duplicate Makefile targets.
+- release GO remains documented.

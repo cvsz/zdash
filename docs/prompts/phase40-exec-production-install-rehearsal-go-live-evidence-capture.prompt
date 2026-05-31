@@ -1,0 +1,67 @@
+Implement Phase 40: Production Install Rehearsal + Go-Live Evidence Capture.
+
+Context:
+Phase 39 completed production dry-run verification:
+- prod-verify targets
+- runtime/health/rollback/observability verification scripts
+- production dry-run verification report
+- release GO remains documented
+- make validate-fast passes
+- make phase39-validate passes
+
+Goal:
+Add a safe go-live rehearsal workflow that captures evidence from install, health, rollback readiness, realtime, and observability checks without enabling live trading or real external mutations.
+
+Hard safety:
+- Keep DRY_RUN=true.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not enable real broker execution.
+- Do not enable real social posting.
+- Do not enable real IoT mutation.
+- Do not commit secrets or .env files.
+- Do not print secret values.
+
+Create:
+- scripts/prod/run-go-live-rehearsal.sh
+- scripts/prod/capture-go-live-evidence.sh
+- scripts/prod/verify-go-live-safety-locks.sh
+- docs/runbooks/GO_LIVE_REHEARSAL.md
+- docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md
+
+Update Makefile only if targets are missing:
+- go-live-rehearsal
+- go-live-evidence
+- go-live-safety-locks
+- phase40-validate
+
+Requirements:
+- If /opt/zdash/runtime is absent, fail safely and tell user to run:
+  sudo ./install-zdash-prod.sh
+- Capture evidence into .runtime/evidence/ or docs/reports/generated/ but do not commit generated runtime evidence by default.
+- Verify:
+  - zdash.service status
+  - docker compose ps
+  - backend health
+  - frontend health
+  - realtime documented endpoints
+  - rollback runbook exists
+  - production dry-run verification report exists
+  - safety env values are locked
+- Redact env values.
+- Add docs explaining exact commands for rehearsal and rollback.
+
+Validation:
+make validate-fast
+make phase39-validate
+make phase40-validate || true
+
+Acceptance:
+- make validate-fast passes.
+- phase40 scripts fail safely when production runtime is absent.
+- no secrets printed.
+- no .env files tracked.
+- no duplicate Makefile targets.
+- release GO remains documented.

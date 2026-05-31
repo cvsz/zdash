@@ -1,0 +1,69 @@
+Implement Phase 41: GitHub Release Automation + Evidence Archive + Final Operator Handoff.
+
+Context:
+Phase 40 completed go-live rehearsal workflow:
+- verify-go-live-safety-locks.sh
+- capture-go-live-evidence.sh
+- run-go-live-rehearsal.sh
+- GO_LIVE_REHEARSAL.md
+- PHASE40_GO_LIVE_REHEARSAL_REPORT.md
+- make validate-fast passes
+- make phase39-validate passes
+- make phase40-validate passes
+- release GO remains documented
+
+Goal:
+Create final release automation and operator handoff package for zDash without enabling live trading or external mutation.
+
+Hard safety:
+- Keep DRY_RUN=true.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not enable real broker execution.
+- Do not enable real social posting.
+- Do not enable real IoT mutation.
+- Do not commit secrets or .env files.
+- Do not print secret values.
+
+Create:
+- scripts/release/create-release-candidate.sh
+- scripts/release/collect-release-evidence.sh
+- scripts/release/verify-release-readiness.sh
+- docs/releases/PHASE41_RELEASE_CANDIDATE.md
+- docs/runbooks/OPERATOR_HANDOFF.md
+- docs/reports/PHASE41_RELEASE_EVIDENCE_ARCHIVE.md
+
+Update Makefile only if missing:
+- release-candidate
+- release-evidence
+- release-readiness
+- phase41-validate
+
+Requirements:
+- Verify Phase 38, 39, and 40 docs exist.
+- Verify release decision is GO.
+- Verify safety locks are documented.
+- Verify rollback runbook exists.
+- Verify go-live rehearsal runbook exists.
+- Verify no .env files are tracked.
+- Verify no secret-looking values are tracked.
+- Generate release candidate notes without embedding secrets.
+- Scripts must fail safely if required docs/scripts are missing.
+- Do not create GitHub release automatically unless CONFIRM_RELEASE=yes.
+
+Validation:
+make validate-fast
+make phase39-validate
+make phase40-validate
+make phase41-validate
+
+Acceptance:
+- make validate-fast passes.
+- phase41 scripts fail safely on missing prerequisites.
+- no secrets printed.
+- no .env files tracked.
+- no duplicate Makefile targets.
+- release GO remains documented.
+- operator handoff doc includes start, stop, health, logs, backup, rollback, and emergency safety lock checks.
