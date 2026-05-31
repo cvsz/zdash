@@ -1,14 +1,30 @@
 # zDash · Safety-First AI Operations Dashboard
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/version-0.42.0--rc1-blue?style=flat-square">
-  <img alt="Status" src="https://img.shields.io/badge/status-release%20candidate-green?style=flat-square">
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-blue?style=flat-square">
-  <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square"><br>
-  <img alt="Node" src="https://img.shields.io/badge/node-20%20LTS-green?style=flat-square">
-  <img alt="CI" src="https://github.com/cvsz/zdash/actions/workflows/ci.yml/badge.svg?style=flat-square">
-  <img alt="Backend port" src="https://img.shields.io/badge/backend--port-8005-important?style=flat-square">
-  <img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square">
+
+<!-- Build & Test -->
+<a href="https://github.com/cvsz/zdash/actions/workflows/ci.yml"><img src="https://github.com/cvsz/zdash/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+<a href="https://github.com/cvsz/zdash/actions/workflows/e2e.yml"><img src="https://github.com/cvsz/zdash/actions/workflows/e2e.yml/badge.svg" alt="e2e"></a>
+<a href="https://github.com/cvsz/zdash/actions/workflows/release-validate.yml"><img src="https://github.com/cvsz/zdash/actions/workflows/release-validate.yml/badge.svg" alt="release-validate"></a>
+<a href="https://github.com/cvsz/zdash/actions/workflows/release.yml"><img src="https://github.com/cvsz/zdash/actions/workflows/release.yml/badge.svg" alt="release"></a>
+
+<!-- Coverage & Quality -->
+<a href="https://codecov.io/gh/cvsz/zdash"><img src="https://img.shields.io/codecov/c/github/cvsz/zdash" alt="Coverage"></a>
+<a href="https://github.com/cvsz/zdash/actions/workflows/lint.yml"><img src="https://github.com/cvsz/zdash/actions/workflows/lint.yml/badge.svg" alt="Lint"></a>
+<a href="https://img.shields.io/snyk/vulnerabilities/github/cvsz/zdash"><img src="https://img.shields.io/snyk/vulnerabilities/github/cvsz/zdash" alt="Security"></a>
+
+<!-- Dependencies -->
+<a href="https://libraries.io/github/cvsz/zdash"><img src="https://img.shields.io/librariesio/github/cvsz/zdash" alt="Dependencies"></a>
+<a href="https://img.shields.io/node/v/zdash"><img src="https://img.shields.io/node/v/zdash" alt="Node Version"></a>
+
+<!-- Metadata -->
+<a href="https://img.shields.io/badge/License-MIT-blue.svg"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
+<a href="https://img.shields.io/github/v/release/cvsz/zdash"><img src="https://img.shields.io/github/v/release/cvsz/zdash" alt="Release"></a>
+<a href="https://img.shields.io/github/issues/cvsz/zdash"><img src="https://img.shields.io/github/issues/cvsz/zdash" alt="Issues"></a>
+<a href="https://img.shields.io/github/issues-pr/cvsz/zdash"><img src="https://img.shields.io/github/issues-pr/cvsz/zdash" alt="Pull Requests"></a>
+<a href="https://img.shields.io/github/stars/cvsz/zdash?style=social"><img src="https://img.shields.io/github/stars/cvsz/zdash?style=social" alt="Stars"></a>
+<a href="https://img.shields.io/github/forks/cvsz/zdash?style=social"><img src="https://img.shields.io/github/forks/cvsz/zdash?style=social" alt="Forks"></a>
+
 </p>
 
 **Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
