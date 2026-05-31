@@ -23,7 +23,7 @@ def _table_exists(table_name: str) -> bool:
 def _create_table_once(table_name: str, *columns: Any, **kwargs: Any) -> None:
     if _table_exists(table_name):
         return
-    _create_table_once(table_name, *columns, **kwargs)
+    op.create_table(table_name, *columns, **kwargs)
 
 
 def upgrade() -> None:
