@@ -26,8 +26,6 @@
 <a href="https://img.shields.io/github/forks/cvsz/zdash?style=social"><img src="https://img.shields.io/github/forks/cvsz/zdash?style=social" alt="Forks"></a>
 
 </p>
----
-# zdash
 
 <!-- Build & Test -->
 ![CI](https://github.com/cvsz/zdash/actions/workflows/ci.yml/badge.svg)
