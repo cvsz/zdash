@@ -3,6 +3,7 @@ import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
 vi.stubEnv('VITE_REALTIME_ENABLED', 'false');
+vi.stubEnv('VITE_ENABLE_MOCK_FALLBACK', 'true');
 
 afterEach(() => {
   cleanup();
