@@ -433,6 +433,43 @@ phase39-validate: ## Validate Phase 39 production dry-run deliverables
 	echo ""; \
 	echo "Phase 39 validation complete."
 
+.PHONY: go-live-rehearsal
+go-live-rehearsal: ## Run full go-live rehearsal (runtime + health + safety + rollback + observability + evidence)
+	bash scripts/prod/run-go-live-rehearsal.sh
+
+.PHONY: go-live-evidence
+go-live-evidence: ## Capture go-live evidence to docs/reports/generated/
+	bash scripts/prod/capture-go-live-evidence.sh
+
+.PHONY: go-live-safety-locks
+go-live-safety-locks: ## Verify go-live safety locks in production env
+	bash scripts/prod/verify-go-live-safety-locks.sh
+
+.PHONY: phase40-validate
+phase40-validate: ## Validate Phase 40 go-live rehearsal deliverables
+	@echo "=== Phase 40 Validation ==="; \
+	echo ""; \
+	echo "--- Makefile Targets ---"; \
+	for t in go-live-rehearsal go-live-evidence go-live-safety-locks phase40-validate; do \
+	  grep -Eq "^$$t:" Makefile && echo "  PASSED: $$t target exists" || echo "  FAILED: $$t target missing"; \
+	done; \
+	echo ""; \
+	echo "--- Scripts ---"; \
+	for s in scripts/prod/verify-go-live-safety-locks.sh scripts/prod/capture-go-live-evidence.sh scripts/prod/run-go-live-rehearsal.sh; do \
+	  if [ -x "$$s" ]; then echo "  PASSED: $$s is executable"; else echo "  FAILED: $$s missing or not executable"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Docs ---"; \
+	for d in docs/runbooks/GO_LIVE_REHEARSAL.md docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md; do \
+	  if [ -f "$$d" ]; then echo "  PASSED: $$d exists"; else echo "  FAILED: $$d missing"; fi; \
+	done; \
+	echo ""; \
+	echo "--- Duplicate Check ---"; \
+	DUPS=$$(grep -E '^go-live-' Makefile | sort | uniq -d); \
+	if [ -n "$$DUPS" ]; then echo "  FAILED: duplicate targets found: $$DUPS"; else echo "  PASSED: no duplicate go-live targets"; fi; \
+	echo ""; \
+	echo "Phase 40 validation complete."
+
 .PHONY: codex-setup
 codex-setup: ## Run Codex Cloud setup script
 	bash .codex/cloud/setup.sh
