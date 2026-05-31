@@ -1098,6 +1098,24 @@ Known non-blocking warnings:
 
 ---
 
+## Bridge
+
+Quick-links connecting each audience to their entry point.
+
+| Who | Start here | Purpose |
+|-----|------------|---------|
+| **Developer** | [`CONTRIBUTING.md`](CONTRIBUTING.md) / [`AGENTS.md`](AGENTS.md) | Setup, test, phase workflow, commit guidance |
+| **AI Agent** | [`AGENTS.md`](AGENTS.md) / [`docs/prompts/`](docs/prompts/) | Repo policy, phase prompts, safety invariants |
+| **Operator** | [`docs/runbooks/OPERATOR_HANDOFF.md`](docs/runbooks/OPERATOR_HANDOFF.md) | Start, stop, health, backup, rollback, monitoring |
+| **Go-Live Manager** | [`docs/runbooks/GO_LIVE_CHECKLIST.md`](docs/runbooks/GO_LIVE_CHECKLIST.md) | Step-by-step production go-live procedure |
+| **Release Manager** | [`docs/releases/PHASE41_RELEASE_CANDIDATE.md`](docs/releases/PHASE41_RELEASE_CANDIDATE.md) | Release readiness, version freeze, final release notes |
+| **Cloudflare Admin** | [`CVSz/zeaz-platform`](https://github.com/CVSz/zeaz-platform) | DNS, Pages, Tunnel, Access, WAF, edge health |
+| **Security Auditor** | [`SECURITY.md`](SECURITY.md) / [`docs/security/`](docs/security/) | Safety policy, fail-closed checks, audit logs |
+| **End User** | [`docs/runbooks/QUICK_START.md`](docs/runbooks/QUICK_START.md) | Install, configure, and run zDash |
+| **Community** | [`COMMUNITY.md`](COMMUNITY.md) / [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) | Support, discussions, conduct guidelines |
+
+**Repository ↔ Operator bridge:** This repo (`cvsz/zdash`) owns application code, config defaults, and phase prompts. Cloudflare DNS, routing, edge security, and production domain rollout live in `CVSz/zeaz-platform`. Never duplicate infrastructure config across both repos.
+
 ## Release Documents
 
 | Document | Description |
