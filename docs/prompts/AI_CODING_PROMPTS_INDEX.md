@@ -1,116 +1,78 @@
 # zDash AI Coding Prompts Index
 
-Use this index to select the correct Codex/new-chat prompt for zDash work. Keep execution phase-scoped, validate after every phase, and never bypass safety policies.
+Use this index to choose the correct zDash AI coding prompt for Codex, DeepSeek V4 Flash Free, or any fast/free coding model with limited context.
 
-## Core rules for every prompt
+## Core execution rules
 
 - Repository: `cvsz/zdash`.
 - Inspect before editing.
 - Do not rebuild from scratch.
 - Preserve existing architecture and working tests.
-- Backend port is `8005`; do not introduce `localhost:8000`.
+- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
 - Do not commit `.env`, tokens, GPG passphrases, private keys, local agent folders, caches, or Codex run artifacts.
 - `docs/prompts/codex-runs/` is local-only and must remain untracked.
-- Trading, AI Trader, and strategy execution are simulation-only unless a future explicit safety-approved phase says otherwise.
+- Trading, AI Trader, and strategy execution remain simulation-only / dry-run only.
 - Keep live trading disabled.
-- Use dry-run/paper-trading paths only.
 - Run validation before reporting completion.
 
-## Current prompt files
+## Master prompts
 
 | Prompt | Purpose |
 |---|---|
 | `docs/prompts/phase33-ai-trader.prompt` | Phase 33 AI Trader Simulation Layer. |
 | `docs/prompts/phase34-ai-trader-master-meta-mega.prompt` | Phase 34 AI Trader Control Plane. |
-| `docs/prompts/phase35-master-meta-final-release.prompt` | Phase 35 full final release candidate polish. |
+| `docs/prompts/phase35-master-meta-final-release.prompt` | Phase 35 master final release prompt with DeepSeek V4 Flash Free split workflow. |
 
-## Recommended new-chat sequence
+## Phase 35 split prompts
 
-### 1. Repo recovery / sync
+Use these when the full Phase 35 prompt is too large for the active model.
 
-Use when local git is dirty, pull fails, or prompt artifacts are tracked by mistake.
+| Pass | Prompt file | Scope |
+|---|---|---|
+| 35.1 | `docs/prompts/phase35.1-backend-release-hardening.prompt` | Backend release hardening, RBAC, safety config, API checks, backend tests. |
+| 35.2 | `docs/prompts/phase35.2-ai-trader-final-polish.prompt` | AI Trader simulation-only final polish, API/UI/tests/docs. |
+| 35.3 | `docs/prompts/phase35.3-frontend-dashboard-ui-polish.prompt` | Frontend dashboard/UI/UX polish and frontend validation. |
+| 35.4 | `docs/prompts/phase35.4-docs-runbooks-api-examples.prompt` | Docs, runbooks, README, API examples, troubleshooting. |
+| 35.5 | `docs/prompts/phase35.5-makefile-ci-maintenance-validation.prompt` | Makefile, CI, maintenance, safety-scan, full validation. |
+| 35.6 | `docs/prompts/phase35.6-final-report-release-handoff.prompt` | Final report and release handoff. |
 
-```text
-You are working in cvsz/zdash. First inspect git status, current branch, and recent commits. Resolve local/remote divergence safely. Do not discard work without creating a backup branch or stash. Ensure docs/prompts/codex-runs/ is ignored and untracked. Run make safety-scan. Report exact commands and results.
+## Recommended DeepSeek V4 Flash Free command flow
+
+Run one pass at a time:
+
+```bash
+cd ~/zdash
+codex "$(cat docs/prompts/phase35.1-backend-release-hardening.prompt)"
 ```
 
-### 2. Fast validation
+Then continue:
 
-Use after any small patch.
-
-```text
-Run zDash fast validation only. Use development/test-safe env overrides. Do not change code unless validation fails. If validation fails, fix the smallest safe issue and rerun.
-
-Commands:
-APP_ENV=development \
-DATABASE_URL=sqlite:///./zdash_test.db \
-PRODUCTION_SAFETY_LOCK=true \
-DRY_RUN=true \
-LIVE_TRADING_ACK=false \
-make validate-fast
+```bash
+codex "$(cat docs/prompts/phase35.2-ai-trader-final-polish.prompt)"
+codex "$(cat docs/prompts/phase35.3-frontend-dashboard-ui-polish.prompt)"
+codex "$(cat docs/prompts/phase35.4-docs-runbooks-api-examples.prompt)"
+codex "$(cat docs/prompts/phase35.5-makefile-ci-maintenance-validation.prompt)"
+codex "$(cat docs/prompts/phase35.6-final-report-release-handoff.prompt)"
 ```
 
-### 3. Full validation
+If shell prompt length is unstable, pipe the file:
 
-Use before push/release.
-
-```text
-Run zDash full validation. Preserve safety defaults. If Docker is unavailable, report that clearly and complete non-Docker validation. Do not commit secrets or local-only files.
-
-Commands:
-APP_ENV=development \
-DATABASE_URL=sqlite:///./zdash_test.db \
-PRODUCTION_SAFETY_LOCK=true \
-DRY_RUN=true \
-LIVE_TRADING_ACK=false \
-make validate
+```bash
+cat docs/prompts/phase35.1-backend-release-hardening.prompt | codex
 ```
-
-### 4. AI Trader feature patch
-
-Use for AI Trader only.
-
-```text
-Execute only AI Trader simulation changes in cvsz/zdash. Do not enable live trading. Do not add broker execution. Do not bypass TradingService, SignalValidationService, ExecutionEngine, Guardian, RBAC, audit/event logging, or dry-run mode. All API/UI execution must be simulation-only and force dry_run=true. Run backend and frontend tests relevant to AI Trader, then run make validate-fast.
-```
-
-### 5. Frontend dashboard polish
-
-Use for UI/UX only.
-
-```text
-Execute only frontend dashboard/UI polish for cvsz/zdash. Preserve existing routes and API contracts. Improve empty/loading/error states, safety banners, button labels, and responsive layout. Do not add new dependencies unless unavoidable. Run npm test and npm run build.
-```
-
-### 6. Backend API hardening
-
-Use for backend only.
-
-```text
-Execute only backend API hardening for cvsz/zdash. Verify router registration, response envelopes, auth/RBAC, tenancy isolation, dry-run defaults, safety lock behavior, and audit/event logging. Do not change frontend unless required by a backend contract fix. Run python -m ruff check app tests and python -B -m pytest -q.
-```
-
-### 7. Docs and release notes
-
-Use for docs-only work.
-
-```text
-Update zDash docs only. Add or improve README sections, architecture docs, API examples, runbooks, and troubleshooting notes. Use backend port 8005. Do not edit source code. Do not commit local-only Codex run files. Run markdown-safe checks if available and make safety-scan.
-```
-
-## Phase 35 execution prompt
-
-Use `docs/prompts/phase35-master-meta-final-release.prompt` when the goal is full final release readiness across backend, frontend, docs, validation, and safety.
-
-Do not paste every old phase prompt into one Codex run. Run Phase 35 as the final release coordinator, then create smaller follow-up prompts only for specific failures.
 
 ## Validation checklist
 
-Before marking any phase complete:
+Before marking any pass complete:
 
 ```bash
 git status --short
 make safety-scan
+```
+
+Fast validation:
+
+```bash
 APP_ENV=development \
 DATABASE_URL=sqlite:///./zdash_test.db \
 PRODUCTION_SAFETY_LOCK=true \
@@ -119,7 +81,7 @@ LIVE_TRADING_ACK=false \
 make validate-fast
 ```
 
-Before release:
+Full validation before release:
 
 ```bash
 APP_ENV=development \
@@ -132,8 +94,25 @@ make validate
 
 ## Known non-blocking warnings
 
+These are not blockers if final summaries pass:
+
 - `passlib` dependency may emit Python `crypt` deprecation warning from `.venv`.
 - React `act(...)` warnings may appear in existing hook tests.
+- React Router future flag warnings may appear.
 - ErrorBoundary tests intentionally throw `Error: fail` to verify fallback rendering.
+- Vite may warn about chunk size.
 
-These are not blockers if test summaries pass.
+## Blocking failures
+
+Treat these as blockers:
+
+- backend ruff failure
+- pytest failed tests
+- frontend failed tests
+- npm build failure
+- make safety-scan failure
+- tracked `.env` or secret-like values
+- tracked `docs/prompts/codex-runs/`
+- runtime/source references to `localhost:8000` or `BACKEND_PORT=8000`
+- live trading enabled
+- broker execution added

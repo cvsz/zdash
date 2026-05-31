@@ -1,38 +1,56 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+about: Report a bug to help improve zDash
+title: '[bug] '
+labels: bug
 assignees: ''
 
 ---
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear and concise description of the bug.
+
+**Area**
+- [ ] Backend (FastAPI / Python / Pydantic / SQLModel)
+- [ ] Frontend (React / TypeScript / Tailwind / Vitest)
+- [ ] Infrastructure (Docker / compose / CI/CD)
+- [ ] Safety / risk system (Guardian, kill-switch, high-risk policy, fail-closed)
+- [ ] Docs / runbooks / prompts
+- [ ] Release / versioning
+- [ ] Other:
 
 **To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+Steps to reproduce with exact commands:
+
+```bash
+# example
+make backend-test
+```
+
+1.
+2.
+3.
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Actual behavior** (logs, errors, screenshots)
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Safety impact**
+Does this affect any safety invariant? (see AGENTS.md §4)
+- [ ] No safety impact
+- [ ] Potential safety bypass — explain:
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Environment**
+- zDash version: `{{ "$(cat VERSION || git describe --tags)" }}`
+- `APP_ENV`: `development` / `production`
+- `DRY_RUN`: `true` / `false`
+- Backend port: `8005` / other:
+- Browser (if frontend):
+
+**Validation before filing**
+- [ ] `make safety-scan` passes
+- [ ] `make validate-fast` passes (or relevant subset)
+- [ ] `make backend-test` and/or `make frontend-test` pass individually
+- [ ] Verified against latest `main`
 
 **Additional context**
-Add any other context about the problem here.
