@@ -1,0 +1,92 @@
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v0.42.0)'
+        required: true
+        type: string
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          cd backend
+          pip install -e '.[dev]'
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install --legacy-peer-deps --no-audit --fund=false
+
+      - name: Backend tests
+        run: |
+          cd backend
+          python -B -m pytest -q
+
+      - name: Frontend build
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Docker build
+        run: |
+          docker build -f infra/docker/backend.Dockerfile -t zdash-backend:${{ github.ref_name }} .
+          docker build -f infra/docker/frontend.Dockerfile -t zdash-frontend:${{ github.ref_name }} .
+          docker build -f infra/docker/nginx.Dockerfile -t zdash-nginx:${{ github.ref_name }} .
+
+      - name: Generate release notes
+        run: |
+          VERSION="${{ github.ref_name }}"
+          NOTES="docs/releases/${VERSION}.md"
+          if [ -f "$NOTES" ]; then
+            cp "$NOTES" release-notes.md
+          else
+            cat > release-notes.md <<EOF
+          # zDash $VERSION
+
+          Release artifacts:
+          - \`zdash-backend:$VERSION\`
+          - \`zdash-frontend:$VERSION\`
+          - \`zdash-nginx:$VERSION\`
+
+          See \`docs/releases/\` for full release documentation.
+          EOF
+          fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: zDash ${{ github.ref_name }}
+          body_path: release-notes.md
+          draft: true
+          generate_release_notes: false
