@@ -8,9 +8,6 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     services:
       postgres:
         image: postgres:16-alpine
@@ -21,7 +18,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U zdash -d zdash_test"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -53,6 +50,27 @@ jobs:
           cd frontend
           npm install --legacy-peer-deps --no-audit --fund=false
 
+      - name: Run DB migrations
+        run: |
+          cd backend
+          DATABASE_URL=postgresql://zdash:zdash-test@localhost:5432/zdash_test \
+          alembic upgrade head
+        env:
+          APP_ENV: test
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          DATABASE_URL=postgresql://zdash:zdash-test@localhost:5432/zdash_test \
+          python -m pytest -q --tb=short 2>&1 | tail -20
+        env:
+          APP_ENV: test
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test
+
       - name: Build frontend
         run: |
           cd frontend
@@ -61,20 +79,61 @@ jobs:
       - name: Start backend
         run: |
           cd backend
-          APP_ENV=test \
           DATABASE_URL=postgresql://zdash:zdash-test@localhost:5432/zdash_test \
           DRY_RUN=true \
-          nohup uvicorn app.main:app --host 127.0.0.1 --port 8005 &
-          sleep 3
+          nohup uvicorn app.main:app --host 127.0.0.1 --port 8005 > /tmp/backend.log 2>&1 &
+        env:
+          APP_ENV: test
 
-      - name: Health check
+      - name: Wait for backend
         run: |
-          for i in $(seq 1 10); do
-            curl -sf http://127.0.0.1:8005/health && break
+          for i in $(seq 1 15); do
+            if curl -sf http://127.0.0.1:8005/health > /dev/null 2>&1; then
+              echo "Backend ready"
+              exit 0
+            fi
             sleep 2
           done
+          echo "Backend failed to start"
+          cat /tmp/backend.log
+          exit 1
 
-      - name: Smoke test
+      - name: Auth bootstrap + login
+        id: auth
         run: |
-          curl -sf http://127.0.0.1:8005/api/admin/safety-check
-          curl -sf http://127.0.0.1:8005/health
+          echo "=== Bootstrap Admin ==="
+          curl -s -X POST http://127.0.0.1:8005/api/auth/bootstrap-admin \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"admin","password":"admin123"}' | python3 -m json.tool
+          echo "=== Login ==="
+          TOKEN=$(curl -s -X POST http://127.0.0.1:8005/api/auth/login \
+            -H 'Content-Type: application/json' \
+            -d '{"username":"admin","password":"admin123"}' | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['access_token'])")
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Smoke test endpoints
+        env:
+          AUTH: Bearer ${{ steps.auth.outputs.token }}
+        run: |
+          echo "=== Health ==="
+          curl -sf http://127.0.0.1:8005/health | python3 -m json.tool
+          echo "=== Safety Check ==="
+          curl -sf http://127.0.0.1:8005/api/admin/safety-check \
+            -H "Authorization: $AUTH" | python3 -m json.tool
+          echo "=== Marketplace Categories ==="
+          curl -sf http://127.0.0.1:8005/api/marketplace/categories \
+            -H "Authorization: $AUTH" | python3 -m json.tool
+          echo "=== Marketplace Plugins ==="
+          curl -sf http://127.0.0.1:8005/api/marketplace/plugins \
+            -H "Authorization: $AUTH" | python3 -m json.tool
+          echo "=== Marketplace Plugin Detail ==="
+          PLUGIN_ID=$(curl -sf http://127.0.0.1:8005/api/marketplace/plugins \
+            -H "Authorization: $AUTH" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['plugins'][0]['id'])")
+          curl -sf "http://127.0.0.1:8005/api/marketplace/plugins/${PLUGIN_ID}" \
+            -H "Authorization: $AUTH" | python3 -m json.tool
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f "uvicorn app.main:app" 2>/dev/null || true
+          echo "Backend stopped"
