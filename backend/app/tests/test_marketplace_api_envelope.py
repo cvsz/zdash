@@ -11,22 +11,34 @@ from app.tenancy.tenant_context import TenantContext
 
 
 @pytest.fixture(autouse=True)
-def marketplace_guards():
+def mock_all_services():
+    """Mock every DB-backed service so envelope tests never touch a real DB."""
+    _mock_install = {
+        "ok": True, "id": "mock-install-id",
+        "organization_id": "mock-org", "workspace_id": "mock-ws",
+        "plugin_id": "mock-plugin", "version": "1.0.0",
+        "status": "installed", "config": {}, "enabled": False,
+        "installed_by": "system",
+    }
+    _mock_enable = {"ok": True}
+    _mock_disable = {"ok": True}
+    _mock_uninstall = {"ok": True}
+    _mock_run = {"ok": True, "output": {"status": "mock"}}
+    _mock_list = []
+
     with (
-        patch("app.billing.entitlement_service.check_feature") as mock_billing_feat,
-        patch("app.api.marketplace.consume") as mock_api_consume,
-        patch("app.marketplace.plugin_service.check_feature") as mock_feat,
-        patch("app.marketplace.plugin_service.consume") as mock_consume,
-        patch("app.marketplace.plugin_service.AuditService.log"),
-        patch("app.marketplace.plugin_service.event_bus"),
+        patch("app.api.marketplace.install_plugin", return_value=_mock_install),
+        patch("app.api.marketplace.list_installations", return_value=_mock_list),
+        patch("app.api.marketplace.enable_plugin", return_value=_mock_enable),
+        patch("app.api.marketplace.disable_plugin", return_value=_mock_disable),
+        patch("app.api.marketplace.uninstall_plugin", return_value=_mock_uninstall),
+        patch("app.api.marketplace.run_plugin_action", return_value=_mock_run),
+        patch("app.api.marketplace.consume") as mock_consume,
     ):
 
         class MockDecision:
             allowed = True
 
-        mock_billing_feat.return_value = MockDecision()
-        mock_api_consume.return_value = MockDecision()
-        mock_feat.return_value = MockDecision()
         mock_consume.return_value = MockDecision()
         yield
 
@@ -39,21 +51,13 @@ def _viewer() -> AuthSession:
     return AuthSession(username="viewer@zeaz.dev", role="viewer")
 
 
-_unique = 0
-
-
 def _tenant() -> TenantContext:
-    global _unique
-    _unique += 1
-    return TenantContext(
-        organization_id=f"test-org-{_unique}",
-        workspace_id=f"test-ws-{_unique}",
-    )
+    return TenantContext(organization_id="test-org", workspace_id="test-ws")
 
 
-def _install_req(plugin_id: str, ws: str) -> marketplace.InstallPluginRequest:
+def _install_req(plugin_id: str) -> marketplace.InstallPluginRequest:
     return marketplace.InstallPluginRequest(
-        plugin_id=plugin_id, workspace_id=ws, config={}
+        plugin_id=plugin_id, workspace_id="test-ws", config={}
     )
 
 
@@ -93,12 +97,11 @@ def test_get_plugin_not_found_returns_error():
 
 
 def test_install_returns_envelope():
-    t = _tenant()
     res = marketplace.api_install(
-        _install_req(BUILTINS[0].id, t.workspace_id or "ws"),
+        _install_req(BUILTINS[0].id),
         current_user=_admin(),
         _f="feature.marketplace",
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(res)
     assert res["ok"] is True
@@ -115,12 +118,11 @@ def test_installations_returns_envelope():
 
 
 def test_install_then_enable_then_disable_then_uninstall():
-    t = _tenant()
     install_res = marketplace.api_install(
-        _install_req(BUILTINS[0].id, t.workspace_id or "ws"),
+        _install_req(BUILTINS[0].id),
         current_user=_admin(),
         _f="feature.marketplace",
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(install_res)
     assert install_res["ok"] is True
@@ -129,7 +131,7 @@ def test_install_then_enable_then_disable_then_uninstall():
     enable_res = marketplace.api_enable(
         inst_id,
         current_user=_admin(),
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(enable_res)
     assert enable_res["ok"] is True
@@ -138,7 +140,7 @@ def test_install_then_enable_then_disable_then_uninstall():
         inst_id,
         marketplace.RunPluginRequest(action="test_action", payload={}),
         current_user=_admin(),
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(run_res)
     assert run_res["ok"] is True
@@ -146,7 +148,7 @@ def test_install_then_enable_then_disable_then_uninstall():
     disable_res = marketplace.api_disable(
         inst_id,
         current_user=_admin(),
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(disable_res)
     assert disable_res["ok"] is True
@@ -154,45 +156,48 @@ def test_install_then_enable_then_disable_then_uninstall():
     uninstall_res = marketplace.api_uninstall(
         inst_id,
         current_user=_admin(),
-        tenant=t,
+        tenant=_tenant(),
     )
     _assert_envelope(uninstall_res)
     assert uninstall_res["ok"] is True
 
 
 def test_run_with_disabled_plugin_returns_envelope():
-    t = _tenant()
-    install_res = marketplace.api_install(
-        _install_req(BUILTINS[0].id, t.workspace_id or "ws"),
-        current_user=_admin(),
-        _f="feature.marketplace",
-        tenant=t,
-    )
-    inst_id = install_res["data"]["id"]
+    with patch("app.api.marketplace.run_plugin_action",
+               return_value={"ok": False, "error": "PLUGIN_DISABLED"}):
+        install_res = marketplace.api_install(
+            _install_req(BUILTINS[0].id),
+            current_user=_admin(),
+            _f="feature.marketplace",
+            tenant=_tenant(),
+        )
+        inst_id = install_res["data"]["id"]
 
-    marketplace.api_disable(
-        inst_id,
-        current_user=_admin(),
-        tenant=t,
-    )
+        marketplace.api_disable(
+            inst_id,
+            current_user=_admin(),
+            tenant=_tenant(),
+        )
 
-    run_res = marketplace.api_run(
-        inst_id,
-        marketplace.RunPluginRequest(action="some_action", payload={}),
-        current_user=_admin(),
-        tenant=t,
-    )
-    _assert_envelope(run_res)
-    assert run_res["ok"] is False
-    assert run_res["error"]["code"] == "RUN_FAILED"
+        run_res = marketplace.api_run(
+            inst_id,
+            marketplace.RunPluginRequest(action="some_action", payload={}),
+            current_user=_admin(),
+            tenant=_tenant(),
+        )
+        _assert_envelope(run_res)
+        assert run_res["ok"] is False
+        assert run_res["error"]["code"] == "RUN_FAILED"
 
 
 def test_uninstall_nonexistent_returns_envelope():
-    res = marketplace.api_uninstall(
-        "nonexistent-installation",
-        current_user=_admin(),
-        tenant=_tenant(),
-    )
+    with patch("app.api.marketplace.uninstall_plugin",
+               return_value={"ok": False, "error": "INSTALLATION_NOT_FOUND"}):
+        res = marketplace.api_uninstall(
+            "nonexistent-installation",
+            current_user=_admin(),
+            tenant=_tenant(),
+        )
     _assert_envelope(res)
     assert res["ok"] is False
 
