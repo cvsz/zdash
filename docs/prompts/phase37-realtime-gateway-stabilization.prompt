@@ -1,0 +1,182 @@
+Implement Phase 37: Realtime Gateway Stabilization + Test Runtime Isolation.
+
+Context:
+Phase 36 added server command center scripts and secret-safe Git workflow.
+Before Phase 37, make validate-fast must pass.
+
+Goal:
+Stabilize zDash realtime WebSocket behavior across local dev, test runtime, and production reverse proxy, while ensuring tests never accidentally depend on a running local backend.
+
+Hard safety requirements:
+- Do not enable live trading.
+- Keep DRY_RUN=true by default.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not add real broker execution.
+- Do not weaken safety-scan or push protection.
+- Do not commit real secrets.
+
+Part 1: Realtime WebSocket routing audit
+
+Audit frontend and backend websocket paths.
+
+Current required behavior:
+- Frontend realtime channels must connect through API-prefixed backend paths.
+- Backend must support:
+  /api/realtime/ws
+  /api/realtime/ws/events
+  /api/realtime/ws/risk
+  /api/realtime/ws/scheduler
+  /api/realtime/ws/content
+
+Frontend channel mapping should be:
+events    -> /api/realtime/ws/events
+risk      -> /api/realtime/ws/risk
+scheduler -> /api/realtime/ws/scheduler
+content   -> /api/realtime/ws/content
+
+Backend must reject unknown channels cleanly with close code 4003 and reason CHANNEL_NOT_ALLOWED.
+
+Part 2: Realtime backend channel support
+
+Update backend/app/api/realtime.py if needed.
+
+Requirements:
+- Keep existing /api/realtime/ws behavior.
+- Add /api/realtime/ws/{channel}.
+- Allowed channels:
+  - events
+  - risk
+  - scheduler
+  - content
+- Use the same broadcaster, heartbeat, connection manager, entitlement checks, and quota checks.
+- Do not duplicate websocket logic unnecessarily.
+- Include channel in pong payload metadata.
+- Preserve compatibility endpoint /api/realtime/ws/events.
+
+Part 3: Frontend realtime client hardening
+
+Update frontend/src/realtime/client.ts if needed.
+
+Requirements:
+- Use /api/realtime/ws/* paths.
+- Respect VITE_REALTIME_ENABLED=false in tests.
+- Keep test runtime default disabled.
+- Do not force VITE_API_BASE_URL or VITE_WS_BASE_URL in frontend/.env.test.
+- Add clear fallback behavior when WebSocket is disabled:
+  connected=false
+  connecting=false
+  retryInMs=null
+
+Part 4: Test runtime isolation
+
+Ensure frontend tests do not depend on a live backend.
+
+Create or update:
+frontend/.env.test
+
+It must contain only:
+
+VITE_ENABLE_MOCK_FALLBACK=true
+VITE_REALTIME_ENABLED=false
+
+Do not set:
+VITE_API_BASE_URL
+VITE_WS_BASE_URL
+
+Reason:
+URL derivation tests expect default localhost:8005 and explicit https/wss conversion behavior.
+
+Part 5: Content pipeline test stability
+
+Fix ContentPipeline tests without weakening safety behavior.
+
+Requirements:
+- Tests should pass whether backend is stopped or running with empty content DB.
+- Do not require real backend content items.
+- Options:
+  A) mock listContentItems in the test, or
+  B) make ContentPipeline render an empty-state safety panel that still contains:
+     - Policy notes
+     - Dry-run publish
+     - approval-gated messaging
+- Preferred: mock API responses in ContentPipeline.test.tsx so tests are deterministic.
+- Keep publish button disabled until approved.
+- Do not enable real social posting.
+
+Part 6: Add focused tests
+
+Add or update tests:
+
+frontend/src/tests/RealtimeClient.test.ts
+- verifies events path is /api/realtime/ws/events
+- verifies risk path is /api/realtime/ws/risk
+- verifies scheduler path is /api/realtime/ws/scheduler
+- verifies content path is /api/realtime/ws/content
+- verifies VITE_REALTIME_ENABLED=false disables socket opening
+
+frontend/src/tests/useCollaboration.test.ts
+- must keep existing default URL expectations:
+  ws://localhost:8005/api/collaboration/ws/collaboration/w1
+  wss://zdash.zeaz.dev/api/collaboration/ws/collaboration/w1
+
+frontend/src/tests/ContentPipeline.test.tsx
+- deterministic mock content item
+- expects Policy notes
+- expects Dry-run publish
+- expects button disabled until approved
+
+Backend tests:
+- add backend test for /api/realtime/ws/{channel} allowed channel logic if websocket test utilities exist.
+- If websocket test utilities are not available, add pure unit coverage for channel validation helper.
+
+Part 7: Makefile validation helper
+
+Add target only if missing:
+
+test-frontend-isolated:
+- cd frontend
+- run vitest with test env
+- must not require running backend
+
+Do not duplicate existing targets.
+
+Part 8: Docs
+
+Create:
+
+docs/runbooks/REALTIME_GATEWAY.md
+
+Include:
+- realtime channel paths
+- local dev websocket setup
+- test isolation rules
+- common 403 causes
+- how to disable realtime locally:
+  VITE_REALTIME_ENABLED=false
+- how to restart server:
+  make server-stop
+  make server-start
+  make server-status
+
+Part 9: Validation
+
+Run:
+
+make server-stop || true
+make validate-fast
+make server-start
+make server-status
+make server-stop
+
+Acceptance criteria:
+- make validate-fast passes.
+- frontend tests do not depend on running backend.
+- no websocket 403 spam for valid realtime channels.
+- unknown websocket channels are rejected cleanly.
+- useCollaboration URL tests still pass.
+- ContentPipeline tests pass with deterministic data.
+- no duplicate Makefile targets.
+- no secrets in tracked files.

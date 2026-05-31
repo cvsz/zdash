@@ -213,6 +213,10 @@ frontend-install: ## Install frontend dependencies using Node 20 when nvm is ava
 frontend-test: ## Run frontend tests
 	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm test
 
+.PHONY: test-frontend-isolated
+test-frontend-isolated: ## Run frontend tests without requiring a running backend
+	@$(NVM_LOAD); VITE_REALTIME_ENABLED=false VITE_ENABLE_MOCK_FALLBACK=true cd $(FRONTEND_DIR); npm test
+
 .PHONY: frontend-build
 frontend-build: ## Build frontend production bundle
 	@$(NVM_LOAD); cd $(FRONTEND_DIR); npm run build
