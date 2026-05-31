@@ -67,14 +67,27 @@ def api_categories(
         with SessionLocal() as db:
             rows = (
                 db.execute(
-                    select(PluginManifest.category).distinct().order_by(PluginManifest.category)
+                    select(PluginManifest.category)
+                    .distinct()
+                    .order_by(PluginManifest.category)
                 )
                 .scalars()
                 .all()
             )
-        categories = list(rows) if rows else [
-            "general", "risk", "backtesting", "content", "automation", "data", "analytics", "ai"
-        ]
+        categories = (
+            list(rows)
+            if rows
+            else [
+                "general",
+                "risk",
+                "backtesting",
+                "content",
+                "automation",
+                "data",
+                "analytics",
+                "ai",
+            ]
+        )
         return success_response({"categories": categories})
     except Exception as e:
         return error_response("CATEGORIES_ERROR", str(e))
@@ -88,9 +101,7 @@ def api_plugins(
     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
 ):
     try:
-        plugins = list_plugins(
-            search=search, category=category, status=status
-        )
+        plugins = list_plugins(search=search, category=category, status=status)
         serialized = [
             p.model_dump() if hasattr(p, "model_dump") else p for p in plugins
         ]
@@ -147,7 +158,9 @@ def api_install(
 ):
     try:
         org_id = getattr(tenant, "organization_id", "default")
-        decision = consume(org_id, getattr(tenant, "workspace_id", "default"), "marketplace_plugins")
+        decision = consume(
+            org_id, getattr(tenant, "workspace_id", "default"), "marketplace_plugins"
+        )
         if not decision.allowed:
             return error_response(
                 "QUOTA_EXCEEDED", "Marketplace plugins quota exceeded"
@@ -249,7 +262,9 @@ def api_run(
 @router.post("/manifest")
 def api_register_manifest(
     body: RegisterManifestRequest,
-    current_user: AuthSession = Depends(require_permissions([Permission.marketplace_manage])),
+    current_user: AuthSession = Depends(
+        require_permissions([Permission.marketplace_manage])
+    ),
 ):
     try:
         if getattr(current_user, "role", "") != "admin":

@@ -129,10 +129,16 @@ def _backtest_report(payload: dict[str, Any]) -> dict[str, Any]:
         "sharpe_ratio": 1.21,
         "calmar_ratio": 0.85,
         "trades": [
-            {"entry": "2025-01-15T08:00:00Z", "exit": "2025-01-15T16:00:00Z",
-             "pnl": 120.0},
-            {"entry": "2025-01-16T09:30:00Z", "exit": "2025-01-16T14:15:00Z",
-             "pnl": -45.0},
+            {
+                "entry": "2025-01-15T08:00:00Z",
+                "exit": "2025-01-15T16:00:00Z",
+                "pnl": 120.0,
+            },
+            {
+                "entry": "2025-01-16T09:30:00Z",
+                "exit": "2025-01-16T14:15:00Z",
+                "pnl": -45.0,
+            },
         ],
     }
 
@@ -163,12 +169,24 @@ def _content_calendar(payload: dict[str, Any]) -> dict[str, Any]:
 def _scheduler_health(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "jobs": [
-            {"name": "risk-snapshot", "last_run": "2026-05-31T12:00:00Z",
-             "status": "success", "success_rate_pct": 99.2},
-            {"name": "backtest-daily", "last_run": "2026-05-31T06:00:00Z",
-             "status": "success", "success_rate_pct": 97.8},
-            {"name": "content-publish", "last_run": "2026-05-30T08:00:00Z",
-             "status": "failed", "success_rate_pct": 85.0},
+            {
+                "name": "risk-snapshot",
+                "last_run": "2026-05-31T12:00:00Z",
+                "status": "success",
+                "success_rate_pct": 99.2,
+            },
+            {
+                "name": "backtest-daily",
+                "last_run": "2026-05-31T06:00:00Z",
+                "status": "success",
+                "success_rate_pct": 97.8,
+            },
+            {
+                "name": "content-publish",
+                "last_run": "2026-05-30T08:00:00Z",
+                "status": "failed",
+                "success_rate_pct": 85.0,
+            },
         ],
         "total_jobs": 3,
         "healthy": 2,
@@ -213,13 +231,18 @@ def _audit_export_metadata(payload: dict[str, Any]) -> dict[str, Any]:
             "to": payload.get("to", "2026-05-31"),
         },
         "columns": [
-            "timestamp", "actor_email", "action", "resource_type",
-            "resource_id", "result", "ip_address",
+            "timestamp",
+            "actor_email",
+            "action",
+            "resource_type",
+            "resource_id",
+            "result",
+            "ip_address",
         ],
         "dry_run": True,
         "message": "Run with dry_run=False (and admin permission) to "
-                   "generate the actual export file. "
-                   "No secrets are included in export metadata.",
+        "generate the actual export file. "
+        "No secrets are included in export metadata.",
         "secrets_included": False,
     }
 

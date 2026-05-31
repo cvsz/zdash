@@ -27,11 +27,7 @@ def seed_builtins(db: Session) -> list[dict[str, Any]]:
     seeded: list[dict[str, Any]] = []
     for builtin in BUILTINS:
         slug = builtin.__dict__.get("slug", "")
-        existing = (
-            db.query(PluginManifest)
-            .filter(PluginManifest.slug == slug)
-            .first()
-        )
+        existing = db.query(PluginManifest).filter(PluginManifest.slug == slug).first()
         if existing is None:
             fresh = deepcopy(builtin)
             fresh.id = builtin.__dict__.get("id", "")
@@ -53,6 +49,7 @@ def _ensure_session(db: Session | None) -> tuple[Session, bool]:
     if db is not None:
         return db, False
     from app.db.session import SessionLocal
+
     sess = SessionLocal()
     seed_builtins(sess)
     return sess, True
@@ -206,8 +203,6 @@ def validate_plugin_manifest(manifest: dict[str, Any]) -> tuple[bool, list[str]]
 
     valid_statuses = {s.value for s in PluginStatus}
     if manifest.get("status") and manifest["status"] not in valid_statuses:
-        errors.append(
-            f"status must be one of {sorted(valid_statuses)}"
-        )
+        errors.append(f"status must be one of {sorted(valid_statuses)}")
 
     return (len(errors) == 0, errors)

@@ -14,10 +14,15 @@ from app.tenancy.tenant_context import TenantContext
 def mock_all_services():
     """Mock every DB-backed service so envelope tests never touch a real DB."""
     _mock_install = {
-        "ok": True, "id": "mock-install-id",
-        "organization_id": "mock-org", "workspace_id": "mock-ws",
-        "plugin_id": "mock-plugin", "version": "1.0.0",
-        "status": "installed", "config": {}, "enabled": False,
+        "ok": True,
+        "id": "mock-install-id",
+        "organization_id": "mock-org",
+        "workspace_id": "mock-ws",
+        "plugin_id": "mock-plugin",
+        "version": "1.0.0",
+        "status": "installed",
+        "config": {},
+        "enabled": False,
         "installed_by": "system",
     }
     _mock_enable = {"ok": True}
@@ -163,8 +168,10 @@ def test_install_then_enable_then_disable_then_uninstall():
 
 
 def test_run_with_disabled_plugin_returns_envelope():
-    with patch("app.api.marketplace.run_plugin_action",
-               return_value={"ok": False, "error": "PLUGIN_DISABLED"}):
+    with patch(
+        "app.api.marketplace.run_plugin_action",
+        return_value={"ok": False, "error": "PLUGIN_DISABLED"},
+    ):
         install_res = marketplace.api_install(
             _install_req(BUILTINS[0].id),
             current_user=_admin(),
@@ -191,8 +198,10 @@ def test_run_with_disabled_plugin_returns_envelope():
 
 
 def test_uninstall_nonexistent_returns_envelope():
-    with patch("app.api.marketplace.uninstall_plugin",
-               return_value={"ok": False, "error": "INSTALLATION_NOT_FOUND"}):
+    with patch(
+        "app.api.marketplace.uninstall_plugin",
+        return_value={"ok": False, "error": "INSTALLATION_NOT_FOUND"},
+    ):
         res = marketplace.api_uninstall(
             "nonexistent-installation",
             current_user=_admin(),

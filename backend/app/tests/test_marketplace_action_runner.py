@@ -77,8 +77,10 @@ def test_action_alert_router():
     seed_builtins(db)
     plugin_id = _get_plugin_id_by_slug("zdash-alert-router")
     result = run_action(
-        db, plugin_id, "route",
-        {"severity": "critical", "source": "test", "message": "test alert"}
+        db,
+        plugin_id,
+        "route",
+        {"severity": "critical", "source": "test", "message": "test alert"},
     )
     assert result.ok is True
     assert result.output["received"]["severity"] == "critical"
@@ -90,8 +92,10 @@ def test_action_alert_router_info():
     seed_builtins(db)
     plugin_id = _get_plugin_id_by_slug("zdash-alert-router")
     result = run_action(
-        db, plugin_id, "route",
-        {"severity": "info", "source": "test", "message": "info alert"}
+        db,
+        plugin_id,
+        "route",
+        {"severity": "info", "source": "test", "message": "info alert"},
     )
     assert result.ok is True
     assert result.output["routing_decision"]["channels"] == ["slack"]
@@ -102,8 +106,7 @@ def test_action_tenant_audit_export():
     seed_builtins(db)
     plugin_id = _get_plugin_id_by_slug("zdash-tenant-audit-export")
     result = run_action(
-        db, plugin_id, "export",
-        {"tenant_id": "tenant-1", "export_type": "csv"}
+        db, plugin_id, "export", {"tenant_id": "tenant-1", "export_type": "csv"}
     )
     assert result.ok is True
     assert result.output["tenant_id"] == "tenant-1"

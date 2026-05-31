@@ -144,13 +144,18 @@ def get_status(organization_id: str) -> dict[str, Any]:
 
 
 def start_checkout(organization_id: str, plan_id: str) -> dict[str, Any]:
-    """Begin a checkout session for the given plan."""
-    if not settings.billing_enabled:
-        return {"ok": False, "error": "BILLING_PROVIDER_NOT_CONFIGURED"}
+    """Begin a checkout session for the given plan.
 
+    Mock billing is deterministic and safe for tests/development even when
+    external billing is disabled. Real providers remain fail-closed unless
+    billing is explicitly enabled.
+    """
     catalog_plan = catalog.get_plan(plan_id)
     if not catalog_plan:
         return {"ok": False, "error": "PLAN_NOT_FOUND"}
+
+    if not settings.billing_enabled and settings.billing_provider != "mock":
+        return {"ok": False, "error": "BILLING_PROVIDER_NOT_CONFIGURED"}
 
     adapter = _get_adapter()
     try:
@@ -169,8 +174,13 @@ def start_checkout(organization_id: str, plan_id: str) -> dict[str, Any]:
 
 
 def open_billing_portal(organization_id: str) -> dict[str, Any]:
-    """Open billing portal for an organization."""
-    if not settings.billing_enabled:
+    """Open billing portal for an organization.
+
+    Mock billing is deterministic and safe for tests/development even when
+    external billing is disabled. Real providers remain fail-closed unless
+    billing is explicitly enabled.
+    """
+    if not settings.billing_enabled and settings.billing_provider != "mock":
         return {"ok": False, "error": "BILLING_PROVIDER_NOT_CONFIGURED"}
 
     adapter = _get_adapter()

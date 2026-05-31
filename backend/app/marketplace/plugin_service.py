@@ -2,9 +2,17 @@ from typing import Dict, Any, List
 from datetime import datetime, timezone
 from sqlalchemy import select
 from app.db.session import SessionLocal
-from app.marketplace.models import PluginInstallation, PluginInstallStatus, PluginManifest, PluginStatus
+from app.marketplace.models import (
+    PluginInstallation,
+    PluginInstallStatus,
+    PluginManifest,
+    PluginStatus,
+)
 from app.marketplace.plugin_runtime import run_action
-from app.marketplace.plugin_registry import list_plugins as registry_list_plugins, seed_builtins
+from app.marketplace.plugin_registry import (
+    list_plugins as registry_list_plugins,
+    seed_builtins,
+)
 from app.marketplace.safety import check_plugin_action
 from app.billing.entitlement_service import check_feature
 from app.billing.quota_service import consume
@@ -125,13 +133,15 @@ def install_plugin(
             "marketplace.plugin.installed",
             "plugin_service",
             f"Plugin {plugin_id} installed",
-            _redact_secrets({
-                "plugin_id": plugin_id,
-                "installation_id": inst.id,
-                "organization_id": organization_id,
-                "workspace_id": workspace_id,
-                "config": safe_config,
-            }),
+            _redact_secrets(
+                {
+                    "plugin_id": plugin_id,
+                    "installation_id": inst.id,
+                    "organization_id": organization_id,
+                    "workspace_id": workspace_id,
+                    "config": safe_config,
+                }
+            ),
         )
 
         audit.log(
@@ -292,7 +302,9 @@ def list_plugins(
 ) -> list[dict[str, Any]]:
     with SessionLocal() as db:
         seed_builtins(db)
-        return registry_list_plugins(db, search=search, category=category, status=status)
+        return registry_list_plugins(
+            db, search=search, category=category, status=status
+        )
 
 
 def run_plugin_action(
@@ -324,11 +336,13 @@ def run_plugin_action(
             "marketplace.plugin.action.started",
             "plugin_service",
             f"Running {action} on {plugin_id}",
-            _redact_secrets({
-                "installation_id": installation_id,
-                "action": action,
-                "payload": safe_payload,
-            }),
+            _redact_secrets(
+                {
+                    "installation_id": installation_id,
+                    "action": action,
+                    "payload": safe_payload,
+                }
+            ),
         )
 
         ok, msg = check_plugin_action(action, payload)
@@ -366,11 +380,13 @@ def run_plugin_action(
             "marketplace.plugin.action.completed",
             "plugin_service",
             f"Action {action} completed on {plugin_id}",
-            _redact_secrets({
-                "installation_id": installation_id,
-                "action": action,
-                "result": result.get("output", {}),
-            }),
+            _redact_secrets(
+                {
+                    "installation_id": installation_id,
+                    "action": action,
+                    "result": result.get("output", {}),
+                }
+            ),
         )
         audit.log(
             AuditLogCreate(

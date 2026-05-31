@@ -49,7 +49,8 @@ def test_list_plugins_search_filter():
     seed_builtins(db)
     results = list_plugins(db, search="risk")
     assert all(
-        "risk" in p.name.lower() or "risk" in p.description.lower()
+        "risk" in p.name.lower()
+        or "risk" in p.description.lower()
         or "risk" in p.slug.lower()
         for p in results
     )
