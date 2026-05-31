@@ -27,9 +27,9 @@ def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
         db.refresh(bundle)
         
         # Async generation placeholder
-        bundle.status = ExportStatus.completed  # type: ignore[assignment]
-        bundle.file_path = f"/tmp/exports/{bundle.id}.zip"  # type: ignore[assignment]
-        bundle.completed_at = utc_now()  # type: ignore[assignment]
+        setattr(bundle, "status", ExportStatus.completed)
+        setattr(bundle, "file_path", f"/tmp/exports/{bundle.id}.zip")
+        setattr(bundle, "completed_at", utc_now())
         db.commit()
         db.refresh(bundle)
         

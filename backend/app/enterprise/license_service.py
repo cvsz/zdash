@@ -45,10 +45,9 @@ def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
             )
             db.add(lic)
         else:
-            lic.license_key_hash = hash_license(license_key)  # type: ignore[assignment]
-
-            lic.status = LicenseStatus.active  # type: ignore[assignment]
-            lic.updated_at = utc_now()  # type: ignore[assignment]
+            setattr(lic, "license_key_hash", hash_license(license_key))
+            setattr(lic, "status", LicenseStatus.active)
+            setattr(lic, "updated_at", utc_now())
             
         db.commit()
     return {"ok": True, "status": "active"}
@@ -57,8 +56,8 @@ def revoke_license(organization_id: str) -> Dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(select(EnterpriseLicense).where(EnterpriseLicense.organization_id == organization_id)).scalar()
         if lic:
-            lic.status = LicenseStatus.revoked  # type: ignore[assignment]
-            lic.updated_at = utc_now()  # type: ignore[assignment]
+            setattr(lic, "status", LicenseStatus.revoked)
+            setattr(lic, "updated_at", utc_now())
             db.commit()
     return {"ok": True, "status": "revoked"}
 
