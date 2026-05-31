@@ -14,7 +14,7 @@ This pass is docs-first. Do not edit backend/frontend source files.
 ## Safety invariants
 
 - Do not commit `.env`, secrets, tokens, private keys, generated logs, GPG passphrases, or local Codex run artifacts.
-- `docs/prompt/codex-runs/` remains local-only and untracked.
+- `docs/prompts/codex-runs/` remains local-only and untracked.
 - API examples must use backend port `8005` only.
 - Do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
 - Trading and AI Trader docs must say simulation-only / not financial advice / no live execution.
@@ -34,7 +34,7 @@ README.md
 docs/
 docs/architecture/
 docs/runbooks/
-docs/prompt/
+docs/prompts/
 docs/AI_TRADER_CONTROL_PLANE.md
 .codex/cloud/README.md
 .codex/cloud/phase-runner.md

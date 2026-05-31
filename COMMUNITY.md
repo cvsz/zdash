@@ -35,7 +35,7 @@ Read these files first:
 - `CONTRIBUTING.md` for contribution workflow
 - `SECURITY.md` for vulnerability handling
 - `CODE-OF-CONDUCT.md` for behavior expectations
-- `docs/prompt/phaseXX.prompt` for phase-specific work
+- `docs/prompts/phaseXX.prompt` for phase-specific work
 
 ## Communication Guidelines
 
@@ -95,5 +95,5 @@ Maintainers should keep the community docs aligned with:
 - `AGENTS.md`
 - `SECURITY.md`
 - `.codex/cloud/README.md`
-- `docs/prompt/`
+- `docs/prompts/`
 - the Cloudflare operator boundary in `CVSz/zeaz-platform`

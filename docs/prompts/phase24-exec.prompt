@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase24.prompt`
+Prompt/document target path: `docs/prompts/phase24.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -103,5 +103,5 @@ Add backend and frontend tests for default framework load, critical safety contr
 DELIVERABLES:
 Repository inspection summary, folder tree changes, full source for new files, patched updated files, tests, .env.example updates, README updates, API examples, run/test instructions, safety checklist, acceptance checklist, known limitations, and Phase 25 handoff notes.
 
-Now generate the complete Phase 24 implementation and save this prompt into docs/prompt/phase24.prompt.
+Now generate the complete Phase 24 implementation and save this prompt into docs/prompts/phase24.prompt.
 ```

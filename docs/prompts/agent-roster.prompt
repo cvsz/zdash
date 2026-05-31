@@ -51,7 +51,7 @@ unless the context is explicitly about legacy compatibility.
 
 ## Phase prompt rule
 
-When updating `docs/prompt/phase*.prompt`, keep class/module names if they are code identifiers, but update user-facing text:
+When updating `docs/prompts/phase*.prompt`, keep class/module names if they are code identifiers, but update user-facing text:
 
 - `CEO agent` -> `Alexander Prime agent (stable id: ceo)`
 - `Janie agent` -> `Sophia Lane agent (stable id: janie)`

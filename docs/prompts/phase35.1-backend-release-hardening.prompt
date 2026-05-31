@@ -24,7 +24,7 @@ Do not rebuild the backend. Inspect first, patch only small cohesive issues, and
 - Enterprise license must never disable `PRODUCTION_SAFETY_LOCK`.
 - Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
 - Do not commit `.env`, secrets, tokens, private keys, GPG passphrases, or generated local artifacts.
-- `docs/prompt/codex-runs/` must remain local-only and untracked.
+- `docs/prompts/codex-runs/` must remain local-only and untracked.
 
 ---
 

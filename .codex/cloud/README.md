@@ -167,13 +167,13 @@ Any external-impacting action must default to dry-run, read-only, mock, simulati
 Primary phase prompts:
 
 ```text
-docs/prompt/phase01.prompt ... docs/prompt/phase32.prompt
+docs/prompts/phase01.prompt ... docs/prompts/phase32.prompt
 ```
 
 Codex run prompts used in local workspaces should remain untracked:
 
 ```text
-docs/prompt/codex-runs/*.prompt
+docs/prompts/codex-runs/*.prompt
 ```
 
 Use `phase-runner.md` templates for both formats.

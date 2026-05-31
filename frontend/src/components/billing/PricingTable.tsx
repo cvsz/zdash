@@ -7,26 +7,54 @@ interface PricingTableProps {
   onSelect: (planId: string) => void;
 }
 
+type ComparisonItem = {
+  name: string;
+  keys?: string[];
+  tierRequired?: string;
+  isLimit?: boolean;
+};
+
+function formatLimit(value: unknown): string {
+  if (value === undefined || value === null) return "N/A";
+  if (value === 999999 || value === "unlimited") return "Unlimited";
+  if (typeof value === "number") return value.toLocaleString();
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
+}
+
+function getLimit(plan: BillingPlan, keys: string[] = []): unknown {
+  const limits = plan.limits ?? {};
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(limits, key)) {
+      return (limits as Record<string, unknown>)[key];
+    }
+  }
+  return undefined;
+}
+
 export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps) {
-  const comparisonFeatures = [
-    { name: "Backtest Run Limits", key: "backtest_runs", isLimit: true },
-    { name: "AI Token Quota", key: "content_generation_tokens", isLimit: true },
-    { name: "Max Plug-ins", key: "marketplace_plugins", isLimit: true },
-    { name: "IoT Controls", key: "iot_actions", isLimit: true },
+  const safePlans = Array.isArray(plans) ? plans : [];
+
+  const comparisonFeatures: ComparisonItem[] = [
+    { name: "Backtest Run Limits", keys: ["backtest_runs", "backtests_per_month"], isLimit: true },
+    { name: "Content Quota", keys: ["content_generation_tokens", "content_items_per_month"], isLimit: true },
+    { name: "Max Plug-ins", keys: ["marketplace_plugins"], isLimit: true },
+    { name: "IoT / Scheduler Controls", keys: ["iot_actions", "scheduler_jobs"], isLimit: true },
     { name: "Advanced Signal Scan", tierRequired: "pro" },
     { name: "Guardian Drawdown Guard", tierRequired: "pro" },
     { name: "Audit Logging & Exports", tierRequired: "enterprise" },
     { name: "White-Label Domain Support", tierRequired: "enterprise" },
   ];
 
-  const checkFeature = (plan: BillingPlan, item: any) => {
+  const checkFeature = (plan: BillingPlan, item: ComparisonItem) => {
     if (item.isLimit) {
-      const val = plan.limits[item.key];
-      return val === 999999 ? "Unlimited" : val.toLocaleString();
+      return formatLimit(getLimit(plan, item.keys));
     }
+
     const tiers = ["free", "starter", "pro", "enterprise"];
     const planIndex = tiers.indexOf(plan.tier);
-    const reqIndex = tiers.indexOf(item.tierRequired);
+    const reqIndex = tiers.indexOf(item.tierRequired ?? "enterprise");
+
     return planIndex >= reqIndex ? "✔" : "✘";
   };
 
@@ -36,10 +64,12 @@ export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps
         <thead>
           <tr className="border-b border-neutral-800 bg-neutral-900/30">
             <th className="p-4 text-sm font-semibold text-neutral-400">Features</th>
-            {plans.map((p) => (
+            {safePlans.map((p) => (
               <th key={p.id} className="p-4 text-sm font-bold text-white capitalize text-center">
-                {p.name}
-                <div className="text-xs font-normal text-neutral-500 mt-1">${p.price_monthly}/mo</div>
+                {p.name ?? p.tier}
+                <div className="text-xs font-normal text-neutral-500 mt-1">
+                  ${typeof p.price_monthly === "number" ? p.price_monthly.toLocaleString() : "0"}/mo
+                </div>
               </th>
             ))}
           </tr>
@@ -48,7 +78,7 @@ export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps
           {comparisonFeatures.map((item, idx) => (
             <tr key={idx} className="hover:bg-neutral-900/10">
               <td className="p-4 text-sm font-medium text-neutral-300">{item.name}</td>
-              {plans.map((p) => {
+              {safePlans.map((p) => {
                 const res = checkFeature(p, item);
                 return (
                   <td
@@ -65,7 +95,7 @@ export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps
           ))}
           <tr className="bg-neutral-900/10">
             <td className="p-4 text-sm font-semibold text-neutral-400">Action</td>
-            {plans.map((p) => (
+            {safePlans.map((p) => (
               <td key={p.id} className="p-4 text-center">
                 {p.tier === currentTier ? (
                   <span className="text-xs font-semibold text-violet-400 px-3 py-1 bg-violet-500/10 rounded-full border border-violet-500/20">

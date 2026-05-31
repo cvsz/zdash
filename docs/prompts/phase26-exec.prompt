@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase26.prompt`
+Prompt/document target path: `docs/prompts/phase26.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -77,5 +77,5 @@ Node registration is tenant-scoped, heartbeat updates health, diagnostics are re
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 27 handoff.
 
-Now generate Phase 26 and save this prompt into docs/prompt/phase26.prompt.
+Now generate Phase 26 and save this prompt into docs/prompts/phase26.prompt.
 ```

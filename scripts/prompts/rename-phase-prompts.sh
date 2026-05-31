@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 MODE="${1:---dry-run}"
 ROOT="${ROOT:-$(pwd)}"
-PROMPT_DIR="${PROMPT_DIR:-$ROOT/docs/prompts}"
+PROMPT_DIR="${PROMPT_DIR:-$ROOT/docs/prompt}"
 MANIFEST="$PROMPT_DIR/phase-rename-manifest.tsv"
 
 [[ "$MODE" == "--dry-run" || "$MODE" == "--apply" ]] || {

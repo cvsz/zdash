@@ -4,7 +4,7 @@ Repository: `cvsz/zdash`
 
 ## 1. Mission
 
-Implement zDash phase-by-phase with production quality while preserving safety defaults. Phases live in `docs/prompt/` (phase01–phase32). Inspect the repo first, implement only requested scope, keep tests passing, never commit secrets.
+Implement zDash phase-by-phase with production quality while preserving safety defaults. Phases live in `docs/prompts/` (phase01–phase45). Inspect the repo first, implement only requested scope, keep tests passing, never commit secrets.
 
 ---
 
@@ -13,7 +13,7 @@ Implement zDash phase-by-phase with production quality while preserving safety d
 ```
 backend/          # FastAPI (Python 3.11+, Pydantic v2, SQLModel, Alembic)
 frontend/         # React / Vite / TypeScript / Tailwind / Vitest
-docs/prompt/      # Phase prompt files (phase01–phase32, agent-roster)
+docs/prompts/      # Phase prompt files (phase01–phase45, agent-roster)
 scripts/          # Phase runner, setup, smoke tests
 infra/docker/     # backend/frontend/nginx Dockerfiles
 .github/workflows/ # CI, security, deploy workflows

@@ -169,7 +169,7 @@ Stable backend/API IDs must remain unchanged for routing, event correlation, tes
 Canonical roster prompt:
 
 ```text
-docs/prompt/agent-roster.prompt
+docs/prompts/agent-roster.prompt
 ```
 
 Recommended wording:
@@ -195,7 +195,7 @@ Alexander Prime delegates execution to Sophia Lane. Sophia Lane coordinates Vict
 ├── .github/workflows/                # CI, frontend CI, security CI
 ├── .codex/cloud/                     # Codex Cloud setup suite
 ├── config/ecc/                       # ECC / Codex CLI integration references
-├── docs/prompt/                      # Phase prompt files and canonical roster prompt
+├── docs/prompts/                      # Phase prompt files and canonical roster prompt
 ├── scripts/                          # Setup, run, and phase runner scripts
 ├── backend/                          # FastAPI backend
 ├── frontend/                         # React/Vite frontend
@@ -394,7 +394,7 @@ Phase 07 delivers the full React/Vite operations dashboard with all module pages
 
 ### Canonical Roster Reference
 
-Use `docs/prompt/agent-roster.prompt` as the source of truth for stable IDs and display names:
+Use `docs/prompts/agent-roster.prompt` as the source of truth for stable IDs and display names:
 
 - Alexander Prime (`ceo`)
 - Sophia Lane (`janie`)
@@ -496,7 +496,7 @@ python -B -m pytest -q
 Phase prompts live under:
 
 ```text
-docs/prompt/
+docs/prompts/
 ```
 
 Canonical phase set:
@@ -1089,8 +1089,8 @@ Known non-blocking warnings:
 
 - `README.md` is the project overview; `AGENTS.md` is the detailed agent policy.
 - Codex Cloud custom instructions are intentionally compact to preserve context window.
-- `docs/prompt/` is the source of truth for phase-specific work.
-- `docs/prompt/agent-roster.prompt` is the source of truth for display agent names.
+- `docs/prompts/` is the source of truth for phase-specific work.
+- `docs/prompts/agent-roster.prompt` is the source of truth for display agent names.
 - Some blueprint phases may be prompt-only until implemented by Codex/agents.
 - The existing app should remain safe in mock/dry-run mode even when optional providers are missing.
 - Frontend tests and frontend production builds intentionally use separate TypeScript config paths.

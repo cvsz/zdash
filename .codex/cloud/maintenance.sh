@@ -28,8 +28,8 @@ tracked_grep() {
   shift || true
   git grep -nE "$pattern" -- . \
     ':(exclude)Makefile' \
-    ':(exclude)docs/prompt/*.prompt' \
-    ':(exclude)docs/prompt/codex-runs/**' \
+    ':(exclude)docs/prompts/*.prompt' \
+    ':(exclude)docs/prompts/codex-runs/**' \
     ':(exclude).codex/reports/**' \
     ':(exclude).codex/runs/**' \
     ':(exclude).agent/**' \
@@ -42,8 +42,8 @@ tracked_source_grep() {
   shift || true
   git grep -nE "$pattern" -- . \
     ':(exclude)Makefile' \
-    ':(exclude)docs/prompt/*.prompt' \
-    ':(exclude)docs/prompt/codex-runs/**' \
+    ':(exclude)docs/prompts/*.prompt' \
+    ':(exclude)docs/prompts/codex-runs/**' \
     ':(exclude).codex/**' \
     ':(exclude).agent/**' \
     ':(exclude).agents/**' \

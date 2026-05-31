@@ -10,7 +10,7 @@ Use this index to select the correct Codex/new-chat prompt for zDash work. Keep 
 - Preserve existing architecture and working tests.
 - Backend port is `8005`; do not introduce `localhost:8000`.
 - Do not commit `.env`, tokens, GPG passphrases, private keys, local agent folders, caches, or Codex run artifacts.
-- `docs/prompt/codex-runs/` is local-only and must remain untracked.
+- `docs/prompts/codex-runs/` is local-only and must remain untracked.
 - Trading, AI Trader, and strategy execution are simulation-only unless a future explicit safety-approved phase says otherwise.
 - Keep live trading disabled.
 - Use dry-run/paper-trading paths only.
@@ -20,9 +20,9 @@ Use this index to select the correct Codex/new-chat prompt for zDash work. Keep 
 
 | Prompt | Purpose |
 |---|---|
-| `docs/prompt/phase33-ai-trader.prompt` | Phase 33 AI Trader Simulation Layer. |
-| `docs/prompt/phase34-ai-trader-master-meta-mega.prompt` | Phase 34 AI Trader Control Plane. |
-| `docs/prompt/phase35-master-meta-final-release.prompt` | Phase 35 full final release candidate polish. |
+| `docs/prompts/phase33-ai-trader.prompt` | Phase 33 AI Trader Simulation Layer. |
+| `docs/prompts/phase34-ai-trader-master-meta-mega.prompt` | Phase 34 AI Trader Control Plane. |
+| `docs/prompts/phase35-master-meta-final-release.prompt` | Phase 35 full final release candidate polish. |
 
 ## Recommended new-chat sequence
 
@@ -31,7 +31,7 @@ Use this index to select the correct Codex/new-chat prompt for zDash work. Keep 
 Use when local git is dirty, pull fails, or prompt artifacts are tracked by mistake.
 
 ```text
-You are working in cvsz/zdash. First inspect git status, current branch, and recent commits. Resolve local/remote divergence safely. Do not discard work without creating a backup branch or stash. Ensure docs/prompt/codex-runs/ is ignored and untracked. Run make safety-scan. Report exact commands and results.
+You are working in cvsz/zdash. First inspect git status, current branch, and recent commits. Resolve local/remote divergence safely. Do not discard work without creating a backup branch or stash. Ensure docs/prompts/codex-runs/ is ignored and untracked. Run make safety-scan. Report exact commands and results.
 ```
 
 ### 2. Fast validation
@@ -100,7 +100,7 @@ Update zDash docs only. Add or improve README sections, architecture docs, API e
 
 ## Phase 35 execution prompt
 
-Use `docs/prompt/phase35-master-meta-final-release.prompt` when the goal is full final release readiness across backend, frontend, docs, validation, and safety.
+Use `docs/prompts/phase35-master-meta-final-release.prompt` when the goal is full final release readiness across backend, frontend, docs, validation, and safety.
 
 Do not paste every old phase prompt into one Codex run. Run Phase 35 as the final release coordinator, then create smaller follow-up prompts only for specific failures.
 

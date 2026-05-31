@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase30.prompt`
+Prompt/document target path: `docs/prompts/phase30.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -77,5 +77,5 @@ Release freeze detects blockers, board pack excludes secrets, dossier excludes c
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 31 handoff.
 
-Now generate Phase 30 and save this prompt into docs/prompt/phase30.prompt.
+Now generate Phase 30 and save this prompt into docs/prompts/phase30.prompt.
 ```

@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase29.prompt`
+Prompt/document target path: `docs/prompts/phase29.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -76,5 +76,5 @@ Partner submissions require auth, plugin certification blocks unsafe permissions
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 30 handoff.
 
-Now generate Phase 29 and save this prompt into docs/prompt/phase29.prompt.
+Now generate Phase 29 and save this prompt into docs/prompts/phase29.prompt.
 ```

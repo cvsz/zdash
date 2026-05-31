@@ -36,7 +36,7 @@ Makefile
 .env.example
 frontend/.env.example
 docs/
-docs/prompt/
+docs/prompts/
 docs/AI_TRADER_CONTROL_PLANE.md
 backend/app/main.py
 backend/app/ai_trader/

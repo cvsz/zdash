@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase32.prompt`
+Prompt/document target path: `docs/prompts/phase32.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -107,5 +107,5 @@ Zero Trust checks detect unsafe CORS, default secrets produce findings, no activ
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 33 handoff.
 
-Now generate Phase 32 and save this prompt into docs/prompt/phase32.prompt.
+Now generate Phase 32 and save this prompt into docs/prompts/phase32.prompt.
 ```

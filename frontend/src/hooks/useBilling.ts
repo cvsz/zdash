@@ -26,9 +26,9 @@ export function useBilling() {
         getBillingPlans(),
         getInvoices(),
       ]);
-      setStatus(statusRes);
-      setPlans(plansRes);
-      setInvoices(invoicesRes);
+      setStatus(statusRes ?? null);
+      setPlans(Array.isArray(plansRes) ? plansRes : []);
+      setInvoices(Array.isArray(invoicesRes) ? invoicesRes : []);
     } catch (err: any) {
       setError(err.message || "Failed to load billing details");
     } finally {

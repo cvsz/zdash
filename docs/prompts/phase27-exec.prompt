@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase27.prompt`
+Prompt/document target path: `docs/prompts/phase27.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -70,5 +70,5 @@ Anomaly detector handles empty data, deterministic anomaly scoring, remediation 
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 28 handoff.
 
-Now generate Phase 27 and save this prompt into docs/prompt/phase27.prompt.
+Now generate Phase 27 and save this prompt into docs/prompts/phase27.prompt.
 ```

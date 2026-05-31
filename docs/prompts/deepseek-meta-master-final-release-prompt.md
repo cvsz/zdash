@@ -99,7 +99,7 @@ Read and obey:
 - README.md
 - SECURITY.md
 - CONTRIBUTING.md
-- docs/prompt/*
+- docs/prompts/*
 - .env.example
 - Makefile
 - .github/workflows/*
@@ -145,8 +145,8 @@ docs/reports/high-risk-action-policy-matrix.md
 docs/runbooks/final-release-runbook.md
 docs/runbooks/rollback-runbook.md
 docs/runbooks/incident-response-runbook.md
-docs/release/final-release-checklist.md
-docs/release/final-release-notes-template.md
+docs/releases/final-release-checklist.md
+docs/releases/final-release-notes-template.md
 docs/security/production-fail-closed-policy.md
 ```
 
@@ -345,7 +345,7 @@ Go/no-go decision
 Next actions
 ```
 
-D. `docs/release/final-release-checklist.md`
+D. `docs/releases/final-release-checklist.md`
 
 Include hard gates:
 
@@ -497,8 +497,8 @@ The task is complete only when:
 [ ] docs/runbooks/final-release-runbook.md exists
 [ ] docs/runbooks/rollback-runbook.md exists
 [ ] docs/runbooks/incident-response-runbook.md exists
-[ ] docs/release/final-release-checklist.md exists
-[ ] docs/release/final-release-notes-template.md exists
+[ ] docs/releases/final-release-checklist.md exists
+[ ] docs/releases/final-release-notes-template.md exists
 [ ] docs/security/production-fail-closed-policy.md exists
 [ ] Production unsafe defaults are documented and tested where code exists
 [ ] Provider safety behavior is documented and tested/skeletonized

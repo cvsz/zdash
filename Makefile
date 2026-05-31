@@ -31,7 +31,7 @@ ZDASH_PROD_UPDATE ?= $(ZDASH_PROD_RUNTIME)/scripts/zdash-update.sh
 
 BACKEND_ACTIVATE := source $(BACKEND_DIR)/.venv/bin/activate
 NVM_LOAD := source $$HOME/.nvm/nvm.sh >/dev/null 2>&1 || true; nvm use $(NODE_VERSION) >/dev/null 2>&1 || true
-FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|^\.gemini/|^\.claude/|^\.mcp/|^docs/prompt/codex-runs/|^skill\.sh$$|^scripts/skill\.sh$$)
+FORBIDDEN_TRACKED_PATTERN := (^\.env$$|^gpg-loopback\.sh$$|^\.agent/|^\.agents/|^\.gemini/|^\.claude/|^\.mcp/|^docs/prompts/codex-runs/|^skill\.sh$$|^scripts/skill\.sh$$)
 
 .PHONY: help
 help: ## Show available targets
@@ -129,15 +129,13 @@ port-scan: ## Fail if tracked runtime/source files still reference backend port 
 	@tmp=$$(mktemp); \
 	git grep -nE 'localhost:8000|BACKEND_PORT=8000' -- . \
 		':(exclude)Makefile' \
-		':(exclude)docs/prompt/*.prompt' \
+		':(exclude)docs/prompts/*.prompt' \
 		':(exclude)docs/prompts/**' \
-		':(exclude)docs/reports/**' \
-		':(exclude)docs/releases/**' \
-		':(exclude)release/**' \
-		':(exclude)docs/prompt/codex-runs/**' \
+		':(exclude)docs/prompts/codex-runs/**' \
 		':(exclude).codex/**' \
 		':(exclude).agent/**' \
 		':(exclude).agents/**' \
+		':(exclude)docs/reports/**' \
 		':(exclude)**/*.md' > $$tmp 2>/dev/null || true; \
 	if [ -s $$tmp ]; then \
 		cat $$tmp; \

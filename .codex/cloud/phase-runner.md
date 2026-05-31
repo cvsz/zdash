@@ -15,7 +15,7 @@ Frontend dev port = 5173.
 ## Run a specific phase (canonical prompt file)
 
 ```text
-Read AGENTS.md, .codex/cloud/README.md, docs/prompt/agent-roster.prompt, and docs/prompt/phaseNN.prompt.
+Read AGENTS.md, .codex/cloud/README.md, docs/prompts/agent-roster.prompt, and docs/prompts/phaseNN.prompt.
 
 Implement Phase NN only.
 
@@ -33,7 +33,7 @@ Requirements:
 ## Run a specific codex-run prompt
 
 ```text
-Read docs/prompt/codex-runs/phaseNN.x.prompt and execute it exactly.
+Read docs/prompts/codex-runs/phaseNN.x.prompt and execute it exactly.
 Keep scope to that sub-phase only.
 Validate backend and frontend before committing.
 If infra changes, validate backend/frontend/nginx Docker builds and both compose configs.
@@ -73,7 +73,7 @@ fix(prod): harden collaboration auth and postgres runtime
 
 ```text
 Read .codex/cloud/README.md.
-Execute phases in order from docs/prompt/phase01.prompt to docs/prompt/phase32.prompt.
+Execute phases in order from docs/prompts/phase01.prompt to docs/prompts/phase32.prompt.
 
 For each phase:
 - implement only that phase scope
@@ -98,7 +98,7 @@ bash .codex/run-phase.sh 08
 Print prompt by path:
 
 ```bash
-bash .codex/run-phase.sh docs/prompt/codex-runs/phase08.5.prompt
+bash .codex/run-phase.sh docs/prompts/codex-runs/phase08.5.prompt
 ```
 
 Run maintenance:

@@ -9,7 +9,28 @@ interface PlanCardProps {
   onApplyMock: (planTier: string) => void;
 }
 
+function formatLimit(value: unknown): string {
+  if (value === undefined || value === null) return "N/A";
+  if (value === 999999 || value === "unlimited") return "Unlimited";
+  if (typeof value === "number") return value.toLocaleString();
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
+}
+
+function limit(plan: BillingPlan, ...keys: string[]): unknown {
+  const limits = plan.limits ?? {};
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(limits, key)) {
+      return (limits as Record<string, unknown>)[key];
+    }
+  }
+  return undefined;
+}
+
 export function PlanCard({ plan, isCurrent, isMock, onSelect, onApplyMock }: PlanCardProps) {
+  const priceMonthly = typeof plan.price_monthly === "number" ? plan.price_monthly : 0;
+  const features = Array.isArray(plan.features) ? plan.features : [];
+
   return (
     <div
       className={`p-6 rounded-xl border flex flex-col justify-between transition-all duration-300 ${
@@ -21,8 +42,8 @@ export function PlanCard({ plan, isCurrent, isMock, onSelect, onApplyMock }: Pla
       <div>
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h4 className="text-xl font-bold capitalize text-white">{plan.name}</h4>
-            <p className="text-sm text-neutral-400 mt-1">{plan.description}</p>
+            <h4 className="text-xl font-bold capitalize text-white">{plan.name ?? plan.tier ?? "Plan"}</h4>
+            <p className="text-sm text-neutral-400 mt-1">{plan.description ?? "Subscription plan"}</p>
           </div>
           {isCurrent && (
             <span className="px-2.5 py-1 text-xs font-semibold text-violet-400 bg-violet-500/10 rounded-full border border-violet-500/20">
@@ -32,24 +53,24 @@ export function PlanCard({ plan, isCurrent, isMock, onSelect, onApplyMock }: Pla
         </div>
 
         <div className="my-6">
-          <span className="text-4xl font-extrabold text-white">${plan.price_monthly}</span>
+          <span className="text-4xl font-extrabold text-white">${priceMonthly.toLocaleString()}</span>
           <span className="text-neutral-500 ml-1">/ month</span>
         </div>
 
         <div className="space-y-4 mb-8">
           <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Limits</div>
           <ul className="text-sm space-y-2 text-neutral-300">
-            <li>• Backtests: {plan.limits.backtest_runs === 999999 ? "Unlimited" : plan.limits.backtest_runs}</li>
-            <li>• AI Tokens: {plan.limits.content_generation_tokens === 999999 ? "Unlimited" : plan.limits.content_generation_tokens.toLocaleString()}</li>
-            <li>• Marketplace Plugins: {plan.limits.marketplace_plugins === 999999 ? "Unlimited" : plan.limits.marketplace_plugins}</li>
-            <li>• IoT Actions: {plan.limits.iot_actions === 999999 ? "Unlimited" : plan.limits.iot_actions}</li>
+            <li>• Backtests: {formatLimit(limit(plan, "backtest_runs", "backtests_per_month"))}</li>
+            <li>• Content Items: {formatLimit(limit(plan, "content_generation_tokens", "content_items_per_month"))}</li>
+            <li>• Marketplace Plugins: {formatLimit(limit(plan, "marketplace_plugins"))}</li>
+            <li>• IoT Actions: {formatLimit(limit(plan, "iot_actions", "scheduler_jobs"))}</li>
           </ul>
 
           <div className="border-t border-neutral-800/80 my-4" />
 
           <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Features</div>
           <ul className="text-sm space-y-2 text-neutral-300">
-            {plan.features.map((feature, idx) => (
+            {features.map((feature, idx) => (
               <li key={idx} className="flex items-center gap-2">
                 <span className="text-violet-400 text-xs">✔</span>
                 <span>{feature}</span>

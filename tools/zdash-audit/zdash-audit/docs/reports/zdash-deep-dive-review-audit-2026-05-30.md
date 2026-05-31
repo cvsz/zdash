@@ -362,7 +362,7 @@ test_audit_event_written_for_high_risk_action
 
 ## 8. Agent and Phase Workflow Audit
 
-Documented roster includes stable backend/API IDs and display names, with `docs/prompt/agent-roster.prompt` as the canonical reference.
+Documented roster includes stable backend/API IDs and display names, with `docs/prompts/agent-roster.prompt` as the canonical reference.
 
 Stable IDs to preserve:
 

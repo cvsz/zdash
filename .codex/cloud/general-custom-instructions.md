@@ -1,7 +1,7 @@
 # Codex Cloud · Compact General Custom Instructions
 
 Paste only the block below into **Codex Cloud → General Custom Instructions**.
-Keep detailed policy in `AGENTS.md`, project docs in `README.md`, and phase details in `docs/prompt/`.
+Keep detailed policy in `AGENTS.md`, project docs in `README.md`, and phase details in `docs/prompts/`.
 
 ```text
 Repository: cvsz/zdash
@@ -13,7 +13,7 @@ Support domain: zdash.zeaz.dev
 Read before coding:
 1. AGENTS.md
 2. .codex/cloud/README.md
-3. docs/prompt/agent-roster.prompt
+3. docs/prompts/agent-roster.prompt
 4. requested phase or codex-run prompt only
 
 Execution policy:

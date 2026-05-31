@@ -27,7 +27,7 @@ Read:
 1. `AGENTS.md`
 2. `README.md`
 3. `.codex/cloud/README.md`
-4. the relevant `docs/prompt/phaseXX.prompt`
+4. the relevant `docs/prompts/phaseXX.prompt`
 5. `SECURITY.md`
 6. `CODE-OF-CONDUCT.md`
 
@@ -132,7 +132,7 @@ Smoke test:
 Phase prompts live in:
 
 ```text
-docs/prompt/
+docs/prompts/
 ```
 
 Run one phase per task unless explicitly asked for a batch.

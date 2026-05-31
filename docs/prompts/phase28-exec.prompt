@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase28.prompt`
+Prompt/document target path: `docs/prompts/phase28.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -74,5 +74,5 @@ Catalog records are tenant-scoped, lineage links deterministic, knowledge graph 
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 29 handoff.
 
-Now generate Phase 28 and save this prompt into docs/prompt/phase28.prompt.
+Now generate Phase 28 and save this prompt into docs/prompts/phase28.prompt.
 ```

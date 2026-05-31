@@ -64,7 +64,7 @@ If this prompt is too large for the active model, use one of these smaller promp
 ### Pass 35.0 · Repo sync and safety scan
 
 ```text
-Execute only Phase 35.0 for cvsz/zdash. Inspect git status, Makefile, .gitignore, .codex/config.toml, and docs/prompt. Ensure docs/prompt/codex-runs/ is untracked and ignored. Do not change app code. Run make safety-scan. Fix only safety-scan false positives or tracked local-only files. Report exact commands and results.
+Execute only Phase 35.0 for cvsz/zdash. Inspect git status, Makefile, .gitignore, .codex/config.toml, and docs/prompt. Ensure docs/prompts/codex-runs/ is untracked and ignored. Do not change app code. Run make safety-scan. Fix only safety-scan false positives or tracked local-only files. Report exact commands and results.
 ```
 
 ### Pass 35.1 · Backend release hardening
@@ -119,7 +119,7 @@ Execute only Phase 35.6 final report for cvsz/zdash. Do not edit files unless va
 - Marketplace review is required by default.
 - Enterprise license must never disable `PRODUCTION_SAFETY_LOCK`.
 - No raw secrets, `.env`, GPG passphrases, token dumps, private keys, payment secrets, API keys, or Cloudflare tokens may be committed.
-- `docs/prompt/codex-runs/` must remain local-only and untracked.
+- `docs/prompts/codex-runs/` must remain local-only and untracked.
 - Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` outside archived/local-only prompt artifacts.
 - All risky flows must show visible safety copy in UI.
 - All financial/trading UI must include simulation-only / not financial advice language.

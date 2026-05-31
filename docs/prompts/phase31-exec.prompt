@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase31.prompt`
+Prompt/document target path: `docs/prompts/phase31.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -79,5 +79,5 @@ Air-gap bundle excludes secrets, secret inclusion requires typed confirmation, o
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, docs, API examples, safety checklist, acceptance checklist, known limitations, and Phase 32 handoff.
 
-Now generate Phase 31 and save this prompt into docs/prompt/phase31.prompt.
+Now generate Phase 31 and save this prompt into docs/prompts/phase31.prompt.
 ```

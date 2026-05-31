@@ -14,7 +14,7 @@ This pass focuses on validation infrastructure. Do not make product feature chan
 ## Safety invariants
 
 - Do not commit `.env`, secrets, tokens, GPG passphrases, private keys, local caches, node_modules, dist, or local Codex run artifacts.
-- `docs/prompt/codex-runs/` must remain local-only and untracked.
+- `docs/prompts/codex-runs/` must remain local-only and untracked.
 - Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
 - Safety scans must avoid self-scan false positives from their own scanner patterns.
 - Safety scans should inspect tracked runtime/source files, not ignored caches.
@@ -100,7 +100,7 @@ node_modules
 frontend/dist
 backend/.pytest_cache
 backend/.ruff_cache
-docs/prompt/codex-runs/ when untracked/ignored
+docs/prompts/codex-runs/ when untracked/ignored
 ```
 
 If false positives occur, patch the scanner to exclude self-files or ignored/generated paths while preserving the actual safety check.
@@ -127,7 +127,7 @@ frontend/node_modules/
 frontend/dist/
 backend/zdash.db
 backups/
-docs/prompt/codex-runs/
+docs/prompts/codex-runs/
 .codex/reports/
 .codex/runs/
 ```

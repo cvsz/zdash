@@ -2,7 +2,7 @@
 
 Repository target: `cvsz/zdash`
 
-Prompt/document target path: `docs/prompt/phase25.prompt`
+Prompt/document target path: `docs/prompts/phase25.prompt`
 
 ```text
 Continue from the previous zDash implementation.
@@ -104,5 +104,5 @@ Preflight catches unsafe production defaults, install plan is dry-run, real inst
 DELIVERABLES:
 Repo inspection summary, files, tests, README, .env.example, API examples, safety checklist, acceptance checklist, known limitations, and Phase 26 handoff.
 
-Now generate Phase 25 and save this prompt into docs/prompt/phase25.prompt.
+Now generate Phase 25 and save this prompt into docs/prompts/phase25.prompt.
 ```

@@ -4,7 +4,7 @@ set -Eeuo pipefail
 # ============================================================
 # zDash Codex Phase-by-Phase Runner
 # Repo: cvsz/zdash
-# Prompt dir: docs/prompt
+# Prompt dir: docs/prompts
 #
 # Examples:
 #   ./scripts/run-prompt-phases.sh
@@ -15,7 +15,7 @@ set -Eeuo pipefail
 #   VALIDATE_CMD="npm test" ./scripts/run-prompt-phases.sh
 # ============================================================
 
-PROMPT_DIR="${PROMPT_DIR:-docs/prompt}"
+PROMPT_DIR="${PROMPT_DIR:-docs/prompts}"
 FROM="${FROM:-1}"
 TO="${TO:-32}"
 AUTOCOMMIT="${AUTOCOMMIT:-0}"

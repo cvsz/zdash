@@ -79,7 +79,7 @@ D  install-zdash-fullstack.sh
 ?? docs/prompt/zdash-dashboard-figma-community-final-prompt-pack.md
 ?? docs/prompt/zdash-deep-dive-audit-prompt.md
 ?? docs/prompts/
-?? docs/release/
+?? docs/releases/
 ?? docs/reports/
 ?? docs/runbooks/final-release-runbook.md
 ?? docs/runbooks/incident-response-runbook.md

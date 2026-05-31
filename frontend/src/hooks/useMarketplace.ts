@@ -24,8 +24,8 @@ export function useMarketplace() {
         listMarketplacePlugins(),
         listPluginInstallations(),
       ]);
-      setPlugins(pluginsRes);
-      setInstallations(installationsRes);
+      setPlugins(Array.isArray(pluginsRes) ? pluginsRes : []);
+      setInstallations(Array.isArray(installationsRes) ? installationsRes : []);
     } catch (err: any) {
       setError(err.message || "Failed to load marketplace data");
     } finally {

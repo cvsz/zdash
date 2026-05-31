@@ -38,10 +38,10 @@ Scope: Phases 01–37
 | 18 | Boardroom AI core models | [x] | — | — | — | — |
 | 19 | Digital twin, macro simulation, planning APIs | [x] | — | — | — | — |
 | 20 | Enterprise OS and governance refinement | [x] | — | — | — | — |
-| 21–32 | Enterprise: governance, certification, marketplace, cloud, security ops | [x] | — | — | — | Short prompt docs in `docs/prompt/` |
+| 21–32 | Enterprise: governance, certification, marketplace, cloud, security ops | [x] | — | — | — | Short prompt docs in `docs/prompts/` |
 | 33 | AI Trader simulation + architecture | [x] | `app/ai_trader/`, `app/api/ai_trader.py` | `src/components/trading/AITraderSimulationCard.tsx`, `src/api/aiTrader.ts` | `tests/test_ai_trader*.py` | `docs/AI_TRADER_CONTROL_PLANE.md` |
 | 34 | AI Trader control plane, strategy registry, feature engine | [x] | `app/ai_trader/` | `src/hooks/useEnterprise.ts` | `tests/test_ai_trader_phase34*.py` | — |
-| 35 | Release hardening: mypy, lint, CI stabilization | [x] | Multiple | Multiple | Multiple | `docs/prompt/phase35.1-backend-release-hardening.prompt` |
+| 35 | Release hardening: mypy, lint, CI stabilization | [x] | Multiple | Multiple | Multiple | `docs/prompts/phase35.1-backend-release-hardening.prompt` |
 | 36 | Server command center + safe git workflow | [x] | — | — | — | `scripts/server/` (9 scripts), `scripts/git/` (5 scripts), `docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md`, `docs/runbooks/START_SERVER.md`, `docs/runbooks/GIT_SAFE_PUSH.md` |
 | 37 | Realtime gateway stabilization | [x] | `app/api/realtime.py` | `src/realtime/client.ts`, `src/hooks/useCollaboration.ts` | `backend/tests/test_realtime_channels.py`, `frontend/src/tests/RealtimeClient.test.ts`, `frontend/src/tests/useCollaboration.test.ts` | `docs/runbooks/REALTIME_GATEWAY.md` |
 

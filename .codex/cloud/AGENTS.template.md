@@ -83,5 +83,5 @@ bash .codex/run-phase.sh 08
 Print a codex-run prompt file:
 
 ```bash
-bash .codex/run-phase.sh docs/prompt/codex-runs/phase08.5.prompt
+bash .codex/run-phase.sh docs/prompts/codex-runs/phase08.5.prompt
 ```

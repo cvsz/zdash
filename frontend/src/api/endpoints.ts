@@ -800,7 +800,7 @@ export const getBillingStatus = async () => {
 };
 
 export const getBillingPlans = async () => {
-  const data = await apiClient.get<{ plans: BillingPlan[] }>("/api/billing/plans", {
+  const data = await apiClient.get<{ plans?: BillingPlan[]; items?: BillingPlan[] }>("/api/billing/plans", {
     plans: [
       {
         id: "free",
@@ -844,7 +844,7 @@ export const getBillingPlans = async () => {
       },
     ],
   });
-  return data.plans;
+  return Array.isArray(data.plans) ? data.plans : Array.isArray(data.items) ? data.items : [];
 };
 
 export const startCheckout = async (planId: string) => {
@@ -880,18 +880,18 @@ export const getUsageSummary = async () => {
 };
 
 export const getInvoices = async () => {
-  const data = await apiClient.get<{ invoices: Invoice[] }>("/api/billing/invoices", {
+  const data = await apiClient.get<{ invoices?: Invoice[]; items?: Invoice[] }>("/api/billing/invoices", {
     invoices: [
       { id: "inv-001", number: "INV-2026-001", amount: 49.00, currency: "USD", status: "paid", created_at: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString() },
       { id: "inv-002", number: "INV-2026-002", amount: 49.00, currency: "USD", status: "paid", created_at: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString() },
     ],
   });
-  return data.invoices;
+  return Array.isArray(data.invoices) ? data.invoices : Array.isArray(data.items) ? data.items : [];
 };
 
 // Marketplace API
 export const listMarketplacePlugins = async () => {
-  const data = await apiClient.get<{ plugins: PluginManifest[] }>("/api/marketplace/plugins", {
+  const data = await apiClient.get<{ plugins?: PluginManifest[]; items?: PluginManifest[] }>("/api/marketplace/plugins", {
     plugins: [
       {
         id: "plugin-tapo",
@@ -929,7 +929,7 @@ export const listMarketplacePlugins = async () => {
       },
     ],
   });
-  return data.plugins;
+  return Array.isArray(data.plugins) ? data.plugins : Array.isArray(data.items) ? data.items : [];
 };
 
 export const getMarketplacePlugin = async (pluginId: string) => {
@@ -956,7 +956,7 @@ export const getMarketplacePlugin = async (pluginId: string) => {
 };
 
 export const listPluginInstallations = async () => {
-  const data = await apiClient.get<{ installations: PluginInstallation[] }>("/api/marketplace/installations", {
+  const data = await apiClient.get<{ installations?: PluginInstallation[]; items?: PluginInstallation[] }>("/api/marketplace/installations", {
     installations: [
       {
         id: "inst-tapo",
@@ -972,7 +972,7 @@ export const listPluginInstallations = async () => {
       },
     ],
   });
-  return data.installations;
+  return Array.isArray(data.installations) ? data.installations : Array.isArray(data.items) ? data.items : [];
 };
 
 export const installMarketplacePlugin = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {

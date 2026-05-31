@@ -71,8 +71,8 @@ skill.sh
 .codex/maintenance.sh
 
 # Optional local prompt/run history
-# Keep committed phase prompts under docs/prompt/*.prompt.
-docs/prompt/codex-runs/
+# Keep committed phase prompts under docs/prompts/*.prompt.
+docs/prompts/codex-runs/
 
 # Python
 __pycache__/

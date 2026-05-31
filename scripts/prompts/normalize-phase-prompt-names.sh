@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 ROOT="$(pwd)"
-DIR="docs/prompts"
+DIR="docs/prompt"
 
 shopt -s nullglob
 
