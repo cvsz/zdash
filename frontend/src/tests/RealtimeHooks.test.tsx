@@ -1,6 +1,9 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+// This test needs the real useRealtime implementation, not the mock from setup.ts
+vi.unmock("../realtime/useRealtime");
+
 import { createRealtimeClientManager } from "../realtime/client";
 import { useRealtime } from "../realtime/useRealtime";
 

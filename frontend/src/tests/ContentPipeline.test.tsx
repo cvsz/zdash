@@ -11,6 +11,7 @@ describe("ContentPipeline", () => {
     expect(screen.getByText("SOCIAL_DRY_RUN")).toBeTruthy();
     expect(screen.getByText("Approval Required")).toBeTruthy();
     expect(screen.getByText("Content Board")).toBeTruthy();
+
     const policyNotes = await screen.findAllByText(/Policy notes/i);
     expect(policyNotes.length).toBeGreaterThan(0);
   });
@@ -21,6 +22,7 @@ describe("ContentPipeline", () => {
     const publishButtons = (await screen.findAllByText(
       "Dry-run publish",
     )) as HTMLButtonElement[];
+
     expect(publishButtons.length).toBeGreaterThan(0);
     expect(publishButtons[0].disabled).toBe(true);
   });

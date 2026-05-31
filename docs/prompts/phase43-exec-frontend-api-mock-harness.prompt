@@ -1,0 +1,149 @@
+Implement Phase 43: Frontend Test API Mock Harness.
+
+Goal:
+Make all frontend Vitest tests deterministic by preventing test files from depending on live backend API responses.
+
+Context:
+Recent frontend validation showed:
+- ContentPipeline.test.tsx failed because the rendered board had 0 content items, so "Policy notes" and "Dry-run publish" were missing.
+- Workers.test.tsx passed but printed stderr because useWorkers called /api/workers/queues and got 404 / invalid API envelope.
+- Several pages use hooks that fetch API data during render. Tests must not call the live backend.
+
+Hard requirements:
+- Do not change production runtime behavior.
+- Do not weaken API envelope validation in production client.
+- Do not enable live trading, real posting, real IoT, or external side effects.
+- Do not commit .env files or secrets.
+- Keep test mocks deterministic and simulation-only.
+- Keep mock data safety-first and dry-run by default.
+
+Implement:
+
+1. Create shared frontend test API mock utilities
+
+Create:
+- frontend/src/tests/mocks/apiMockData.ts
+- frontend/src/tests/mocks/mockApiEndpoints.ts
+- frontend/src/tests/mocks/mockRealtime.ts
+
+apiMockData.ts must export deterministic data for:
+- health
+- logs
+- agents
+- trading status
+- risk status
+- scheduler status/jobs/runs
+- backtesting status/strategies/results/optimizations
+- content status/items/runs/report
+- iot status/action
+- tenancy organizations/workspaces
+- workers queues/tasks
+- alerts rules/events/channels
+- billing status/plans
+- usage summary/invoices
+- marketplace plugins/installations
+- enterprise license/branding/onboarding/customer health
+- admin users/audit/safety check
+
+All content item mocks must include at least one draft item with:
+- id
+- title
+- topic
+- status: "draft"
+- approved: false
+- approval_required: true
+- social_dry_run: true
+- policy_notes with text including "Policy notes"
+This guarantees ContentPipeline can render "Policy notes" and disabled "Dry-run publish".
+
+All worker mocks must include at least one queue:
+- queue_name: "default"
+- workers_active
+- tasks_pending
+- tasks_processing
+- tasks_failed
+- uptime_seconds
+
+2. Mock endpoint module in test setup
+
+Use Vitest setup so tests do not manually mock every page.
+
+Find existing Vitest setup file. If none exists, create:
+- frontend/src/tests/setup.ts
+
+Update Vitest config if needed.
+
+In setup, mock:
+- frontend/src/api/endpoints
+- frontend/src/realtime/useRealtime or realtime hooks if needed
+
+The mocked endpoints should return promises matching the exact shapes expected by pages/hooks:
+- listContentItems returns ContentItem[]
+- getContentStatus returns object with enabled, approval_required, social_dry_run
+- getQueueStatus returns QueueStatus[]
+- listTasks returns TaskItem[]
+- listOrganizations returns Organization[]
+- listWorkspaces returns Workspace[]
+- all mutation endpoints return safe mock results
+
+3. Block accidental live API during tests
+
+In test setup, install a guarded fetch mock:
+- allow static/local test resources if required
+- fail loudly for unexpected /api/* calls with a clear error:
+  "Unexpected live API call in frontend test: METHOD URL"
+This proves tests use mocks instead of live backend.
+
+Do not break tests that intentionally test apiClient. For apiClient-specific tests, allow them to override global.fetch inside that test file.
+
+4. Update affected tests
+
+Update:
+- frontend/src/tests/ContentPipeline.test.tsx
+- frontend/src/tests/Workers.test.tsx
+
+Make tests use shared mocks implicitly, not per-test live API.
+ContentPipeline tests must pass and still verify:
+- Content Pipeline heading
+- SOCIAL_DRY_RUN
+- Approval Required
+- Content Board
+- Policy notes
+- Dry-run publish button exists and is disabled before approval
+
+Workers tests must pass without stderr and verify:
+- Workers & Queues heading
+- default queue rendered
+- task table / recent tasks rendered
+
+5. Add regression tests
+
+Create or update:
+- frontend/src/tests/ApiMockHarness.test.ts
+
+Assertions:
+- listContentItems returns at least one item
+- getQueueStatus returns at least one queue
+- listOrganizations returns at least one org
+- listWorkspaces returns at least one workspace
+- no live /api call is needed for these helpers
+
+6. Validation
+
+Run:
+- cd frontend && npm test -- src/tests/ContentPipeline.test.tsx
+- cd frontend && npm test -- src/tests/Workers.test.tsx
+- cd frontend && npm test
+- make validate-fast
+- make phase42-validate
+
+Acceptance criteria:
+- 90+ frontend tests pass.
+- ContentPipeline tests pass.
+- Workers tests pass without Failed to fetch workers data stderr.
+- No frontend test depends on backend being online.
+- No unmocked /api calls happen in tests, except tests that explicitly override fetch for apiClient behavior.
+- make validate-fast passes.
+- make phase42-validate passes.
+- No secrets.
+- No .env tracked.
