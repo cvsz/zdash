@@ -61,6 +61,7 @@ vi.mock("../api/endpoints", () => {
     disablePluginInstallation: vi.fn(),
     uninstallPluginInstallation: vi.fn(),
     runPluginAction: vi.fn(),
+    listPluginCategories: vi.fn(async () => ["risk", "backtesting", "content", "automation", "notifications", "compliance"]),
   };
 });
 

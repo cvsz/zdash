@@ -1,6 +1,6 @@
-"""Marketplace models — Phase 10.4
+"""Marketplace models — Phase 10.4 / 46
 
-ORM tables: PluginManifest, PluginInstallation
+ORM tables: PluginManifest, PluginInstallation, PluginActionRun
 Pydantic schemas: PluginActionResult
 Enums: PluginStatus, PluginInstallStatus
 """
@@ -67,6 +67,9 @@ class PluginManifest(Base, Timestamped):
     entrypoint: Mapped[str] = mapped_column(String, default="")
     safety_level: Mapped[str] = mapped_column(String, default="sandbox")
     metadata_json: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
+    source_type: Mapped[str] = mapped_column(String, default="builtin")
+    source_ref: Mapped[str | None] = mapped_column(String, nullable=True)
+    checksum: Mapped[str | None] = mapped_column(String, nullable=True)
 
 
 class PluginInstallation(Base, Timestamped):
@@ -90,6 +93,23 @@ class PluginInstallation(Base, Timestamped):
     installed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=func.now()
     )
+
+
+class PluginActionRun(Base, Timestamped):
+    """Record of a single plugin action execution."""
+
+    __tablename__ = "plugin_action_runs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=_id)
+    installation_id: Mapped[str] = mapped_column(
+        String, ForeignKey("plugin_installations.id"), index=True
+    )
+    action: Mapped[str] = mapped_column(String, default="")
+    payload_json: Mapped[dict] = mapped_column("payload", JSON, default=dict)
+    dry_run: Mapped[bool] = mapped_column(Boolean, default=True)
+    status: Mapped[str] = mapped_column(String, default="dry_run")
+    output_json: Mapped[dict] = mapped_column("output", JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
 # ------------------------------------------------------------------ #
@@ -127,6 +147,9 @@ def manifest_to_dict(m: PluginManifest) -> dict[str, Any]:
         "entrypoint": m.entrypoint,
         "safety_level": m.safety_level,
         "metadata": m.metadata_json or {},
+        "source_type": m.source_type or "builtin",
+        "source_ref": m.source_ref,
+        "checksum": m.checksum,
     }
 
 

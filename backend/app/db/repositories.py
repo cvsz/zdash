@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -23,7 +23,7 @@ from app.billing.models import (
     Subscription,
     UsageRecord,
 )
-from app.marketplace.models import PluginInstallation
+from app.marketplace.models import PluginActionRun, PluginInstallation, PluginManifest
 
 
 class UserRepositoryProtocol(Protocol):
@@ -303,6 +303,28 @@ class BillingRepositoryProtocol(Protocol):
     def record_usage(self, **kwargs) -> UsageRecord: ...
 
 
+class PluginManifestRepositoryProtocol(Protocol):
+    def get_by_id(self, manifest_id: str) -> PluginManifest | None: ...
+    def get_by_slug(self, slug: str) -> PluginManifest | None: ...
+    def list(
+        self,
+        search: str | None = None,
+        category: str | None = None,
+        status: str | None = None,
+    ) -> list[PluginManifest]: ...
+    def create(self, **kwargs) -> PluginManifest: ...
+    def update(self, manifest: PluginManifest) -> PluginManifest: ...
+    def delete(self, manifest: PluginManifest) -> None: ...
+
+
+class PluginActionRunRepositoryProtocol(Protocol):
+    def create(self, **kwargs) -> PluginActionRun: ...
+    def get_by_id(self, run_id: str) -> PluginActionRun | None: ...
+    def list_by_installation(
+        self, installation_id: str, limit: int = 50
+    ) -> list[PluginActionRun]: ...
+
+
 class MarketplaceRepositoryProtocol(Protocol):
     def get_installation(
         self, organization_id: str, installation_id: str
@@ -360,6 +382,84 @@ class BillingRepository(BillingRepositoryProtocol):
         self.db.commit()
         self.db.refresh(row)
         return row
+
+
+class PluginManifestRepository(PluginManifestRepositoryProtocol):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_by_id(self, manifest_id: str) -> PluginManifest | None:
+        return self.db.get(PluginManifest, manifest_id)
+
+    def get_by_slug(self, slug: str) -> PluginManifest | None:
+        return self.db.execute(
+            select(PluginManifest).where(PluginManifest.slug == slug)
+        ).scalar_one_or_none()
+
+    def list(
+        self,
+        search: str | None = None,
+        category: str | None = None,
+        status: str | None = None,
+    ) -> list[PluginManifest]:
+        q = select(PluginManifest)
+        if search:
+            like = f"%{search}%"
+            q = q.where(
+                or_(
+                    PluginManifest.name.ilike(like),
+                    PluginManifest.description.ilike(like),
+                    PluginManifest.slug.ilike(like),
+                )
+            )
+        if category:
+            q = q.where(PluginManifest.category == category)
+        if status:
+            q = q.where(PluginManifest.status == status)
+        q = q.order_by(PluginManifest.name)
+        return list(self.db.execute(q).scalars().all())
+
+    def create(self, **kwargs) -> PluginManifest:
+        row = PluginManifest(**kwargs)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def update(self, manifest: PluginManifest) -> PluginManifest:
+        self.db.commit()
+        self.db.refresh(manifest)
+        return manifest
+
+    def delete(self, manifest: PluginManifest) -> None:
+        self.db.delete(manifest)
+        self.db.commit()
+
+
+class PluginActionRunRepository(PluginActionRunRepositoryProtocol):
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create(self, **kwargs) -> PluginActionRun:
+        row = PluginActionRun(**kwargs)
+        self.db.add(row)
+        self.db.commit()
+        self.db.refresh(row)
+        return row
+
+    def get_by_id(self, run_id: str) -> PluginActionRun | None:
+        return self.db.get(PluginActionRun, run_id)
+
+    def list_by_installation(
+        self, installation_id: str, limit: int = 50
+    ) -> list[PluginActionRun]:
+        q = (
+            select(PluginActionRun)
+            .where(PluginActionRun.installation_id == installation_id)
+            .order_by(PluginActionRun.created_at.desc())
+            .limit(limit)
+        )
+        return list(self.db.execute(q).scalars().all())
 
 
 class MarketplaceRepository(MarketplaceRepositoryProtocol):

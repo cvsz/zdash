@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   listMarketplacePlugins,
   listPluginInstallations,
+  listPluginCategories,
   installMarketplacePlugin,
   enablePluginInstallation,
   disablePluginInstallation,
@@ -13,19 +14,25 @@ import { PluginManifest, PluginInstallation } from "../api/types";
 export function useMarketplace() {
   const [plugins, setPlugins] = useState<PluginManifest[]>([]);
   const [installations, setInstallations] = useState<PluginInstallation[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
 
   const fetchMarketplace = async () => {
     try {
       setLoading(true);
       setError(null);
-      const [pluginsRes, installationsRes] = await Promise.all([
-        listMarketplacePlugins(),
+      const [pluginsRes, installationsRes, categoriesRes] = await Promise.all([
+        listMarketplacePlugins(search || undefined, category || undefined, status || undefined),
         listPluginInstallations(),
+        listPluginCategories(),
       ]);
       setPlugins(Array.isArray(pluginsRes) ? pluginsRes : []);
       setInstallations(Array.isArray(installationsRes) ? installationsRes : []);
+      setCategories(Array.isArray(categoriesRes) ? categoriesRes : []);
     } catch (err: any) {
       setError(err.message || "Failed to load marketplace data");
     } finally {
@@ -35,7 +42,7 @@ export function useMarketplace() {
 
   useEffect(() => {
     fetchMarketplace();
-  }, []);
+  }, [search, category, status]);
 
   const install = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
     setError(null);
@@ -93,7 +100,6 @@ export function useMarketplace() {
   ) => {
     setError(null);
     try {
-      // Safety rule: Plugin actions default to dry-run unless explicitly allowed (dryRun=false)
       const finalPayload = { ...payload, dry_run: dryRun };
       const res = await apiRunPluginAction(installationId, action, finalPayload);
       return res;
@@ -106,8 +112,15 @@ export function useMarketplace() {
   return {
     plugins,
     installations,
+    categories,
     loading,
     error,
+    search,
+    setSearch,
+    category,
+    setCategory,
+    status,
+    setStatus,
     install,
     enable,
     disable,

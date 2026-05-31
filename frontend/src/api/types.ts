@@ -532,6 +532,9 @@ export type PluginManifest = {
   entrypoint: string;
   safety_level: string;
   metadata_json: Record<string, unknown>;
+  source_type: string;
+  source_ref: string | null;
+  checksum: string | null;
 };
 
 export type PluginInstallation = {

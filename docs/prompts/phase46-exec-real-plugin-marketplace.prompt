@@ -1,0 +1,238 @@
+Implement Phase 46: Real Plug-in Marketplace.
+
+Goal:
+Replace the current mostly static/mock marketplace with a real production-grade, DB-backed, safety-gated plug-in marketplace for zDash.
+
+Context:
+Current marketplace has:
+- backend/app/api/marketplace.py
+- backend/app/marketplace/builtins.py
+- backend/app/marketplace/plugin_registry.py
+- backend/app/marketplace/plugin_service.py
+- frontend/src/pages/Marketplace.tsx
+- frontend/src/components/marketplace/*
+- frontend/src/hooks/useMarketplace.ts
+- frontend/src/api/endpoints.ts
+
+Recent issues fixed:
+- frontend crash from missing plugin fields such as safety_level, required_features, required_permissions
+- install button returned FastAPI {detail: ...}, causing Invalid API envelope
+- backend should always return zDash envelope: { ok, data, error, timestamp }
+
+Core requirement:
+Build a real marketplace, not mock-only. It must support real registry data, persistent installs, versioned manifests, enable/disable/uninstall actions, dry-run action execution, audit events, quota/entitlement handling, and safe UI rendering.
+
+Hard safety rules:
+- No arbitrary unrestricted code execution.
+- No plug-in gets direct secret access.
+- No plug-in gets filesystem/network access unless explicitly declared and approved.
+- All plug-in run actions default to dry_run=true.
+- No live trading, social posting, IoT control, or destructive action unless existing zDash safety locks allow it.
+- Never print secrets.
+- No .env files tracked.
+- All backend errors must use zDash API envelope.
+
+Backend tasks:
+
+1. Normalize plugin manifest model
+Ensure PluginManifest has complete stable fields:
+- id
+- name
+- slug
+- version
+- description
+- author
+- category
+- status: draft | approved | disabled | rejected
+- safety_level: sandbox | restricted | privileged
+- required_features: list[str]
+- required_permissions: list[str]
+- config_schema: dict
+- default_config: dict
+- entrypoint: str
+- source_type: builtin | local | git | package
+- source_ref: str | null
+- checksum: str | null
+- metadata_json: dict
+- created_at / updated_at where persisted
+
+2. DB-backed registry
+Implement persistent marketplace registry tables/repositories if missing:
+- marketplace_plugin_manifests
+- marketplace_plugin_versions if useful
+- marketplace_plugin_installations
+- marketplace_plugin_action_runs
+
+Requirements:
+- Unique plugin id + version.
+- Unique installation per organization/workspace/plugin id unless uninstalled.
+- Installation stores config_json, enabled, installed_by, installed_at.
+- Action runs store installation_id, action, payload redacted, dry_run, status, output_json, error, timestamps.
+
+3. Built-in plugin seed
+Replace incomplete builtins with complete manifests:
+- zdash-risk-summary
+- zdash-backtest-reporter
+- zdash-content-calendar
+- zdash-scheduler-health
+- zdash-alert-router
+- zdash-tenant-audit-export
+
+Each built-in must include:
+- safety_level
+- required_features
+- required_permissions
+- config_schema
+- default_config
+- entrypoint
+- metadata_json
+
+4. Registry service
+Implement service functions:
+- list_plugins(search, category, status)
+- get_plugin(plugin_id)
+- register_plugin_manifest(manifest, actor)
+- validate_plugin_manifest(manifest)
+- list_installations(org_id, workspace_id)
+- install_plugin(org_id, workspace_id, plugin_id, config, actor)
+- enable_plugin(org_id, installation_id, actor)
+- disable_plugin(org_id, installation_id, actor)
+- uninstall_plugin(org_id, installation_id, actor)
+- run_plugin_action(org_id, installation_id, action, payload, actor, dry_run=True)
+
+Validation:
+- Reject invalid manifest fields.
+- Reject unknown safety_level.
+- Reject unknown plugin id.
+- Reject installing disabled/rejected plugin.
+- Validate config against config_schema where feasible.
+- Redact secrets from audit/event payloads.
+
+5. Safe action runner
+Implement a safe built-in action runner for built-in plugins only:
+- risk summary: returns latest risk status summary
+- backtest reporter: returns markdown summary from latest backtest results
+- content calendar: returns scheduled/draft content summary
+- scheduler health: returns scheduler jobs/runs summary
+- alert router: dry-run only, returns simulated routing result
+- tenant audit export: dry-run export metadata only, never raw secrets
+
+No arbitrary external code execution in Phase 46.
+For source_type git/package/local, only registry + install metadata is supported unless plugin is approved and runner is implemented later.
+
+6. API endpoints
+Update backend/app/api/marketplace.py:
+- GET /api/marketplace/plugins
+- GET /api/marketplace/plugins/{plugin_id}
+- GET /api/marketplace/categories
+- GET /api/marketplace/installations
+- POST /api/marketplace/install
+- POST /api/marketplace/installations/{installation_id}/enable
+- POST /api/marketplace/installations/{installation_id}/disable
+- DELETE /api/marketplace/installations/{installation_id}
+- POST /api/marketplace/installations/{installation_id}/run
+
+All endpoints must return zDash envelope using success_response/error_response.
+Dependency failures must also be enveloped by main.py HTTPException handler.
+
+7. Dev entitlement behavior
+In development only, marketplace install should be usable without causing UX crash:
+- If entitlement fails, return enveloped error.
+- Frontend shows clear error.
+- Optional local development bypass must be controlled by settings, not hardcoded.
+- Default production remains fail-closed.
+
+Frontend tasks:
+
+8. Real marketplace UI
+Update /marketplace to support:
+- plugin search
+- category filters
+- status/safety badges
+- installed plugins table
+- install button with loading state
+- enable/disable/uninstall loading state
+- detail panel with manifest info
+- config JSON editor before install
+- dry-run action console for installed plugins
+- action run output display
+- clear error banner from API envelope errors
+
+9. Defensive rendering
+All marketplace components must tolerate missing optional fields:
+- default safety_level = sandbox
+- default required_features = []
+- default required_permissions = []
+- default config_schema = {}
+- default default_config = {}
+- default metadata_json = {}
+
+No .toLowerCase(), .map(), .length, or toLocaleString() on unknown/undefined values.
+
+10. API client endpoints
+Update frontend/src/api/endpoints.ts:
+- listMarketplacePlugins returns PluginManifest[]
+- getMarketplacePlugin returns PluginManifest
+- listPluginInstallations returns PluginInstallation[]
+- installMarketplacePlugin returns install result
+- enable/disable/uninstall return result
+- runPluginAction returns output result
+- categories endpoint if added
+
+Fallback mock data must be complete and safety-first.
+
+11. Tests
+Add/update tests:
+- backend app/tests/test_marketplace_real_registry.py
+- backend app/tests/test_marketplace_api_envelope.py
+- backend app/tests/test_marketplace_action_runner.py
+- frontend src/tests/Marketplace.test.tsx
+- frontend src/tests/MarketplaceActions.test.tsx
+- frontend src/tests/ApiMockHarness.test.ts
+
+Test cases:
+- plugin list returns complete manifests
+- install unknown plugin fails with envelope
+- install entitlement failure returns envelope, not {detail}
+- install valid built-in creates persistent installation
+- enable/disable/uninstall update state
+- run action defaults dry_run true
+- no secrets in action output
+- frontend renders missing optional fields safely
+- install button displays API error, does not crash
+- no Invalid API envelope on marketplace actions
+
+12. Documentation
+Create:
+- docs/runbooks/REAL_PLUGIN_MARKETPLACE.md
+- docs/reports/PHASE46_REAL_PLUGIN_MARKETPLACE_REPORT.md
+
+Docs must cover:
+- marketplace architecture
+- manifest schema
+- safety levels
+- dry-run action model
+- install/enable/disable/uninstall flow
+- local dev entitlement behavior
+- production safety posture
+
+Validation commands:
+- cd backend && python -m ruff format --check app tests
+- cd backend && python -m ruff check app tests
+- cd backend && pytest app/tests/test_marketplace_real_registry.py app/tests/test_marketplace_api_envelope.py app/tests/test_marketplace_action_runner.py
+- cd frontend && npm test -- src/tests/Marketplace.test.tsx
+- cd frontend && npm test -- src/tests/MarketplaceActions.test.tsx
+- cd frontend && npm run build
+- make validate-fast
+
+Acceptance criteria:
+- /marketplace loads without ErrorBoundary crash.
+- Click Install never produces Invalid API envelope.
+- Install either succeeds or shows clear enveloped error.
+- Real DB-backed installations persist.
+- Built-in plugin actions can run in dry-run mode.
+- All API responses are zDash envelopes.
+- All tests pass.
+- make validate-fast passes.
+- No secrets.
+- No .env tracked.

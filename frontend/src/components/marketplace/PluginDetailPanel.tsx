@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PluginManifest } from "../../api/types";
 
 interface PluginDetailPanelProps {
   plugin: PluginManifest | null;
   onClose: () => void;
-  onInstall: (pluginId: string) => void;
+  onInstall: (pluginId: string, config?: Record<string, any>) => void;
   isInstalled: boolean;
   onRunAction?: (action: string, payload: Record<string, any>, dryRun: boolean) => Promise<any>;
+  actionLoading?: boolean;
 }
 
 export function PluginDetailPanel({
@@ -15,6 +16,7 @@ export function PluginDetailPanel({
   onInstall,
   isInstalled,
   onRunAction,
+  actionLoading,
 }: PluginDetailPanelProps) {
   const [actionName, setActionName] = useState("");
   const [actionPayload, setActionPayload] = useState("");
@@ -22,6 +24,17 @@ export function PluginDetailPanel({
   const [running, setRunning] = useState(false);
   const [runResult, setRunResult] = useState<any>(null);
   const [runError, setRunError] = useState<string | null>(null);
+  const [installConfig, setInstallConfig] = useState("");
+  const [configError, setConfigError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setInstallConfig(JSON.stringify(plugin?.default_config || {}, null, 2));
+    setConfigError(null);
+    setActionName("");
+    setActionPayload("");
+    setRunResult(null);
+    setRunError(null);
+  }, [plugin]);
 
   if (!plugin) return null;
 
@@ -34,6 +47,33 @@ export function PluginDetailPanel({
   const pluginCategory = plugin.category || "general";
   const pluginVersion = plugin.version || "0.0.0";
   const pluginDescription = plugin.description || "No description provided.";
+  const hasConfigSchema = typeof plugin.config_schema === "object" && plugin.config_schema !== null && Object.keys(plugin.config_schema).length > 0;
+
+  const handleConfigChange = (value: string) => {
+    setInstallConfig(value);
+    try {
+      if (value.trim()) {
+        JSON.parse(value);
+      }
+      setConfigError(null);
+    } catch {
+      setConfigError("Invalid JSON format");
+    }
+  };
+
+  const handleInstallWithConfig = () => {
+    if (configError) return;
+    let config: Record<string, any> = {};
+    if (installConfig.trim()) {
+      try {
+        config = JSON.parse(installConfig);
+      } catch {
+        setConfigError("Invalid JSON configuration");
+        return;
+      }
+    }
+    onInstall(plugin.id, config);
+  };
 
   const handleRun = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +103,12 @@ export function PluginDetailPanel({
       <div className="p-6 border-b border-neutral-800 flex justify-between items-center bg-neutral-900/30">
         <div>
           <h3 className="text-xl font-bold text-white">{pluginName}</h3>
+          {plugin.source_type && (
+            <span className="text-neutral-500 text-xs mt-1 block">
+              Source: <span className="font-mono">{plugin.source_type}</span>
+              {plugin.source_ref && <span> ({plugin.source_ref})</span>}
+            </span>
+          )}
           <span className="text-neutral-500 text-xs mt-1 block">
             Category: <span className="capitalize">{pluginCategory}</span> • v{pluginVersion}
           </span>
@@ -135,6 +181,25 @@ export function PluginDetailPanel({
             )}
           </div>
         </section>
+
+        {/* Config editor for install */}
+        {!isInstalled && hasConfigSchema && (
+          <section className="border-t border-neutral-900 pt-6 space-y-4">
+            <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Configuration</h4>
+            <p className="text-xs text-neutral-500">
+              Customize plugin configuration before installing. Changes take effect on install.
+            </p>
+            <textarea
+              value={installConfig}
+              onChange={(e) => handleConfigChange(e.target.value)}
+              rows={6}
+              className="w-full px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-violet-500 text-sm font-mono"
+            />
+            {configError && (
+              <p className="text-xs text-rose-400">{configError}</p>
+            )}
+          </section>
+        )}
 
         {/* Dry-run action runner console */}
         {isInstalled && onRunAction && (
@@ -223,10 +288,21 @@ export function PluginDetailPanel({
       {!isInstalled && (
         <div className="p-6 border-t border-neutral-800 bg-neutral-900/20 flex gap-4">
           <button
-            onClick={() => onInstall(plugin.id)}
-            className="w-full py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition"
+            onClick={handleInstallWithConfig}
+            disabled={!!configError || !!actionLoading}
+            className="w-full py-2.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            Install plug-in
+            {actionLoading ? (
+              <>
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Installing...
+              </>
+            ) : (
+              "Install plug-in"
+            )}
           </button>
         </div>
       )}

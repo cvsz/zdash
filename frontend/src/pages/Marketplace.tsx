@@ -9,8 +9,15 @@ export default function Marketplace() {
   const {
     plugins,
     installations,
+    categories,
     loading,
     error,
+    search,
+    setSearch,
+    category,
+    setCategory,
+    status,
+    setStatus,
     install,
     enable,
     disable,
@@ -19,36 +26,49 @@ export default function Marketplace() {
   } = useMarketplace();
 
   const [selectedPlugin, setSelectedPlugin] = useState<PluginManifest | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const handleInstall = async (pluginId: string) => {
+  const handleInstall = async (pluginId: string, config?: Record<string, any>) => {
+    setActionLoading("install-" + pluginId);
     try {
-      await install(pluginId, "ws-1");
+      await install(pluginId, "ws-1", config);
     } catch {
       // Error state is handled in useMarketplace.
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleEnable = async (installationId: string) => {
+    setActionLoading("enable-" + installationId);
     try {
       await enable(installationId);
     } catch {
       // Error state is handled in useMarketplace.
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleDisable = async (installationId: string) => {
+    setActionLoading("disable-" + installationId);
     try {
       await disable(installationId);
     } catch {
       // Error state is handled in useMarketplace.
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleUninstall = async (installationId: string) => {
+    setActionLoading("uninstall-" + installationId);
     try {
       await uninstall(installationId);
     } catch {
       // Error state is handled in useMarketplace.
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -63,6 +83,10 @@ export default function Marketplace() {
     return installations.some((inst) => inst.plugin_id === pluginId);
   };
 
+  const isLoadingAction = (prefix: string, id: string) => {
+    return actionLoading === prefix + id;
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8 text-white relative">
       <div>
@@ -72,7 +96,7 @@ export default function Marketplace() {
 
       {error && (
         <div className="p-4 bg-state-danger/10 border border-state-danger/20 text-state-danger rounded-xl text-sm font-semibold">
-          Error: {error}
+          {error}
         </div>
       )}
 
@@ -83,6 +107,38 @@ export default function Marketplace() {
         </div>
       ) : (
         <>
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex-1 min-w-[200px]">
+              <input
+                type="text"
+                placeholder="Search plugins..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-violet-500 text-sm"
+              />
+            </div>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-violet-500 text-sm"
+            >
+              <option value="">All Categories</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-violet-500 text-sm"
+            >
+              <option value="">All Statuses</option>
+              <option value="approved">Approved</option>
+              <option value="draft">Draft</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </div>
+
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">Installed Plug-ins</h3>
             <InstalledPluginTable
@@ -112,6 +168,7 @@ export default function Marketplace() {
               onInstall={handleInstall}
               isInstalled={isPluginInstalled(selectedPlugin.id)}
               onRunAction={handleRunAction}
+              actionLoading={isLoadingAction("install-", selectedPlugin.id)}
             />
           )}
         </>

@@ -890,8 +890,14 @@ export const getInvoices = async () => {
 };
 
 // Marketplace API
-export const listMarketplacePlugins = async () => {
-  const data = await apiClient.get<{ plugins?: PluginManifest[]; items?: PluginManifest[] }>("/api/marketplace/plugins", {
+export const listMarketplacePlugins = async (search?: string, category?: string, status?: string) => {
+  const params = new URLSearchParams();
+  if (search) params.set("search", search);
+  if (category) params.set("category", category);
+  if (status) params.set("status", status);
+  const query = params.toString();
+  const url = "/api/marketplace/plugins" + (query ? "?" + query : "");
+  const data = await apiClient.get<{ plugins?: PluginManifest[]; items?: PluginManifest[] }>(url, {
     plugins: [
       {
         id: "plugin-tapo",
@@ -909,6 +915,9 @@ export const listMarketplacePlugins = async () => {
         entrypoint: "main.py",
         safety_level: "sandbox",
         metadata_json: {},
+        source_type: "builtin",
+        source_ref: null,
+        checksum: null,
       },
       {
         id: "plugin-slack",
@@ -926,6 +935,9 @@ export const listMarketplacePlugins = async () => {
         entrypoint: "slack.py",
         safety_level: "restricted",
         metadata_json: {},
+        source_type: "builtin",
+        source_ref: null,
+        checksum: null,
       },
     ],
   });
@@ -950,6 +962,9 @@ export const getMarketplacePlugin = async (pluginId: string) => {
       entrypoint: "main.py",
       safety_level: "sandbox",
       metadata_json: {},
+      source_type: "builtin",
+      source_ref: null,
+      checksum: null,
     },
   });
   return data.plugin;
@@ -959,10 +974,10 @@ export const listPluginInstallations = async () => {
   const data = await apiClient.get<{ installations?: PluginInstallation[]; items?: PluginInstallation[] }>("/api/marketplace/installations", {
     installations: [
       {
-        id: "inst-tapo",
+        id: "inst-zdash-tapo",
         organization_id: "org-1",
         workspace_id: "ws-1",
-        plugin_id: "plugin-tapo",
+        plugin_id: "zdash-tapo",
         version: "1.0.2",
         status: "enabled",
         config_json: {},
@@ -976,9 +991,10 @@ export const listPluginInstallations = async () => {
 };
 
 export const installMarketplacePlugin = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
-  return apiClient.post<{ ok: boolean, id: string }>("/api/marketplace/install", { plugin_id: pluginId, workspace_id: workspaceId, config }, {
+  return apiClient.post<{ ok: boolean; id: string; source_type: string }>("/api/marketplace/install", { plugin_id: pluginId, workspace_id: workspaceId, config }, {
     ok: true,
-    id: "inst-tapo",
+    id: "inst-zdash-" + pluginId,
+    source_type: "builtin",
   });
 };
 
@@ -995,10 +1011,17 @@ export const uninstallPluginInstallation = async (installationId: string) => {
 };
 
 export const runPluginAction = async (installationId: string, action: string, payload: Record<string, any> = {}) => {
-  return apiClient.post<{ ok: boolean, output: any }>("/api/marketplace/installations/" + installationId + "/run", { action, payload }, {
+  return apiClient.post<{ ok: boolean; output: any }>("/api/marketplace/installations/" + installationId + "/run", { action, payload }, {
     ok: true,
     output: { status: "simulated_success" },
   });
+};
+
+export const listPluginCategories = async () => {
+  const data = await apiClient.get<{ categories: string[] }>("/api/marketplace/categories", {
+    categories: ["risk", "backtesting", "content", "automation", "notifications", "compliance"],
+  });
+  return data.categories;
 };
 
 // Enterprise API

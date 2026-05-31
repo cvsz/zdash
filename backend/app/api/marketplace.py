@@ -1,10 +1,19 @@
 from fastapi import APIRouter, Depends
 from typing import Any
 from pydantic import BaseModel
+from sqlalchemy import select
 
 from app.auth.dependencies import require_permissions
+from app.auth.models import AuthSession
 from app.auth.rbac import Permission
-from app.marketplace.plugin_registry import list_plugins, get_plugin
+from app.db.session import SessionLocal
+from app.marketplace.models import PluginManifest, PluginStatus
+from app.marketplace.plugin_registry import (
+    list_plugins,
+    get_plugin,
+    register_plugin_manifest,
+    validate_plugin_manifest,
+)
 from app.marketplace.plugin_service import (
     list_installations,
     install_plugin,
@@ -33,17 +42,59 @@ class RunPluginRequest(BaseModel):
     payload: dict = {}
 
 
-@router.get("/plugins")
-def api_plugins(
+class RegisterManifestRequest(BaseModel):
+    name: str
+    slug: str
+    version: str = "1.0.0"
+    description: str = ""
+    author: str = "zDash"
+    category: str = "general"
+    status: str = PluginStatus.draft.value
+    required_features: list[str] = []
+    required_permissions: list[str] = []
+    config_schema: dict = {}
+    default_config: dict = {}
+    entrypoint: str = ""
+    safety_level: str = "sandbox"
+    metadata: dict = {}
+
+
+@router.get("/categories")
+def api_categories(
     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
 ):
     try:
-        # Pydantic models need model_dump(), or we can just let FastAPI serialize it if they are ORM models.
-        # list_plugins returns a list of PluginManifest models.
-        plugins = [
-            p.model_dump() if hasattr(p, "model_dump") else p for p in list_plugins()
+        with SessionLocal() as db:
+            rows = (
+                db.execute(
+                    select(PluginManifest.category).distinct().order_by(PluginManifest.category)
+                )
+                .scalars()
+                .all()
+            )
+        categories = list(rows) if rows else [
+            "general", "risk", "backtesting", "content", "automation", "data", "analytics", "ai"
         ]
-        return success_response({"plugins": plugins})
+        return success_response({"categories": categories})
+    except Exception as e:
+        return error_response("CATEGORIES_ERROR", str(e))
+
+
+@router.get("/plugins")
+def api_plugins(
+    search: str | None = None,
+    category: str | None = None,
+    status: str | None = None,
+    current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+):
+    try:
+        plugins = list_plugins(
+            search=search, category=category, status=status
+        )
+        serialized = [
+            p.model_dump() if hasattr(p, "model_dump") else p for p in plugins
+        ]
+        return success_response({"plugins": serialized})
     except Exception as e:
         return error_response("PLUGINS_ERROR", str(e))
 
@@ -73,7 +124,6 @@ def api_installations(
         ws_id: str | None = getattr(tenant, "workspace_id", None)
         insts = list_installations(org_id, ws_id)
 
-        # Serialize list of installations
         res: list[dict[str, Any]] = []
         for i in insts:
             if hasattr(i, "__dict__"):
@@ -81,7 +131,7 @@ def api_installations(
                 d.pop("_sa_instance_state", None)
                 res.append(d)
             else:
-                res.append(i)  # type: ignore[arg-type]
+                res.append(i)
 
         return success_response({"installations": res})
     except Exception as e:
@@ -97,8 +147,7 @@ def api_install(
 ):
     try:
         org_id = getattr(tenant, "organization_id", "default")
-        ws_id = getattr(tenant, "workspace_id", "default")
-        decision = consume(org_id, ws_id, "marketplace_plugins")
+        decision = consume(org_id, getattr(tenant, "workspace_id", "default"), "marketplace_plugins")
         if not decision.allowed:
             return error_response(
                 "QUOTA_EXCEEDED", "Marketplace plugins quota exceeded"
@@ -195,3 +244,46 @@ def api_run(
         return success_response(res)
     except Exception as e:
         return error_response("RUN_ERROR", str(e))
+
+
+@router.post("/manifest")
+def api_register_manifest(
+    body: RegisterManifestRequest,
+    current_user: AuthSession = Depends(require_permissions([Permission.marketplace_manage])),
+):
+    try:
+        if getattr(current_user, "role", "") != "admin":
+            return error_response(
+                "FORBIDDEN", "Only administrators can register manifests"
+            )
+
+        manifest_dict = body.model_dump()
+        ok, errors = validate_plugin_manifest(manifest_dict)
+        if not ok:
+            return error_response("VALIDATION_FAILED", "; ".join(errors))
+
+        manifest = PluginManifest(
+            name=body.name,
+            slug=body.slug,
+            version=body.version,
+            description=body.description,
+            author=body.author,
+            category=body.category,
+            status=body.status,
+            required_features=body.required_features,
+            required_permissions=body.required_permissions,
+            config_schema=body.config_schema,
+            default_config=body.default_config,
+            entrypoint=body.entrypoint,
+            safety_level=body.safety_level,
+            metadata_json=body.metadata,
+        )
+
+        with SessionLocal() as db:
+            result = register_plugin_manifest(
+                db, manifest, getattr(current_user, "username", "system")
+            )
+
+        return success_response({"manifest": result})
+    except Exception as e:
+        return error_response("REGISTER_ERROR", str(e))

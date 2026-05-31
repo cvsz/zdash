@@ -1,8 +1,10 @@
 from typing import Dict, Any, List
 from datetime import datetime, timezone
+from sqlalchemy import select
 from app.db.session import SessionLocal
-from app.marketplace.models import PluginInstallation, PluginInstallStatus
+from app.marketplace.models import PluginInstallation, PluginInstallStatus, PluginManifest, PluginStatus
 from app.marketplace.plugin_runtime import run_action
+from app.marketplace.plugin_registry import list_plugins as registry_list_plugins, seed_builtins
 from app.marketplace.safety import check_plugin_action
 from app.billing.entitlement_service import check_feature
 from app.billing.quota_service import consume
@@ -12,8 +14,70 @@ from app.audit.models import AuditLogCreate
 from app.db.repositories import MarketplaceRepository
 
 
+SECRET_KEYS = {"secret", "password", "token", "key", "credential"}
+
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def _redact_secrets(payload: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return payload
+    redacted: dict[str, Any] = {}
+    for k, v in payload.items():
+        if any(s in k.lower() for s in SECRET_KEYS):
+            redacted[k] = "***REDACTED***"
+        elif isinstance(v, dict):
+            redacted[k] = _redact_secrets(v)
+        else:
+            redacted[k] = v
+    return redacted
+
+
+def validate_install(
+    organization_id: str,
+    plugin_id: str,
+    workspace_id: str,
+    config: dict[str, Any] | None = None,
+    db: Any | None = None,
+) -> Dict[str, Any]:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+        seed_builtins(db)
+    try:
+        manifest = db.execute(
+            select(PluginManifest).where(PluginManifest.id == plugin_id)
+        ).scalar_one_or_none()
+
+        if not manifest:
+            return {"ok": False, "error": "PLUGIN_NOT_FOUND"}
+
+        if manifest.status not in (PluginStatus.approved.value,):
+            return {"ok": False, "error": "PLUGIN_NOT_APPROVED"}
+
+        repo = MarketplaceRepository(db)
+        existing = repo.list_installations(organization_id, workspace_id)
+        for inst in existing:
+            if inst.plugin_id == plugin_id and inst.status not in (
+                PluginInstallStatus.removed.value,
+                PluginInstallStatus.failed.value,
+            ):
+                return {"ok": False, "error": "ALREADY_INSTALLED"}
+
+        ent = check_feature(organization_id, "feature.marketplace")
+        if not ent.allowed:
+            return {"ok": False, "error": "FEATURE_NOT_ENTITLED"}
+
+        quota = consume(organization_id, workspace_id, "marketplace_plugins")
+        if not quota.allowed:
+            return {"ok": False, "error": "QUOTA_EXCEEDED"}
+
+        return {"ok": True, "manifest": manifest}
+    finally:
+        if own_session:
+            db.close()
 
 
 def list_installations(
@@ -30,16 +94,18 @@ def install_plugin(
     workspace_id: str,
     config: dict[str, Any] | None = None,
     installed_by: str = "system",
+    db: Any | None = None,
 ) -> Dict[str, Any]:
-    ent = check_feature(organization_id, "feature.marketplace")
-    if not ent.allowed:
-        return {"ok": False, "error": "FEATURE_NOT_ENTITLED"}
+    validation = validate_install(
+        organization_id, plugin_id, workspace_id, config, db=db
+    )
+    if not validation.get("ok"):
+        return validation
 
-    quota = consume(organization_id, workspace_id, "marketplace_plugins")
-    if not quota.allowed:
-        return {"ok": False, "error": "QUOTA_EXCEEDED"}
-
-    with SessionLocal() as db:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
         repo = MarketplaceRepository(db)
         audit = AuditService(db)
 
@@ -54,16 +120,18 @@ def install_plugin(
             installed_by=installed_by,
         )
 
+        safe_config = _redact_secrets(config or {})
         event_bus.emit(
             "marketplace.plugin.installed",
             "plugin_service",
             f"Plugin {plugin_id} installed",
-            {
+            _redact_secrets({
                 "plugin_id": plugin_id,
                 "installation_id": inst.id,
                 "organization_id": organization_id,
                 "workspace_id": workspace_id,
-            },
+                "config": safe_config,
+            }),
         )
 
         audit.log(
@@ -74,6 +142,7 @@ def install_plugin(
                 resource_type="plugin_installation",
                 resource_id=inst.id,
                 result="success",
+                metadata=_redact_secrets({"config": safe_config}),
             )
         )
 
@@ -81,12 +150,21 @@ def install_plugin(
         ret.pop("_sa_instance_state", None)
         ret["ok"] = True
         return ret
+    finally:
+        if own_session:
+            db.close()
 
 
 def enable_plugin(
-    organization_id: str, installation_id: str, actor_id: str = "system"
+    organization_id: str,
+    installation_id: str,
+    actor_id: str = "system",
+    db: Any | None = None,
 ) -> Dict[str, Any]:
-    with SessionLocal() as db:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
         repo = MarketplaceRepository(db)
         audit = AuditService(db)
         inst = repo.get_installation(organization_id, installation_id)
@@ -115,13 +193,22 @@ def enable_plugin(
             )
         )
 
-    return {"ok": True}
+        return {"ok": True}
+    finally:
+        if own_session:
+            db.close()
 
 
 def disable_plugin(
-    organization_id: str, installation_id: str, actor_id: str = "system"
+    organization_id: str,
+    installation_id: str,
+    actor_id: str = "system",
+    db: Any | None = None,
 ) -> Dict[str, Any]:
-    with SessionLocal() as db:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
         repo = MarketplaceRepository(db)
         audit = AuditService(db)
         inst = repo.get_installation(organization_id, installation_id)
@@ -150,13 +237,22 @@ def disable_plugin(
             )
         )
 
-    return {"ok": True}
+        return {"ok": True}
+    finally:
+        if own_session:
+            db.close()
 
 
 def uninstall_plugin(
-    organization_id: str, installation_id: str, actor_id: str = "system"
+    organization_id: str,
+    installation_id: str,
+    actor_id: str = "system",
+    db: Any | None = None,
 ) -> Dict[str, Any]:
-    with SessionLocal() as db:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
         repo = MarketplaceRepository(db)
         audit = AuditService(db)
         inst = repo.get_installation(organization_id, installation_id)
@@ -183,7 +279,20 @@ def uninstall_plugin(
             )
         )
 
-    return {"ok": True}
+        return {"ok": True}
+    finally:
+        if own_session:
+            db.close()
+
+
+def list_plugins(
+    search: str | None = None,
+    category: str | None = None,
+    status: str | None = None,
+) -> list[dict[str, Any]]:
+    with SessionLocal() as db:
+        seed_builtins(db)
+        return registry_list_plugins(db, search=search, category=category, status=status)
 
 
 def run_plugin_action(
@@ -192,8 +301,12 @@ def run_plugin_action(
     action: str,
     payload: dict,
     actor_id: str = "system",
+    db: Any | None = None,
 ) -> Dict[str, Any]:
-    with SessionLocal() as db:
+    own_session = db is None
+    if own_session:
+        db = SessionLocal()
+    try:
         repo = MarketplaceRepository(db)
         audit = AuditService(db)
         inst = repo.get_installation(organization_id, installation_id)
@@ -205,11 +318,17 @@ def run_plugin_action(
 
         plugin_id = inst.plugin_id
 
+        safe_payload = _redact_secrets(payload)
+
         event_bus.emit(
             "marketplace.plugin.action.started",
             "plugin_service",
             f"Running {action} on {plugin_id}",
-            {"installation_id": installation_id, "action": action},
+            _redact_secrets({
+                "installation_id": installation_id,
+                "action": action,
+                "payload": safe_payload,
+            }),
         )
 
         ok, msg = check_plugin_action(action, payload)
@@ -233,13 +352,25 @@ def run_plugin_action(
             )
             return {"ok": False, "error": msg}
 
-        result = run_action(plugin_id, action, payload)
+        result = run_action(
+            db=db,
+            plugin_id=plugin_id,
+            action=action,
+            payload=payload,
+            dry_run=True,
+        )
+        if hasattr(result, "model_dump"):
+            result = result.model_dump()
 
         event_bus.emit(
             "marketplace.plugin.action.completed",
             "plugin_service",
             f"Action {action} completed on {plugin_id}",
-            {"installation_id": installation_id, "action": action},
+            _redact_secrets({
+                "installation_id": installation_id,
+                "action": action,
+                "result": result.get("output", {}),
+            }),
         )
         audit.log(
             AuditLogCreate(
@@ -249,8 +380,11 @@ def run_plugin_action(
                 resource_type="plugin_installation",
                 resource_id=installation_id,
                 result="success",
-                metadata={"action": action},
+                metadata={"action": action, "plugin_id": plugin_id},
             )
         )
 
         return result
+    finally:
+        if own_session:
+            db.close()
