@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createRealtimeClientManager } from "../realtime/client";
@@ -72,20 +71,16 @@ describe("realtime hooks", () => {
     expect(MockWebSocket.instances.length).toBe(1);
     const socket = MockWebSocket.instances[0];
 
-    act(() => {
-      socket.emitOpen();
-    });
+    socket.emitOpen();
 
     expect(screen.getByTestId("connected").textContent).toBe("true");
 
-    act(() => {
-      socket.emitJson({
-        type: "scheduler.completed",
-        timestamp: new Date().toISOString(),
-        source: "SchedulerService",
-        severity: "success",
-        payload: { message: "Scheduler run completed" },
-      });
+    socket.emitJson({
+      type: "scheduler.completed",
+      timestamp: new Date().toISOString(),
+      source: "SchedulerService",
+      severity: "success",
+      payload: { message: "Scheduler run completed" },
     });
 
     expect(screen.getByTestId("event-count").textContent).toBe("1");
