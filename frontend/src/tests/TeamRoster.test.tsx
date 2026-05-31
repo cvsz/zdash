@@ -6,7 +6,7 @@ import TeamRoster from '../pages/TeamRoster'
 describe('TeamRoster', () => {
   it('renders team roster heading', () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <TeamRoster />
       </BrowserRouter>,
     )

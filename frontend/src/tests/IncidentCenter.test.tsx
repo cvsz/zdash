@@ -6,7 +6,7 @@ import IncidentCenter from '../pages/IncidentCenter'
 describe('IncidentCenter', () => {
   it('renders incident center heading', () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <IncidentCenter />
       </BrowserRouter>,
     )

@@ -6,7 +6,7 @@ import SessionLogs from '../pages/SessionLogs'
 describe('SessionLogs', () => {
   it('renders session logs heading', () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SessionLogs />
       </BrowserRouter>,
     )
