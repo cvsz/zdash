@@ -3,6 +3,7 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -122,6 +123,25 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         extra={"context": {"path": request.url.path, "error": str(exc)}},
     )
     return JSONResponse(status_code=422, content=fail("VALIDATION_ERROR", str(exc)))
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    logger.warning(
+        "http_error",
+        extra={
+            "context": {
+                "path": request.url.path,
+                "status_code": exc.status_code,
+                "detail": str(exc.detail),
+            }
+        },
+    )
+    message = exc.detail if isinstance(exc.detail, str) else str(exc.detail)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=fail(f"HTTP_{exc.status_code}", message),
+    )
 
 
 app.include_router(health.router)

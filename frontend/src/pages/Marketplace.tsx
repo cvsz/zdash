@@ -23,8 +23,32 @@ export default function Marketplace() {
   const handleInstall = async (pluginId: string) => {
     try {
       await install(pluginId, "ws-1");
-    } catch (err) {
-      // Handled in hook
+    } catch {
+      // Error state is handled in useMarketplace.
+    }
+  };
+
+  const handleEnable = async (installationId: string) => {
+    try {
+      await enable(installationId);
+    } catch {
+      // Error state is handled in useMarketplace.
+    }
+  };
+
+  const handleDisable = async (installationId: string) => {
+    try {
+      await disable(installationId);
+    } catch {
+      // Error state is handled in useMarketplace.
+    }
+  };
+
+  const handleUninstall = async (installationId: string) => {
+    try {
+      await uninstall(installationId);
+    } catch {
+      // Error state is handled in useMarketplace.
     }
   };
 
@@ -59,20 +83,18 @@ export default function Marketplace() {
         </div>
       ) : (
         <>
-          {/* Installed plugins section */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">Installed Plug-ins</h3>
             <InstalledPluginTable
               installations={installations}
               plugins={plugins}
-              onEnable={enable}
-              onDisable={disable}
-              onUninstall={uninstall}
+              onEnable={handleEnable}
+              onDisable={handleDisable}
+              onUninstall={handleUninstall}
               onViewDetails={setSelectedPlugin}
             />
           </section>
 
-          {/* Plugin Grid catalog */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">Browse Available Plugins</h3>
             <PluginGrid
@@ -83,7 +105,6 @@ export default function Marketplace() {
             />
           </section>
 
-          {/* Slide-over details & console panel */}
           {selectedPlugin && (
             <PluginDetailPanel
               plugin={selectedPlugin}
@@ -98,4 +119,5 @@ export default function Marketplace() {
     </div>
   );
 }
+
 export { Marketplace };

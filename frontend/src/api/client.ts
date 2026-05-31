@@ -130,6 +130,30 @@ function shouldUseMockFallback<T>(
   return false;
 }
 
+function getLegacyErrorMessage(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+
+  const candidate = payload as { detail?: unknown; message?: unknown; error?: unknown };
+
+  if (typeof candidate.detail === "string") return candidate.detail;
+  if (typeof candidate.message === "string") return candidate.message;
+  if (typeof candidate.error === "string") return candidate.error;
+
+  if (Array.isArray(candidate.detail)) {
+    return candidate.detail
+      .map((item) => {
+        if (typeof item === "string") return item;
+        if (item && typeof item === "object" && "msg" in item) {
+          return String((item as { msg: unknown }).msg);
+        }
+        return JSON.stringify(item);
+      })
+      .join("; ");
+  }
+
+  return null;
+}
+
 async function request<T>(
   path: string,
   init: RequestInit = {},
@@ -164,6 +188,23 @@ async function request<T>(
     }
 
     if (!isApiResponse<T>(payload)) {
+      const legacyMessage = getLegacyErrorMessage(payload);
+
+      if (!response.ok && legacyMessage) {
+        throw new ApiError(legacyMessage, {
+          code: `HTTP_${response.status || 500}`,
+          status: response.status,
+          path,
+          details: payload,
+        });
+      }
+
+      console.error("[zDash API] Invalid API envelope", {
+        path,
+        url,
+        status: response.status,
+        payload,
+      });
       throw new ApiError("Invalid API envelope", {
         code: "INVALID_ENVELOPE",
         status: response.status,
