@@ -233,7 +233,9 @@ class Repository:
     def list_content_items(self) -> list[ContentItemRecord]:
         return list(
             self.session.exec(
-                select(ContentItemRecord).order_by(col(ContentItemRecord.created_at).desc())
+                select(ContentItemRecord).order_by(
+                    col(ContentItemRecord.created_at).desc()
+                )
             )
         )
 

@@ -4,8 +4,10 @@ from app.db.session import SessionLocal
 from app.enterprise.models import OnboardingChecklist
 from datetime import datetime, timezone
 
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
 
 DEFAULT_STEPS = [
     "create organization",
@@ -17,15 +19,20 @@ DEFAULT_STEPS = [
     "create first content item",
     "review scheduler jobs",
     "configure billing",
-    "review production safety check"
+    "review production safety check",
 ]
 
-def get_checklist(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+def get_checklist(
+    organization_id: str, workspace_id: Optional[str] = None
+) -> Dict[str, Any]:
     with SessionLocal() as db:
-        query = select(OnboardingChecklist).where(OnboardingChecklist.organization_id == organization_id)
+        query = select(OnboardingChecklist).where(
+            OnboardingChecklist.organization_id == organization_id
+        )
         if workspace_id:
             query = query.where(OnboardingChecklist.workspace_id == workspace_id)
-            
+
         chk = db.execute(query).scalar()
         if not chk:
             chk = OnboardingChecklist(
@@ -33,29 +40,34 @@ def get_checklist(organization_id: str, workspace_id: Optional[str] = None) -> D
                 workspace_id=workspace_id,
                 completed_steps=[],
                 pending_steps=DEFAULT_STEPS,
-                progress_percent=0.0
+                progress_percent=0.0,
             )
             db.add(chk)
             db.commit()
             db.refresh(chk)
-            
+
         ret = dict(chk.__dict__)
-        ret.pop('_sa_instance_state', None)
+        ret.pop("_sa_instance_state", None)
         return ret
 
-def mark_step_complete(organization_id: str, workspace_id: Optional[str], step: str) -> Dict[str, Any]:
+
+def mark_step_complete(
+    organization_id: str, workspace_id: Optional[str], step: str
+) -> Dict[str, Any]:
     with SessionLocal() as db:
-        query = select(OnboardingChecklist).where(OnboardingChecklist.organization_id == organization_id)
+        query = select(OnboardingChecklist).where(
+            OnboardingChecklist.organization_id == organization_id
+        )
         if workspace_id:
             query = query.where(OnboardingChecklist.workspace_id == workspace_id)
-            
+
         chk = db.execute(query).scalar()
         if not chk:
             get_checklist(organization_id, workspace_id)
             chk = db.execute(query).scalar()
         if chk is None:
             return {"ok": False, "error": "checklist not found"}
-            
+
         pending_steps = cast(list[str], getattr(chk, "pending_steps", []) or [])
         completed_steps = cast(list[str], getattr(chk, "completed_steps", []) or [])
 
@@ -78,15 +90,20 @@ def mark_step_complete(organization_id: str, workspace_id: Optional[str], step: 
             setattr(chk, "progress_percent", progress_percent)
             setattr(chk, "updated_at", utc_now())
             db.commit()
-            
+
     return {"ok": True}
 
-def reset_checklist(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+def reset_checklist(
+    organization_id: str, workspace_id: Optional[str] = None
+) -> Dict[str, Any]:
     with SessionLocal() as db:
-        query = select(OnboardingChecklist).where(OnboardingChecklist.organization_id == organization_id)
+        query = select(OnboardingChecklist).where(
+            OnboardingChecklist.organization_id == organization_id
+        )
         if workspace_id:
             query = query.where(OnboardingChecklist.workspace_id == workspace_id)
-            
+
         chk = db.execute(query).scalar()
         if chk:
             setattr(chk, "completed_steps", [])
@@ -96,19 +113,22 @@ def reset_checklist(organization_id: str, workspace_id: Optional[str] = None) ->
             db.commit()
     return {"ok": True}
 
-def get_customer_health(organization_id: str, workspace_id: Optional[str] = None) -> Dict[str, Any]:
+
+def get_customer_health(
+    organization_id: str, workspace_id: Optional[str] = None
+) -> Dict[str, Any]:
     chk = get_checklist(organization_id, workspace_id)
     score = chk.get("progress_percent", 0.0)
-    
+
     status = "poor"
     if score >= 80:
         status = "excellent"
     elif score >= 50:
         status = "fair"
-        
+
     return {
         "health_score": score,
         "status": status,
         "active_users": 1,
-        "usage_trend": "stable"
+        "usage_trend": "stable",
     }

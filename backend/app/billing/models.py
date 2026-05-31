@@ -44,13 +44,21 @@ class Subscription(Base, Timestamped):
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_id)
     organization_id: Mapped[str] = mapped_column(String, index=True)
     plan_id: Mapped[str] = mapped_column(String, ForeignKey("billing_plans.id"))
-    status: Mapped[str] = mapped_column(String, default=SubscriptionStatus.trialing.value, index=True)
+    status: Mapped[str] = mapped_column(
+        String, default=SubscriptionStatus.trialing.value, index=True
+    )
     provider: Mapped[str] = mapped_column(String, default="mock")
     provider_customer_id: Mapped[str] = mapped_column(String, default="")
     provider_subscription_id: Mapped[str] = mapped_column(String, default="")
-    trial_ends_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    current_period_start: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    current_period_end: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    trial_ends_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    current_period_start: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    current_period_end: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, default=False)
     metadata_json: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
 
@@ -65,7 +73,9 @@ class UsageRecord(Base, Timestamped):
     source: Mapped[str] = mapped_column(String, default="")
     resource_id: Mapped[str] = mapped_column(String, default="")
     metadata_json: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
-    measured_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=func.now())
+    measured_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=func.now()
+    )
 
 
 class Invoice(Base, Timestamped):
@@ -80,8 +90,12 @@ class Invoice(Base, Timestamped):
     currency: Mapped[str] = mapped_column(String, default="USD")
     hosted_invoice_url: Mapped[str] = mapped_column(String, default="")
     invoice_pdf_url: Mapped[str] = mapped_column(String, default="")
-    due_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    paid_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    due_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    paid_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
 
 class EntitlementDecision(BaseModel):

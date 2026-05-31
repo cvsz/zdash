@@ -86,7 +86,7 @@ PLANS = {
         price_yearly=None,
         features=FEATURES,
         limits={
-            "workspaces": "unlimited", 
+            "workspaces": "unlimited",
             "users": "unlimited",
             "custom_quotas": True,
             "sso_ready": True,

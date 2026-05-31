@@ -51,7 +51,10 @@ def enterprise_guards():
             "status": "completed",
         }
         mock_checklist.return_value = {"steps": [], "completed": 0}
-        mock_step.return_value = {"steps": [{"name": "setup", "done": True}], "completed": 1}
+        mock_step.return_value = {
+            "steps": [{"name": "setup", "done": True}],
+            "completed": 1,
+        }
         mock_reset.return_value = {"steps": [], "completed": 0}
         mock_health.return_value = {"status": "healthy", "score": 85}
         yield

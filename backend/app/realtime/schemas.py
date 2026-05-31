@@ -6,7 +6,9 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-RealtimeCategory = Literal["system", "trading", "risk", "scheduler", "content", "iot", "admin", "audit"]
+RealtimeCategory = Literal[
+    "system", "trading", "risk", "scheduler", "content", "iot", "admin", "audit"
+]
 RealtimeSeverity = Literal["info", "warning", "critical"]
 RealtimeChannel = Literal["events", "risk", "scheduler", "content"]
 

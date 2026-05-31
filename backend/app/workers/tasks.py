@@ -31,9 +31,13 @@ def run_task(task) -> dict:
         request = BacktestRequest(
             strategy=str(payload.get("strategy", settings.primary_strategy)),
             symbol=str(payload.get("symbol", settings.backtest_default_symbol)),
-            timeframe=str(payload.get("timeframe", settings.backtest_default_timeframe)),
+            timeframe=str(
+                payload.get("timeframe", settings.backtest_default_timeframe)
+            ),
             dataset=str(payload.get("dataset", "")),
-            initial_balance=float(payload.get("initial_balance", settings.backtest_initial_balance)),
+            initial_balance=float(
+                payload.get("initial_balance", settings.backtest_initial_balance)
+            ),
             risk_per_trade_percent=float(
                 payload.get(
                     "risk_per_trade_percent",
@@ -54,8 +58,11 @@ def run_task(task) -> dict:
 
     if task_type == "content_pipeline_run":
         from app.content.models import CreateContentRequest
+
         topic = str(payload.get("topic", "Educational simulation market update"))
-        pipeline_result = get_content_pipeline().run_full_pipeline(CreateContentRequest(topic=topic))
+        pipeline_result = get_content_pipeline().run_full_pipeline(
+            CreateContentRequest(topic=topic)
+        )
         return {"ok": True, "task_type": task_type, "run_id": pipeline_result.id}
 
     if task_type == "content_publish_dry_run":

@@ -185,7 +185,9 @@ class TenancyRepository:
             members.append(member)
             return member
 
-    def list_organization_members(self, organization_id: str) -> list[OrganizationMember]:
+    def list_organization_members(
+        self, organization_id: str
+    ) -> list[OrganizationMember]:
         with self._lock:
             return list(self.organization_members.get(organization_id, []))
 
@@ -197,7 +199,10 @@ class TenancyRepository:
         with self._lock:
             ids: set[str] = set()
             for organization_id, members in self.organization_members.items():
-                if any(member.user_id == user_id and member.status == "active" for member in members):
+                if any(
+                    member.user_id == user_id and member.status == "active"
+                    for member in members
+                ):
                     ids.add(organization_id)
             return ids
 
@@ -205,7 +210,10 @@ class TenancyRepository:
         with self._lock:
             ids: set[str] = set()
             for workspace_id, members in self.workspace_members.items():
-                if any(member.user_id == user_id and member.status == "active" for member in members):
+                if any(
+                    member.user_id == user_id and member.status == "active"
+                    for member in members
+                ):
                     ids.add(workspace_id)
             return ids
 

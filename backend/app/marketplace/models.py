@@ -4,6 +4,7 @@ ORM tables: PluginManifest, PluginInstallation
 Pydantic schemas: PluginActionResult
 Enums: PluginStatus, PluginInstallStatus
 """
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -143,6 +144,8 @@ def installation_to_dict(inst: PluginInstallation) -> dict[str, Any]:
         "enabled": inst.enabled,
         "installed_by": inst.installed_by,
         "installed_at": (
-            inst.installed_at.isoformat() if isinstance(inst.installed_at, datetime) else None
+            inst.installed_at.isoformat()
+            if isinstance(inst.installed_at, datetime)
+            else None
         ),
     }

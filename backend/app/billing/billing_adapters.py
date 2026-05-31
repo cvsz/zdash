@@ -24,9 +24,7 @@ class BillingProviderAdapter(ABC):
         ...
 
     @abstractmethod
-    def get_subscription(
-        self, provider_subscription_id: str
-    ) -> dict[str, Any] | None:
+    def get_subscription(self, provider_subscription_id: str) -> dict[str, Any] | None:
         """Fetch current subscription data from provider."""
         ...
 
@@ -47,9 +45,7 @@ class BillingProviderAdapter(ABC):
         ...
 
     @abstractmethod
-    def handle_webhook(
-        self, payload: bytes, signature: str
-    ) -> dict[str, Any]:
+    def handle_webhook(self, payload: bytes, signature: str) -> dict[str, Any]:
         """Handle an incoming webhook from the provider.
 
         Returns a result dict with at minimum ``{"ok": bool}``.

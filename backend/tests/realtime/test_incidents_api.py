@@ -10,7 +10,9 @@ from app.api.routes.incidents import (
     resolve_incident,
 )
 from app.auth.models import AuthSession
-from app.services.incidents import reset_incident_service as reset_incident_service_state
+from app.services.incidents import (
+    reset_incident_service as reset_incident_service_state,
+)
 
 
 @pytest.fixture(autouse=True)

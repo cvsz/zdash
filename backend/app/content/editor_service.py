@@ -89,7 +89,9 @@ class EditorService:
                 "warnings": [],
             }
         else:
-            result = cast(dict[str, Any], self.policy.check_text(text, {"content_id": content_id}))
+            result = cast(
+                dict[str, Any], self.policy.check_text(text, {"content_id": content_id})
+            )
         notes = cast(list[str], result["notes"])
         warnings = cast(list[str], result["warnings"])
         self._emit_content_event(
@@ -129,10 +131,13 @@ class EditorService:
 
     def _ensure_trading_disclaimer(self, text: str) -> str:
         lower = text.lower()
-        if any(
-            keyword in lower
-            for keyword in ("trading", "market", "strategy", "backtest", "results")
-        ) and TRADING_DISCLAIMER.lower() not in lower:
+        if (
+            any(
+                keyword in lower
+                for keyword in ("trading", "market", "strategy", "backtest", "results")
+            )
+            and TRADING_DISCLAIMER.lower() not in lower
+        ):
             return f"{text} {TRADING_DISCLAIMER}"
         return text
 

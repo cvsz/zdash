@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from app.db.base import Base
 from app.db.models import _id
 
+
 class EnterpriseLicense(Base):
     __tablename__ = "enterprise_licenses"
 
@@ -17,8 +18,12 @@ class EnterpriseLicense(Base):
     offline_mode = Column(Boolean, default=False)
     issued_to = Column(String)
     metadata_json = Column("metadata", JSON, default=dict)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
 
 
 class BrandingSettings(Base):
@@ -34,8 +39,12 @@ class BrandingSettings(Base):
     support_email = Column(String)
     custom_domain = Column(String)
     metadata_json = Column("metadata", JSON, default=dict)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
 
 
 class ExportBundle(Base):
@@ -53,19 +62,28 @@ class ExportBundle(Base):
     include_scheduler = Column(Boolean, default=True)
     include_secrets = Column(Boolean, default=False)
     created_by = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
     completed_at = Column(DateTime)
 
 
 class OnboardingChecklist(Base):
     __tablename__ = "onboarding_checklists"
 
-    id = Column(String, primary_key=True, default=lambda: f"chk-{datetime.now(timezone.utc).timestamp()}")
+    id = Column(
+        String,
+        primary_key=True,
+        default=lambda: f"chk-{datetime.now(timezone.utc).timestamp()}",
+    )
     organization_id = Column(String, nullable=False, index=True)
     workspace_id = Column(String, index=True)
     completed_steps = Column(JSON, default=list)
     pending_steps = Column(JSON, default=list)
     progress_percent = Column(Integer, default=0)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-
+    created_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+    updated_at = Column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )

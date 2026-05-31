@@ -77,13 +77,17 @@ def check_high_risk_action(req: HighRiskActionRequest) -> HighRiskActionDecision
         HighRiskActionClass.credential_export,
     ):
         if req.actor_role not in ("admin", "operator"):
-            blocked_by.append(f"Role '{req.actor_role}' lacks permission for {req.action_class.value}")
+            blocked_by.append(
+                f"Role '{req.actor_role}' lacks permission for {req.action_class.value}"
+            )
         if req.actor_role not in ("admin",) and req.action_class in (
             HighRiskActionClass.infrastructure,
             HighRiskActionClass.raw_shell,
             HighRiskActionClass.credential_export,
         ):
-            blocked_by.append(f"Role '{req.actor_role}' requires admin for {req.action_class.value}")
+            blocked_by.append(
+                f"Role '{req.actor_role}' requires admin for {req.action_class.value}"
+            )
 
     # -- Tenant scope gate --
     if not req.actor_tenant.strip():

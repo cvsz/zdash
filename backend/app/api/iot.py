@@ -45,7 +45,9 @@ def status(
 @router.post("/action")
 def action(
     req: IoTAction,
-    current_user: AuthSession = Depends(require_permission(Permission.CONTROL_DRY_RUN_IOT)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.CONTROL_DRY_RUN_IOT)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     result = _service().execute(req)
@@ -67,7 +69,9 @@ def action(
 @router.post("/power-cycle")
 def power_cycle(
     req: IoTPowerCycleRequest | None = None,
-    current_user: AuthSession = Depends(require_permission(Permission.CONTROL_DRY_RUN_IOT)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.CONTROL_DRY_RUN_IOT)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     settings = get_settings()

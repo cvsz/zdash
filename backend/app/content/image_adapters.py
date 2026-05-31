@@ -39,11 +39,15 @@ def build_image_adapter(
     dry_run: bool | None = None,
 ) -> ImageGenerationAdapter:
     settings = get_settings()
-    resolved_provider = (provider or settings.image_generation_provider or "mock").lower()
+    resolved_provider = (
+        provider or settings.image_generation_provider or "mock"
+    ).lower()
     resolved_dry_run = settings.image_dry_run if dry_run is None else dry_run
 
     # Phase 06 safety: real image providers are intentionally disabled.
     if resolved_provider != "mock" or not resolved_dry_run:
-        return MockImageGenerationAdapter(provider_name=f"mock_fallback:{resolved_provider}")
+        return MockImageGenerationAdapter(
+            provider_name=f"mock_fallback:{resolved_provider}"
+        )
 
     return MockImageGenerationAdapter(provider_name=resolved_provider)

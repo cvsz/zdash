@@ -65,7 +65,9 @@ def test_auth_api_login_refresh_logout_and_me(tmp_path):
     assert logout_body["ok"] is True
     assert logout_body["data"]["revoked"] is True
 
-    me_body = auth_api.me(current_user=AuthSession(username="analyst@example.com", role="analyst"))
+    me_body = auth_api.me(
+        current_user=AuthSession(username="analyst@example.com", role="analyst")
+    )
     _assert_envelope(me_body)
     assert me_body["ok"] is True
     assert me_body["data"]["role"] == "analyst"

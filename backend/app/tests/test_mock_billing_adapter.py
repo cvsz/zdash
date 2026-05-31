@@ -1,4 +1,5 @@
 """Tests for mock billing adapter — Phase 10.3"""
+
 from __future__ import annotations
 
 import pytest
@@ -34,7 +35,9 @@ def test_create_customer_is_deterministic(adapter: MockBillingAdapter) -> None:
 
 
 def test_create_customer_differs_per_org(adapter: MockBillingAdapter) -> None:
-    assert adapter.create_customer(_Org("org-1")) != adapter.create_customer(_Org("org-2"))
+    assert adapter.create_customer(_Org("org-1")) != adapter.create_customer(
+        _Org("org-2")
+    )
 
 
 # ------------------------------------------------------------------ #

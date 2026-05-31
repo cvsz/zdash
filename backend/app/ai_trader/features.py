@@ -109,7 +109,9 @@ def calculate_features(
         clean.append(candle)
 
     if not clean:
-        return AITraderFeatures(warnings=[*warnings, "no valid candles after sanitization"])
+        return AITraderFeatures(
+            warnings=[*warnings, "no valid candles after sanitization"]
+        )
 
     if len(clean) < min_candles:
         warnings.append(f"insufficient candles: need {min_candles}, got {len(clean)}")

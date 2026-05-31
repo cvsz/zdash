@@ -128,9 +128,15 @@ class WorkerQueue:
     def status_snapshot(self) -> dict:
         with self._lock:
             counts = {
-                "queued": len([task for task in TASKS.values() if task.status == "queued"]),
-                "running": len([task for task in TASKS.values() if task.status == "running"]),
-                "failed": len([task for task in TASKS.values() if task.status == "failed"]),
+                "queued": len(
+                    [task for task in TASKS.values() if task.status == "queued"]
+                ),
+                "running": len(
+                    [task for task in TASKS.values() if task.status == "running"]
+                ),
+                "failed": len(
+                    [task for task in TASKS.values() if task.status == "failed"]
+                ),
                 "completed": len(
                     [task for task in TASKS.values() if task.status == "completed"]
                 ),

@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from app.realtime.schemas import RealtimeCategory, RealtimeChannel, RealtimeEventEnvelope, RealtimeSeverity, utc_now_iso
+from app.realtime.schemas import (
+    RealtimeCategory,
+    RealtimeChannel,
+    RealtimeEventEnvelope,
+    RealtimeSeverity,
+    utc_now_iso,
+)
 
 CHANNELS: tuple[RealtimeChannel, ...] = ("events", "risk", "scheduler", "content")
 _EVENT_ALIASES = {
@@ -20,12 +26,23 @@ def normalize_event_type(event_type: str, payload: dict[str, Any] | None = None)
 
 def _category_for_event(event_type: str) -> RealtimeCategory:
     prefix = normalize_event_type(event_type).split(".", 1)[0].lower()
-    if prefix in {"system", "trading", "risk", "scheduler", "content", "iot", "admin", "audit"}:
+    if prefix in {
+        "system",
+        "trading",
+        "risk",
+        "scheduler",
+        "content",
+        "iot",
+        "admin",
+        "audit",
+    }:
         return prefix  # type: ignore[return-value]
     return "system"
 
 
-def severity_for_event(event_type: str, payload: dict[str, Any] | None = None) -> RealtimeSeverity:
+def severity_for_event(
+    event_type: str, payload: dict[str, Any] | None = None
+) -> RealtimeSeverity:
     lowered = normalize_event_type(event_type).lower()
     if "critical" in lowered or "halt" in lowered or "blocked" in lowered:
         return "critical"
@@ -37,13 +54,24 @@ def severity_for_event(event_type: str, payload: dict[str, Any] | None = None) -
 def channels_for_event(event_type: str) -> set[RealtimeChannel]:
     category = _category_for_event(event_type)
     channels: set[RealtimeChannel] = {"events"}
-    if category == "risk": channels.add("risk")
-    if category == "scheduler": channels.add("scheduler")
-    if category == "content": channels.add("content")
+    if category == "risk":
+        channels.add("risk")
+    if category == "scheduler":
+        channels.add("scheduler")
+    if category == "content":
+        channels.add("content")
     return channels
 
 
-def build_event_envelope(*, event_type: str, source: str, payload: dict[str, Any] | None = None, severity: RealtimeSeverity | None = None, message: str | None = None, timestamp: str | None = None) -> RealtimeEventEnvelope:
+def build_event_envelope(
+    *,
+    event_type: str,
+    source: str,
+    payload: dict[str, Any] | None = None,
+    severity: RealtimeSeverity | None = None,
+    message: str | None = None,
+    timestamp: str | None = None,
+) -> RealtimeEventEnvelope:
     safe_payload = dict(payload or {})
     normalized = normalize_event_type(event_type, safe_payload)
     return RealtimeEventEnvelope(

@@ -42,8 +42,7 @@ class NotificationService:
             )
             self.channels[default_channel.id] = default_channel
         existing_rule_names = {
-            rule.name
-            for rule in self.rules_for_tenant(organization_id, workspace_id)
+            rule.name for rule in self.rules_for_tenant(organization_id, workspace_id)
         }
         if existing_rule_names:
             return
@@ -65,11 +64,14 @@ class NotificationService:
             )
             self.rules[rule.id] = rule
 
-    def rules_for_tenant(self, organization_id: str, workspace_id: str) -> list[AlertRule]:
+    def rules_for_tenant(
+        self, organization_id: str, workspace_id: str
+    ) -> list[AlertRule]:
         return [
             rule
             for rule in self.rules.values()
-            if rule.organization_id == organization_id and rule.workspace_id == workspace_id
+            if rule.organization_id == organization_id
+            and rule.workspace_id == workspace_id
         ]
 
     def channels_for_tenant(
@@ -82,7 +84,9 @@ class NotificationService:
             and channel.workspace_id == workspace_id
         ]
 
-    def events_for_tenant(self, organization_id: str, workspace_id: str) -> list[AlertEvent]:
+    def events_for_tenant(
+        self, organization_id: str, workspace_id: str
+    ) -> list[AlertEvent]:
         return [
             event
             for event in self.events
@@ -110,7 +114,9 @@ class NotificationService:
         self.rules[rule.id] = rule
         return rule
 
-    def update_rule(self, rule_id: str, payload: AlertRuleUpdateRequest) -> AlertRule | None:
+    def update_rule(
+        self, rule_id: str, payload: AlertRuleUpdateRequest
+    ) -> AlertRule | None:
         current = self.rules.get(rule_id)
         if current is None:
             return None
@@ -287,14 +293,20 @@ class NotificationService:
             if channel is None:
                 continue
             if settings.notification_dry_run:
-                dispatches.append(dispatch_dry_run(channel_name, title, message, payload))
+                dispatches.append(
+                    dispatch_dry_run(channel_name, title, message, payload)
+                )
                 continue
             if channel.channel_type == "email":
                 dispatches.append(dispatch_email(channel_name, title, message, payload))
             elif channel.channel_type == "webhook":
-                dispatches.append(dispatch_webhook(channel_name, title, message, payload))
+                dispatches.append(
+                    dispatch_webhook(channel_name, title, message, payload)
+                )
             else:
-                dispatches.append(dispatch_dry_run(channel_name, title, message, payload))
+                dispatches.append(
+                    dispatch_dry_run(channel_name, title, message, payload)
+                )
         return dispatches
 
 

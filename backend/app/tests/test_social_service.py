@@ -62,7 +62,9 @@ def test_dry_run_publish_simulated_after_approval() -> None:
     assert stored.status == ContentStatus.approved
 
 
-def test_real_publish_blocked_without_confirmation(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_real_publish_blocked_without_confirmation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setenv("SOCIAL_DRY_RUN", "false")
     monkeypatch.setenv("SOCIAL_AUTO_POST_ENABLED", "true")
     get_settings.cache_clear()

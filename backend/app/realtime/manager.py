@@ -115,11 +115,16 @@ class RealtimeConnectionManager:
         return len(stale_refs)
 
     def snapshot(self) -> dict[str, int]:
-        counts: dict[str, int] = {channel: len(connections) for channel, connections in self._connections.items()}
+        counts: dict[str, int] = {
+            channel: len(connections)
+            for channel, connections in self._connections.items()
+        }
         counts["total"] = sum(counts.values())
         return counts
 
-    def force_last_pong(self, channel: RealtimeChannel, client_id: str, epoch_seconds: float) -> None:
+    def force_last_pong(
+        self, channel: RealtimeChannel, client_id: str, epoch_seconds: float
+    ) -> None:
         connection = self._connections.get(channel, {}).get(client_id)
         if connection is not None:
             connection.last_pong_at = epoch_seconds

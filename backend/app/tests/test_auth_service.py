@@ -55,6 +55,8 @@ def test_auth_service_bootstrap_admin_only_when_empty(tmp_path):
     assert created is True
     assert detail == "admin"
 
-    created_again, detail_again = auth_service.bootstrap_admin("admin2", "safe-password")
+    created_again, detail_again = auth_service.bootstrap_admin(
+        "admin2", "safe-password"
+    )
     assert created_again is False
     assert "only allowed" in detail_again

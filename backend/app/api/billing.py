@@ -92,9 +92,7 @@ def _audit(action: str, user: AuthSession, extra: dict[str, Any] | None = None) 
 
 @router.get("/status")
 def api_get_status(
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.billing_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
 ) -> dict:
     try:
         result = get_status(_org_id(current_user))
@@ -114,9 +112,7 @@ def api_list_plans() -> dict:
 
 @router.get("/subscription")
 def api_get_subscription(
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.billing_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
 ) -> dict:
     try:
         result = get_status(_org_id(current_user))
@@ -137,7 +133,9 @@ def api_checkout(
     if not result.get("ok"):
         code = result.get("error", "BILLING_ERROR")
         return error_response(
-            code if code in ("BILLING_PROVIDER_NOT_CONFIGURED", "PLAN_NOT_FOUND") else "BILLING_ERROR",
+            code
+            if code in ("BILLING_PROVIDER_NOT_CONFIGURED", "PLAN_NOT_FOUND")
+            else "BILLING_ERROR",
             result.get("error", "Checkout failed"),
         )
     _audit("billing.checkout.started", current_user, {"plan_id": req.plan_id})
@@ -198,9 +196,7 @@ def api_apply_mock_plan(
 
 @router.get("/usage")
 def api_get_usage(
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.usage_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
 ) -> dict:
     try:
         org = _org_id(current_user)
@@ -214,9 +210,7 @@ def api_get_usage(
 @router.get("/usage/{metric}")
 def api_get_metric_usage(
     metric: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.usage_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
 ) -> dict:
     try:
         org = _org_id(current_user)
@@ -229,9 +223,7 @@ def api_get_metric_usage(
 
 @router.get("/invoices")
 def api_get_invoices(
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.billing_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
 ) -> dict:
     try:
         org = _org_id(current_user)
@@ -249,7 +241,9 @@ async def api_webhook(request: Request) -> dict:
         signature = request.headers.get("stripe-signature", "")
         result = handle_webhook(payload, signature)
         if not result.get("ok"):
-            raise HTTPException(status_code=400, detail=result.get("error", "Webhook failed"))
+            raise HTTPException(
+                status_code=400, detail=result.get("error", "Webhook failed")
+            )
         return success_response(result)
     except HTTPException:
         raise

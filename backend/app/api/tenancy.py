@@ -43,7 +43,9 @@ def context(
 
 @router.get("/organizations")
 def organizations(user: AuthSession = Depends(get_current_user)) -> dict:
-    items = [item.model_dump() for item in tenant_service.list_accessible_organizations(user)]
+    items = [
+        item.model_dump() for item in tenant_service.list_accessible_organizations(user)
+    ]
     return ok({"items": items})
 
 
@@ -65,7 +67,10 @@ def get_organization(
     organization = tenant_service.get_organization(organization_id)
     if organization is None:
         raise HTTPException(status_code=404, detail="organization not found")
-    if user.role != "admin" and organization not in tenant_service.list_accessible_organizations(user):
+    if (
+        user.role != "admin"
+        and organization not in tenant_service.list_accessible_organizations(user)
+    ):
         raise HTTPException(status_code=403, detail="Organization access denied")
     return ok({"item": organization.model_dump()})
 
@@ -92,9 +97,15 @@ def list_workspaces(
     organization = tenant_service.get_organization(organization_id)
     if organization is None:
         raise HTTPException(status_code=404, detail="organization not found")
-    if user.role != "admin" and organization not in tenant_service.list_accessible_organizations(user):
+    if (
+        user.role != "admin"
+        and organization not in tenant_service.list_accessible_organizations(user)
+    ):
         raise HTTPException(status_code=403, detail="Organization access denied")
-    items = [workspace.model_dump() for workspace in tenant_service.list_workspaces(organization_id)]
+    items = [
+        workspace.model_dump()
+        for workspace in tenant_service.list_workspaces(organization_id)
+    ]
     return ok({"items": items})
 
 

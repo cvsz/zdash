@@ -32,16 +32,16 @@ class Permission(str, Enum):
     billing_read = "billing.read"
     billing_manage = "billing.manage"
     billing_apply_mock_plan = "billing.apply_mock_plan"
-    
+
     # Phase 10 Usage
     usage_read = "usage.read"
-    
+
     # Phase 10 Marketplace
     marketplace_read = "marketplace.read"
     marketplace_install = "marketplace.install"
     marketplace_manage = "marketplace.manage"
     marketplace_run_plugin = "marketplace.run_plugin"
-    
+
     # Phase 10 Enterprise
     enterprise_read = "enterprise.read"
     enterprise_license_manage = "enterprise.license.manage"

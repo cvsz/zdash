@@ -85,7 +85,9 @@ def drawdown(_: object = Depends(require_authenticated)) -> dict:
 @router.post("/halt")
 def halt(
     req: HaltRequest,
-    current_user: AuthSession = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.HALT_RESUME_RISK)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     service = get_guardian_service()
@@ -118,7 +120,9 @@ def halt(
 @router.post("/resume")
 def resume(
     req: ResumeRequest,
-    current_user: AuthSession = Depends(require_permission(Permission.HALT_RESUME_RISK)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.HALT_RESUME_RISK)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     service = get_guardian_service()

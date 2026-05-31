@@ -210,6 +210,7 @@ class AITraderService:
             strategy, features, all_warnings, explanation
         )
         from typing import Literal
+
         return TradingSignal(
             symbol=symbol,
             timeframe=timeframe,

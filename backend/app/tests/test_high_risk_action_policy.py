@@ -41,9 +41,7 @@ def test_live_trading_requires_ack():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert settings.live_trading_ack is False, (
-        "LIVE_TRADING_ACK must default to False"
-    )
+    assert settings.live_trading_ack is False, "LIVE_TRADING_ACK must default to False"
 
 
 def test_mt5_disabled_by_default():
@@ -360,6 +358,7 @@ class TestHighRiskActionPolicyDependency:
 
         with pytest.raises(Exception):
             import asyncio
+
             asyncio.run(dep(user=user))
 
     def test_require_policy_allows_admin_trading(self):

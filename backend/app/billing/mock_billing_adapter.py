@@ -38,9 +38,7 @@ class MockBillingAdapter(BillingProviderAdapter):
         token = self._stable_id("sess", f"{organization_id}:{plan_id}")
         return f"{self._CHECKOUT_BASE}/{token}"
 
-    def get_subscription(
-        self, provider_subscription_id: str
-    ) -> dict[str, Any] | None:
+    def get_subscription(self, provider_subscription_id: str) -> dict[str, Any] | None:
         # Mock adapter has no live state — return None (no subscription found)
         return None
 
@@ -51,7 +49,5 @@ class MockBillingAdapter(BillingProviderAdapter):
         token = self._stable_id("portal", organization_id)
         return f"{self._PORTAL_BASE}/{token}"
 
-    def handle_webhook(
-        self, payload: bytes, signature: str
-    ) -> dict[str, Any]:
+    def handle_webhook(self, payload: bytes, signature: str) -> dict[str, Any]:
         return {"ok": True, "event": "mock.noop", "provider": "mock"}

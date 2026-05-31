@@ -7,7 +7,12 @@ from typing import cast
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from app.core.responses import ok
-from app.realtime import bind_realtime_loop, get_realtime_broadcaster, get_realtime_connection_manager, get_realtime_heartbeat
+from app.realtime import (
+    bind_realtime_loop,
+    get_realtime_broadcaster,
+    get_realtime_connection_manager,
+    get_realtime_heartbeat,
+)
 from app.realtime.events import build_event_envelope
 from app.realtime.mock_streams import start_mock_stream_if_enabled
 from app.realtime.schemas import RealtimeChannel
@@ -22,13 +27,13 @@ router = APIRouter(prefix="/api/realtime", tags=["realtime"])
 async def ws_realtime(websocket: WebSocket) -> None:
     org_id = websocket.headers.get(settings.tenant_header_name, "default")
     ws_id = websocket.headers.get(settings.workspace_header_name, "default")
-    
+
     if settings.billing_enabled:
         dec = check_feature(org_id, "feature.realtime_stream")
         if not dec.allowed and settings.billing_fail_closed:
             await websocket.close(code=4003, reason="FEATURE_NOT_ENTITLED")
             return
-            
+
         quota = consume(org_id, ws_id, "realtime_connections")
         if not quota.allowed and settings.usage_enforcement_enabled:
             await websocket.close(code=4002, reason="QUOTA_EXCEEDED")
@@ -48,13 +53,17 @@ async def ws_realtime(websocket: WebSocket) -> None:
             message = await websocket.receive_text()
             msg_type = _parse_message_type(message)
             if msg_type in {"ping", "system.ping"}:
-                await websocket.send_json(build_event_envelope(event_type="system.pong", source="realtime.gateway", payload={"client_id": client_id}).model_dump(mode="json"))
+                await websocket.send_json(
+                    build_event_envelope(
+                        event_type="system.pong",
+                        source="realtime.gateway",
+                        payload={"client_id": client_id},
+                    ).model_dump(mode="json")
+                )
     except WebSocketDisconnect:
         return
     finally:
         await manager.disconnect("events", client_id)
-
-
 
 
 @router.websocket("/ws/events")
@@ -111,6 +120,7 @@ async def ws_channel(websocket: WebSocket, channel: str) -> None:
     finally:
         await manager.disconnect(chan, client_id)
 
+
 @router.get("/status")
 def realtime_status() -> dict:
     return ok({"connections": get_realtime_connection_manager().snapshot()})
@@ -118,7 +128,9 @@ def realtime_status() -> dict:
 
 @router.get("/events")
 def realtime_events(limit: int = Query(default=100, ge=1, le=500)) -> dict:
-    events = get_realtime_broadcaster().recent_events(cast(RealtimeChannel, "events"), limit=limit)
+    events = get_realtime_broadcaster().recent_events(
+        cast(RealtimeChannel, "events"), limit=limit
+    )
     return ok({"events": events, "count": len(events), "max_retained": 500})
 
 

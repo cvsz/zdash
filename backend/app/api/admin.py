@@ -79,9 +79,7 @@ def _safety_check_payload() -> dict[str, Any]:
                     "LIVE_TRADING_ACK cannot be enabled with default JWT secret."
                 )
             if not settings.risk_guardian_enabled:
-                blockers.append(
-                    "LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true."
-                )
+                blockers.append("LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true.")
 
         if settings.mt5_enabled:
             if settings.dry_run:
@@ -187,7 +185,9 @@ def users(
         _require_admin(current_user)
     except PermissionError as exc:
         return fail("AUTH_FORBIDDEN", str(exc))
-    rows = session.execute(select(User).order_by(User.created_at.desc())).scalars().all()
+    rows = (
+        session.execute(select(User).order_by(User.created_at.desc())).scalars().all()
+    )
     return ok({"users": [_sanitize_user(row) for row in rows]})
 
 
@@ -202,7 +202,9 @@ def create_user(
     except PermissionError as exc:
         return fail("AUTH_FORBIDDEN", str(exc))
 
-    existing = session.execute(select(User).where(User.email == req.email)).scalar_one_or_none()
+    existing = session.execute(
+        select(User).where(User.email == req.email)
+    ).scalar_one_or_none()
     if existing is not None:
         return fail("USER_EXISTS", "A user with that email already exists.")
 

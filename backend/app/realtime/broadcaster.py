@@ -34,7 +34,9 @@ class RealtimeBroadcaster:
     def bind_loop(self, loop: asyncio.AbstractEventLoop) -> None:
         self._loop = loop
 
-    def recent_events(self, channel: RealtimeChannel, limit: int = 100) -> list[dict[str, Any]]:
+    def recent_events(
+        self, channel: RealtimeChannel, limit: int = 100
+    ) -> list[dict[str, Any]]:
         safe_limit = max(1, min(limit, 500))
         with self._lock:
             data = list(self._buffers[channel])
@@ -117,7 +119,9 @@ def publish_event(event: Any) -> dict[str, Any]:
     return get_realtime_broadcaster().publish_core_event(event)
 
 
-def broadcast_risk_alert(payload: dict[str, Any], source: str = "guardian") -> dict[str, Any]:
+def broadcast_risk_alert(
+    payload: dict[str, Any], source: str = "guardian"
+) -> dict[str, Any]:
     envelope = RealtimeEventEnvelope(
         type="risk.alert",
         source=source,
@@ -127,7 +131,9 @@ def broadcast_risk_alert(payload: dict[str, Any], source: str = "guardian") -> d
     return get_realtime_broadcaster().publish(envelope, channels={"events", "risk"})
 
 
-def broadcast_scheduler_run(payload: dict[str, Any], source: str = "scheduler") -> dict[str, Any]:
+def broadcast_scheduler_run(
+    payload: dict[str, Any], source: str = "scheduler"
+) -> dict[str, Any]:
     envelope = RealtimeEventEnvelope(
         type="scheduler.started",
         source=source,
@@ -139,7 +145,9 @@ def broadcast_scheduler_run(payload: dict[str, Any], source: str = "scheduler") 
     )
 
 
-def broadcast_content_update(payload: dict[str, Any], source: str = "content") -> dict[str, Any]:
+def broadcast_content_update(
+    payload: dict[str, Any], source: str = "content"
+) -> dict[str, Any]:
     envelope = RealtimeEventEnvelope(
         type="content.created",
         source=source,

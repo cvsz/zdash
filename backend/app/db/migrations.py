@@ -9,6 +9,7 @@ import app.billing.models  # noqa
 import app.marketplace.models  # noqa
 import app.enterprise.models  # noqa
 
+
 def create_all() -> None:
     Base.metadata.create_all(bind=engine)
 

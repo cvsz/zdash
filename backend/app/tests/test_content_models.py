@@ -23,7 +23,15 @@ def test_content_status_enum_contains_phase06_values() -> None:
 
 def test_content_platform_enum_contains_required_values() -> None:
     values = {platform.value for platform in ContentPlatform}
-    assert values >= {"x", "tiktok", "facebook", "instagram", "linkedin", "blog", "generic"}
+    assert values >= {
+        "x",
+        "tiktok",
+        "facebook",
+        "instagram",
+        "linkedin",
+        "blog",
+        "generic",
+    }
 
 
 def test_content_item_defaults() -> None:

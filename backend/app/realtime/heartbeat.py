@@ -4,7 +4,10 @@ import asyncio
 from contextlib import suppress
 
 from app.realtime.events import CHANNELS
-from app.realtime.manager import RealtimeConnectionManager, get_realtime_connection_manager
+from app.realtime.manager import (
+    RealtimeConnectionManager,
+    get_realtime_connection_manager,
+)
 from app.realtime.schemas import RealtimeEventEnvelope
 
 

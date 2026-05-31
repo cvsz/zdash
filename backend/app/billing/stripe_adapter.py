@@ -62,8 +62,7 @@ class StripeAdapter(BillingProviderAdapter):
             )
         if not self._has_secret_key:
             raise RuntimeError(
-                "BILLING_PROVIDER_NOT_CONFIGURED: "
-                "STRIPE_SECRET_KEY is not set."
+                "BILLING_PROVIDER_NOT_CONFIGURED: STRIPE_SECRET_KEY is not set."
             )
 
     # ------------------------------------------------------------------ #
@@ -100,9 +99,7 @@ class StripeAdapter(BillingProviderAdapter):
         )
         return session["url"]
 
-    def get_subscription(
-        self, provider_subscription_id: str
-    ) -> dict[str, Any] | None:
+    def get_subscription(self, provider_subscription_id: str) -> dict[str, Any] | None:
         if not self._enabled:
             return None
         self._require_enabled()
@@ -137,9 +134,7 @@ class StripeAdapter(BillingProviderAdapter):
         )
         return session["url"]
 
-    def handle_webhook(
-        self, payload: bytes, signature: str
-    ) -> dict[str, Any]:
+    def handle_webhook(self, payload: bytes, signature: str) -> dict[str, Any]:
         if not self._enabled:
             return {"ok": False, "error": "BILLING_PROVIDER_NOT_CONFIGURED"}
         if not self._has_webhook_secret:

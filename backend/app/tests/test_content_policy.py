@@ -27,7 +27,9 @@ def test_policy_rejects_spam_hashtag_pattern() -> None:
 
 
 def test_policy_warns_trading_content_and_requires_disclaimer() -> None:
-    result = ContentPolicyChecker().check_text("New backtest strategy results for markets.")
+    result = ContentPolicyChecker().check_text(
+        "New backtest strategy results for markets."
+    )
     assert result["passed"] is False
     assert "trading_content_detected" in result["warnings"]
     assert "missing_trading_disclaimer" in result["blocked_terms"]

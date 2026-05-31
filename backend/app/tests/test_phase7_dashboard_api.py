@@ -52,7 +52,11 @@ def test_logs_api_returns_recent_event_logs() -> None:
 
 def test_cors_default_origins_support_frontend_dev_server() -> None:
     settings = get_settings()
-    origins = {origin.strip() for origin in settings.cors_allow_origins.split(",") if origin.strip()}
+    origins = {
+        origin.strip()
+        for origin in settings.cors_allow_origins.split(",")
+        if origin.strip()
+    }
 
     assert "http://localhost:5173" in origins
     assert "http://127.0.0.1:5173" in origins

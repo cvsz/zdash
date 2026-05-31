@@ -19,7 +19,9 @@ TaskType = Literal[
     "backup_run",
     "custom",
 ]
-TaskStatus = Literal["queued", "running", "completed", "failed", "retrying", "cancelled"]
+TaskStatus = Literal[
+    "queued", "running", "completed", "failed", "retrying", "cancelled"
+]
 WorkerHealth = Literal["idle", "running", "degraded", "offline"]
 
 

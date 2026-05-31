@@ -65,7 +65,7 @@ def create(
         decision = consume(org_id, ws_id, "content_items_per_month")
         if not decision.allowed:
             return fail("QUOTA_EXCEEDED", "Content items per month quota exceeded")
-            
+
         item = _pipeline().editor.create_draft(req)
         metrics_store.increment_content_items()
         _maybe_audit(
@@ -90,7 +90,9 @@ def edit(
     _: object = Depends(require_authenticated),
 ):
     try:
-        return ok({"item": _pipeline().editor.edit_content(req).model_dump(mode="json")})
+        return ok(
+            {"item": _pipeline().editor.edit_content(req).model_dump(mode="json")}
+        )
     except Exception as exc:
         return fail("CONTENT_EDIT_FAILED", str(exc))
 
@@ -122,7 +124,9 @@ def schedule(
 @router.post("/approve")
 def approve(
     req: ApproveContentRequest,
-    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+    ),
     session: Session = Depends(get_db_session),
 ):
     try:
@@ -146,7 +150,9 @@ def approve(
 @router.post("/post")
 def post(
     req: PublishContentRequest,
-    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_CONTENT_APPROVAL)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+    ),
     session: Session = Depends(get_db_session),
 ):
     try:
@@ -184,7 +190,9 @@ def items(
     status: ContentStatus | None = None,
     _: object = Depends(require_authenticated),
 ):
-    items_payload = [i.model_dump(mode="json") for i in _pipeline().store.list_items(status)]
+    items_payload = [
+        i.model_dump(mode="json") for i in _pipeline().store.list_items(status)
+    ]
     return ok({"items": items_payload})
 
 
@@ -201,7 +209,9 @@ def item(
 
 @router.get("/runs")
 def runs(_: object = Depends(require_authenticated)):
-    run_items = [r.model_dump(mode="json") for r in _pipeline().store.list_pipeline_runs()]
+    run_items = [
+        r.model_dump(mode="json") for r in _pipeline().store.list_pipeline_runs()
+    ]
     return ok({"runs": run_items})
 
 

@@ -123,6 +123,7 @@ ALL_EVENT_TYPES = (
     + MARKETPLACE_EVENT_TYPES
 )
 
+
 class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     type: str

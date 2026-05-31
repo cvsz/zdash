@@ -43,9 +43,7 @@ def _get_adapter() -> BillingProviderAdapter:
 
 
 def _get_or_create_plan(db: Any, plan_tier: str) -> BillingPlan | None:
-    plan = db.execute(
-        select(BillingPlan).where(BillingPlan.tier == plan_tier)
-    ).scalar()
+    plan = db.execute(select(BillingPlan).where(BillingPlan.tier == plan_tier)).scalar()
     if plan:
         return plan
     catalog_plan = catalog.get_plan(plan_tier)
@@ -57,7 +55,9 @@ def _get_or_create_plan(db: Any, plan_tier: str) -> BillingPlan | None:
         name=catalog_plan.name,
         description=catalog_plan.description,
         price_monthly=float(catalog_plan.price_monthly or 0),
-        price_yearly=float(catalog_plan.price_yearly) if catalog_plan.price_yearly else None,
+        price_yearly=float(catalog_plan.price_yearly)
+        if catalog_plan.price_yearly
+        else None,
         features=list(catalog_plan.features),
         limits=dict(catalog_plan.limits),
         is_public=catalog_plan.is_public,
@@ -135,9 +135,7 @@ def get_status(organization_id: str) -> dict[str, Any]:
                 else None
             ),
             "current_period_end": (
-                sub.current_period_end.isoformat()
-                if sub.current_period_end
-                else None
+                sub.current_period_end.isoformat() if sub.current_period_end else None
             ),
             "trial_ends_at": (
                 sub.trial_ends_at.isoformat() if sub.trial_ends_at else None
@@ -224,8 +222,7 @@ def sync_subscription_from_provider(organization_id: str) -> dict[str, Any]:
     """Sync subscription state from the provider (placeholder)."""
     with SessionLocal() as db:
         sub = db.execute(
-            select(Subscription)
-            .where(Subscription.organization_id == organization_id)
+            select(Subscription).where(Subscription.organization_id == organization_id)
         ).scalar()
         if not sub or not sub.provider_subscription_id:
             return {"ok": False, "error": "SUBSCRIPTION_INACTIVE"}
@@ -256,10 +253,7 @@ def apply_mock_plan(organization_id: str, plan_tier: str) -> dict[str, Any]:
 
     This is guarded by the billing_apply_mock_plan permission at the API layer.
     """
-    if (
-        settings.billing_provider != "mock"
-        and not getattr(settings, "debug", False)
-    ):
+    if settings.billing_provider != "mock" and not getattr(settings, "debug", False):
         return {"ok": False, "error": "Not allowed outside mock or debug mode"}
 
     valid_tiers = {t.value for t in PlanTier}
@@ -272,9 +266,7 @@ def apply_mock_plan(organization_id: str, plan_tier: str) -> dict[str, Any]:
             return {"ok": False, "error": "PLAN_NOT_FOUND"}
 
         sub = db.execute(
-            select(Subscription).where(
-                Subscription.organization_id == organization_id
-            )
+            select(Subscription).where(Subscription.organization_id == organization_id)
         ).scalar()
         if sub:
             old_plan = sub.plan_id

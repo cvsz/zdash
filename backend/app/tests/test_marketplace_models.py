@@ -6,8 +6,9 @@ from app.marketplace.models import (
     PluginInstallStatus,
     PluginActionResult,
     manifest_to_dict,
-    installation_to_dict
+    installation_to_dict,
 )
+
 
 def test_plugin_manifest_model():
     manifest = PluginManifest(
@@ -22,11 +23,12 @@ def test_plugin_manifest_model():
     )
     assert manifest.id == "test-plugin"
     assert manifest.name == "Test Plugin"
-    
+
     d = manifest_to_dict(manifest)
     assert d["id"] == "test-plugin"
     assert d["name"] == "Test Plugin"
     assert d["status"] == "approved"
+
 
 def test_plugin_installation_model():
     inst = PluginInstallation(
@@ -39,17 +41,18 @@ def test_plugin_installation_model():
         config_json={"key": "value"},
         enabled=True,
         installed_by="user-1",
-        installed_at=datetime.now(timezone.utc)
+        installed_at=datetime.now(timezone.utc),
     )
     assert inst.id == "inst-1"
     assert inst.organization_id == "org-1"
-    
+
     d = installation_to_dict(inst)
     assert d["id"] == "inst-1"
     assert d["organization_id"] == "org-1"
     assert d["status"] == "installed"
     assert d["enabled"] is True
     assert d["config"] == {"key": "value"}
+
 
 def test_plugin_action_result_schema():
     res = PluginActionResult(
@@ -59,7 +62,7 @@ def test_plugin_action_result_schema():
         message="Success",
         output={"data": "test"},
         dry_run=True,
-        timestamp=datetime.now(timezone.utc)
+        timestamp=datetime.now(timezone.utc),
     )
     assert res.plugin_id == "plugin-1"
     assert res.action == "test_action"

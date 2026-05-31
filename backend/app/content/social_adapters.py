@@ -100,7 +100,9 @@ def build_platform_adapters(
     return {
         ContentPlatform.x: XAdapter(token=cfg.social_x_api_key),
         ContentPlatform.tiktok: TikTokAdapter(token=cfg.social_tiktok_access_token),
-        ContentPlatform.facebook: FacebookAdapter(token=cfg.social_facebook_access_token),
+        ContentPlatform.facebook: FacebookAdapter(
+            token=cfg.social_facebook_access_token
+        ),
         ContentPlatform.instagram: InstagramAdapter(
             token=cfg.social_instagram_access_token
         ),

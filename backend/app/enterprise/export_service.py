@@ -5,8 +5,10 @@ from app.enterprise.models import ExportBundle
 from app.enterprise.models_enums import ExportStatus
 from datetime import datetime, timezone
 
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
 
 def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
     with SessionLocal() as db:
@@ -20,42 +22,57 @@ def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
             include_backtests=request.get("include_backtests", False),
             include_scheduler=request.get("include_scheduler", True),
             include_secrets=request.get("include_secrets", False),
-            created_by="system" # should come from request ideally
+            created_by="system",  # should come from request ideally
         )
         db.add(bundle)
         db.commit()
         db.refresh(bundle)
-        
+
         # Async generation placeholder
         setattr(bundle, "status", ExportStatus.completed)
         setattr(bundle, "file_path", f"/tmp/exports/{bundle.id}.zip")
         setattr(bundle, "completed_at", utc_now())
         db.commit()
         db.refresh(bundle)
-        
+
         ret = dict(bundle.__dict__)
-        ret.pop('_sa_instance_state', None)
+        ret.pop("_sa_instance_state", None)
         return {"ok": True, "bundle": ret}
+
 
 def get_export_bundle(organization_id: str, bundle_id: str) -> Dict[str, Any]:
     with SessionLocal() as db:
-        bundle = db.execute(select(ExportBundle).where(ExportBundle.id == bundle_id).where(ExportBundle.organization_id == organization_id)).scalar()
+        bundle = db.execute(
+            select(ExportBundle)
+            .where(ExportBundle.id == bundle_id)
+            .where(ExportBundle.organization_id == organization_id)
+        ).scalar()
         if not bundle:
             return {"ok": False, "error": "NOT_FOUND"}
-            
+
         ret = dict(bundle.__dict__)
-        ret.pop('_sa_instance_state', None)
+        ret.pop("_sa_instance_state", None)
         return {"ok": True, "bundle": ret}
+
 
 def list_export_bundles(organization_id: str) -> List[Dict[str, Any]]:
     with SessionLocal() as db:
-        bundles = db.execute(select(ExportBundle).where(ExportBundle.organization_id == organization_id).order_by(ExportBundle.created_at.desc())).scalars().all()
+        bundles = (
+            db.execute(
+                select(ExportBundle)
+                .where(ExportBundle.organization_id == organization_id)
+                .order_by(ExportBundle.created_at.desc())
+            )
+            .scalars()
+            .all()
+        )
         res = []
         for b in bundles:
             d = dict(b.__dict__)
-            d.pop('_sa_instance_state', None)
+            d.pop("_sa_instance_state", None)
             res.append(d)
         return res
+
 
 def import_bundle(file_path: str) -> Dict[str, Any]:
     return {"ok": True, "status": "imported"}

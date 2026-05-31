@@ -3,9 +3,15 @@ from __future__ import annotations
 from fastapi import APIRouter, Query
 
 from app.core.responses import success_response
-from app.market_data.google_finance_beta import overview_payload, search_url, section_url
+from app.market_data.google_finance_beta import (
+    overview_payload,
+    search_url,
+    section_url,
+)
 
-router = APIRouter(prefix="/api/integrations/google-finance", tags=["integrations", "google-finance"])
+router = APIRouter(
+    prefix="/api/integrations/google-finance", tags=["integrations", "google-finance"]
+)
 
 
 @router.get("/status")

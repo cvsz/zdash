@@ -39,7 +39,10 @@ def test_realtime_broadcaster_buffers_and_delivers_by_channel() -> None:
 
         assert websocket.sent_payloads
         assert websocket.sent_payloads[-1]["type"] == "scheduler.started"
-        assert broadcaster.recent_events("scheduler", limit=1)[0]["payload"]["job_id"] == "job-1"
+        assert (
+            broadcaster.recent_events("scheduler", limit=1)[0]["payload"]["job_id"]
+            == "job-1"
+        )
 
     asyncio.run(scenario())
 

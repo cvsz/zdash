@@ -18,11 +18,15 @@ class EventHub:
         self.replay_limit = replay_limit
         self._replay: deque[dict] = deque(maxlen=replay_limit)
 
-    async def broadcast(self, event_type: str, source: str, payload: dict, severity: str = "info") -> dict:
+    async def broadcast(
+        self, event_type: str, source: str, payload: dict, severity: str = "info"
+    ) -> dict:
         event = RealtimeEnvelope(
             id=f"evt_{uuid4().hex[:12]}",
             type=event_type,
-            timestamp=payload.get("timestamp") or payload.get("ts") or _utc_iso_timestamp(),
+            timestamp=payload.get("timestamp")
+            or payload.get("ts")
+            or _utc_iso_timestamp(),
             source=source,
             severity=severity,
             payload=payload,

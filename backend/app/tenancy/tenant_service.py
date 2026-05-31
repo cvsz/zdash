@@ -22,7 +22,9 @@ class TenantService:
     def __init__(self) -> None:
         self.repository = get_tenancy_repository()
 
-    def ensure_bootstrap(self, user_id: str = "dev-user") -> tuple[Organization, Workspace]:
+    def ensure_bootstrap(
+        self, user_id: str = "dev-user"
+    ) -> tuple[Organization, Workspace]:
         settings = get_settings()
         return self.repository.bootstrap_defaults(
             organization_name=settings.default_org_name,
@@ -59,7 +61,10 @@ class TenantService:
         if settings.multi_tenant_enabled and user.role != "admin":
             allowed_orgs = self.repository.user_organization_ids(user.username)
             allowed_workspaces = self.repository.user_workspace_ids(user.username)
-            if organization.id not in allowed_orgs or workspace.id not in allowed_workspaces:
+            if (
+                organization.id not in allowed_orgs
+                or workspace.id not in allowed_workspaces
+            ):
                 raise PermissionError("cross-tenant access forbidden")
 
         return TenantContext(

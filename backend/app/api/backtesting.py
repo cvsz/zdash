@@ -58,7 +58,7 @@ def run(
         decision = consume(org_id, ws_id, "backtests_per_month")
         if not decision.allowed:
             return fail("QUOTA_EXCEEDED", "Backtests per month quota exceeded")
-            
+
         result = get_backtest_service().run_backtest(req)
         metrics_store.increment_backtests()
         _maybe_audit(
@@ -114,7 +114,7 @@ def optimize(
         decision = consume(org_id, ws_id, "optimizations_per_month")
         if not decision.allowed:
             return fail("QUOTA_EXCEEDED", "Optimizations per month quota exceeded")
-            
+
         optimization = get_backtest_service().optimize(req)
         metrics_store.increment_backtests()
         _maybe_audit(

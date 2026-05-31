@@ -32,7 +32,9 @@ def test_full_pipeline_runs_editor_and_graphic_without_auto_publish() -> None:
 
 def test_full_pipeline_records_steps() -> None:
     pipeline = ContentPipeline(InMemoryContentStore())
-    result = pipeline.run_full_pipeline(CreateContentRequest(topic="zDash weekly update"))
+    result = pipeline.run_full_pipeline(
+        CreateContentRequest(topic="zDash weekly update")
+    )
     step_names = [step["step"] for step in result.steps]
     assert "create_draft" in step_names
     assert "edit_content" in step_names

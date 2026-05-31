@@ -211,7 +211,9 @@ def patch_channel(
         channel.organization_id != tenant_context.organization_id
         or channel.workspace_id != tenant_context.workspace_id
     ):
-        raise HTTPException(status_code=403, detail="cross-tenant channel access denied")
+        raise HTTPException(
+            status_code=403, detail="cross-tenant channel access denied"
+        )
     updated = service.update_channel(channel_id, payload)
     if updated is None:
         raise HTTPException(status_code=404, detail="channel not found")
@@ -234,7 +236,9 @@ def delete_channel(
         channel.organization_id != tenant_context.organization_id
         or channel.workspace_id != tenant_context.workspace_id
     ):
-        raise HTTPException(status_code=403, detail="cross-tenant channel access denied")
+        raise HTTPException(
+            status_code=403, detail="cross-tenant channel access denied"
+        )
     deleted = service.delete_channel(channel_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="channel not found")

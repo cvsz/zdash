@@ -1,4 +1,5 @@
 """Tests for subscription service — Phase 10.3"""
+
 from __future__ import annotations
 
 
@@ -111,7 +112,11 @@ def test_apply_mock_plan_updates_status() -> None:
     org = "org-mock-status-" + __name__
     apply_mock_plan(org, "starter")
     status = get_status(org)
-    assert status["plan_tier"] in ("starter", "free", "unknown")  # DB may vary in test context
+    assert status["plan_tier"] in (
+        "starter",
+        "free",
+        "unknown",
+    )  # DB may vary in test context
 
 
 # ------------------------------------------------------------------ #

@@ -2,7 +2,14 @@ from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Query,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from app.auth.dependencies import get_current_user
 from app.auth.jwt import decode_token
 from app.auth.models import AuthSession
@@ -17,26 +24,46 @@ router = APIRouter(prefix="/api/collaboration", tags=["collaboration"])
 
 @router.get("/presence")
 def get_presence(workspace_id: str, _: AuthSession = Depends(get_current_user)):
-    return ok({"items": [p.model_dump(mode="json") for p in service.list_presence(workspace_id)]})
+    return ok(
+        {
+            "items": [
+                p.model_dump(mode="json") for p in service.list_presence(workspace_id)
+            ]
+        }
+    )
 
 
 @router.post("/presence")
-def post_presence(payload: PresenceUpdate, user: AuthSession = Depends(get_current_user)):
-    return ok({"item": service.upsert_presence(user.username, payload).model_dump(mode="json")})
+def post_presence(
+    payload: PresenceUpdate, user: AuthSession = Depends(get_current_user)
+):
+    return ok(
+        {
+            "item": service.upsert_presence(user.username, payload).model_dump(
+                mode="json"
+            )
+        }
+    )
 
 
 @router.get("/notes")
 def get_notes(workspace_id: str, _: AuthSession = Depends(get_current_user)):
-    return ok({"items": [n.model_dump(mode="json") for n in service.list_notes(workspace_id)]})
+    return ok(
+        {"items": [n.model_dump(mode="json") for n in service.list_notes(workspace_id)]}
+    )
 
 
 @router.post("/notes")
 def post_notes(payload: NoteCreate, user: AuthSession = Depends(get_current_user)):
-    return ok({"item": service.create_note(user.username, payload).model_dump(mode="json")})
+    return ok(
+        {"item": service.create_note(user.username, payload).model_dump(mode="json")}
+    )
 
 
 @router.patch("/notes/{note_id}/resolve")
-def resolve_note(note_id: str, workspace_id: str, user: AuthSession = Depends(get_current_user)):
+def resolve_note(
+    note_id: str, workspace_id: str, user: AuthSession = Depends(get_current_user)
+):
     note = service.resolve_note(workspace_id, note_id, user.username)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
@@ -52,7 +79,12 @@ def timeline(
     _: AuthSession = Depends(get_current_user),
 ):
     items, next_cursor = service.list_timeline(workspace_id, cursor, limit, event_type)
-    return ok({"items": [i.model_dump(mode="json") for i in items], "next_cursor": next_cursor})
+    return ok(
+        {
+            "items": [i.model_dump(mode="json") for i in items],
+            "next_cursor": next_cursor,
+        }
+    )
 
 
 def _extract_token_from_subprotocol_header(raw_header: str | None) -> str | None:

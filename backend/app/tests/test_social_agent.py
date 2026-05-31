@@ -43,7 +43,9 @@ def test_social_agent_blocks_publish_without_approval() -> None:
     editor = EditorAgent()
     social = SocialAgent()
     item = editor.create_draft(CreateContentRequest(topic="zDash publish note"))
-    social.pipeline.store.update_item(item.id, {"policy_passed": True, "status": ContentStatus.edited})
+    social.pipeline.store.update_item(
+        item.id, {"policy_passed": True, "status": ContentStatus.edited}
+    )
     with pytest.raises(ValueError):
         social.publish_content(PublishContentRequest(content_id=item.id))
 
@@ -51,8 +53,12 @@ def test_social_agent_blocks_publish_without_approval() -> None:
 def test_social_agent_emits_events() -> None:
     editor = EditorAgent()
     social = SocialAgent()
-    item = editor.create_draft(CreateContentRequest(topic="educational simulation strategy post"))
-    social.pipeline.store.update_item(item.id, {"policy_passed": True, "status": ContentStatus.edited})
+    item = editor.create_draft(
+        CreateContentRequest(topic="educational simulation strategy post")
+    )
+    social.pipeline.store.update_item(
+        item.id, {"policy_passed": True, "status": ContentStatus.edited}
+    )
     social.approve_content(ApproveContentRequest(content_id=item.id))
     event_bus.clear()
     social.publish_content(PublishContentRequest(content_id=item.id))

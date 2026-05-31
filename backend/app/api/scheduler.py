@@ -52,7 +52,9 @@ def list_jobs(_: object = Depends(require_authenticated)) -> dict:
 @router.post("/jobs")
 def create_job(
     req: CreateJobRequest,
-    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.MANAGE_SCHEDULER)
+    ),
     session: Session = Depends(get_db_session),
     _f: str = Depends(require_feature("feature.scheduler")),
     tenant: TenantContext = Depends(get_tenant_context),
@@ -63,7 +65,7 @@ def create_job(
         decision = consume(org_id, ws_id, "scheduler_jobs")
         if not decision.allowed:
             return fail("QUOTA_EXCEEDED", "Scheduler jobs quota exceeded")
-            
+
         job = _service().create_job(req)
     except ValueError as exc:
         return fail("SCHEDULER_JOB_INVALID", str(exc))
@@ -86,7 +88,9 @@ def create_job(
 @router.post("/jobs/{job_id}/run")
 def run_job(
     job_id: str,
-    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.MANAGE_SCHEDULER)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     try:
@@ -144,7 +148,9 @@ def resume_job(
 @router.delete("/jobs/{job_id}")
 def delete_job(
     job_id: str,
-    current_user: AuthSession = Depends(require_permission(Permission.MANAGE_SCHEDULER)),
+    current_user: AuthSession = Depends(
+        require_permission(Permission.MANAGE_SCHEDULER)
+    ),
     session: Session = Depends(get_db_session),
 ) -> dict:
     deleted = _service().delete_job(job_id)

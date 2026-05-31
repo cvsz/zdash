@@ -19,6 +19,7 @@ from app.db.migrations import run_migrations
 
 run_migrations()
 
+
 @pytest.fixture(autouse=True)
 def reset_runtime_state() -> Generator[None, None, None]:
     get_settings.cache_clear()

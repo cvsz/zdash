@@ -26,7 +26,6 @@ from app.billing.models import (
 from app.marketplace.models import PluginInstallation
 
 
-
 class UserRepositoryProtocol(Protocol):
     def get_by_email(self, email: str) -> User | None: ...
     def create(
@@ -45,12 +44,16 @@ class AuditRepositoryProtocol(Protocol):
 
 
 class EventLogRepositoryProtocol(Protocol):
-    def create(self, event_type: str, source: str, message: str, payload: dict) -> EventLog: ...
+    def create(
+        self, event_type: str, source: str, message: str, payload: dict
+    ) -> EventLog: ...
 
 
 class SchedulerRepositoryProtocol(Protocol):
     def upsert_job(self, job_id: str, **kwargs) -> SchedulerJob: ...
-    def add_run(self, job_id: str, status: str, message: str = "", output: dict | None = None) -> SchedulerRun: ...
+    def add_run(
+        self, job_id: str, status: str, message: str = "", output: dict | None = None
+    ) -> SchedulerRun: ...
 
 
 class BacktestRepositoryProtocol(Protocol):
@@ -70,7 +73,9 @@ class ContentRepositoryProtocol(Protocol):
 
 
 class HaltStateRepositoryProtocol(Protocol):
-    def set_state(self, halted: bool, reason: str, actor: str, locked: bool = False) -> HaltState: ...
+    def set_state(
+        self, halted: bool, reason: str, actor: str, locked: bool = False
+    ) -> HaltState: ...
 
 
 class IoTActionLogRepositoryProtocol(Protocol):
@@ -133,7 +138,9 @@ class EventLogRepository(EventLogRepositoryProtocol):
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, event_type: str, source: str, message: str, payload: dict) -> EventLog:
+    def create(
+        self, event_type: str, source: str, message: str, payload: dict
+    ) -> EventLog:
         row = EventLog(
             event_type=event_type,
             source=source,
@@ -290,17 +297,24 @@ class RefreshTokenRepository(RefreshTokenRepositoryProtocol):
 class BillingRepositoryProtocol(Protocol):
     def get_subscription_by_org(self, organization_id: str) -> Subscription | None: ...
     def create_subscription(self, **kwargs) -> Subscription: ...
-    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None: ...
+    def get_usage(
+        self, organization_id: str, workspace_id: str, metric: str
+    ) -> UsageRecord | None: ...
     def record_usage(self, **kwargs) -> UsageRecord: ...
 
 
 class MarketplaceRepositoryProtocol(Protocol):
-    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None: ...
-    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]: ...
+    def get_installation(
+        self, organization_id: str, installation_id: str
+    ) -> PluginInstallation | None: ...
+    def list_installations(
+        self, organization_id: str, workspace_id: str | None = None
+    ) -> list[PluginInstallation]: ...
     def create_installation(self, **kwargs) -> PluginInstallation: ...
-    def update_installation(self, installation: PluginInstallation) -> PluginInstallation: ...
+    def update_installation(
+        self, installation: PluginInstallation
+    ) -> PluginInstallation: ...
     def delete_installation(self, installation: PluginInstallation) -> None: ...
-
 
 
 class BillingRepository(BillingRepositoryProtocol):
@@ -308,11 +322,15 @@ class BillingRepository(BillingRepositoryProtocol):
         self.db = db
 
     def get_subscription_by_org(self, organization_id: str) -> Subscription | None:
-        return self.db.execute(
-            select(Subscription)
-            .where(Subscription.organization_id == organization_id)
-            .order_by(Subscription.created_at.desc())
-        ).scalars().first()
+        return (
+            self.db.execute(
+                select(Subscription)
+                .where(Subscription.organization_id == organization_id)
+                .order_by(Subscription.created_at.desc())
+            )
+            .scalars()
+            .first()
+        )
 
     def create_subscription(self, **kwargs) -> Subscription:
         row = Subscription(**kwargs)
@@ -321,14 +339,20 @@ class BillingRepository(BillingRepositoryProtocol):
         self.db.refresh(row)
         return row
 
-    def get_usage(self, organization_id: str, workspace_id: str, metric: str) -> UsageRecord | None:
-        return self.db.execute(
-            select(UsageRecord)
-            .where(UsageRecord.organization_id == organization_id)
-            .where(UsageRecord.workspace_id == workspace_id)
-            .where(UsageRecord.metric == metric)
-            .order_by(UsageRecord.created_at.desc())
-        ).scalars().first()
+    def get_usage(
+        self, organization_id: str, workspace_id: str, metric: str
+    ) -> UsageRecord | None:
+        return (
+            self.db.execute(
+                select(UsageRecord)
+                .where(UsageRecord.organization_id == organization_id)
+                .where(UsageRecord.workspace_id == workspace_id)
+                .where(UsageRecord.metric == metric)
+                .order_by(UsageRecord.created_at.desc())
+            )
+            .scalars()
+            .first()
+        )
 
     def record_usage(self, **kwargs) -> UsageRecord:
         row = UsageRecord(**kwargs)
@@ -342,15 +366,25 @@ class MarketplaceRepository(MarketplaceRepositoryProtocol):
     def __init__(self, db: Session):
         self.db = db
 
-    def get_installation(self, organization_id: str, installation_id: str) -> PluginInstallation | None:
-        return self.db.execute(
-            select(PluginInstallation)
-            .where(PluginInstallation.id == installation_id)
-            .where(PluginInstallation.organization_id == organization_id)
-        ).scalars().first()
+    def get_installation(
+        self, organization_id: str, installation_id: str
+    ) -> PluginInstallation | None:
+        return (
+            self.db.execute(
+                select(PluginInstallation)
+                .where(PluginInstallation.id == installation_id)
+                .where(PluginInstallation.organization_id == organization_id)
+            )
+            .scalars()
+            .first()
+        )
 
-    def list_installations(self, organization_id: str, workspace_id: str | None = None) -> list[PluginInstallation]:
-        query = select(PluginInstallation).where(PluginInstallation.organization_id == organization_id)
+    def list_installations(
+        self, organization_id: str, workspace_id: str | None = None
+    ) -> list[PluginInstallation]:
+        query = select(PluginInstallation).where(
+            PluginInstallation.organization_id == organization_id
+        )
         if workspace_id:
             query = query.where(PluginInstallation.workspace_id == workspace_id)
         return list(self.db.execute(query).scalars().all())
@@ -362,7 +396,9 @@ class MarketplaceRepository(MarketplaceRepositoryProtocol):
         self.db.refresh(row)
         return row
 
-    def update_installation(self, installation: PluginInstallation) -> PluginInstallation:
+    def update_installation(
+        self, installation: PluginInstallation
+    ) -> PluginInstallation:
         self.db.commit()
         self.db.refresh(installation)
         return installation
@@ -370,4 +406,3 @@ class MarketplaceRepository(MarketplaceRepositoryProtocol):
     def delete_installation(self, installation: PluginInstallation) -> None:
         self.db.delete(installation)
         self.db.commit()
-

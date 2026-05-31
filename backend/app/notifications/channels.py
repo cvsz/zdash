@@ -16,7 +16,9 @@ def sanitize_payload(payload: dict[str, Any]) -> dict[str, Any]:
     return safe_payload
 
 
-def dispatch_dry_run(channel_name: str, title: str, message: str, payload: dict[str, Any]) -> dict:
+def dispatch_dry_run(
+    channel_name: str, title: str, message: str, payload: dict[str, Any]
+) -> dict:
     return {
         "channel": channel_name,
         "status": "dry_run",

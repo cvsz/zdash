@@ -7,13 +7,45 @@ from itertools import cycle
 from app.realtime.broadcaster import get_realtime_broadcaster
 from app.realtime.events import build_event_envelope
 
-_EVENTS = cycle([
-    ("risk.drawdown.warning", "risk", "warning", "guardian", "Drawdown warning threshold reached"),
-    ("scheduler.job.tick", "scheduler", "info", "scheduler", "Scheduled heartbeat job completed"),
-    ("content.pipeline.updated", "content", "info", "content", "Draft queued for approval"),
-    ("trading.signal.generated", "trading", "info", "scanner", "Dry-run signal generated"),
-    ("system.health.warning", "system", "warning", "health", "System latency elevated"),
-])
+_EVENTS = cycle(
+    [
+        (
+            "risk.drawdown.warning",
+            "risk",
+            "warning",
+            "guardian",
+            "Drawdown warning threshold reached",
+        ),
+        (
+            "scheduler.job.tick",
+            "scheduler",
+            "info",
+            "scheduler",
+            "Scheduled heartbeat job completed",
+        ),
+        (
+            "content.pipeline.updated",
+            "content",
+            "info",
+            "content",
+            "Draft queued for approval",
+        ),
+        (
+            "trading.signal.generated",
+            "trading",
+            "info",
+            "scanner",
+            "Dry-run signal generated",
+        ),
+        (
+            "system.health.warning",
+            "system",
+            "warning",
+            "health",
+            "System latency elevated",
+        ),
+    ]
+)
 
 _task: asyncio.Task[None] | None = None
 

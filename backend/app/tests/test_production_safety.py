@@ -75,7 +75,9 @@ def test_production_requires_metrics_auth(monkeypatch):
     try:
         payload = admin_api._safety_check_payload()
         assert payload["status"] == "blocked"
-        assert any("METRICS_AUTH_REQUIRED" in blocker for blocker in payload["blockers"])
+        assert any(
+            "METRICS_AUTH_REQUIRED" in blocker for blocker in payload["blockers"]
+        )
     finally:
         get_settings.cache_clear()
 
@@ -211,6 +213,7 @@ def test_production_rejects_default_jwt_secret(monkeypatch):
 
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="JWT_SECRET_KEY"):
             get_settings()
     finally:
@@ -294,6 +297,7 @@ def test_validate_production_config_blocks_unsafe(monkeypatch):
 
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="AUTH_ENABLED"):
             validate_production_config()
     finally:
@@ -318,6 +322,7 @@ def test_validate_production_config_blocks_missing_auth(monkeypatch):
     _set_prod_env(monkeypatch, AUTH_ENABLED="false")
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="AUTH_ENABLED"):
             validate_production_config()
     finally:
@@ -330,6 +335,7 @@ def test_validate_production_config_blocks_missing_metrics_auth(monkeypatch):
     _set_prod_env(monkeypatch, METRICS_AUTH_REQUIRED="false")
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="METRICS_AUTH_REQUIRED"):
             validate_production_config()
     finally:
@@ -346,6 +352,7 @@ def test_validate_production_config_blocks_cors_wildcard(monkeypatch):
     )
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="CORS wildcard"):
             validate_production_config()
     finally:
@@ -361,6 +368,7 @@ def test_validate_production_config_blocks_dry_run_false(monkeypatch):
     )
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="DRY_RUN"):
             validate_production_config()
     finally:
@@ -376,6 +384,7 @@ def test_validate_production_config_blocks_default_admin_password(monkeypatch):
     )
     try:
         import pytest
+
         with pytest.raises(RuntimeError, match="DEFAULT_ADMIN_PASSWORD"):
             validate_production_config()
     finally:

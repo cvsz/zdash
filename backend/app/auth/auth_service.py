@@ -22,7 +22,9 @@ class AuthService:
     def _build_token_pair(self, username: str, role: str, user_id: str) -> TokenPair:
         access_token = create_access_token(username, role)
         refresh_token = create_refresh_token(username, role)
-        self.refresh_tokens.create(user_id=user_id, token_hash=self._hash_token(refresh_token))
+        self.refresh_tokens.create(
+            user_id=user_id, token_hash=self._hash_token(refresh_token)
+        )
         return TokenPair(
             access_token=access_token,
             refresh_token=refresh_token,
@@ -36,7 +38,9 @@ class AuthService:
             return None
         if not user.is_active:
             return None
-        return self._build_token_pair(username=user.email, role=user.role, user_id=user.id)
+        return self._build_token_pair(
+            username=user.email, role=user.role, user_id=user.id
+        )
 
     def refresh(self, refresh_token: str) -> TokenPair | None:
         try:
@@ -53,20 +57,31 @@ class AuthService:
         if user is None or not user.is_active:
             return None
         self.refresh_tokens.revoke(token_hash)
-        return self._build_token_pair(username=user.email, role=user.role, user_id=user.id)
+        return self._build_token_pair(
+            username=user.email, role=user.role, user_id=user.id
+        )
 
     def logout(self, refresh_token: str) -> bool:
         token_hash = self._hash_token(refresh_token)
         return self.refresh_tokens.revoke(token_hash)
 
-    def bootstrap_admin(self, username: str | None, password: str | None) -> tuple[bool, str]:
+    def bootstrap_admin(
+        self, username: str | None, password: str | None
+    ) -> tuple[bool, str]:
         if self.users.count() > 0:
             return False, "Admin bootstrap is only allowed when no users exist."
-        if self.settings.is_production and not self.settings.auth_allow_bootstrap_in_production:
+        if (
+            self.settings.is_production
+            and not self.settings.auth_allow_bootstrap_in_production
+        ):
             return False, "Admin bootstrap is disabled in production."
 
-        bootstrap_username = (username or self.settings.bootstrap_admin_username).strip()
-        bootstrap_password = (password or self.settings.bootstrap_admin_password).strip()
+        bootstrap_username = (
+            username or self.settings.bootstrap_admin_username
+        ).strip()
+        bootstrap_password = (
+            password or self.settings.bootstrap_admin_password
+        ).strip()
         if not bootstrap_username:
             return False, "Bootstrap username is required."
         if not bootstrap_password:

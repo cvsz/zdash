@@ -32,7 +32,9 @@ def test_extract_token_from_query_string() -> None:
 
 def test_extract_token_from_subprotocol_header() -> None:
     websocket = _fake_websocket(subprotocol_header="bearer, subprotocol-token")
-    assert collaboration_router._extract_websocket_token(websocket) == "subprotocol-token"
+    assert (
+        collaboration_router._extract_websocket_token(websocket) == "subprotocol-token"
+    )
 
 
 def test_authenticate_websocket_requires_token_when_auth_enabled(

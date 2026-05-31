@@ -21,9 +21,6 @@ from app.core.config import get_settings
 # ---------------------------------------------------------------------------
 
 
-
-
-
 def _settings(monkeypatch, **overrides):
     for k, v in overrides.items():
         monkeypatch.setenv(k, v)
@@ -120,7 +117,13 @@ class TestMt5AdapterContract:
     def test_missing_credential(self, monkeypatch):
         from app.trading.mt5_adapter import MT5Adapter
 
-        _settings(monkeypatch, MT5_ENABLED="true", MT5_LOGIN="", MT5_PASSWORD="", MT5_SERVER="")
+        _settings(
+            monkeypatch,
+            MT5_ENABLED="true",
+            MT5_LOGIN="",
+            MT5_PASSWORD="",
+            MT5_SERVER="",
+        )
         adapter = MT5Adapter()
         result = adapter.connect()
         assert result["mode"] == "mock"
@@ -257,7 +260,10 @@ class TestTapoAdapterContract:
         adapter = TapoAdapter()
         result = adapter.power_cycle("test-device", confirmation=False)
         assert result.ok is False
-        assert "confirmation_required" in result.message.lower() or "blocked" in result.message.lower()
+        assert (
+            "confirmation_required" in result.message.lower()
+            or "blocked" in result.message.lower()
+        )
 
     def test_invalid_payload(self, monkeypatch):
         from app.iot.tapo_adapter import TapoAdapter
@@ -442,7 +448,10 @@ class TestStripeAdapterContract:
         adapter = StripeAdapter()
         with pytest.raises(RuntimeError) as excinfo:
             adapter._require_enabled()
-        assert any(word in str(excinfo.value).lower() for word in ("disabled", "not configured"))
+        assert any(
+            word in str(excinfo.value).lower()
+            for word in ("disabled", "not configured")
+        )
 
     def test_invalid_payload(self):
         from app.billing.stripe_adapter import StripeAdapter

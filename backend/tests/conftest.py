@@ -12,6 +12,7 @@ from app.db.migrations import run_migrations
 
 run_migrations()
 
+
 @pytest.fixture(autouse=True)
 def reset_risk_runtime_state() -> None:
     get_settings.cache_clear()

@@ -18,7 +18,10 @@ def reset_peers() -> None:
 def _dependency_calls(path: str, method: str) -> list[object]:
     for route in workspaces_api.router.routes:
         methods: set[str] = getattr(route, "methods", set())  # type: ignore[attr-defined]
-        if getattr(route, "path", "") == f"/api/workspaces/federation{path}" and method in methods:
+        if (
+            getattr(route, "path", "") == f"/api/workspaces/federation{path}"
+            and method in methods
+        ):
             return [dependency.call for dependency in route.dependant.dependencies]  # type: ignore[attr-defined]
     raise AssertionError(f"route not found: {method} {path}")
 
@@ -36,7 +39,9 @@ def _permission_dependency(path: str, method: str, permission: Permission):
         closure = getattr(call, "__closure__", None) or ()
         if any(getattr(cell, "cell_contents", None) == permission for cell in closure):
             return call
-    raise AssertionError(f"permission dependency not found: {method} {path} {permission}")
+    raise AssertionError(
+        f"permission dependency not found: {method} {path} {permission}"
+    )
 
 
 def test_federation_status_is_public() -> None:

@@ -77,7 +77,9 @@ class SchedulerJob(Base, Timestamped):
 class SchedulerRun(Base, Timestamped):
     __tablename__ = "scheduler_runs"
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_id)
-    job_id: Mapped[str] = mapped_column(String, ForeignKey("scheduler_jobs.id"), index=True)
+    job_id: Mapped[str] = mapped_column(
+        String, ForeignKey("scheduler_jobs.id"), index=True
+    )
     status: Mapped[str] = mapped_column(String, default="queued")
     message: Mapped[str] = mapped_column(Text, default="")
     output_json: Mapped[dict] = mapped_column("output", JSON, default=dict)
@@ -115,7 +117,9 @@ class OptimizationResult(Base, Timestamped):
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_id)
     strategy: Mapped[str] = mapped_column(String, index=True)
     sort_metric: Mapped[str] = mapped_column(String, default="profit_factor")
-    ranked_results_json: Mapped[list] = mapped_column("ranked_results", JSON, default=list)
+    ranked_results_json: Mapped[list] = mapped_column(
+        "ranked_results", JSON, default=list
+    )
     best_result_json: Mapped[dict] = mapped_column("best_result", JSON, default=dict)
     params_json: Mapped[dict] = mapped_column("params", JSON, default=dict)
 
@@ -154,6 +158,7 @@ class IoTActionLog(Base, Timestamped):
     confirmation_required: Mapped[bool] = mapped_column(Boolean, default=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
     payload_json: Mapped[dict] = mapped_column("payload", JSON, default=dict)
+
 
 # removed circular imports
 from app.marketplace.models import PluginManifest, PluginInstallation  # noqa: E402, F401

@@ -102,9 +102,7 @@ def require_feature(feature: str) -> Callable:
     def _dependency(tenant: TenantContext = Depends(get_tenant_context)) -> str:
         if not settings.billing_enabled:
             return feature
-        decision = check_feature(
-            getattr(tenant, "organization_id", "default"), feature
-        )
+        decision = check_feature(getattr(tenant, "organization_id", "default"), feature)
         if not decision.allowed and settings.billing_fail_closed:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

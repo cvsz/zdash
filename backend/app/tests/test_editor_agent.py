@@ -14,7 +14,9 @@ def test_editor_agent_is_registered() -> None:
 
 def test_editor_agent_can_create_draft() -> None:
     editor = EditorAgent()
-    item = editor.create_draft(CreateContentRequest(topic="Educational simulation note"))
+    item = editor.create_draft(
+        CreateContentRequest(topic="Educational simulation note")
+    )
     assert item.id
     assert item.draft_text
     assert item.policy_passed is True

@@ -33,7 +33,9 @@ def _require_task_permission(task_type: str, user: AuthSession) -> None:
     required_permission = _TASK_PERMISSION_MAP.get(task_type, Permission.MANAGE_WORKERS)
     if has_permission(user.role, required_permission):
         return
-    raise HTTPException(status_code=403, detail="Insufficient permissions for task type")
+    raise HTTPException(
+        status_code=403, detail="Insufficient permissions for task type"
+    )
 
 
 @router.get("/status")
@@ -54,7 +56,9 @@ def tasks(
     tenant_context=Depends(get_tenant_context),
     _: AuthSession = Depends(get_current_user),
 ):
-    items = queue.list_tasks(tenant_context.organization_id, tenant_context.workspace_id)
+    items = queue.list_tasks(
+        tenant_context.organization_id, tenant_context.workspace_id
+    )
     return ok({"items": [item.model_dump() for item in items]})
 
 
@@ -95,7 +99,10 @@ def task_detail(
     task = queue.get_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    if task.organization_id != tenant_context.organization_id or task.workspace_id != tenant_context.workspace_id:
+    if (
+        task.organization_id != tenant_context.organization_id
+        or task.workspace_id != tenant_context.workspace_id
+    ):
         raise HTTPException(status_code=403, detail="cross-tenant task access denied")
     return ok({"item": task.model_dump()})
 
@@ -111,7 +118,10 @@ def cancel_task(
     task = queue.get_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    if task.organization_id != tenant_context.organization_id or task.workspace_id != tenant_context.workspace_id:
+    if (
+        task.organization_id != tenant_context.organization_id
+        or task.workspace_id != tenant_context.workspace_id
+    ):
         raise HTTPException(status_code=403, detail="cross-tenant task access denied")
     updated = queue.cancel(task_id)
     event_bus.emit(
@@ -134,7 +144,10 @@ def retry_task(
     task = queue.get_task(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    if task.organization_id != tenant_context.organization_id or task.workspace_id != tenant_context.workspace_id:
+    if (
+        task.organization_id != tenant_context.organization_id
+        or task.workspace_id != tenant_context.workspace_id
+    ):
         raise HTTPException(status_code=403, detail="cross-tenant task access denied")
     updated = queue.retry(task_id)
     event_bus.emit(

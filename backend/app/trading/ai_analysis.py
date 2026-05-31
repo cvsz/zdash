@@ -21,7 +21,9 @@ class TradingAIAnalysis:
     def _disclaimer() -> str:
         return "Simulation only. Not financial advice. No live execution."
 
-    def summarize_signal(self, signal: TradingSignal, context: dict | None = None) -> str:
+    def summarize_signal(
+        self, signal: TradingSignal, context: dict | None = None
+    ) -> str:
         if not self.settings.ai_trading_analysis_enabled:
             return f"{self._disclaimer()} AI analysis is disabled."
 
@@ -30,10 +32,14 @@ class TradingAIAnalysis:
             f"Direction={signal.direction}, confidence={signal.confidence:.2f}, "
             f"entry={signal.entry}, stop={signal.stop_loss}, target={signal.take_profit}."
         )
-        ai_response = self.adapter.generate_response(prompt=prompt, context=context or {})
+        ai_response = self.adapter.generate_response(
+            prompt=prompt, context=context or {}
+        )
         return f"{ai_response.text} | {self._disclaimer()}"
 
-    def analyze_scanner_context(self, candles: list[Candle], signal: TradingSignal) -> str:
+    def analyze_scanner_context(
+        self, candles: list[Candle], signal: TradingSignal
+    ) -> str:
         candle_count = len(candles)
         recent_close = candles[-1].close if candles else 0.0
         context = {
