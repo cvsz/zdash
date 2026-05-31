@@ -286,7 +286,7 @@ Env:
   GPG_ENV_FILE=.env
 
 Required .env value:
-  GPG_PASSPHRASE=your_passphrase
+  Set GPG_PASSPHRASE in your local .env file. Never commit .env.
 
 Recommended:
   cd ~/zdash
