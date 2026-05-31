@@ -7,6 +7,7 @@ Create Date: 2026-05-24
 
 from alembic import op
 import sqlalchemy as sa
+from typing import Any
 
 
 revision = '20260524_0003'
@@ -15,8 +16,18 @@ branch_labels = None
 depends_on = None
 
 
+def _table_exists(table_name: str) -> bool:
+    return bool(sa.inspect(op.get_bind()).has_table(table_name))
+
+
+def _create_table_once(table_name: str, *columns: Any, **kwargs: Any) -> None:
+    if _table_exists(table_name):
+        return
+    _create_table_once(table_name, *columns, **kwargs)
+
+
 def upgrade() -> None:
-    op.create_table(
+    _create_table_once(
         'agents',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
@@ -27,7 +38,7 @@ def upgrade() -> None:
         sa.UniqueConstraint('name'),
     )
 
-    op.create_table(
+    _create_table_once(
         'messages',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('sender', sa.String(), nullable=False),
@@ -38,7 +49,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'events',
         sa.Column('id', sa.Integer(), primary_key=True),
         sa.Column('event_type', sa.String(), nullable=False),
@@ -47,7 +58,7 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
     )
 
-    op.create_table(
+    _create_table_once(
         'trading_signals',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('symbol', sa.String(), nullable=False),
@@ -60,7 +71,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'execution_attempts',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('mode', sa.String(), nullable=False),
@@ -71,7 +82,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'risk_decisions',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('decision_type', sa.String(), nullable=False),
@@ -82,7 +93,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'halt_flags',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('halted', sa.Boolean(), nullable=False),
@@ -93,7 +104,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'scheduler_jobs',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
@@ -104,7 +115,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'backtest_runs',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('strategy', sa.String(), nullable=False),
@@ -114,7 +125,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'backtest_results',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('run_id', sa.String(), nullable=False),
@@ -123,7 +134,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'content_items',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('topic', sa.String(), nullable=False),
@@ -136,7 +147,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'audit_logs',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('action', sa.String(), nullable=False),
@@ -148,7 +159,7 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
 
-    op.create_table(
+    _create_table_once(
         'users',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('username', sa.String(), nullable=False),
@@ -160,7 +171,7 @@ def upgrade() -> None:
         sa.UniqueConstraint('username'),
     )
 
-    op.create_table(
+    _create_table_once(
         'live_mode_approvals',
         sa.Column('id', sa.String(), nullable=False),
         sa.Column('approved', sa.Boolean(), nullable=False),
@@ -188,4 +199,5 @@ def downgrade() -> None:
         'messages',
         'agents',
     ]:
-        op.drop_table(table)
+        if _table_exists(table):
+            op.drop_table(table)
