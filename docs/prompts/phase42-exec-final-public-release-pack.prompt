@@ -1,0 +1,202 @@
+Implement Phase 42: Final Public Release Pack + README Docs Landing + Version Freeze.
+
+Context:
+zDash has completed:
+- Phase 36: Server Command Center + Safe Git Workflow
+- Phase 37: Realtime Gateway Stabilization
+- Phase 38: Release Readiness Pack
+- Phase 39: Production Dry-Run Verification
+- Phase 40: Go-Live Rehearsal + Evidence Capture
+- Phase 41: Release Automation + Operator Handoff
+
+Goal:
+Prepare zDash for final public release presentation and operator-ready delivery while preserving all safety defaults.
+
+Hard safety requirements:
+- Keep DRY_RUN=true by default.
+- Keep LIVE_TRADING_ACK=false.
+- Keep MT5_ENABLED=false.
+- Keep PRODUCTION_ALLOW_LIVE_ACTIONS=false.
+- Keep RISK_GUARDIAN_ENABLED=true.
+- Do not enable real broker execution.
+- Do not enable real social posting.
+- Do not enable real IoT mutation.
+- Do not commit secrets.
+- Do not commit .env files.
+- Do not print secret values.
+- Do not weaken safety-scan, GitHub push protection, RBAC, audit logging, tenant scoping, realtime validation, or rollback controls.
+
+Create or update:
+
+1. Public release docs
+
+Create/update:
+- README.md
+- CHANGELOG.md
+- VERSION
+- docs/releases/FINAL_RELEASE_NOTES.md
+- docs/releases/PHASE42_FINAL_PUBLIC_RELEASE.md
+
+README.md must include:
+- Project overview
+- Safety-first statement
+- Feature map
+- Architecture summary
+- Local quick start
+- Production install summary
+- Server commands
+- Validation commands
+- Release docs links
+- Operator handoff links
+- Clear note: simulation / dry-run by default, not financial advice
+
+2. Quick start docs
+
+Create:
+- docs/runbooks/QUICK_START.md
+- docs/runbooks/INSTALLATION.md
+- docs/runbooks/OPERATIONS_INDEX.md
+
+QUICK_START.md must include:
+- git clone
+- install-local
+- server-start
+- server-status
+- server-logs
+- server-stop
+- localhost URLs:
+  - http://localhost:5173
+  - http://localhost:8005/health
+  - http://localhost:8005/docs
+
+INSTALLATION.md must include:
+- local install
+- production install
+- Docker notes
+- Ubuntu/VMware notes
+- Cloudflare/domain notes if already present in repo
+- safety env defaults
+- no secrets in repo rule
+
+OPERATIONS_INDEX.md must link:
+- START_SERVER.md
+- GIT_SAFE_PUSH.md
+- REALTIME_GATEWAY.md
+- PRODUCTION_DRY_RUN_VERIFICATION.md
+- GO_LIVE_REHEARSAL.md
+- ROLLBACK_RUNBOOK.md
+- OPERATOR_HANDOFF.md
+
+3. Version freeze
+
+Create/update:
+- VERSION
+
+Set version:
+0.42.0-rc1
+
+Create:
+- docs/releases/VERSION_FREEZE.md
+
+Include:
+- version
+- date
+- release status: GO
+- safety status: locked
+- validation commands
+- rollback reference
+- tag command:
+  git tag -a v0.42.0-rc1 -m "zDash v0.42.0-rc1 final public release candidate"
+
+4. Release notes
+
+Create/update:
+- CHANGELOG.md
+- docs/releases/FINAL_RELEASE_NOTES.md
+
+Include sections:
+- Added
+- Changed
+- Fixed
+- Safety
+- Operations
+- Validation
+- Known limitations
+
+Mention:
+- Phase 36 server command center
+- Phase 37 realtime gateway stabilization
+- Phase 38 release readiness
+- Phase 39 production dry-run verification
+- Phase 40 go-live rehearsal
+- Phase 41 release automation/operator handoff
+- Phase 42 public release pack/version freeze
+
+5. Final validation script
+
+Create:
+- scripts/release/verify-final-public-release.sh
+
+Requirements:
+- Check README.md exists
+- Check CHANGELOG.md exists
+- Check VERSION exists and equals 0.42.0-rc1
+- Check FINAL_RELEASE_NOTES.md exists
+- Check QUICK_START.md exists
+- Check INSTALLATION.md exists
+- Check OPERATIONS_INDEX.md exists
+- Check OPERATOR_HANDOFF.md exists
+- Check ROLLBACK_RUNBOOK.md exists
+- Check release decision GO exists in docs/releases/PHASE37_RELEASE_READINESS.md
+- Check no tracked .env files except allowed examples
+- Check no secret-looking values in tracked files
+- Check safety lock keys are documented:
+  - DRY_RUN=true
+  - LIVE_TRADING_ACK=false
+  - MT5_ENABLED=false
+  - PRODUCTION_ALLOW_LIVE_ACTIONS=false
+  - RISK_GUARDIAN_ENABLED=true
+- Do not print secret values
+
+6. Makefile targets
+
+Add only if missing:
+- final-release-check
+- version-show
+- phase42-validate
+
+Expected behavior:
+- make version-show prints VERSION
+- make final-release-check runs scripts/release/verify-final-public-release.sh
+- make phase42-validate runs:
+  - make validate-fast
+  - make phase39-validate
+  - make phase40-validate
+  - make phase41-validate
+  - make final-release-check
+
+Do not duplicate existing targets.
+
+7. Validation
+
+Run:
+make validate-fast
+make phase39-validate
+make phase40-validate
+make phase41-validate
+make final-release-check
+make phase42-validate
+
+Acceptance criteria:
+- make validate-fast passes.
+- make phase42-validate passes.
+- README.md has quick start and safety defaults.
+- CHANGELOG.md exists.
+- VERSION exists and equals 0.42.0-rc1.
+- final release notes exist.
+- operations index links all major runbooks.
+- no .env files tracked except allowed examples.
+- no secret-looking values in tracked files.
+- no duplicate Makefile targets.
+- release GO remains documented.
+- live trading remains disabled by default.

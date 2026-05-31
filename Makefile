@@ -539,6 +539,23 @@ validate-fast: safety-scan backend-check frontend-check ## Run safety scans + ba
 .PHONY: validate
 validate: validate-fast docker-build compose-check maintenance ## Run full validation including Docker and maintenance
 
+.PHONY: final-release-check
+final-release-check: ## Run final public release verification
+	bash scripts/release/verify-final-public-release.sh
+
+.PHONY: version-show
+version-show: ## Show current VERSION
+	@echo "VERSION: $$(cat VERSION 2>/dev/null || echo '(not set)')"
+
+.PHONY: phase42-validate
+phase42-validate: validate-fast ## Run full Phase 42 validation chain (validate-fast + phase39-41 + final-release-check)
+	$(MAKE) phase39-validate
+	$(MAKE) phase40-validate
+	$(MAKE) phase41-validate
+	$(MAKE) final-release-check
+	@echo ""
+	@echo "Phase 42 validation complete."
+
 .PHONY: release-candidate
 release-candidate: ## Create release candidate (verify readiness + collect evidence + generate notes)
 	bash scripts/release/create-release-candidate.sh

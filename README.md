@@ -1,5 +1,8 @@
 # zDash · Safety-First AI Operations Dashboard
 
+**Version:** 0.42.0-rc1
+**Status:** RELEASE CANDIDATE (GO)
+
 **Short description:** zDash is a safety-first AI operations dashboard and agent runtime for staged automation, trading simulation, governance, observability, and enterprise control workflows.
 
 Repository: `cvsz/zdash`
@@ -17,6 +20,74 @@ https://github.com/CVSz/zeaz-platform
 ```
 
 Use this repository for application code, local configuration defaults, backend/frontend implementation, tests, and documentation. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout.
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/cvsz/zdash.git
+cd zdash
+make install-local     # install dependencies
+make server-start      # start backend + frontend
+make server-status     # check service status
+make server-logs       # view logs
+make server-stop       # stop services
+```
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend health | http://localhost:8005/health |
+| API docs | http://localhost:8005/docs |
+
+```bash
+make validate-fast     # safety scan + tests + build
+```
+
+---
+
+## Feature Map
+
+| Phase | Area | Summary |
+|-------|------|---------|
+| 01 | Foundation | Agent runtime, mock AI, event bus, health APIs |
+| 02 | Trading Core | XAU scanner, MT5 shell, Funnel Filter, dry-run execution |
+| 03 | Risk System | Guardian, drawdown guard, kill switch, halt flag |
+| 04 | Automation | Scheduler, IoT shell, NSSM service |
+| 05 | Backtesting | Strategy lab, backtest engine, optimizer |
+| 06 | Content Pipeline | Approval-gated content, graphic, social workflow |
+| 07 | Dashboard | React/Vite dashboard, realtime streaming, incident ops |
+| 08 | Production Hardening | DB, auth/RBAC, audit, observability, Docker |
+| 09 | Enterprise Scale | Tenancy, workers, notifications, cloud infra |
+| 10 | SaaS Monetization | Billing, marketplace, enterprise packaging |
+| 11–32 | Expansion | Governance, compliance, plugins, AI trader, enterprise OS |
+| 33–35 | AI Trader + Release | AI Trader simulation, release hardening |
+| 36 | Server Command Center | Server scripts, git safety scripts |
+| 37 | Realtime Gateway | WebSocket validation, frontend client |
+| 38 | Release Readiness | Release report, rollback runbook, traceability, checklist |
+| 39 | Dry-Run Verification | Runtime, health, rollback, observability scripts |
+| 40 | Go-Live Rehearsal | Safety locks, evidence capture, rehearsal workflow |
+| 41 | Release Automation | Readiness check, evidence collection, candidate creation |
+| 42 | Public Release | README update, CHANGELOG, version freeze, quick start |
+
+---
+
+## Architecture Summary
+
+```text
+Frontend (React/Vite :5173) ──▶ Backend (FastAPI :8005) ──▶ Database (SQLite/Postgres)
+                                    │
+                              Redis (queue/cache)
+```
+
+- **Frontend**: React, TypeScript, Tailwind, Vite, React Router v7
+- **Backend**: FastAPI, Pydantic v2, SQLAlchemy, Alembic, APScheduler
+- **Auth**: JWT with RBAC
+- **Database**: SQLite (dev), PostgreSQL (prod)
+- **Queue**: Celery/Redis
+- **Container**: Docker Compose (dev + prod profiles)
+- **CI**: GitHub Actions (backend tests, frontend tests, Docker)
 
 ---
 
@@ -1024,6 +1095,60 @@ Known non-blocking warnings:
 - The existing app should remain safe in mock/dry-run mode even when optional providers are missing.
 - Frontend tests and frontend production builds intentionally use separate TypeScript config paths.
 - Keep port examples on `8005`, not `8000`.
+
+---
+
+## Release Documents
+
+| Document | Description |
+|----------|-------------|
+| `docs/releases/PHASE37_RELEASE_READINESS.md` | Release readiness report (status: GO) |
+| `docs/releases/PHASE41_RELEASE_CANDIDATE.md` | Release candidate notes |
+| `docs/releases/FINAL_RELEASE_NOTES.md` | Final public release notes |
+| `docs/releases/VERSION_FREEZE.md` | Version freeze documentation |
+
+## Operator Handoff
+
+| Runbook | Description |
+|---------|-------------|
+| `docs/runbooks/OPERATOR_HANDOFF.md` | Complete operator manual (start, stop, health, logs, backup, rollback, safety) |
+| `docs/runbooks/GO_LIVE_CHECKLIST.md` | Step-by-step go-live procedure |
+| `docs/runbooks/GO_LIVE_REHEARSAL.md` | Go-live rehearsal workflow |
+| `docs/runbooks/ROLLBACK_RUNBOOK.md` | Rollback procedure |
+| `docs/runbooks/QUICK_START.md` | Quick start guide |
+| `docs/runbooks/INSTALLATION.md` | Installation guide |
+| `docs/runbooks/OPERATIONS_INDEX.md` | Complete operations index |
+
+## Server Commands
+
+```bash
+make server-start       # Start backend + frontend
+make server-stop        # Stop backend + frontend
+make server-status      # Show service status
+make server-logs        # Show logs
+make server-health      # Run health check
+make prod-up            # Start production stack
+make prod-down          # Stop production stack
+make prod-health        # Production health check
+make prod-backup        # Run production backup
+make prod-logs          # View production logs
+```
+
+## Validation Commands
+
+```bash
+make validate-fast      # Safety scan + backend tests + frontend tests + build
+make golive             # Full go-live gate
+make prod-verify        # Full production dry-run verification
+make go-live-rehearsal  # Full go-live rehearsal
+make release-candidate  # Create release candidate
+make final-release-check # Final public release verification
+make phase42-validate   # Complete validation chain
+```
+
+## Safety Note
+
+zDash includes trading, automation, IoT, social posting, and marketplace concepts. These capabilities are intentionally **simulation / dry-run only by default**. Nothing in this repository is financial advice.
 
 ---
 
