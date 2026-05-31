@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createRealtimeClientManager } from "../realtime/client";
@@ -71,18 +71,22 @@ describe("realtime hooks", () => {
     expect(MockWebSocket.instances.length).toBe(1);
     const socket = MockWebSocket.instances[0];
 
-    socket.emitOpen();
+    await act(async () => {
+      socket.emitOpen();
+    });
 
     await waitFor(() => {
       expect(screen.getByTestId("connected").textContent).toBe("true");
     });
 
-    socket.emitJson({
-      type: "scheduler.completed",
-      timestamp: new Date().toISOString(),
-      source: "SchedulerService",
-      severity: "success",
-      payload: { message: "Scheduler run completed" },
+    await act(async () => {
+      socket.emitJson({
+        type: "scheduler.completed",
+        timestamp: new Date().toISOString(),
+        source: "SchedulerService",
+        severity: "success",
+        payload: { message: "Scheduler run completed" },
+      });
     });
 
     await waitFor(() => {
@@ -90,6 +94,8 @@ describe("realtime hooks", () => {
     });
     expect(screen.getByTestId("last-type").textContent).toBe("scheduler.completed");
 
-    manager.reset();
+    await act(async () => {
+      manager.reset();
+    });
   });
 });
