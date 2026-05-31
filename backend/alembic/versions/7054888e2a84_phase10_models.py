@@ -89,12 +89,36 @@ def upgrade() -> None:
         if not _index_exists('scheduler_jobs', 'ix_scheduler_jobs_name'):
             op.create_index('ix_scheduler_jobs_name', 'scheduler_jobs', ['name'], unique=False)
 
-    with op.batch_alter_table('users', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('email', sa.String(), nullable=False))
-        batch_op.add_column(sa.Column('display_name', sa.String(), nullable=False))
-        batch_op.add_column(sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False))
-        batch_op.create_index(batch_op.f('ix_users_email'), ['email'], unique=True)
-        batch_op.drop_column('username')
+    # SQLite-safe/idempotent users migration.
+    # Some CI/test databases may already have the current users schema,
+    # while older baseline databases may still include username.
+    if _table_exists('users'):
+        _add_column_once(
+            'users',
+            sa.Column('email', sa.String(), nullable=False, server_default=''),
+        )
+        _add_column_once(
+            'users',
+            sa.Column('display_name', sa.String(), nullable=False, server_default=''),
+        )
+        _add_column_once(
+            'users',
+            sa.Column(
+                'updated_at',
+                sa.DateTime(timezone=True),
+                server_default=sa.text('(CURRENT_TIMESTAMP)'),
+                nullable=False,
+            ),
+        )
+
+        if not _index_exists('users', 'ix_users_email'):
+            op.create_index('ix_users_email', 'users', ['email'], unique=True)
+
+        # Avoid SQLite batch/drop-column edge cases in CI. The ORM ignores
+        # legacy username if it exists, and production databases can drop it
+        # safely on non-SQLite dialects.
+        if _column_exists('users', 'username') and _dialect_name() != 'sqlite':
+            op.drop_column('users', 'username')
 
     # ### end Alembic commands ###
 
