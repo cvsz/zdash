@@ -1,0 +1,267 @@
+# Phase 35.1 · Backend Release Hardening
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Harden the zDash backend for final release readiness without changing product direction or bypassing safety policy.
+
+Do not rebuild the backend. Inspect first, patch only small cohesive issues, and preserve all Phase 01–34 behavior.
+
+---
+
+## Safety invariants
+
+- Do not enable live trading.
+- Do not add real broker order execution.
+- Do not bypass Guardian risk checks.
+- Do not bypass `TradingService`, `ExecutionEngine`, `SignalValidationService`, RBAC, audit/event logging, dry-run mode, or existing zDash safety policy.
+- AI Trader remains simulation-only and paper-trading only.
+- Billing provider remains mock by default.
+- Stripe remains disabled by default.
+- Marketplace plugin runtime remains sandboxed by default.
+- Enterprise license must never disable `PRODUCTION_SAFETY_LOCK`.
+- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
+- Do not commit `.env`, secrets, tokens, private keys, GPG passphrases, or generated local artifacts.
+- `docs/prompt/codex-runs/` must remain local-only and untracked.
+
+---
+
+## Inspect first
+
+Inspect only the files needed for backend hardening:
+
+```text
+backend/app/main.py
+backend/app/core/config.py
+backend/app/core/responses.py
+backend/app/auth/
+backend/app/api/
+backend/app/trading/
+backend/app/ai_trader/
+backend/app/risk/
+backend/app/backtesting/
+backend/app/content/
+backend/app/billing/
+backend/app/marketplace/
+backend/app/enterprise/
+backend/app/observability/
+backend/app/scheduler/
+backend/tests/
+Makefile
+.env.example
+```
+
+Create a short inspection summary before edits:
+
+```text
+- routers found
+- duplicate router risk
+- sensitive routes missing auth/RBAC
+- response envelope inconsistencies
+- dry-run/safety-lock risks
+- obvious test/lint risks
+```
+
+---
+
+## Required backend hardening checks
+
+### Router registration
+
+- Verify every router is registered once in `backend/app/main.py`.
+- Remove duplicate imports or duplicate `app.include_router(...)` calls only if present.
+- Do not remove valid phase routers.
+
+### Response envelope consistency
+
+- Prefer existing response helpers such as `ok(...)` / `fail(...)` where already used.
+- Do not create a new response standard unless necessary.
+- Do not break existing frontend API contracts.
+
+### Auth and RBAC
+
+Verify sensitive endpoints require auth/permission checks:
+
+```text
+trading execution
+AI trader signal / compare / paper trade
+risk control changes
+billing/subscription actions
+marketplace install/enable/disable/uninstall actions
+enterprise export/import/license actions
+admin/audit/ops actions
+content publish/approve actions
+```
+
+Patch only missing checks that are clearly unsafe.
+
+### Tenancy isolation
+
+Inspect billing, marketplace, enterprise, collaboration, trading, and AI trader APIs for tenant/workspace scoping.
+
+- Do not invent a full tenancy system in this pass.
+- Patch obvious missing tenant/workspace filters only if existing repo abstractions already support it.
+- Otherwise document the limitation in the final report.
+
+### Production safety config
+
+Verify:
+
+- `APP_ENV=production` requires PostgreSQL.
+- SQLite remains allowed for development/test only.
+- `PRODUCTION_SAFETY_LOCK=true` remains default.
+- `DRY_RUN=true` remains default.
+- `LIVE_TRADING_ACK=false` remains default.
+- No config example enables live trading.
+
+### AI Trader backend safety
+
+Verify:
+
+- `/api/ai-trader/status` reports `simulation_only=true`, `dry_run_forced=true`, `live_execution_allowed=false`.
+- `/api/ai-trader/paper-trade` forces dry-run and routes through existing execution engine.
+- Every AI Trader signal includes safety metadata.
+
+### Trading backend safety
+
+Verify:
+
+- live execution remains blocked unless existing safety gates explicitly allow it.
+- dry-run execution remains the default path.
+- Guardian checks are not bypassed.
+
+### Observability and audit
+
+Verify critical actions emit existing audit/event logs where current patterns already exist:
+
+```text
+trading execution attempts
+AI trader signal generation / compare / paper trade
+content approval/publish
+marketplace plugin lifecycle
+enterprise export/import
+billing plan changes
+admin safety actions
+```
+
+Patch only obvious omissions using current event/audit patterns.
+
+---
+
+## Tests to add or update
+
+Add/update tests only for actual changes. Prefer targeted tests:
+
+```text
+backend/tests/test_ai_trader_phase34.py
+backend/tests/test_*api*.py
+backend/tests/test_*rbac*.py
+backend/tests/test_*safety*.py
+```
+
+Do not add fragile integration tests that require external services.
+
+---
+
+## Validation
+
+Run from `backend/`:
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -m ruff check app tests
+```
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -B -m pytest -q
+```
+
+If full pytest is too slow, run targeted tests first, then full pytest.
+
+---
+
+## Allowed changes
+
+Allowed:
+
+- small backend bug fixes
+- missing RBAC checks
+- duplicate import/router cleanup
+- response envelope cleanup where safe
+- test fixes
+- docs comments for known limitations
+
+Not allowed:
+
+- new external services
+- new ML dependencies
+- broker integrations
+- live trading enablement
+- large framework rewrite
+- database schema rewrite without migration/tests
+- committing secrets
+
+---
+
+## Final report format
+
+Return:
+
+```text
+Phase 35.1 Backend Release Hardening Report
+
+Repository inspection summary:
+- ...
+
+Files changed:
+- ...
+
+Tests added/updated:
+- ...
+
+Validation:
+- ruff: pass/fail
+- pytest: pass/fail
+
+Safety checklist:
+- live trading disabled: yes/no
+- dry-run default preserved: yes/no
+- Guardian path preserved: yes/no
+- RBAC checked: yes/no
+- secrets committed: no
+
+Known warnings:
+- ...
+
+Known limitations:
+- ...
+
+Next pass:
+- Phase 35.2 AI Trader final polish
+```
+
+---
+
+## Commit
+
+If changes are made:
+
+```bash
+git add backend tests .env.example Makefile
+git commit -m "phase35.1: harden backend release checks"
+```
