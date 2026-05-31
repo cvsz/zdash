@@ -68,7 +68,8 @@ class ApplyMockPlanRequest(BaseModel):
 
 
 def _org_id(user: AuthSession) -> str:
-    return getattr(user, "organization_id", None) or getattr(user, "username", "default")
+    org: str | None = getattr(user, "organization_id", None)
+    return org or str(getattr(user, "username", "default"))
 
 
 def _ws_id(user: AuthSession) -> str | None:
@@ -205,7 +206,7 @@ def api_get_usage(
         org = _org_id(current_user)
         ws = _ws_id(current_user)
         result = get_usage_summary(org, ws)
-        return success_response(result)
+        return success_response({"summary": result})
     except Exception as exc:  # noqa: BLE001
         return error_response("BILLING_ERROR", str(exc))
 
@@ -219,7 +220,7 @@ def api_get_metric_usage(
 ) -> dict:
     try:
         org = _org_id(current_user)
-        ws = _ws_id(current_user)
+        ws = _ws_id(current_user) or "default"
         result = get_metric_summary(org, ws, metric)
         return success_response(result)
     except Exception as exc:  # noqa: BLE001

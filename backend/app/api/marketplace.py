@@ -58,18 +58,18 @@ def api_installations(
 ):
     try:
         org_id = getattr(tenant, "organization_id", "default")
-        ws_id = getattr(tenant, "workspace_id", None)
+        ws_id: str | None = getattr(tenant, "workspace_id", None)
         insts = list_installations(org_id, ws_id)
         
         # Serialize list of installations
-        res = []
+        res: list[dict[str, Any]] = []
         for i in insts:
             if hasattr(i, "__dict__"):
                 d = dict(i.__dict__)
                 d.pop('_sa_instance_state', None)
                 res.append(d)
             else:
-                res.append(i)
+                res.append(i)  # type: ignore[arg-type]
 
         return success_response({"installations": res})
     except Exception as e:

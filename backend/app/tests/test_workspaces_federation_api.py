@@ -17,9 +17,9 @@ def reset_peers() -> None:
 
 def _dependency_calls(path: str, method: str) -> list[object]:
     for route in workspaces_api.router.routes:
-        methods = getattr(route, "methods", set())
+        methods: set[str] = getattr(route, "methods", set())  # type: ignore[attr-defined]
         if getattr(route, "path", "") == f"/api/workspaces/federation{path}" and method in methods:
-            return [dependency.call for dependency in route.dependant.dependencies]
+            return [dependency.call for dependency in route.dependant.dependencies]  # type: ignore[attr-defined]
     raise AssertionError(f"route not found: {method} {path}")
 
 

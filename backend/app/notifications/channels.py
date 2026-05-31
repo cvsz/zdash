@@ -34,11 +34,11 @@ def dispatch_email(
 ) -> dict:
     settings = get_settings()
     if (
-        not settings.email_notifications_enabled
-        or not settings.smtp_host.strip()
-        or not settings.smtp_username.strip()
-        or not settings.smtp_password.strip()
-        or not settings.smtp_from.strip()
+        not settings.email_notifications_enabled  # type: ignore[attr-defined]
+        or not settings.smtp_host.strip()  # type: ignore[attr-defined]
+        or not settings.smtp_username.strip()  # type: ignore[attr-defined]
+        or not settings.smtp_password.strip()  # type: ignore[attr-defined]
+        or not settings.smtp_from.strip()  # type: ignore[attr-defined]
     ):
         return {
             "channel": channel_name,
@@ -62,7 +62,7 @@ def dispatch_webhook(
     payload: dict[str, Any],
 ) -> dict:
     settings = get_settings()
-    if not settings.webhook_notifications_enabled or not settings.webhook_url.strip():
+    if not settings.webhook_notifications_enabled or not settings.webhook_url.strip():  # type: ignore[attr-defined]
         return {
             "channel": channel_name,
             "status": "blocked",

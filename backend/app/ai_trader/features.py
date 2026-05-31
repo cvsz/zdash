@@ -43,7 +43,7 @@ class AITraderFeatures:
 
 def _safe_float(value: object, default: float = 0.0) -> float:
     try:
-        result = float(value)
+        result = float(value)  # type: ignore[arg-type]
     except (TypeError, ValueError):
         return default
     if result != result or result in {float("inf"), float("-inf")}:  # NaN/Inf guard

@@ -51,24 +51,24 @@ def mark_step_complete(organization_id: str, workspace_id: Optional[str], step: 
             
         chk = db.execute(query).scalar()
         if not chk:
-            # Init if not exist
             get_checklist(organization_id, workspace_id)
             chk = db.execute(query).scalar()
+        if chk is None:
+            return {"ok": False, "error": "checklist not found"}
             
         if step in chk.pending_steps:
-            # Need to reassign list since JSON array mutation is not always tracked
             new_pending = list(chk.pending_steps)
             new_pending.remove(step)
-            chk.pending_steps = new_pending
+            chk.pending_steps = new_pending  # type: ignore[assignment]
             
             new_completed = list(chk.completed_steps)
             if step not in new_completed:
                 new_completed.append(step)
-            chk.completed_steps = new_completed
+            chk.completed_steps = new_completed  # type: ignore[assignment]
             
             total_steps = len(chk.completed_steps) + len(chk.pending_steps)
-            chk.progress_percent = round((len(chk.completed_steps) / total_steps) * 100) if total_steps > 0 else 100.0
-            chk.updated_at = utc_now()
+            chk.progress_percent = round((len(chk.completed_steps) / total_steps) * 100) if total_steps > 0 else 100.0  # type: ignore[assignment,arg-type]
+            chk.updated_at = utc_now()  # type: ignore[assignment]
             db.commit()
             
     return {"ok": True}
@@ -81,10 +81,10 @@ def reset_checklist(organization_id: str, workspace_id: Optional[str] = None) ->
             
         chk = db.execute(query).scalar()
         if chk:
-            chk.completed_steps = []
-            chk.pending_steps = DEFAULT_STEPS
-            chk.progress_percent = 0.0
-            chk.updated_at = utc_now()
+            chk.completed_steps = []  # type: ignore[assignment]
+            chk.pending_steps = DEFAULT_STEPS  # type: ignore[assignment]
+            chk.progress_percent = 0.0  # type: ignore[assignment]
+            chk.updated_at = utc_now()  # type: ignore[assignment]
             db.commit()
     return {"ok": True}
 

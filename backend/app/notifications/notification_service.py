@@ -258,7 +258,7 @@ class NotificationService:
     def status(self) -> dict:
         settings = get_settings()
         return {
-            "enabled": settings.notifications_enabled,
+            "enabled": settings.notifications_enabled,  # type: ignore[attr-defined]
             "dry_run": settings.notification_dry_run,
             "rules_count": len(self.rules),
             "channels_count": len(self.channels),

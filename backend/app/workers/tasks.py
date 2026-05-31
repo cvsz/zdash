@@ -53,9 +53,10 @@ def run_task(task) -> dict:
         }
 
     if task_type == "content_pipeline_run":
+        from app.content.models import CreateContentRequest
         topic = str(payload.get("topic", "Educational simulation market update"))
-        run = get_content_pipeline().run_full_pipeline(topic=topic)
-        return {"ok": True, "task_type": task_type, "run_id": run.run.id}
+        pipeline_result = get_content_pipeline().run_full_pipeline(CreateContentRequest(topic=topic))
+        return {"ok": True, "task_type": task_type, "run_id": pipeline_result.id}
 
     if task_type == "content_publish_dry_run":
         return {

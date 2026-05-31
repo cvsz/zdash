@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from app.ai_trader.features import AITraderFeatures, calculate_features
 from app.ai_trader.registry import (
@@ -209,10 +209,11 @@ class AITraderService:
         metadata = self.build_safety_metadata(
             strategy, features, all_warnings, explanation
         )
+        from typing import Literal
         return TradingSignal(
             symbol=symbol,
             timeframe=timeframe,
-            direction=direction,
+            direction=cast("Literal['buy', 'sell', 'hold']", direction),
             strategy=strategy.id,
             confidence=round(confidence, 4),
             entry=round(entry, 4),

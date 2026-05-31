@@ -143,11 +143,12 @@ def run_ai_trader_paper_simulation(
         snapshot=req.snapshot,
     )
     payload = _decision_payload(result)
+    execution = result.get("execution")
     payload.update(
         {
             "dry_run": True,
             "live_execution_allowed": False,
-            "execution": result["execution"].model_dump(mode="json"),
+            "execution": execution.model_dump(mode="json") if hasattr(execution, "model_dump") else execution,  # type: ignore[union-attr]
         }
     )
     return ok(payload)
