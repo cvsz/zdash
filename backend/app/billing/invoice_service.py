@@ -25,13 +25,13 @@ def _invoice_to_dict(inv: Invoice) -> dict[str, Any]:
         "currency": inv.currency,
         "hosted_invoice_url": inv.hosted_invoice_url,
         "invoice_pdf_url": inv.invoice_pdf_url,
-        "created_at": inv.created_at.isoformat()
-        if isinstance(inv.created_at, datetime)
-        else None,
+        "created_at": (
+            inv.created_at.isoformat() if isinstance(inv.created_at, datetime) else None
+        ),
         "due_at": inv.due_at.isoformat() if isinstance(inv.due_at, datetime) else None,
-        "paid_at": inv.paid_at.isoformat()
-        if isinstance(inv.paid_at, datetime)
-        else None,
+        "paid_at": (
+            inv.paid_at.isoformat() if isinstance(inv.paid_at, datetime) else None
+        ),
     }
 
 

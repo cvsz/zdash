@@ -133,9 +133,11 @@ def api_checkout(
     if not result.get("ok"):
         code = result.get("error", "BILLING_ERROR")
         return error_response(
-            code
-            if code in ("BILLING_PROVIDER_NOT_CONFIGURED", "PLAN_NOT_FOUND")
-            else "BILLING_ERROR",
+            (
+                code
+                if code in ("BILLING_PROVIDER_NOT_CONFIGURED", "PLAN_NOT_FOUND")
+                else "BILLING_ERROR"
+            ),
             result.get("error", "Checkout failed"),
         )
     _audit("billing.checkout.started", current_user, {"plan_id": req.plan_id})

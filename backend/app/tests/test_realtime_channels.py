@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from app.api.realtime import router
 
-
 ALLOWED_CHANNELS = {"events", "risk", "scheduler", "content"}
 
 

@@ -284,9 +284,11 @@ class ExecutionEngine:
             return result
 
         event_bus.emit(
-            "trading.execution.failed"
-            if result.status == "failed"
-            else "trading.execution.blocked",
+            (
+                "trading.execution.failed"
+                if result.status == "failed"
+                else "trading.execution.blocked"
+            ),
             "ExecutionEngine",
             result.message,
             {"signal_id": signal.id, "status": result.status},

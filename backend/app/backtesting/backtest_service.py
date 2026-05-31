@@ -144,9 +144,11 @@ class BacktestService:
             },
         )
         event_bus.emit(
-            "strategy.promotion.approved"
-            if decision.approved
-            else "strategy.promotion.rejected",
+            (
+                "strategy.promotion.approved"
+                if decision.approved
+                else "strategy.promotion.rejected"
+            ),
             "backtest_service",
             "Promotion decision",
             {

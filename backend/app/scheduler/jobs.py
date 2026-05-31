@@ -242,9 +242,9 @@ def run_scheduled_job(job):
                 "allowed": not blocked,
                 "blocked": blocked,
                 "risk_level": _risk_level(guardian_status),
-                "reason": "guardian_halted_or_kill_switch"
-                if blocked
-                else "risk_check_passed",
+                "reason": (
+                    "guardian_halted_or_kill_switch" if blocked else "risk_check_passed"
+                ),
             },
         }
 

@@ -161,4 +161,7 @@ class IoTActionLog(Base, Timestamped):
 
 
 # removed circular imports
-from app.marketplace.models import PluginManifest, PluginInstallation  # noqa: E402, F401
+from app.marketplace.models import (
+    PluginManifest,
+    PluginInstallation,
+)  # noqa: E402, F401

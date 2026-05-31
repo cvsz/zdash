@@ -55,9 +55,9 @@ def _get_or_create_plan(db: Any, plan_tier: str) -> BillingPlan | None:
         name=catalog_plan.name,
         description=catalog_plan.description,
         price_monthly=float(catalog_plan.price_monthly or 0),
-        price_yearly=float(catalog_plan.price_yearly)
-        if catalog_plan.price_yearly
-        else None,
+        price_yearly=(
+            float(catalog_plan.price_yearly) if catalog_plan.price_yearly else None
+        ),
         features=list(catalog_plan.features),
         limits=dict(catalog_plan.limits),
         is_public=catalog_plan.is_public,

@@ -33,12 +33,14 @@ class GuardianService:
                 "soft_halt_drawdown_level_2": self.settings.soft_halt_drawdown_level_2,
                 "soft_halt_drawdown_level_3": self.settings.soft_halt_drawdown_level_3,
             },
-            "current_risk_status": self.latest_decision.risk_level
-            if self.latest_decision
-            else "unknown",
-            "latest_risk_decision": self.latest_decision.model_dump(mode="json")
-            if self.latest_decision
-            else None,
+            "current_risk_status": (
+                self.latest_decision.risk_level if self.latest_decision else "unknown"
+            ),
+            "latest_risk_decision": (
+                self.latest_decision.model_dump(mode="json")
+                if self.latest_decision
+                else None
+            ),
         }
 
     def check(self, snapshot: AccountSnapshot) -> RiskDecision:

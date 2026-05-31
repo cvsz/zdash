@@ -8,7 +8,6 @@ from app.content.store import InMemoryContentStore
 from app.core.config import get_settings
 from app.core.events import event_bus
 
-
 TRADING_DISCLAIMER = (
     "Educational simulation only. Not financial advice. "
     "Backtest results are not guaranteed future performance."
