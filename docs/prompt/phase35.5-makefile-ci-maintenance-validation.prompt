@@ -1,0 +1,302 @@
+# Phase 35.5 · Makefile, CI, and Maintenance Validation
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Finalize local validation, Makefile safety scans, CI workflow sanity, and Codex Cloud maintenance checks for zDash release readiness.
+
+This pass focuses on validation infrastructure. Do not make product feature changes.
+
+---
+
+## Safety invariants
+
+- Do not commit `.env`, secrets, tokens, GPG passphrases, private keys, local caches, node_modules, dist, or local Codex run artifacts.
+- `docs/prompt/codex-runs/` must remain local-only and untracked.
+- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
+- Safety scans must avoid self-scan false positives from their own scanner patterns.
+- Safety scans should inspect tracked runtime/source files, not ignored caches.
+- Do not weaken safety policy just to pass validation.
+
+---
+
+## Inspect first
+
+Inspect:
+
+```text
+Makefile
+.gitignore
+.github/workflows/
+.codex/cloud/README.md
+.codex/cloud/phase-runner.md
+.codex/cloud/maintenance.sh
+.codex/cloud/setup.sh
+.codex/cloud/repair-backend-deps.sh
+.env.example
+frontend/.env.example
+backend/pyproject.toml
+frontend/package.json
+docker-compose.yml
+docker-compose.prod.yml
+infra/docker/
+infra/nginx/
+```
+
+Create an inspection summary:
+
+```text
+- Make targets present
+- safety scan behavior
+- ignored local-only files
+- CI workflow coverage
+- maintenance script behavior
+- Docker build targets
+- compose config status
+- false-positive risks
+```
+
+---
+
+## Required Makefile behavior
+
+Verify targets exist and behave:
+
+```text
+make help
+make safety-scan
+make backend-lint
+make backend-test
+make backend-check
+make frontend-test
+make frontend-build
+make frontend-check
+make validate-fast
+make docker-build
+make compose-check
+make maintenance
+make validate
+```
+
+### safety-scan must check
+
+```text
+forbidden tracked files
+.env formatting without printing values
+old backend port 8000 references in tracked runtime/source files
+secret-looking values in tracked runtime/source files
+```
+
+### safety-scan must not fail on
+
+```text
+Makefile scanner command text
+.codex/cloud scanner command text
+ignored caches
+node_modules
+.venv
+frontend/dist
+backend/.pytest_cache
+backend/.ruff_cache
+docs/prompt/codex-runs/ when untracked/ignored
+```
+
+If false positives occur, patch the scanner to exclude self-files or ignored/generated paths while preserving the actual safety check.
+
+---
+
+## Git ignore policy
+
+Verify ignored/local-only paths:
+
+```text
+.env
+.env.*.local
+frontend/.env.local
+.agent/
+.agents/
+.claude/
+.gemini/
+.mcp/
+.venv/
+backend/.venv/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+backend/zdash.db
+backups/
+docs/prompt/codex-runs/
+.codex/reports/
+.codex/runs/
+```
+
+If a forbidden local-only file is tracked, untrack it with:
+
+```bash
+git rm --cached <path>
+```
+
+Do not delete the user’s local copy unless explicitly required.
+
+---
+
+## CI workflow sanity
+
+Inspect `.github/workflows/` and verify it covers:
+
+```text
+backend lint/tests
+frontend tests/build
+Docker build sanity
+security scan if present
+Pages/deploy jobs if present
+```
+
+Do not add expensive or flaky jobs unless clearly required.
+
+---
+
+## Maintenance script
+
+Verify `.codex/cloud/maintenance.sh`:
+
+- uses development-safe env overrides where needed
+- does not fail on its own scanner text
+- does not expose secrets
+- records a report under `.codex/reports/`
+- exits non-zero only for real failures in strict mode
+- supports advisory mode if already implemented
+
+Patch only clear issues.
+
+---
+
+## Validation sequence
+
+Run in order and stop at the first real failure:
+
+```bash
+cd ~/zdash
+make safety-scan
+```
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+If Docker is available:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate
+```
+
+If Docker is unavailable, report that Docker validation was skipped.
+
+---
+
+## Non-blocking known warnings
+
+Not blockers if summaries pass:
+
+```text
+passlib crypt deprecation warning from dependency
+React act(...) warnings in existing hook tests
+React Router future flag warnings
+intentional ErrorBoundary test Error: fail
+Vite chunk size warning
+```
+
+Blocking:
+
+```text
+ruff failure
+pytest failure
+vitest failed tests
+TypeScript build failure
+safety-scan failure
+Docker build failure when Docker is available
+compose config failure
+tracked forbidden files
+tracked secret-like values
+tracked port 8000 runtime/source references
+```
+
+---
+
+## Allowed changes
+
+Allowed:
+
+- Makefile scanner fixes
+- .gitignore fixes
+- CI workflow minor validation fixes
+- maintenance script false-positive fixes
+- docs updates about validation
+- untracking forbidden local-only files
+
+Not allowed:
+
+- product feature changes
+- weakening safety scans
+- adding live trading
+- committing local-only artifacts
+- hiding real failures as warnings
+
+---
+
+## Final report format
+
+```text
+Phase 35.5 Makefile/CI/Maintenance Validation Report
+
+Inspection summary:
+- ...
+
+Files changed:
+- ...
+
+Validation:
+- safety-scan: pass/fail
+- validate-fast: pass/fail
+- docker-build: pass/fail/skipped
+- compose-check: pass/fail/skipped
+- maintenance: pass/fail/skipped
+- validate: pass/fail/skipped
+
+Safety checklist:
+- forbidden tracked files: none/found
+- secrets scan: pass/fail
+- port 8000 scan: pass/fail
+- codex-runs untracked: yes/no
+- .env untracked: yes/no
+
+Known warnings:
+- ...
+
+Next pass:
+- Phase 35.6 Final report and release handoff
+```
+
+---
+
+## Commit
+
+```bash
+git add Makefile .gitignore .github/workflows .codex/cloud docs
+
+git commit -m "phase35.5: harden validation and maintenance checks"
+```
