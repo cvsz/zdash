@@ -22,7 +22,7 @@ def test_channel_validation_accepts_known() -> None:
 
 
 def test_events_compat_endpoint_registered() -> None:
-    ws_paths = {r.path for r in router.routes}
+    ws_paths = {getattr(r, "path", "") for r in router.routes}
     assert "/api/realtime/ws/events" in ws_paths
     assert "/api/realtime/ws/{channel}" in ws_paths
     assert "/api/realtime/ws" in ws_paths
