@@ -12,32 +12,52 @@ export function useTenancy() {
 
   useEffect(() => {
     let mounted = true;
+
     const fetchOrgs = async () => {
       try {
         const orgs = await listOrganizations();
-        if (mounted) {
-          setOrganizations(orgs);
-          if (orgs.length > 0) {
-            const org = orgs[0];
-            setActiveOrg(org);
-            setTenant(org.id);
-            const wss = await listWorkspaces(org.id);
-            if (mounted) {
-              setWorkspaces(wss);
-              if (wss.length > 0) {
-                setActiveWorkspace(wss[0]);
-                setWorkspace(wss[0].id);
-              }
-            }
+
+        if (!mounted) return;
+
+        const safeOrgs = Array.isArray(orgs) ? orgs : [];
+        setOrganizations(safeOrgs);
+
+        if (safeOrgs.length > 0) {
+          const org = safeOrgs[0];
+          setActiveOrg(org);
+          setTenant(org.id);
+
+          const loadedWorkspaces = await listWorkspaces(org.id);
+          if (!mounted) return;
+
+          const safeWorkspaces = Array.isArray(loadedWorkspaces)
+            ? loadedWorkspaces
+            : [];
+          setWorkspaces(safeWorkspaces);
+
+          if (safeWorkspaces.length > 0) {
+            setActiveWorkspace(safeWorkspaces[0]);
+            setWorkspace(safeWorkspaces[0].id);
+          } else {
+            setActiveWorkspace(null);
+            setWorkspace(undefined);
           }
         }
       } catch (err) {
         console.error("Failed to load tenancy:", err);
+        if (mounted) {
+          setOrganizations([]);
+          setWorkspaces([]);
+          setActiveOrg(null);
+          setActiveWorkspace(null);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
     };
+
     fetchOrgs();
+
     return () => {
       mounted = false;
     };
@@ -45,18 +65,24 @@ export function useTenancy() {
 
   const switchOrganization = async (orgId: string) => {
     const org = organizations.find((o) => o.id === orgId);
-    if (org) {
-      setActiveOrg(org);
-      setTenant(org.id);
-      const wss = await listWorkspaces(org.id);
-      setWorkspaces(wss);
-      if (wss.length > 0) {
-        setActiveWorkspace(wss[0]);
-        setWorkspace(wss[0].id);
-      } else {
-        setActiveWorkspace(null);
-        setWorkspace(undefined);
-      }
+    if (!org) return;
+
+    setActiveOrg(org);
+    setTenant(org.id);
+
+    const loadedWorkspaces = await listWorkspaces(org.id);
+    const safeWorkspaces = Array.isArray(loadedWorkspaces)
+      ? loadedWorkspaces
+      : [];
+
+    setWorkspaces(safeWorkspaces);
+
+    if (safeWorkspaces.length > 0) {
+      setActiveWorkspace(safeWorkspaces[0]);
+      setWorkspace(safeWorkspaces[0].id);
+    } else {
+      setActiveWorkspace(null);
+      setWorkspace(undefined);
     }
   };
 

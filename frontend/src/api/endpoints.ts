@@ -688,17 +688,54 @@ export const powerCycleIoT = async (deviceAlias = "zdash-power-node", confirmati
 };
 
 export const listOrganizations = async () => {
-  const data = await apiClient.get<{ organizations: Organization[] }>("/api/tenancy/organizations", {
-    organizations: [{ id: "org-1", name: "Zeaz Inc", slug: "zeaz", status: "active", plan: "enterprise", role: "admin", mock: true }],
+  const fallbackOrg: Organization = {
+    id: "org-1",
+    name: "Zeaz Inc",
+    slug: "zeaz",
+    status: "active",
+    plan: "enterprise",
+    role: "admin",
+    mock: true,
+  };
+
+  const data = await apiClient.get<{
+    organizations?: Organization[];
+    items?: Organization[];
+  }>("/api/tenancy/organizations", {
+    organizations: [fallbackOrg],
+    items: [fallbackOrg],
   });
-  return data.organizations;
+
+  return Array.isArray(data.organizations)
+    ? data.organizations
+    : Array.isArray(data.items)
+      ? data.items
+      : [];
 };
 
 export const listWorkspaces = async (orgId: string) => {
-  const data = await apiClient.get<{ workspaces: Workspace[] }>(`/api/tenancy/organizations/${orgId}/workspaces`, {
-    workspaces: [{ id: "ws-1", name: "Production", slug: "prod", environment: "production", is_active: true, mock: true }],
+  const fallbackWorkspace: Workspace = {
+    id: "ws-1",
+    name: "Production",
+    slug: "prod",
+    environment: "production",
+    is_active: true,
+    mock: true,
+  };
+
+  const data = await apiClient.get<{
+    workspaces?: Workspace[];
+    items?: Workspace[];
+  }>(`/api/tenancy/organizations/${orgId}/workspaces`, {
+    workspaces: [fallbackWorkspace],
+    items: [fallbackWorkspace],
   });
-  return data.workspaces;
+
+  return Array.isArray(data.workspaces)
+    ? data.workspaces
+    : Array.isArray(data.items)
+      ? data.items
+      : [];
 };
 
 export const getQueueStatus = async () => {
