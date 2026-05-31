@@ -115,7 +115,7 @@ class RealtimeConnectionManager:
         return len(stale_refs)
 
     def snapshot(self) -> dict[str, int]:
-        counts = {channel: len(connections) for channel, connections in self._connections.items()}
+        counts: dict[str, int] = {channel: len(connections) for channel, connections in self._connections.items()}
         counts["total"] = sum(counts.values())
         return counts
 

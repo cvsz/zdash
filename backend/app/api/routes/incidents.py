@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/incidents", tags=["incidents"])
 @router.get("")
 async def list_incidents(user: AuthSession = Depends(get_current_user)) -> dict:
     _ = user
-    return ok(get_incident_service().list_incidents())
+    return ok({"items": get_incident_service().list_incidents()})
 
 
 @router.post("")

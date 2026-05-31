@@ -126,7 +126,7 @@ def test_invoices_endpoint_returns_list() -> None:
 def test_webhook_endpoint_mock_returns_ok() -> None:
     body = asyncio.run(
         billing.api_webhook(
-            _MockRequest(
+            _MockRequest(  # type: ignore[arg-type]
                 body=b'{"type": "payment_intent.succeeded"}',
                 headers={"Content-Type": "application/json"},
             )
@@ -137,6 +137,6 @@ def test_webhook_endpoint_mock_returns_ok() -> None:
 
 
 def test_webhook_endpoint_no_auth_required() -> None:
-    body = asyncio.run(billing.api_webhook(_MockRequest(body=b'{"type": "test"}')))
+    body = asyncio.run(billing.api_webhook(_MockRequest(body=b'{"type": "test"}')))  # type: ignore[arg-type]
 
     assert body["ok"] is True

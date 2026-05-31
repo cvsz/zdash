@@ -58,7 +58,7 @@ class RealtimeBroadcaster:
             future = asyncio.run_coroutine_threadsafe(
                 self._manager.broadcast_channels(targets, payload), loop
             )
-            future.add_done_callback(self._consume_future_exception)
+            future.add_done_callback(self._consume_future_exception)  # type: ignore[arg-type]
 
         return payload
 

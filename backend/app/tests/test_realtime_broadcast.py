@@ -27,12 +27,13 @@ def test_realtime_broadcaster_buffers_and_delivers_by_channel() -> None:
         broadcaster = RealtimeBroadcaster(manager, max_events_per_channel=10)
 
         websocket = FakeWebSocket()
-        await manager.connect("scheduler", websocket)
+        await manager.connect("scheduler", websocket)  # type: ignore[arg-type]
 
         envelope = build_event_envelope(
             event_type="scheduler.job.started",
             source="SchedulerService",
             payload={"job_id": "job-1"},
+            severity="info",
         )
         await broadcaster.apublish(envelope)
 

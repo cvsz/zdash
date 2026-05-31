@@ -12,8 +12,9 @@ class IncidentService:
 
     async def create_incident(self, title: str, severity: str, notes: str = "", actor: str = "system") -> dict:
         now = datetime.now(UTC).isoformat()
-        item = {"id": str(uuid4()), "title": title, "severity": severity, "status": "open", "created_at": now, "updated_at": now, "acknowledged_by": None, "resolved_by": None, "notes": notes}
-        self._items[item["id"]] = item
+        item_id = str(uuid4())
+        item = {"id": item_id, "title": title, "severity": severity, "status": "open", "created_at": now, "updated_at": now, "acknowledged_by": None, "resolved_by": None, "notes": notes}
+        self._items[item_id] = item
         await get_event_hub().broadcast("incident.created", "incident.service", {"incident": item, "actor": actor}, "warning")
         return item
 

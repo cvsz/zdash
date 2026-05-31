@@ -32,8 +32,8 @@ def test_heartbeat_sends_ping_and_prunes_stale_connections() -> None:
         healthy_socket = FakeWebSocket()
         stale_socket = FakeWebSocket()
 
-        healthy_id = await manager.connect("events", healthy_socket)
-        stale_id = await manager.connect("events", stale_socket)
+        healthy_id = await manager.connect("events", healthy_socket)  # type: ignore[arg-type]
+        stale_id = await manager.connect("events", stale_socket)  # type: ignore[arg-type]
 
         manager.force_last_pong("events", healthy_id, time.time())
         manager.force_last_pong("events", stale_id, time.time() - 2)

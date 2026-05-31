@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from typing import cast
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
@@ -9,6 +10,7 @@ from app.core.responses import ok
 from app.realtime import bind_realtime_loop, get_realtime_broadcaster, get_realtime_connection_manager, get_realtime_heartbeat
 from app.realtime.events import build_event_envelope
 from app.realtime.mock_streams import start_mock_stream_if_enabled
+from app.realtime.schemas import RealtimeChannel
 from app.billing.entitlement_service import check_feature
 from app.billing.quota_service import consume
 from app.core.config import settings
@@ -88,9 +90,10 @@ async def ws_channel(websocket: WebSocket, channel: str) -> None:
     heartbeat = get_realtime_heartbeat()
     heartbeat.start()
 
-    client_id = await manager.connect(channel, websocket)
+    chan = cast(RealtimeChannel, channel)
+    client_id = await manager.connect(chan, websocket)
     try:
-        for payload in broadcaster.recent_events(channel, limit=150):
+        for payload in broadcaster.recent_events(chan, limit=150):
             await websocket.send_json(payload)
         while True:
             message = await websocket.receive_text()
@@ -106,7 +109,7 @@ async def ws_channel(websocket: WebSocket, channel: str) -> None:
     except WebSocketDisconnect:
         return
     finally:
-        await manager.disconnect(channel, client_id)
+        await manager.disconnect(chan, client_id)
 
 @router.get("/status")
 def realtime_status() -> dict:
@@ -115,7 +118,7 @@ def realtime_status() -> dict:
 
 @router.get("/events")
 def realtime_events(limit: int = Query(default=100, ge=1, le=500)) -> dict:
-    events = get_realtime_broadcaster().recent_events("events", limit=limit)
+    events = get_realtime_broadcaster().recent_events(cast(RealtimeChannel, "events"), limit=limit)
     return ok({"events": events, "count": len(events), "max_retained": 500})
 
 

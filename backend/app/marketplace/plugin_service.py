@@ -15,12 +15,12 @@ from app.db.repositories import MarketplaceRepository
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
-def list_installations(organization_id: str, workspace_id: str = None) -> List[PluginInstallation]:
+def list_installations(organization_id: str, workspace_id: str | None = None) -> List[PluginInstallation]:
     with SessionLocal() as db:
         repo = MarketplaceRepository(db)
         return repo.list_installations(organization_id, workspace_id)
 
-def install_plugin(organization_id: str, plugin_id: str, workspace_id: str, config: dict = None, installed_by: str = "system") -> Dict[str, Any]:
+def install_plugin(organization_id: str, plugin_id: str, workspace_id: str, config: dict[str, Any] | None = None, installed_by: str = "system") -> Dict[str, Any]:
     ent = check_feature(organization_id, "feature.marketplace")
     if not ent.allowed:
         return {"ok": False, "error": "FEATURE_NOT_ENTITLED"}
