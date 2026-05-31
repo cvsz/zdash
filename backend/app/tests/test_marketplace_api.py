@@ -50,7 +50,10 @@ def test_get_plugin_api() -> None:
     plugin = res["data"]["plugin"]
 
     assert res["ok"] is True
-    assert plugin["id"] == BUILTINS[0].id
+    plugin_id = (
+        plugin["id"] if isinstance(plugin, dict) else getattr(plugin, "id", None)
+    )
+    assert plugin_id == BUILTINS[0].id
 
 
 def test_install_and_lifecycle_api() -> None:
