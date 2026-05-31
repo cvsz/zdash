@@ -1,3 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import Alerts from '../pages/Alerts';
-test('renders alerts', () => { render(<Alerts />); expect(screen.getByText('Alerts & Notifications')).toBeInTheDocument(); });
+import { waitForStableUi } from './utils/settle';
+
+test('renders alerts', async () => {
+  render(<Alerts />);
+  await waitForStableUi();
+  expect(await screen.findByText('Alerts & Notifications')).toBeInTheDocument();
+});

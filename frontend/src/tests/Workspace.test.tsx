@@ -1,8 +1,10 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { test, expect } from 'vitest';
 import Workspace from '../pages/Workspace';
+import { waitForStableUi } from './utils/settle';
 
-test('shows workspace', () => {
-  const { getByText } = render(<Workspace />);
-  expect(getByText('Workspace Overview')).toBeInTheDocument();
+test('shows workspace', async () => {
+  render(<Workspace />);
+  await waitForStableUi();
+  expect(await screen.findByText('Workspace Overview')).toBeInTheDocument();
 });

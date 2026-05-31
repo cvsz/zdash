@@ -1,8 +1,10 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { test, expect } from 'vitest';
 import Organizations from '../pages/Organizations';
+import { waitForStableUi } from './utils/settle';
 
-test('renders organizations page', () => {
-  const { getByText } = render(<Organizations />);
-  expect(getByText('Organizations')).toBeInTheDocument();
+test('renders organizations page', async () => {
+  render(<Organizations />);
+  await waitForStableUi();
+  expect(await screen.findByText('Organizations')).toBeInTheDocument();
 });

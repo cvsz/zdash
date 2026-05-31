@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import App from "../App";
+import { waitForStableUi } from "./utils/settle";
 
 function renderAt(path: string) {
   window.history.pushState({}, "", path);
@@ -9,45 +10,52 @@ function renderAt(path: string) {
 }
 
 describe("App routing", () => {
-  it("app renders", () => {
+  it("app renders", async () => {
     renderAt("/");
-    const heading = screen.getByRole("heading", { name: (name) => name.replace(/\s/g, "").toLowerCase() === "zdash" });
+    await waitForStableUi();
+    const heading = await screen.findByRole("heading", { name: (name) => name.replace(/\s/g, "").toLowerCase() === "zdash" });
     expect(heading).toBeTruthy();
   });
 
-  it("sidebar navigation exists", () => {
+  it("sidebar navigation exists", async () => {
     renderAt("/");
-    expect(screen.getAllByText("Team Roster").length).toBeGreaterThan(0);
-    const sessionLogsLinks = screen.getAllByText("Session Logs");
+    await waitForStableUi();
+    expect((await screen.findAllByText("Team Roster")).length).toBeGreaterThan(0);
+    const sessionLogsLinks = await screen.findAllByText("Session Logs");
     expect(sessionLogsLinks.length).toBeGreaterThan(0);
   });
 
-  it("dashboard route works", () => {
+  it("dashboard route works", async () => {
     renderAt("/");
-    expect(screen.getByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Team Roster", level: 1 })).toBeTruthy();
+    await waitForStableUi();
+    expect(await screen.findByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Team Roster", level: 1 })).toBeTruthy();
   });
 
-  it("renders risk route", () => {
+  it("renders risk route", async () => {
     renderAt("/risk");
-    expect(screen.getByRole("heading", { name: "Risk Panel", level: 2 })).toBeTruthy();
-    expect(screen.getByText("Manual Halt")).toBeTruthy();
+    await waitForStableUi();
+    expect(await screen.findByRole("heading", { name: "Risk Panel", level: 2 })).toBeTruthy();
+    expect(await screen.findByText("Manual Halt")).toBeTruthy();
   });
 
-  it("renders scheduler route", () => {
+  it("renders scheduler route", async () => {
     renderAt("/scheduler");
-    expect(screen.getByRole("heading", { name: "Scheduler", level: 2 })).toBeTruthy();
-    expect(screen.getByText("Default Jobs")).toBeTruthy();
+    await waitForStableUi();
+    expect(await screen.findByRole("heading", { name: "Scheduler", level: 2 })).toBeTruthy();
+    expect(await screen.findByText("Default Jobs")).toBeTruthy();
   });
 
-  it("renders content route", () => {
+  it("renders content route", async () => {
     renderAt("/content");
-    expect(screen.getByRole("heading", { name: "Content Pipeline", level: 2 })).toBeTruthy();
-    expect(screen.getByText("SOCIAL_DRY_RUN")).toBeTruthy();
+    await waitForStableUi();
+    expect(await screen.findByRole("heading", { name: "Content Pipeline", level: 2 })).toBeTruthy();
+    expect((await screen.findAllByText("SOCIAL_DRY_RUN")).length).toBeGreaterThan(0);
   });
 
-  it("renders not-found route", () => {
+  it("renders not-found route", async () => {
     renderAt("/does-not-exist");
-    expect(screen.getByText("Page not found")).toBeTruthy();
+    await waitForStableUi();
+    expect(await screen.findByText("Page not found")).toBeTruthy();
   });
 });

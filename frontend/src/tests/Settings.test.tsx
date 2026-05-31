@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Settings from '../pages/Settings'
+import { waitForStableUi } from './utils/settle'
 
 vi.mock('../hooks/useAuth', async () => {
   const actual = await vi.importActual('../hooks/useAuth')
@@ -16,8 +17,9 @@ vi.mock('../hooks/useAuth', async () => {
 })
 
 describe('Settings', () => {
-  it('renders settings heading', () => {
+  it('renders settings heading', async () => {
     render(<Settings />)
-    expect(screen.getByText('Settings')).toBeTruthy()
+    await waitForStableUi()
+    expect(await screen.findByText('Settings')).toBeTruthy()
   })
 })

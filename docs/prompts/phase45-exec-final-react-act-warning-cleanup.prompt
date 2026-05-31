@@ -1,0 +1,68 @@
+Implement Phase 45: Final React act() Warning Cleanup.
+
+Goal:
+Make frontend validation stderr clean. Remove all remaining React act() warnings without suppressing real errors.
+
+Current grep output from .runtime/logs/validate-fast.stderr.log shows act() warnings from:
+- XauDashboard
+- Settings
+- Workspace
+- SessionLogs
+- Organizations
+- Alerts
+
+Hard requirements:
+- Do not suppress console.error globally.
+- Do not silence React warnings by filtering stderr.
+- Do not weaken assertions.
+- Do not change production behavior unless fixing a real lifecycle bug.
+- Do not remove useful async hooks.
+- Use Testing Library async patterns: findBy*, waitFor, waitForElementToBeRemoved.
+- Use existing frontend/src/tests/utils/settle.ts helpers if present.
+- Keep frontend tests deterministic with the Phase 43 API mock harness.
+- No live /api calls in tests.
+- No secrets and no .env tracked.
+
+Tasks:
+1. Inspect these test files and update them to await async state updates:
+   - frontend/src/tests/XauDashboard.test.tsx
+   - frontend/src/tests/Settings.test.tsx
+   - frontend/src/tests/Workspace.test.tsx
+   - frontend/src/tests/SessionLogs.test.tsx
+   - frontend/src/tests/Organizations.test.tsx
+   - frontend/src/tests/Alerts.test.tsx
+
+2. For each affected test:
+   - after render(), await the real stable UI state
+   - prefer screen.findByText/findByRole for content loaded by hooks
+   - use waitForStableUi() only as a final settle helper
+   - ensure assertions happen after async effects finish
+
+3. If page components update after mount from API hooks:
+   - wait for mocked data to render
+   - wait for loading text to disappear if present
+   - avoid finishing tests immediately after render()
+
+4. Validate each file independently and capture stderr:
+   - cd frontend && npm test -- src/tests/XauDashboard.test.tsx
+   - cd frontend && npm test -- src/tests/Settings.test.tsx
+   - cd frontend && npm test -- src/tests/Workspace.test.tsx
+   - cd frontend && npm test -- src/tests/SessionLogs.test.tsx
+   - cd frontend && npm test -- src/tests/Organizations.test.tsx
+   - cd frontend && npm test -- src/tests/Alerts.test.tsx
+
+5. Full validation:
+   - make validate-fast > .runtime/logs/validate-fast.stdout.log 2> .runtime/logs/validate-fast.stderr.log
+   - grep -nE "not wrapped in act|Failed to fetch|Unexpected live API|Invalid API envelope" .runtime/logs/validate-fast.stderr.log || true
+
+Acceptance criteria:
+- All frontend tests pass.
+- make validate-fast passes.
+- grep returns zero lines for:
+  not wrapped in act
+  Failed to fetch
+  Unexpected live API
+  Invalid API envelope
+- No live API calls.
+- No secret-looking tracked values.
+- No .env files tracked.

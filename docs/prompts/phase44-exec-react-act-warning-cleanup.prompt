@@ -1,0 +1,61 @@
+Implement Phase 44: React Test act() Warning Cleanup.
+
+Goal:
+Remove React act() warnings from frontend tests without weakening production behavior.
+
+Context:
+make validate-fast passes, frontend tests pass 45 files / 96 tests, but stderr still shows act() warnings from:
+- Dashboard.test.tsx
+- QuotaBanner
+- TeamRoster
+- Workers
+- RiskPanel
+- App.test.tsx
+- OrganizationSwitcher
+- WorkspaceSwitcher
+- Topbar
+
+Requirements:
+- Do not suppress console.error globally.
+- Do not hide real runtime errors.
+- Do not weaken assertions.
+- Do not change production behavior unless fixing a real lifecycle issue.
+- Prefer Testing Library async queries: findBy*, waitFor, waitForElementToBeRemoved.
+- Ensure all async hook state updates settle before assertions finish.
+- Keep API mocks deterministic and simulation-only.
+- Do not commit secrets or .env files.
+
+Tasks:
+1. Update affected tests to await async renders/state updates:
+   - Dashboard.test.tsx
+   - Workers.test.tsx
+   - RiskPanel.test.tsx
+   - App.test.tsx
+   - any tests rendering Topbar/AppLayout/ProtectedDashboardRoutes
+
+2. Add a shared helper if useful:
+   - frontend/src/tests/utils/settle.ts
+   with helpers such as:
+   - waitForStableUi()
+   - flushPromises()
+   Use Testing Library act only where necessary.
+
+3. Ensure components that trigger async effects are tested with awaited UI states:
+   - wait for loading indicators to disappear
+   - wait for mocked data to render
+   - wait for dashboard cards/roster/quota to settle
+
+4. Validation:
+   - cd frontend && npm test -- src/tests/Dashboard.test.tsx
+   - cd frontend && npm test -- src/tests/Workers.test.tsx
+   - cd frontend && npm test -- src/tests/RiskPanel.test.tsx
+   - cd frontend && npm test -- src/tests/App.test.tsx
+   - cd frontend && npm test
+   - make validate-fast
+
+Acceptance criteria:
+- All frontend tests pass.
+- No React act() warnings in tested files.
+- No live /api calls in frontend tests.
+- make validate-fast passes.
+- No secrets.
