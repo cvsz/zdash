@@ -7,7 +7,18 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import get_settings
 
 settings = get_settings()
-database_url = getattr(settings, "database_url", "sqlite:///./zdash.db")
+
+
+def _normalize_database_url(url: str) -> str:
+    """Use the installed psycopg v3 driver for generic PostgreSQL URLs."""
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg://" + url[len("postgresql://") :]
+    return url
+
+
+database_url = _normalize_database_url(
+    str(getattr(settings, "database_url", "sqlite:///./zdash.db"))
+)
 
 
 def _is_sqlite_url(url: str) -> bool:
