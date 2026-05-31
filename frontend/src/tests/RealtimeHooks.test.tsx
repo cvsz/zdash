@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createRealtimeClientManager } from "../realtime/client";
@@ -61,7 +61,7 @@ describe("realtime hooks", () => {
     MockWebSocket.reset();
   });
 
-  it("useRealtime consumes websocket events and connection state", () => {
+  it("useRealtime consumes websocket events and connection state", async () => {
     vi.stubGlobal("WebSocket", MockWebSocket as unknown as typeof WebSocket);
 
     const manager = createRealtimeClientManager({ enabled: true, staleThresholdMs: 60000 });
@@ -73,7 +73,9 @@ describe("realtime hooks", () => {
 
     socket.emitOpen();
 
-    expect(screen.getByTestId("connected").textContent).toBe("true");
+    await waitFor(() => {
+      expect(screen.getByTestId("connected").textContent).toBe("true");
+    });
 
     socket.emitJson({
       type: "scheduler.completed",
@@ -83,7 +85,9 @@ describe("realtime hooks", () => {
       payload: { message: "Scheduler run completed" },
     });
 
-    expect(screen.getByTestId("event-count").textContent).toBe("1");
+    await waitFor(() => {
+      expect(screen.getByTestId("event-count").textContent).toBe("1");
+    });
     expect(screen.getByTestId("last-type").textContent).toBe("scheduler.completed");
 
     manager.reset();
