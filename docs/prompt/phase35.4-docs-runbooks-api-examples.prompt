@@ -1,0 +1,250 @@
+# Phase 35.4 · Docs, Runbooks, and API Examples
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Finalize zDash documentation for release readiness without changing source code unless a docs command exposes a critical broken reference.
+
+This pass is docs-first. Do not edit backend/frontend source files.
+
+---
+
+## Safety invariants
+
+- Do not commit `.env`, secrets, tokens, private keys, generated logs, GPG passphrases, or local Codex run artifacts.
+- `docs/prompt/codex-runs/` remains local-only and untracked.
+- API examples must use backend port `8005` only.
+- Do not introduce `localhost:8000` or `BACKEND_PORT=8000`.
+- Trading and AI Trader docs must say simulation-only / not financial advice / no live execution.
+- Billing docs must say mock provider is default and Stripe is disabled by default.
+- Marketplace docs must say plugin sandbox/review is required by default.
+- Enterprise docs must say export with secrets requires explicit typed confirmation and secrets are excluded by default.
+- Cloudflare operator handoff must reference `cvsz/zeaz-platform`.
+
+---
+
+## Inspect first
+
+Inspect docs and release files:
+
+```text
+README.md
+docs/
+docs/architecture/
+docs/runbooks/
+docs/prompt/
+docs/AI_TRADER_CONTROL_PLANE.md
+.codex/cloud/README.md
+.codex/cloud/phase-runner.md
+.env.example
+frontend/.env.example
+Makefile
+```
+
+Create an inspection summary:
+
+```text
+- docs present
+- stale docs
+- missing API examples
+- port 8000 references
+- missing safety notes
+- missing validation notes
+- missing troubleshooting notes
+```
+
+---
+
+## Required README updates
+
+Ensure README includes or links to:
+
+- Phase 35 final release status.
+- Local development quickstart.
+- Backend API port `8005`.
+- Frontend port `5173`.
+- Validation commands.
+- `make safety-scan`.
+- `make validate-fast`.
+- `make validate`.
+- AI Trader simulation-only control plane.
+- Billing model and mock provider default.
+- Marketplace plugin safety model.
+- Enterprise packaging and export/import safety.
+- Cloudflare operator handoff to `cvsz/zeaz-platform`.
+- Known non-blocking warnings.
+
+Avoid turning README into a huge duplicated manual. Link to architecture docs/runbooks where possible.
+
+---
+
+## Required architecture docs
+
+Ensure docs exist and are cross-linked where relevant:
+
+```text
+docs/AI_TRADER_CONTROL_PLANE.md
+docs/architecture/PHASE_10_SAAS_MONETIZATION.md
+docs/architecture/BILLING_MODEL.md
+docs/architecture/MARKETPLACE_MODEL.md
+docs/architecture/ENTERPRISE_PACKAGING.md
+docs/architecture/PHASE_33_AI_TRADER_SIMULATION.md
+```
+
+If a doc is missing, create a concise version.
+
+---
+
+## Required runbooks
+
+Ensure docs exist and are discoverable:
+
+```text
+docs/runbooks/BILLING_INCIDENT_RUNBOOK.md
+docs/runbooks/SUBSCRIPTION_SUPPORT_RUNBOOK.md
+docs/runbooks/MARKETPLACE_REVIEW_RUNBOOK.md
+docs/runbooks/ENTERPRISE_CUSTOMER_RUNBOOK.md
+```
+
+Add or improve runbooks only if missing or clearly incomplete.
+
+---
+
+## API examples
+
+All examples must use port `8005`:
+
+```bash
+curl http://localhost:8005/health
+curl http://localhost:8005/api/ai-trader/status -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/ai-trader/strategies -H "Authorization: Bearer TOKEN"
+curl -X POST http://localhost:8005/api/ai-trader/signal \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"symbol":"XAUUSD","timeframe":"M5","strategy_id":"trend_momentum_v1","candles":[],"min_confidence":0.55}'
+curl http://localhost:8005/api/billing/plans -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/marketplace/plugins -H "Authorization: Bearer TOKEN"
+curl http://localhost:8005/api/enterprise/status -H "Authorization: Bearer TOKEN"
+```
+
+Do not add examples with real tokens, real card data, real secrets, or live order execution.
+
+---
+
+## Troubleshooting notes
+
+Document these as non-blocking when summaries pass:
+
+```text
+passlib crypt deprecation warning from dependency
+React act(...) warnings in existing hook tests
+React Router future flag warnings
+intentional ErrorBoundary test Error: fail
+```
+
+Document these as blocking:
+
+```text
+backend ruff failure
+pytest failed tests
+frontend failed tests
+npm build failure
+make safety-scan failure
+tracked .env or local-only prompt artifacts
+old backend port 8000 in tracked runtime/source files
+secret-like values in tracked runtime/source files
+```
+
+---
+
+## Validation
+
+Docs-only safety validation:
+
+```bash
+cd ~/zdash
+make safety-scan
+```
+
+Optional fast validation:
+
+```bash
+cd ~/zdash
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+make validate-fast
+```
+
+---
+
+## Allowed changes
+
+Allowed:
+
+- README updates
+- docs additions
+- runbook improvements
+- prompt index updates
+- API examples
+- troubleshooting notes
+- cross-links
+
+Not allowed:
+
+- backend code edits
+- frontend code edits
+- dependency changes
+- committing secrets
+- adding live trading docs
+- adding external broker docs as active functionality
+
+---
+
+## Final report format
+
+```text
+Phase 35.4 Docs/Runbooks/API Examples Report
+
+Inspection summary:
+- ...
+
+Docs created:
+- ...
+
+Docs updated:
+- ...
+
+Validation:
+- safety-scan: pass/fail
+- validate-fast: pass/fail/not run
+
+Safety checklist:
+- no port 8000 examples: yes/no
+- no secrets: yes/no
+- AI Trader simulation-only docs: yes/no
+- billing mock default docs: yes/no
+- marketplace sandbox docs: yes/no
+- enterprise export safety docs: yes/no
+- Cloudflare operator handoff: yes/no
+
+Known limitations:
+- ...
+
+Next pass:
+- Phase 35.5 Makefile/CI/maintenance validation
+```
+
+---
+
+## Commit
+
+```bash
+git add README.md docs .codex/cloud .env.example frontend/.env.example
+
+git commit -m "phase35.4: update release documentation"
+```
