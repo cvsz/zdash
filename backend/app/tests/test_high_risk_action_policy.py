@@ -31,9 +31,9 @@ def test_trading_action_requires_guardian():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.risk_guardian_enabled is True
-    ), "RISK_GUARDIAN_ENABLED must default to True"
+    assert settings.risk_guardian_enabled is True, (
+        "RISK_GUARDIAN_ENABLED must default to True"
+    )
 
 
 def test_live_trading_requires_ack():
@@ -65,9 +65,9 @@ def test_iot_requires_confirmation():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.iot_require_confirmation is True
-    ), "IOT_REQUIRE_CONFIRMATION must default to True"
+    assert settings.iot_require_confirmation is True, (
+        "IOT_REQUIRE_CONFIRMATION must default to True"
+    )
 
 
 def test_social_dry_run_default():
@@ -83,9 +83,9 @@ def test_social_approval_required():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.social_approval_required is True
-    ), "SOCIAL_APPROVAL_REQUIRED must default to True"
+    assert settings.social_approval_required is True, (
+        "SOCIAL_APPROVAL_REQUIRED must default to True"
+    )
 
 
 def test_social_auto_post_disabled():
@@ -93,9 +93,9 @@ def test_social_auto_post_disabled():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.social_auto_post_enabled is False
-    ), "SOCIAL_AUTO_POST_ENABLED must default to False"
+    assert settings.social_auto_post_enabled is False, (
+        "SOCIAL_AUTO_POST_ENABLED must default to False"
+    )
 
 
 def test_production_safety_lock_default():
@@ -103,9 +103,9 @@ def test_production_safety_lock_default():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.production_safety_lock is True
-    ), "PRODUCTION_SAFETY_LOCK must default to True"
+    assert settings.production_safety_lock is True, (
+        "PRODUCTION_SAFETY_LOCK must default to True"
+    )
 
 
 def test_cloudflare_dry_run_default():
@@ -113,9 +113,9 @@ def test_cloudflare_dry_run_default():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.cloudflare_dry_run is True
-    ), "CLOUDFLARE_DRY_RUN must default to True"
+    assert settings.cloudflare_dry_run is True, (
+        "CLOUDFLARE_DRY_RUN must default to True"
+    )
 
 
 def test_notification_dry_run_default():
@@ -123,9 +123,9 @@ def test_notification_dry_run_default():
     from app.core.config import get_settings
 
     settings = get_settings()
-    assert (
-        settings.notification_dry_run is True
-    ), "NOTIFICATION_DRY_RUN must default to True"
+    assert settings.notification_dry_run is True, (
+        "NOTIFICATION_DRY_RUN must default to True"
+    )
 
 
 # ---------------------------------------------------------------------------

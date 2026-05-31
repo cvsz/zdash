@@ -158,10 +158,3 @@ class IoTActionLog(Base, Timestamped):
     confirmation_required: Mapped[bool] = mapped_column(Boolean, default=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False)
     payload_json: Mapped[dict] = mapped_column("payload", JSON, default=dict)
-
-
-# removed circular imports
-from app.marketplace.models import (
-    PluginManifest,
-    PluginInstallation,
-)  # noqa: E402, F401
