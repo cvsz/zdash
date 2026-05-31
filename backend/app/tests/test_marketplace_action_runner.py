@@ -7,7 +7,11 @@ from sqlalchemy.orm import Session
 
 from app.db.base import Base
 from app.marketplace.builtins import BUILTINS
-from app.marketplace.models import PluginActionRun, PluginActionResult
+from app.marketplace.models import (
+    PluginActionRun,
+    PluginActionResult,
+    PluginInstallation,
+)
 from app.marketplace.plugin_registry import seed_builtins
 from app.marketplace.plugin_runtime import run_action
 
@@ -137,11 +141,37 @@ def test_action_logs_run_to_db():
     Base.metadata.create_all(bind=db.bind)
     seed_builtins(db)
     plugin_id = _get_plugin_id_by_slug("zdash-risk-summary")
-    result = run_action(db, plugin_id, "summarize", {})
+
+    installation = PluginInstallation(
+        id="test-installation-action-log",
+        organization_id="test-org",
+        workspace_id="test-ws",
+        plugin_id=plugin_id,
+        version="1.0.0",
+        status="enabled",
+        config_json={},
+        enabled=True,
+        installed_by="test",
+    )
+    db.add(installation)
+    db.commit()
+
+    result = run_action(
+        db,
+        plugin_id,
+        "summarize",
+        {},
+        installation_id=installation.id,
+    )
     assert result.ok is True
 
-    runs = db.query(PluginActionRun).all()
+    runs = (
+        db.query(PluginActionRun)
+        .filter(PluginActionRun.installation_id == installation.id)
+        .all()
+    )
     assert len(runs) == 1
+    assert runs[0].installation_id == installation.id
     assert runs[0].action == "summarize"
     assert runs[0].dry_run is True
     assert runs[0].status == "dry_run"

@@ -21,6 +21,7 @@ def run_action(
     action: str,
     payload: dict[str, Any] | None = None,
     dry_run: bool = True,
+    installation_id: str | None = None,
 ) -> PluginActionResult:
     """Execute a plugin action safely.
 
@@ -81,7 +82,8 @@ def run_action(
             timestamp=datetime.now(timezone.utc),
         )
 
-    _log_run(db, plugin_id, action, payload, dry_run, output)
+    if installation_id:
+        _log_run(db, installation_id, action, payload, dry_run, output)
 
     return PluginActionResult(
         plugin_id=plugin_id,
@@ -254,7 +256,7 @@ def _audit_export_metadata(payload: dict[str, Any]) -> dict[str, Any]:
 
 def _log_run(
     db: Session,
-    plugin_id: str,
+    installation_id: str,
     action: str,
     payload: dict[str, Any],
     dry_run: bool,
@@ -262,7 +264,7 @@ def _log_run(
 ) -> None:
     """Persist a PluginActionRun record for audit purposes."""
     run = PluginActionRun(
-        installation_id="",
+        installation_id=installation_id,
         action=action,
         payload_json=payload,
         dry_run=dry_run,

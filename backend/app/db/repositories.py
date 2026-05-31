@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from sqlalchemy import or_, select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -504,5 +504,10 @@ class MarketplaceRepository(MarketplaceRepositoryProtocol):
         return installation
 
     def delete_installation(self, installation: PluginInstallation) -> None:
+        self.db.execute(
+            delete(PluginActionRun).where(
+                PluginActionRun.installation_id == installation.id
+            )
+        )
         self.db.delete(installation)
         self.db.commit()

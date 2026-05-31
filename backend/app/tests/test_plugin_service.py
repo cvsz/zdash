@@ -14,10 +14,11 @@ from unittest.mock import patch
 
 @pytest.fixture(autouse=True)
 def setup_teardown():
-    from app.marketplace.models import PluginInstallation
+    from app.marketplace.models import PluginActionRun, PluginInstallation
     from app.db.session import SessionLocal
 
     with SessionLocal() as db:
+        db.query(PluginActionRun).delete()
         db.query(PluginInstallation).delete()
         db.commit()
 

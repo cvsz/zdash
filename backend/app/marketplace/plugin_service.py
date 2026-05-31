@@ -372,6 +372,7 @@ def run_plugin_action(
             action=action,
             payload=payload,
             dry_run=True,
+            installation_id=installation_id,
         )
         if hasattr(result, "model_dump"):
             result = result.model_dump()
