@@ -1,0 +1,333 @@
+# Phase 35.2 · AI Trader Final Polish
+
+Repository: `cvsz/zdash`
+
+Execution profile: DeepSeek V4 Flash Free / fast free coding model.
+
+Goal:
+Finalize the AI Trader Simulation Control Plane for release readiness while keeping it strictly simulation-only and routed through existing zDash safety systems.
+
+Do not add live trading. Do not add broker execution. Do not add external ML dependencies.
+
+---
+
+## Safety invariants
+
+- AI Trader remains simulation-only.
+- Paper trade remains dry-run only.
+- No live trading button exists in UI.
+- No broker order execution is added.
+- Do not bypass `TradingService`.
+- Do not bypass `ExecutionEngine`.
+- Do not bypass `SignalValidationService`.
+- Do not bypass Guardian risk checks.
+- Do not bypass RBAC, audit/event logging, or dry-run mode.
+- Every signal metadata must include `simulation_only=true`.
+- Every signal metadata must include `risk_policy.live_execution_allowed=false`.
+- Every visible AI Trader UI must show simulation-only / not financial advice / no live execution language.
+
+---
+
+## Inspect first
+
+Inspect:
+
+```text
+backend/app/ai_trader/__init__.py
+backend/app/ai_trader/features.py
+backend/app/ai_trader/registry.py
+backend/app/ai_trader/service.py
+backend/app/api/ai_trader.py
+backend/tests/test_ai_trader_service.py
+backend/tests/test_ai_trader_phase34.py
+frontend/src/api/aiTrader.ts
+frontend/src/components/trading/AITraderSimulationCard.tsx
+frontend/src/pages/XauDashboard.tsx
+frontend/src/tests/AITrader.test.tsx
+docs/AI_TRADER_CONTROL_PLANE.md
+docs/architecture/PHASE_33_AI_TRADER_SIMULATION.md
+```
+
+Create an inspection summary:
+
+```text
+- strategy registry status
+- feature engine status
+- API status
+- paper-trade safety status
+- frontend control card status
+- test coverage status
+- docs status
+```
+
+---
+
+## Backend requirements
+
+### Strategy registry
+
+Verify deterministic strategies exist and are simulation-only:
+
+```text
+trend_momentum_v1
+mean_reversion_v1
+volatility_breakout_v1
+conservative_guarded_v1
+```
+
+Each strategy should expose:
+
+```text
+id
+name
+description
+risk_profile
+min_candles
+default_min_confidence
+supported_symbols
+supported_timeframes
+simulation_only=true
+```
+
+### Feature engine
+
+Verify no external ML dependency is used.
+
+Features should include:
+
+```text
+close
+fast_ma
+slow_ma
+ma_delta
+momentum_3
+momentum_7
+volatility_pct
+atr_proxy
+volume_ma
+volume_ratio
+trend_state
+volatility_state
+candles_analyzed
+warnings
+```
+
+Malformed/insufficient candle data must not crash normal requests; return hold/warnings.
+
+### Service behavior
+
+Verify:
+
+- `generate_signal(...)` returns `TradingSignal`.
+- insufficient candles return hold.
+- confidence below threshold returns hold.
+- strategy compare does not execute orders.
+- `paper_trade(...)` forces `dry_run=true`.
+- execution goes through `TradingService.execution_engine.execute(...)`.
+- all outputs include safety metadata.
+
+### API behavior
+
+Verify endpoints:
+
+```text
+GET /api/ai-trader/status
+GET /api/ai-trader/strategies
+POST /api/ai-trader/signal
+POST /api/ai-trader/compare
+POST /api/ai-trader/paper-trade
+```
+
+RBAC:
+
+```text
+status/strategies/signal/compare require Permission.READ_TRADING_SIGNALS
+paper-trade requires Permission.RUN_DRY_RUN_TRADING
+```
+
+Responses must include:
+
+```text
+simulation_only=true
+safety_notice
+model_version
+risk_policy
+warnings where applicable
+explanation where applicable
+```
+
+---
+
+## Frontend requirements
+
+Verify `AITraderSimulationCard` includes:
+
+- strategy selector
+- symbol input
+- timeframe input
+- min confidence input
+- generate simulation signal button
+- compare simulation strategies button
+- run dry-run paper trade only button
+- model version display
+- generated direction
+- confidence
+- validation state
+- execution state
+- strategy comparison table
+- simulation-only banner
+- no live trading button
+
+UI text must be clear:
+
+```text
+Simulation only
+No live broker execution
+Not financial advice
+dry-run only
+```
+
+---
+
+## Tests
+
+Ensure tests cover:
+
+```text
+insufficient candles returns hold
+malformed candles do not crash
+up trend gives buy or hold
+down trend gives sell or hold
+compare returns ranked decisions
+paper trade always dry_run=true
+metadata includes simulation_only=true
+metadata risk_policy.live_execution_allowed=false
+frontend card renders simulation controls
+frontend compare table uses non-ambiguous assertions
+no live button exists
+```
+
+Add missing tests only where coverage is absent.
+
+---
+
+## Validation
+
+Backend targeted:
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -m pytest -q tests/test_ai_trader_service.py tests/test_ai_trader_phase34.py
+```
+
+Backend full:
+
+```bash
+cd backend
+source .venv/bin/activate
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -m ruff check app tests
+APP_ENV=development \
+DATABASE_URL=sqlite:///./zdash_test.db \
+PRODUCTION_SAFETY_LOCK=true \
+DRY_RUN=true \
+LIVE_TRADING_ACK=false \
+python -B -m pytest -q
+```
+
+Frontend targeted:
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test -- AITrader.test.tsx
+```
+
+Frontend full:
+
+```bash
+cd frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test
+npm run build
+```
+
+---
+
+## Allowed changes
+
+Allowed:
+
+- deterministic AI Trader bug fixes
+- metadata completeness fixes
+- API response shape fixes
+- frontend label/safety copy fixes
+- tests for AI Trader behavior
+- docs updates
+
+Not allowed:
+
+- live trading
+- broker integration
+- external ML packages
+- model API dependencies
+- bypassing existing trading safety services
+- hidden execution path
+
+---
+
+## Final report format
+
+```text
+Phase 35.2 AI Trader Final Polish Report
+
+Inspection summary:
+- ...
+
+Files changed:
+- ...
+
+Tests added/updated:
+- ...
+
+Validation:
+- targeted backend: pass/fail
+- full backend: pass/fail
+- targeted frontend: pass/fail
+- full frontend: pass/fail
+
+Safety checklist:
+- simulation_only metadata: yes/no
+- dry_run forced: yes/no
+- live_execution_allowed=false: yes/no
+- no live button: yes/no
+- Guardian path preserved: yes/no
+
+Known warnings:
+- ...
+
+Next pass:
+- Phase 35.3 Frontend dashboard/UI polish
+```
+
+---
+
+## Commit
+
+```bash
+git add backend/app/ai_trader backend/app/api/ai_trader.py backend/tests/test_ai_trader* frontend/src/api/aiTrader.ts frontend/src/components/trading/AITraderSimulationCard.tsx frontend/src/tests/AITrader.test.tsx docs
+
+git commit -m "phase35.2: finalize ai trader simulation polish"
+```
