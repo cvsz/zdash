@@ -7,7 +7,12 @@ from app.auth.dependencies import require_permissions
 from app.auth.models import AuthSession
 from app.auth.rbac import Permission
 from app.db.session import SessionLocal
-from app.marketplace.models import PluginManifest, PluginStatus
+from app.marketplace.models import (
+    PluginManifest,
+    PluginStatus,
+    installation_to_dict,
+    manifest_to_dict,
+)
 from app.marketplace.plugin_registry import (
     list_plugins,
     get_plugin,
@@ -29,6 +34,20 @@ from app.tenancy.tenant_context import TenantContext
 from app.core.responses import success_response, error_response
 
 router = APIRouter(prefix="/api/marketplace", tags=["marketplace"])
+
+
+def _serialize_plugin(plugin: Any) -> dict[str, Any]:
+    if isinstance(plugin, dict):
+        return plugin
+    if isinstance(plugin, PluginManifest):
+        return manifest_to_dict(plugin)
+    if hasattr(plugin, "model_dump"):
+        return plugin.model_dump()
+    if hasattr(plugin, "__dict__"):
+        data = dict(plugin.__dict__)
+        data.pop("_sa_instance_state", None)
+        return data
+    return {"id": str(plugin)}
 
 
 class InstallPluginRequest(BaseModel):
@@ -102,10 +121,7 @@ def api_plugins(
 ):
     try:
         plugins = list_plugins(search=search, category=category, status=status)
-        serialized = [
-            p.model_dump() if hasattr(p, "model_dump") else p for p in plugins
-        ]
-        return success_response({"plugins": serialized})
+        return success_response({"plugins": plugins})
     except Exception as e:
         return error_response("PLUGINS_ERROR", str(e))
 
@@ -116,10 +132,12 @@ def api_plugin(
     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
 ):
     try:
-        p = get_plugin(plugin_id)
-        if not p:
+        plugin = get_plugin(plugin_id=plugin_id)
+        if not plugin:
             return error_response("PLUGIN_NOT_FOUND", "Plugin not found")
-        plugin_data = p.model_dump() if hasattr(p, "model_dump") else p
+        plugin_data = (
+            manifest_to_dict(plugin) if isinstance(plugin, PluginManifest) else plugin
+        )
         return success_response({"plugin": plugin_data})
     except Exception as e:
         return error_response("PLUGIN_ERROR", str(e))
@@ -135,15 +153,7 @@ def api_installations(
         ws_id: str | None = getattr(tenant, "workspace_id", None)
         insts = list_installations(org_id, ws_id)
 
-        res: list[dict[str, Any]] = []
-        for i in insts:
-            if hasattr(i, "__dict__"):
-                d = dict(i.__dict__)
-                d.pop("_sa_instance_state", None)
-                res.append(d)
-            else:
-                res.append(i)
-
+        res = [installation_to_dict(inst) for inst in insts]
         return success_response({"installations": res})
     except Exception as e:
         return error_response("INSTALLATIONS_ERROR", str(e))
