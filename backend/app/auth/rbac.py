@@ -50,6 +50,13 @@ class Permission(str, Enum):
     enterprise_export_secrets = "enterprise.export_secrets"
     enterprise_onboarding_manage = "enterprise.onboarding.manage"
 
+    # Phase 47 Team
+    team_read = "team.read"
+    team_manage = "team.manage"
+    team_invite = "team.invite"
+    team_remove = "team.remove"
+    team_assign_agents = "team.assign_agents"
+
 
 ROLE_PERMISSIONS = {
     RoleName.admin.value: {permission.value for permission in Permission},
@@ -77,6 +84,11 @@ ROLE_PERMISSIONS = {
         Permission.enterprise_read.value,
         Permission.enterprise_branding_manage.value,
         Permission.enterprise_onboarding_manage.value,
+        Permission.team_read.value,
+        Permission.team_manage.value,
+        Permission.team_invite.value,
+        Permission.team_remove.value,
+        Permission.team_assign_agents.value,
     },
     RoleName.analyst.value: {
         Permission.READ_DASHBOARD.value,
@@ -91,6 +103,7 @@ ROLE_PERMISSIONS = {
         Permission.usage_read.value,
         Permission.marketplace_read.value,
         Permission.enterprise_read.value,
+        Permission.team_read.value,
     },
     RoleName.viewer.value: {
         Permission.READ_DASHBOARD.value,

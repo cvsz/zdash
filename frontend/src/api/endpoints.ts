@@ -8,6 +8,12 @@ import {
   mockJobs,
   mockLogs,
   mockSignals,
+  mockTeamMembers,
+  mockTeamInvitations,
+  mockTeamWorkspaceAccess,
+  mockTeamAgentAssignments,
+  mockTeamActivity,
+  mockTeamSummary,
   mockTradingOwner,
 } from "./mockData";
 import type {
@@ -60,6 +66,12 @@ import type {
   ExportBundle,
   OnboardingChecklist,
   CustomerHealth,
+  TeamMember,
+  TeamInvitation,
+  TeamWorkspaceAccess,
+  TeamAgentAssignment,
+  TeamActivity,
+  TeamSummary,
 } from "./types";
 
 type AgentMessagePayload = {
@@ -1290,4 +1302,101 @@ export const runAITraderPaperTrade = (payload: AITraderSignalRequest & { snapsho
       },
     },
   );
+};
+
+// Team API
+export const listTeamMembers = async (workspaceId?: string) => {
+  const params = workspaceId ? `?workspace_id=${workspaceId}` : '';
+  const data = await apiClient.get<{ members: TeamMember[] }>(`/api/team/members${params}`, { members: mockTeamMembers });
+  return Array.isArray(data.members) ? data.members : [];
+};
+
+export const getTeamMember = async (memberId: string) => {
+  const data = await apiClient.get<{ member: TeamMember }>(`/api/team/members/${memberId}`, { member: mockTeamMembers[0] });
+  return data.member;
+};
+
+export const inviteTeamMember = async (email: string, role: string, workspaceId?: string) => {
+  const payload: Record<string, unknown> = { email, role };
+  if (workspaceId) payload.workspace_id = workspaceId;
+  const data = await apiClient.post<{ invitation: TeamInvitation }>('/api/team/invitations', payload, { invitation: mockTeamInvitations[0] });
+  return data.invitation;
+};
+
+export const listTeamInvitations = async (workspaceId?: string) => {
+  const params = workspaceId ? `?workspace_id=${workspaceId}` : '';
+  const data = await apiClient.get<{ invitations: TeamInvitation[] }>(`/api/team/invitations${params}`, { invitations: mockTeamInvitations });
+  return Array.isArray(data.invitations) ? data.invitations : [];
+};
+
+export const resendTeamInvitation = async (invitationId: string) => {
+  const data = await apiClient.post<{ invitation: TeamInvitation }>(`/api/team/invitations/${invitationId}/resend`, {}, { invitation: mockTeamInvitations[0] });
+  return data.invitation;
+};
+
+export const revokeTeamInvitation = async (invitationId: string) => {
+  const data = await apiClient.post<{ ok: boolean }>(`/api/team/invitations/${invitationId}/revoke`, {}, { ok: true });
+  return data.ok;
+};
+
+export const updateTeamMemberRole = async (memberId: string, role: string) => {
+  const data = await apiClient.patch<{ member: TeamMember }>(`/api/team/members/${memberId}/role`, { role }, { member: mockTeamMembers[0] });
+  return data.member;
+};
+
+export const suspendTeamMember = async (memberId: string) => {
+  const data = await apiClient.post<{ member: TeamMember }>(`/api/team/members/${memberId}/suspend`, {}, { member: mockTeamMembers[0] });
+  return data.member;
+};
+
+export const reactivateTeamMember = async (memberId: string) => {
+  const data = await apiClient.post<{ member: TeamMember }>(`/api/team/members/${memberId}/reactivate`, {}, { member: mockTeamMembers[0] });
+  return data.member;
+};
+
+export const removeTeamMember = async (memberId: string) => {
+  const data = await apiClient.delete<{ ok: boolean }>(`/api/team/members/${memberId}`, { ok: true });
+  return data.ok;
+};
+
+export const listTeamWorkspaceAccess = async (workspaceId: string) => {
+  const data = await apiClient.get<{ access: TeamWorkspaceAccess[] }>(`/api/team/workspace-access?workspace_id=${workspaceId}`, { access: mockTeamWorkspaceAccess });
+  return Array.isArray(data.access) ? data.access : [];
+};
+
+export const grantTeamWorkspaceAccess = async (workspaceId: string, memberId: string, accessLevel: string) => {
+  const data = await apiClient.post<{ access: TeamWorkspaceAccess }>('/api/team/workspace-access', { workspace_id: workspaceId, member_id: memberId, access_level: accessLevel }, { access: mockTeamWorkspaceAccess[0] });
+  return data.access;
+};
+
+export const revokeTeamWorkspaceAccess = async (accessId: string) => {
+  const data = await apiClient.delete<{ ok: boolean }>(`/api/team/workspace-access/${accessId}`, { ok: true });
+  return data.ok;
+};
+
+export const listTeamAgentAssignments = async () => {
+  const data = await apiClient.get<{ assignments: TeamAgentAssignment[] }>('/api/team/agent-assignments', { assignments: mockTeamAgentAssignments });
+  return Array.isArray(data.assignments) ? data.assignments : [];
+};
+
+export const assignTeamAgent = async (workspaceId: string, agentId: string, memberId: string | null, role: string) => {
+  const payload: Record<string, unknown> = { workspace_id: workspaceId, agent_id: agentId, assignment_role: role };
+  if (memberId) payload.member_id = memberId;
+  const data = await apiClient.post<{ assignment: TeamAgentAssignment }>('/api/team/agent-assignments', payload, { assignment: mockTeamAgentAssignments[0] });
+  return data.assignment;
+};
+
+export const unassignTeamAgent = async (assignmentId: string) => {
+  const data = await apiClient.delete<{ ok: boolean }>(`/api/team/agent-assignments/${assignmentId}`, { ok: true });
+  return data.ok;
+};
+
+export const getTeamActivity = async () => {
+  const data = await apiClient.get<{ activity: TeamActivity[] }>('/api/team/activity', { activity: mockTeamActivity });
+  return Array.isArray(data.activity) ? data.activity : [];
+};
+
+export const getTeamSummary = async () => {
+  const data = await apiClient.get<{ summary: TeamSummary }>('/api/team/summary', { summary: mockTeamSummary });
+  return data.summary;
 };

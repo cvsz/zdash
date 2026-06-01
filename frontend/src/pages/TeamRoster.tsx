@@ -1,246 +1,504 @@
-import { type FormEvent, useMemo, useState } from "react";
-
-import AgentsPagination from "../components/AgentsPagination";
+import { useState, type FormEvent } from "react";
 import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
-import { CANONICAL_AGENTS, type AgentTier } from "../constants/agents";
-import { useAgents } from "../hooks/useAgents";
-import { useAgentsPagination } from "../hooks/useAgentsPagination";
+import AgentAssignmentBoard from "../components/team/AgentAssignmentBoard";
+import { useTeam } from "../hooks/useTeam";
+import type { TeamMember } from "../api/types";
 
-const tierStyle: Record<AgentTier, string> = {
-  Legendary: "border-amber-300/60 bg-amber-400/10 text-state-warning",
-  Epic: "border-cyan-300/50 bg-cyan-400/10 text-cyan-100",
-  Rare: "border-emerald-300/50 bg-emerald-400/10 text-emerald-100",
+const TABS = ["Overview", "Members", "Invitations", "Workspace Access", "Agent Assignments", "Activity"] as const;
+type TabName = (typeof TABS)[number];
+
+const ROLE_OPTIONS = ["owner", "admin", "operator", "analyst", "developer", "viewer"];
+const ACCESS_LEVELS = ["owner", "manage", "write", "read"];
+
+const roleBadgeVariant = (role: string) => {
+  switch (role) {
+    case "owner": return "success" as const;
+    case "admin": return "warning" as const;
+    case "operator": return "normal" as const;
+    case "analyst": return "normal" as const;
+    case "developer": return "normal" as const;
+    case "viewer": return "muted" as const;
+    default: return "muted" as const;
+  }
 };
 
-const tierAccent: Record<AgentTier, string> = {
-  Legendary: "A",
-  Epic: "E",
-  Rare: "R",
+const statusBadgeVariant = (status: string) => {
+  switch (status) {
+    case "active": return "success" as const;
+    case "invited": return "warning" as const;
+    case "suspended": return "danger" as const;
+    case "removed": return "muted" as const;
+    default: return "muted" as const;
+  }
 };
 
 export default function TeamRoster() {
-  const [message, setMessage] = useState("");
-  const [messageResult, setMessageResult] = useState<string | null>(null);
-  const [messageError, setMessageError] = useState<string | null>(null);
-  const [messageSending, setMessageSending] = useState(false);
-
-  const agentsState = useAgents();
-  const liveAgentsById = useMemo(() => {
-    const map = new Map<string, { status: string; lastEvent?: string; health?: string }>();
-    for (const agent of agentsState.data ?? []) {
-      map.set(agent.id, {
-        status: agent.status,
-        lastEvent: agent.last_event,
-        health: agent.health,
-      });
-    }
-    return map;
-  }, [agentsState.data]);
-
+  const [activeTab, setActiveTab] = useState<TabName>("Overview");
+  const [searchQuery, setSearchQuery] = useState("");
   const {
-    agentsPerPage,
-    currentPage,
-    totalItems,
-    totalPages,
-    pageItems,
-    pageStart,
-    pageEnd,
-    setAgentsPerPage,
-    goToPage,
-  } = useAgentsPagination(CANONICAL_AGENTS);
+    members, invitations, workspaceAccess, agentAssignments, activity, summary,
+    loading, error,
+    invite, revokeInvite, resendInvite, updateRole,
+    suspend, reactivate, remove,
+    grantAccess, revokeAccess,
+    assignAgent, unassignAgent,
+  } = useTeam();
 
-  const tierCounts = useMemo(() => {
-    return CANONICAL_AGENTS.reduce(
-      (counts, agent) => {
-        counts[agent.tier] += 1;
-        return counts;
-      },
-      { Legendary: 0, Epic: 0, Rare: 0 } as Record<AgentTier, number>,
-    );
-  }, []);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("analyst");
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteSending, setInviteSending] = useState(false);
 
-  async function onSendMessage(event: FormEvent) {
-    event.preventDefault();
-    setMessageError(null);
-    setMessageResult(null);
+  const [confirmMemberId, setConfirmMemberId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"suspend" | "reactivate" | "remove" | null>(null);
 
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage) {
-      setMessageError("Message is required.");
+  const [grantMemberId, setGrantMemberId] = useState("");
+  const [grantAccessLevel, setGrantAccessLevel] = useState("read");
+  const [grantError, setGrantError] = useState<string | null>(null);
+
+  const filteredMembers = Array.isArray(members)
+    ? members.filter((m) => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          (m.display_name ?? "").toLowerCase().includes(q) ||
+          (m.email ?? "").toLowerCase().includes(q) ||
+          (m.role ?? "").toLowerCase().includes(q) ||
+          (m.status ?? "").toLowerCase().includes(q)
+        );
+      })
+    : [];
+
+  const activeMembers = Array.isArray(members)
+    ? members.filter((m) => m.status === "active")
+    : [];
+
+  async function handleInvite(e: FormEvent) {
+    e.preventDefault();
+    setInviteError(null);
+    if (!inviteEmail.trim()) {
+      setInviteError("Email is required.");
       return;
     }
-
-    setMessageSending(true);
+    setInviteSending(true);
     try {
-      const response = await agentsState.sendMessage({
-        from_agent: "ceo",
-        to_agent: "janie",
-        message: trimmedMessage,
-        context: { source: "team_roster" },
-      });
-      const responseText =
-        typeof response.response_text === "string"
-          ? response.response_text
-          : "Message delivered in simulation mode.";
-      setMessageResult(responseText);
-      setMessage("");
-    } catch (error) {
-      const messageText = error instanceof Error ? error.message : String(error);
-      setMessageError(messageText);
+      await invite(inviteEmail.trim(), inviteRole);
+      setInviteEmail("");
+      setInviteRole("analyst");
+    } catch (err: any) {
+      setInviteError(err?.message ?? "Failed to send invitation.");
     } finally {
-      setMessageSending(false);
+      setInviteSending(false);
     }
+  }
+
+  function handleConfirmAction() {
+    if (!confirmMemberId || !confirmAction) return;
+    const actionFn = confirmAction === "suspend" ? suspend
+      : confirmAction === "reactivate" ? reactivate
+      : remove;
+    actionFn(confirmMemberId).catch(() => {});
+    setConfirmMemberId(null);
+    setConfirmAction(null);
+  }
+
+  async function handleGrantAccess() {
+    if (!grantMemberId) {
+      setGrantError("Please select a member.");
+      return;
+    }
+    setGrantError(null);
+    try {
+      await grantAccess("ws-1", grantMemberId, grantAccessLevel);
+      setGrantMemberId("");
+      setGrantAccessLevel("read");
+    } catch (err: any) {
+      setGrantError(err?.message ?? "Failed to grant access.");
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="mx-auto flex w-full max-w-[112rem] flex-col gap-6 px-1 py-2 text-text-primary sm:px-2 lg:px-4">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-sm text-text-dim">Loading team workspace...</div>
+        </div>
+      </section>
+    );
   }
 
   return (
     <section className="mx-auto flex w-full max-w-[112rem] flex-col gap-6 px-1 py-2 text-text-primary sm:px-2 lg:px-4">
       <div className="rounded-3xl border border-border/70 bg-canvas-lighter/60 p-6 shadow-glass-lg backdrop-blur">
-        <p className="text-xs font-bold uppercase tracking-[0.32em] text-cyan-300">zDash Command Roster</p>
+        <p className="text-xs font-bold uppercase tracking-[0.32em] text-cyan-300">zDash</p>
         <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-text-primary md:text-4xl">Team Roster</h1>
+            <h1 className="text-3xl font-black tracking-tight text-text-primary md:text-4xl">Team Workspace</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
-              Alexander Prime delegates execution to Sophia Lane. Sophia Lane coordinates Victor Hale, Isla Grant,
-              Nathan Cole, Elena Voss, Julian Reed, Maya Quinn, and Damien Cross.
+              Manage team members, invitations, workspace access, and AI agent assignments.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center text-xs font-bold uppercase tracking-[0.16em] text-text-secondary">
-            <span className="rounded-2xl border border-amber-300/40 bg-amber-400/10 px-3 py-2">
-              {tierCounts.Legendary} Legendary
-            </span>
-            <span className="rounded-2xl border border-cyan-300/40 bg-cyan-400/10 px-3 py-2">
-              {tierCounts.Epic} Epic
-            </span>
-            <span className="rounded-2xl border border-emerald-300/40 bg-emerald-400/10 px-3 py-2">
-              {tierCounts.Rare} Rare
-            </span>
-          </div>
         </div>
+        {error ? (
+          <div className="mt-4 rounded-md border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-200">
+            {error}
+          </div>
+        ) : null}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <form
-          className="rounded-2xl border border-border bg-panel-hover p-4"
-          onSubmit={(event) => {
-            void onSendMessage(event);
-          }}
-        >
-          <h2 className="text-sm font-semibold text-text-primary">Alexander Prime -&gt; Sophia Lane Message Panel</h2>
-          <p className="mt-1 text-xs text-text-dim">Stable routing IDs preserved: ceo -&gt; janie.</p>
-          <textarea
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            className="mt-3 min-h-[90px] w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
-            placeholder="Send execution guidance to Sophia Lane..."
-          />
-          <div className="mt-3 flex items-center gap-2">
-            <Button type="submit" variant="primary" disabled={messageSending}>
-              {messageSending ? "Sending..." : "Send message"}
-            </Button>
-            {messageResult ? <Badge variant="success">Delivered</Badge> : null}
-            {messageError ? <Badge variant="danger">Failed</Badge> : null}
-          </div>
-          {messageResult ? <p className="mt-2 text-sm text-state-success">{messageResult}</p> : null}
-          {messageError ? <p className="mt-2 text-sm text-state-danger">{messageError}</p> : null}
-        </form>
+      <div className="flex flex-wrap gap-1 rounded-2xl border border-border bg-panel-hover p-1">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={`rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition ${
+              activeTab === tab
+                ? "bg-cyan-500/20 text-cyan-100"
+                : "text-text-dim hover:text-text-secondary"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        <div className="rounded-2xl border border-border bg-panel-hover p-4">
-          <h2 className="text-sm font-semibold text-text-primary">Roster Health Snapshot</h2>
-          <p className="mt-1 text-xs text-text-dim">Live agent statuses from backend APIs with mock-safe fallback.</p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {CANONICAL_AGENTS.map((agent) => {
-              const live = liveAgentsById.get(agent.id);
-              const status = live?.status ?? "unknown";
-              const statusVariant =
-                status === "online"
-                  ? "success"
-                  : status === "offline"
-                    ? "danger"
-                    : status === "degraded"
-                      ? "warning"
-                      : "muted";
-              return (
-                <div key={`${agent.id}-health`} className="rounded-md border border-border bg-canvas/80 p-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-semibold text-text-secondary">{agent.name}</p>
-                    <Badge variant={statusVariant}>{status.toUpperCase()}</Badge>
+      {activeTab === "Overview" && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {summary ? (
+            <>
+              <div className="rounded-2xl border border-border bg-panel-hover p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Total Members</p>
+                <p className="mt-2 text-3xl font-black text-text-primary">{summary.total_members ?? 0}</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-panel-hover p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Active Members</p>
+                <p className="mt-2 text-3xl font-black text-emerald-400">{summary.active_members ?? 0}</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-panel-hover p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Pending Invitations</p>
+                <p className="mt-2 text-3xl font-black text-amber-400">{summary.pending_invitations ?? 0}</p>
+              </div>
+              <div className="rounded-2xl border border-border bg-panel-hover p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Admins</p>
+                <p className="mt-2 text-3xl font-black text-text-primary">{summary.admins ?? 0}</p>
+              </div>
+              {summary.is_last_owner ? (
+                <div className="col-span-full rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4">
+                  <p className="text-sm font-semibold text-amber-200">
+                    You are the last owner. Transfer ownership or add another admin before removing yourself.
+                  </p>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="col-span-full flex items-center justify-center py-10 text-sm text-text-dim">
+              No summary data available.
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "Members" && (
+        <div className="rounded-2xl border border-border bg-panel-hover">
+          <div className="border-b border-border p-4">
+            <input
+              id="member-search"
+              name="member-search"
+              type="text"
+              placeholder="Search members..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
+            />
+          </div>
+          {Array.isArray(filteredMembers) && filteredMembers.length > 0 ? (
+            <div className="divide-y divide-border">
+              {filteredMembers.map((m) => (
+                <div key={m.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-text-primary">{m.display_name ?? "Unnamed"}</p>
+                      <Badge variant={roleBadgeVariant(m.role)}>{m.role ?? "viewer"}</Badge>
+                    </div>
+                    <p className="mt-1 text-xs text-text-dim">{m.email ?? ""}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Badge variant={statusBadgeVariant(m.status)}>{m.status ?? "unknown"}</Badge>
+                      {m.last_seen_at ? (
+                        <span className="text-[11px] text-text-dim">
+                          Last seen: {new Date(m.last_seen_at).toLocaleDateString()}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
-                  <p className="mt-1 text-[11px] text-text-dim">{live?.lastEvent ?? "No recent event."}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(["admin", "operator", "analyst", "developer", "viewer"] as const).map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => updateRole(m.id, r).catch(() => {})}
+                        className={`rounded-md border px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.1em] transition ${
+                          m.role === r
+                            ? "border-cyan-500/40 bg-cyan-500/20 text-cyan-100"
+                            : "border-border text-text-dim hover:text-text-secondary"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                    {m.status === "active" ? (
+                      <Button variant="danger" onClick={() => { setConfirmMemberId(m.id); setConfirmAction("suspend"); }}>
+                        Suspend
+                      </Button>
+                    ) : m.status === "suspended" ? (
+                      <Button variant="primary" onClick={() => reactivate(m.id).catch(() => {})}>
+                        Reactivate
+                      </Button>
+                    ) : null}
+                    <Button variant="danger" onClick={() => { setConfirmMemberId(m.id); setConfirmAction("remove"); }}>
+                      Remove
+                    </Button>
+                  </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8 text-sm text-text-dim">
+              No members found.
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === "Invitations" && (
+        <div className="flex flex-col gap-4">
+          <form
+            onSubmit={(e) => { void handleInvite(e); }}
+            className="rounded-2xl border border-border bg-panel-hover p-4"
+          >
+            <h2 className="text-sm font-semibold text-text-primary">Invite Team Member</h2>
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label htmlFor="invite-email" className="text-xs font-semibold text-text-dim">Email</label>
+                <input
+                  id="invite-email"
+                  name="invite-email"
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
+                />
+              </div>
+              <div>
+                <label htmlFor="invite-role" className="text-xs font-semibold text-text-dim">Role</label>
+                <select
+                  id="invite-role"
+                  name="invite-role"
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
+                >
+                  {ROLE_OPTIONS.map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+              <Button type="submit" variant="primary" disabled={inviteSending}>
+                {inviteSending ? "Sending..." : "Invite"}
+              </Button>
+            </div>
+            {inviteError ? (
+              <p className="mt-2 text-xs text-state-danger">{inviteError}</p>
+            ) : null}
+          </form>
+
+          <div className="rounded-2xl border border-border bg-panel-hover">
+            <div className="border-b border-border px-4 py-3">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">
+                Pending Invitations ({invitations?.length ?? 0})
+              </p>
+            </div>
+            {Array.isArray(invitations) && invitations.length > 0 ? (
+              <div className="divide-y divide-border">
+                {invitations.map((inv) => (
+                  <div key={inv.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">{inv.email ?? ""}</p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge variant={roleBadgeVariant(inv.role)}>{inv.role}</Badge>
+                        <Badge variant={inv.status === "pending" ? "warning" : inv.status === "accepted" ? "success" : "muted"}>
+                          {inv.status ?? "unknown"}
+                        </Badge>
+                        <span className="text-xs text-text-dim">by {inv.invited_by ?? "system"}</span>
+                      </div>
+                      {inv.expires_at ? (
+                        <p className="mt-1 text-[11px] text-text-dim">
+                          Expires: {new Date(inv.expires_at).toLocaleDateString()}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="primary" onClick={() => resendInvite(inv.id).catch(() => {})}>
+                        Resend
+                      </Button>
+                      <Button variant="danger" onClick={() => revokeInvite(inv.id).catch(() => {})}>
+                        Revoke
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-sm text-text-dim">
+                No pending invitations.
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      <AgentsPagination
-        pageStart={pageStart}
-        pageEnd={pageEnd}
-        totalItems={totalItems}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        agentsPerPage={agentsPerPage}
-        onPageSizeChange={setAgentsPerPage}
-        onPageChange={goToPage}
-      />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
-        {pageItems.map((agent) => {
-          const live = liveAgentsById.get(agent.id);
-          const status = live?.status ?? "unknown";
-          const statusVariant =
-            status === "online"
-              ? "success"
-              : status === "offline"
-                ? "danger"
-                : status === "degraded"
-                  ? "warning"
-                  : "muted";
-
-          return (
-            <article
-              key={agent.id}
-              className="rounded-3xl border border-border/70 bg-canvas/55 p-4 shadow-xl shadow-canvas/25 transition hover:-translate-y-1 hover:border-cyan-300/60"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <span
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-panel-solid text-sm font-black text-accent-cyan"
-                    aria-hidden="true"
-                  >
-                    {tierAccent[agent.tier]}
-                  </span>
-                  <h2 className="mt-3 text-xl font-black text-text-primary">{agent.name}</h2>
-                  <p className="mt-1 text-sm font-semibold text-accent-cyan">{agent.title}</p>
-                </div>
-                <span
-                  className={`rounded-full border px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] ${tierStyle[agent.tier]}`}
+      {activeTab === "Workspace Access" && (
+        <div className="flex flex-col gap-4">
+          <div className="rounded-2xl border border-border bg-panel-hover p-4">
+            <h2 className="text-sm font-semibold text-text-primary">Grant Workspace Access</h2>
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label htmlFor="grant-member" className="text-xs font-semibold text-text-dim">Member</label>
+                <select
+                  id="grant-member"
+                  name="grant-member"
+                  value={grantMemberId}
+                  onChange={(e) => setGrantMemberId(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
                 >
-                  {agent.tier}
-                </span>
+                  <option value="">Select member...</option>
+                  {Array.isArray(activeMembers) && activeMembers.map((m) => (
+                    <option key={m.id} value={m.id}>{m.display_name} ({m.email})</option>
+                  ))}
+                </select>
               </div>
-
-              <div className="mt-5 rounded-2xl border border-border bg-canvas/80 p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Stable Agent ID</p>
-                <p className="mt-2 text-sm text-text-primary">{agent.id}</p>
+              <div>
+                <label htmlFor="grant-level" className="text-xs font-semibold text-text-dim">Access Level</label>
+                <select
+                  id="grant-level"
+                  name="grant-level"
+                  value={grantAccessLevel}
+                  onChange={(e) => setGrantAccessLevel(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
+                >
+                  {ACCESS_LEVELS.map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
               </div>
+              <Button variant="primary" onClick={() => { void handleGrantAccess(); }}>
+                Grant Access
+              </Button>
+            </div>
+            {grantError ? (
+              <p className="mt-2 text-xs text-state-danger">{grantError}</p>
+            ) : null}
+          </div>
 
-              <div className="mt-3 rounded-2xl border border-border bg-canvas/80 p-3">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">Primary Role</p>
-                <p className="mt-2 text-sm text-text-secondary">{agent.role}</p>
+          <div className="rounded-2xl border border-border bg-panel-hover">
+            <div className="border-b border-border px-4 py-3">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">
+                Current Access ({workspaceAccess?.length ?? 0})
+              </p>
+            </div>
+            {Array.isArray(workspaceAccess) && workspaceAccess.length > 0 ? (
+              <div className="divide-y divide-border">
+                {workspaceAccess.map((acc) => {
+                  const member = Array.isArray(members)
+                    ? members.find((m) => m.id === acc.member_id)
+                    : undefined;
+                  return (
+                    <div key={acc.id} className="flex items-center justify-between p-4">
+                      <div>
+                        <p className="text-sm text-text-primary">{member?.display_name ?? acc.member_id}</p>
+                        <Badge variant={roleBadgeVariant(acc.access_level)}>{acc.access_level}</Badge>
+                      </div>
+                      <Button variant="danger" onClick={() => revokeAccess(acc.id).catch(() => {})}>
+                        Revoke
+                      </Button>
+                    </div>
+                  );
+                })}
               </div>
-
-              <p className="mt-4 text-sm leading-6 text-text-secondary">{agent.summary}</p>
-
-              <div className="mt-4 flex items-center justify-between gap-2">
-                <Badge variant={statusVariant}>{status.toUpperCase()}</Badge>
-                <span className="text-xs text-text-dim">{live?.health ?? "status: unknown"}</span>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-sm text-text-dim">
+                No workspace access entries.
               </div>
-            </article>
-          );
-        })}
-      </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "Agent Assignments" && (
+        <AgentAssignmentBoard
+          assignments={agentAssignments}
+          members={members}
+          onAssign={(agentId, memberId, role) => {
+            assignAgent("ws-1", agentId, memberId, role).catch(() => {});
+          }}
+          onUnassign={(assignmentId) => {
+            unassignAgent(assignmentId).catch(() => {});
+          }}
+        />
+      )}
+
+      {activeTab === "Activity" && (
+        <div className="rounded-2xl border border-border bg-panel-hover">
+          <div className="border-b border-border px-4 py-3">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-dim">
+              Team Activity ({activity?.length ?? 0})
+            </p>
+          </div>
+          {Array.isArray(activity) && activity.length > 0 ? (
+            <div className="divide-y divide-border">
+              {activity.map((act) => (
+                <div key={act.id} className="p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-text-primary">{act.actor ?? "system"}</span>
+                    <span className="text-xs text-text-dim">{act.action ?? ""}</span>
+                  </div>
+                  <p className="mt-1 text-sm text-text-secondary">{act.details ?? ""}</p>
+                  {act.created_at ? (
+                    <p className="mt-1 text-[11px] text-text-dim">
+                      {new Date(act.created_at).toLocaleString()}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8 text-sm text-text-dim">
+              No activity recorded.
+            </div>
+          )}
+        </div>
+      )}
+
+      {confirmMemberId && confirmAction ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-panel-solid p-6 shadow-2xl">
+            <p className="text-sm font-semibold text-text-primary">Are you sure?</p>
+            <p className="mt-2 text-sm text-text-secondary">
+              This will {confirmAction} the selected member. {confirmAction === "remove" ? "This action cannot be undone." : ""}
+            </p>
+            <div className="mt-4 flex gap-3">
+              <Button variant="danger" onClick={handleConfirmAction}>
+                Yes, {confirmAction}
+              </Button>
+              <Button variant="secondary" onClick={() => { setConfirmMemberId(null); setConfirmAction(null); }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }

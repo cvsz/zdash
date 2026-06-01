@@ -6,6 +6,12 @@ import type {
   EventLog,
   HealthStatus,
   ScheduledJob,
+  TeamMember,
+  TeamInvitation,
+  TeamWorkspaceAccess,
+  TeamAgentAssignment,
+  TeamActivity,
+  TeamSummary,
   TradingSignal,
 } from "./types";
 
@@ -235,3 +241,41 @@ export const mockContent: ContentItem[] = [
     metadata: { mock: true, simulation: true },
   },
 ];
+
+// --- Team Workspace Mocks ---
+export const mockTeamMembers: TeamMember[] = [
+  { id: "mem-1", organization_id: "org-1", workspace_id: null, user_id: "user-1", email: "admin@zdash.dev", display_name: "Admin User", role: "owner", status: "active", avatar_url: null, last_seen_at: new Date().toISOString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mem-2", organization_id: "org-1", workspace_id: null, user_id: "user-2", email: "operator@zdash.dev", display_name: "Operator Bot", role: "operator", status: "active", avatar_url: null, last_seen_at: new Date(Date.now() - 3600000).toISOString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mem-3", organization_id: "org-1", workspace_id: null, user_id: null, email: "analyst@zdash.dev", display_name: "Jane Analyst", role: "analyst", status: "active", avatar_url: null, last_seen_at: new Date(Date.now() - 86400000).toISOString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: "mem-4", organization_id: "org-1", workspace_id: null, user_id: null, email: "viewer@zdash.dev", display_name: "Viewer User", role: "viewer", status: "invited", avatar_url: null, last_seen_at: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+];
+
+export const mockTeamInvitations: TeamInvitation[] = [
+  { id: "inv-1", organization_id: "org-1", workspace_id: null, email: "newmember@zdash.dev", role: "analyst", status: "pending", invited_by: "Admin User", expires_at: new Date(Date.now() + 86400000 * 7).toISOString(), created_at: new Date().toISOString() },
+];
+
+export const mockTeamWorkspaceAccess: TeamWorkspaceAccess[] = [
+  { id: "access-1", workspace_id: "ws-1", member_id: "mem-2", access_level: "manage", created_at: new Date().toISOString() },
+];
+
+export const mockTeamAgentAssignments: TeamAgentAssignment[] = [
+  { id: "assign-1", agent_id: "ceo", member_id: "mem-1", assignment_role: "owner", created_at: new Date().toISOString(), agent_name: "Alexander Prime" },
+  { id: "assign-2", agent_id: "trading", member_id: "mem-2", assignment_role: "reviewer", created_at: new Date().toISOString(), agent_name: "System Trader" },
+];
+
+export const mockTeamActivity: TeamActivity[] = [
+  { id: "act-1", action: "team.member.invited", actor: "Admin User", details: "Invited newmember@zdash.dev as analyst", created_at: new Date().toISOString() },
+  { id: "act-2", action: "team.member.role_updated", actor: "Admin User", details: "Changed Jane Analyst role to analyst", created_at: new Date(Date.now() - 3600000).toISOString() },
+];
+
+export const mockTeamSummary: TeamSummary = {
+  total_members: 4,
+  active_members: 3,
+  pending_invitations: 1,
+  admins: 1,
+  operators: 1,
+  analysts: 1,
+  developers: 0,
+  viewers: 1,
+  is_last_owner: true,
+};

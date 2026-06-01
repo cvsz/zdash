@@ -51,6 +51,7 @@ from app.api import (
     global_ops,
     notifications,
     sovereign,
+    team,
     tenancy,
     workers,
 )
@@ -192,6 +193,7 @@ app.include_router(lessons.router)
 app.include_router(collaboration.router)
 app.include_router(workspaces.router)
 
+app.include_router(team.router)
 app.include_router(audit.router)
 app.include_router(notifications.router)
 app.include_router(workers.router)

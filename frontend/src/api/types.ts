@@ -655,3 +655,68 @@ export type AITraderPaperTradeResult = AITraderDecision & {
   dry_run: true;
   execution: ExecutionResult;
 };
+
+// --- Team Workspace Types ---
+export interface TeamMember {
+  id: string;
+  organization_id: string;
+  workspace_id: string | null;
+  user_id: string | null;
+  email: string;
+  display_name: string;
+  role: 'owner' | 'admin' | 'operator' | 'analyst' | 'developer' | 'viewer';
+  status: 'active' | 'invited' | 'suspended' | 'removed';
+  avatar_url: string | null;
+  last_seen_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeamInvitation {
+  id: string;
+  organization_id: string;
+  workspace_id: string | null;
+  email: string;
+  role: string;
+  status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  invited_by: string;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface TeamWorkspaceAccess {
+  id: string;
+  workspace_id: string;
+  member_id: string;
+  access_level: 'owner' | 'manage' | 'write' | 'read';
+  created_at: string;
+}
+
+export interface TeamAgentAssignment {
+  id: string;
+  agent_id: string;
+  member_id: string | null;
+  assignment_role: 'owner' | 'reviewer' | 'runner' | 'observer';
+  created_at: string;
+  agent_name?: string;
+}
+
+export interface TeamActivity {
+  id: string;
+  action: string;
+  actor: string;
+  details: string;
+  created_at: string;
+}
+
+export interface TeamSummary {
+  total_members: number;
+  active_members: number;
+  pending_invitations: number;
+  admins: number;
+  operators: number;
+  analysts: number;
+  developers: number;
+  viewers: number;
+  is_last_owner: boolean;
+}

@@ -29,7 +29,7 @@ describe("App routing", () => {
     renderAt("/");
     await waitForStableUi();
     expect(await screen.findByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
-    expect(await screen.findByRole("heading", { name: "Team Roster", level: 1 })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Team Workspace", level: 1 })).toBeTruthy();
   });
 
   it("renders risk route", async () => {
