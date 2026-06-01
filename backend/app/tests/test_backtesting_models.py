@@ -69,3 +69,34 @@ def test_optimization_request_max_combinations_validation() -> None:
             parameter_grid={"lookback": [8, 12]},
             max_combinations=0,
         )
+
+
+def test_optimization_request_defaults_empty_parameter_grid():
+    from app.backtesting.models import OptimizationRequest
+
+    req = OptimizationRequest(
+        strategy="ob_aggressive",
+        symbol="XAUUSD",
+        timeframe="M5",
+        sort_metric="max_drawdown_percent",
+    )
+
+    assert req.parameter_grid == {}
+
+
+def test_optimizer_accepts_empty_parameter_grid():
+    from app.backtesting.models import OptimizationRequest
+    from app.backtesting.optimizer import ParameterOptimizer
+
+    req = OptimizationRequest(
+        strategy="ob_aggressive",
+        symbol="XAUUSD",
+        timeframe="M5",
+        parameter_grid={},
+        sort_metric="profit_factor",
+    )
+
+    result = ParameterOptimizer().optimize(req)
+
+    assert result.executed_combinations == 1
+    assert result.total_combinations == 1
