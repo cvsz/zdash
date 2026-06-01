@@ -1,0 +1,318 @@
+Implement Phase 47: Real /team Team Workspace.
+
+Goal:
+Replace the current mostly static Team Roster page with a real DB-backed team workspace for zDash.
+
+Current state:
+- frontend/src/pages/TeamRoster.tsx renders canonical AI agents from CANONICAL_AGENTS.
+- It uses useAgents() only for live agent health.
+- It has a hardcoded message panel from ceo -> janie.
+- It is not a real organization/team/member management page.
+
+Target:
+Build a real /team page that manages organization users, roles, invitations, workspace access, AI agent assignments, activity, and audit-safe actions.
+
+Hard requirements:
+- No secrets printed.
+- No .env files tracked.
+- All backend responses must use zDash API envelope: { ok, data, error, timestamp }.
+- No frontend runtime crash on undefined/null arrays.
+- No live destructive actions without confirmation.
+- Must remain safe in development and production.
+- Do not break existing TeamRoster tests; update them to match the real page.
+- Preserve existing AI agent roster as a tab/section, not as the entire /team page.
+
+Backend tasks:
+
+1. Create or finalize team domain models
+Add DB-backed models if missing:
+- TeamMember
+  - id
+  - organization_id
+  - workspace_id nullable
+  - user_id nullable
+  - email
+  - display_name
+  - role: owner | admin | operator | analyst | developer | viewer
+  - status: active | invited | suspended | removed
+  - avatar_url nullable
+  - last_seen_at nullable
+  - created_at / updated_at
+- TeamInvitation
+  - id
+  - organization_id
+  - workspace_id nullable
+  - email
+  - role
+  - token_hash
+  - status: pending | accepted | revoked | expired
+  - invited_by
+  - expires_at
+  - created_at / updated_at
+- TeamWorkspaceAccess
+  - id
+  - organization_id
+  - workspace_id
+  - member_id
+  - access_level: owner | manage | write | read
+  - created_at / updated_at
+- TeamAgentAssignment
+  - id
+  - organization_id
+  - workspace_id
+  - member_id nullable
+  - agent_id
+  - assignment_role: owner | reviewer | runner | observer
+  - created_at / updated_at
+
+Use existing Base/session/migration style in repo.
+
+2. Repository/service layer
+Create:
+- backend/app/team/models.py
+- backend/app/team/repositories.py
+- backend/app/team/service.py
+- backend/app/team/schemas.py
+
+Service functions:
+- list_members(org_id, workspace_id optional)
+- get_member(org_id, member_id)
+- invite_member(org_id, workspace_id, email, role, invited_by)
+- resend_invitation(org_id, invitation_id, actor)
+- revoke_invitation(org_id, invitation_id, actor)
+- update_member_role(org_id, member_id, role, actor)
+- suspend_member(org_id, member_id, actor)
+- reactivate_member(org_id, member_id, actor)
+- remove_member(org_id, member_id, actor)
+- list_invitations(org_id, workspace_id optional)
+- list_workspace_access(org_id, workspace_id)
+- grant_workspace_access(org_id, workspace_id, member_id, access_level, actor)
+- revoke_workspace_access(org_id, access_id, actor)
+- list_agent_assignments(org_id, workspace_id optional)
+- assign_agent(org_id, workspace_id, agent_id, member_id, assignment_role, actor)
+- unassign_agent(org_id, assignment_id, actor)
+- get_team_activity(org_id, workspace_id optional, limit)
+
+Rules:
+- Validate email.
+- Validate role.
+- Owner cannot remove/suspend self.
+- Last owner cannot be removed or downgraded.
+- Invitations must be token-hashed; never return raw token except immediately at creation in development-safe form if necessary.
+- Redact secrets in audit logs.
+- All mutations emit audit/event entries.
+
+3. API
+Create:
+- backend/app/api/team.py
+
+Routes:
+- GET /api/team/members
+- GET /api/team/members/{member_id}
+- POST /api/team/invitations
+- GET /api/team/invitations
+- POST /api/team/invitations/{invitation_id}/resend
+- POST /api/team/invitations/{invitation_id}/revoke
+- PATCH /api/team/members/{member_id}/role
+- POST /api/team/members/{member_id}/suspend
+- POST /api/team/members/{member_id}/reactivate
+- DELETE /api/team/members/{member_id}
+- GET /api/team/workspace-access
+- POST /api/team/workspace-access
+- DELETE /api/team/workspace-access/{access_id}
+- GET /api/team/agent-assignments
+- POST /api/team/agent-assignments
+- DELETE /api/team/agent-assignments/{assignment_id}
+- GET /api/team/activity
+- GET /api/team/summary
+
+Every endpoint returns zDash envelope.
+Use RBAC permissions if existing ones exist. If missing, add safe permission mapping:
+- team_read
+- team_manage
+- team_invite
+- team_remove
+- team_assign_agents
+
+If RBAC enum cannot be safely extended, reuse closest admin/team permissions and document.
+
+4. Seed/default dev data
+When no members exist for an org, return or seed:
+- current authenticated user as owner/admin
+- optional system operator member
+- no secrets
+- development-only generated invitations must be clearly mock/dev
+
+5. Frontend API
+Update frontend/src/api/types.ts and frontend/src/api/endpoints.ts with:
+- TeamMember
+- TeamInvitation
+- TeamWorkspaceAccess
+- TeamAgentAssignment
+- TeamActivity
+- TeamSummary
+- listTeamMembers()
+- listTeamInvitations()
+- inviteTeamMember()
+- revokeTeamInvitation()
+- resendTeamInvitation()
+- updateTeamMemberRole()
+- suspendTeamMember()
+- reactivateTeamMember()
+- removeTeamMember()
+- listTeamWorkspaceAccess()
+- grantTeamWorkspaceAccess()
+- revokeTeamWorkspaceAccess()
+- listTeamAgentAssignments()
+- assignTeamAgent()
+- unassignTeamAgent()
+- getTeamActivity()
+- getTeamSummary()
+
+Fallback mocks must be complete, deterministic, safe, and never require live backend for tests.
+
+6. Frontend hook
+Create:
+- frontend/src/hooks/useTeam.ts
+
+Hook state:
+- members
+- invitations
+- workspaceAccess
+- agentAssignments
+- activity
+- summary
+- loading
+- error
+- mutation loading states
+
+Hook actions:
+- inviteMember
+- updateRole
+- suspendMember
+- reactivateMember
+- removeMember
+- resendInvite
+- revokeInvite
+- grantAccess
+- revokeAccess
+- assignAgent
+- unassignAgent
+- refetch
+
+All actions catch API errors and set a visible error without crashing.
+
+7. Real /team UI
+Replace frontend/src/pages/TeamRoster.tsx with a real team workspace page.
+
+Sections/tabs:
+- Overview
+  - total members
+  - active members
+  - pending invitations
+  - admins/operators/viewers counts
+  - safety warning for last owner
+- Members
+  - searchable/filterable member table
+  - role badge
+  - status badge
+  - last seen
+  - actions: change role, suspend/reactivate, remove
+  - confirmations for suspend/remove
+- Invitations
+  - invite member form
+  - email input with id/name/autocomplete
+  - role select with id/name
+  - workspace select if available
+  - pending invites table
+  - resend/revoke actions
+- Workspace Access
+  - workspace access table
+  - grant/revoke access
+- Agent Assignments
+  - preserve current canonical AI agents roster here
+  - show live agent status from useAgents()
+  - assign human owner/reviewer/runner/observer to agent
+- Activity
+  - audit/event timeline of team changes
+
+Defensive rendering:
+- Every array must be guarded with Array.isArray.
+- No .map/.length on undefined.
+- No .toLowerCase on undefined.
+- All form fields must have id or name.
+- All action buttons handle rejected promises.
+
+8. Preserve current AI team value
+Move the current static canonical agent roster into a component:
+- frontend/src/components/team/AgentAssignmentBoard.tsx
+
+It should keep:
+- canonical agent cards
+- live status from useAgents
+- pagination
+- existing message panel may become "Agent Message Panel"
+But it should not be the only /team content.
+
+9. Tests
+Add/update:
+- frontend/src/tests/TeamRoster.test.tsx
+- frontend/src/tests/TeamActions.test.tsx
+- frontend/src/tests/ApiMockHarness.test.ts
+- backend/app/tests/test_team_api.py
+- backend/app/tests/test_team_service.py
+
+Frontend tests:
+- /team renders Team Workspace heading
+- renders overview cards
+- renders members table
+- invite form has id/name fields
+- clicking invite calls API mock and shows pending invitation
+- suspend/remove actions require confirmation or safe flow
+- agent assignment board renders canonical agents
+- no live /api calls
+- no act warnings
+
+Backend tests:
+- list members returns envelope
+- invite member returns envelope
+- invalid role returns envelope error
+- cannot remove last owner
+- suspend/reactivate works
+- agent assignment dry/safe semantics
+- all HTTP exceptions remain enveloped
+
+10. Docs
+Create:
+- docs/runbooks/REAL_TEAM_WORKSPACE.md
+- docs/reports/PHASE47_REAL_TEAM_WORKSPACE_REPORT.md
+
+Docs must cover:
+- team architecture
+- role model
+- invitation flow
+- workspace access model
+- agent assignment model
+- audit/safety model
+- local development behavior
+
+Validation:
+- cd backend && python -m ruff format --check app tests
+- cd backend && python -m ruff check app tests
+- cd backend && pytest app/tests/test_team_api.py app/tests/test_team_service.py
+- cd frontend && npm test -- src/tests/TeamRoster.test.tsx
+- cd frontend && npm test -- src/tests/TeamActions.test.tsx
+- cd frontend && npm run build
+- make validate-fast
+
+Acceptance criteria:
+- /team loads without ErrorBoundary crash.
+- /team is real team management, not only static AI roster.
+- Team members and invitations are DB-backed or repository-backed with deterministic dev seed.
+- All API responses are zDash envelopes.
+- Mutations show clear UI errors and do not crash.
+- Agent roster is preserved under Agent Assignments.
+- All tests pass.
+- make validate-fast passes.
+- No secrets.
+- No .env tracked.
