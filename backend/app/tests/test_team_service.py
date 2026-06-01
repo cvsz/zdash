@@ -213,27 +213,19 @@ def test_update_member_role_not_found(db_session):
 
 def test_cannot_downgrade_last_owner(db_session):
     repo = TeamMemberRepository(db_session)
-    owner = repo.create(
-        organization_id="org-1", email="owner@test.com", role="owner"
-    )
+    owner = repo.create(organization_id="org-1", email="owner@test.com", role="owner")
 
-    result = update_member_role(
-        "org-1", owner.id, "viewer", "actor", db=db_session
-    )
+    result = update_member_role("org-1", owner.id, "viewer", "actor", db=db_session)
     assert result["ok"] is False
     assert result["error"] == "CANNOT_DOWNGRADE_LAST_OWNER"
 
 
 def test_can_downgrade_when_multiple_owners(db_session):
     repo = TeamMemberRepository(db_session)
-    o1 = repo.create(
-        organization_id="org-1", email="owner1@test.com", role="owner"
-    )
+    o1 = repo.create(organization_id="org-1", email="owner1@test.com", role="owner")
     repo.create(organization_id="org-1", email="owner2@test.com", role="owner")
 
-    result = update_member_role(
-        "org-1", o1.id, "viewer", "actor", db=db_session
-    )
+    result = update_member_role("org-1", o1.id, "viewer", "actor", db=db_session)
     assert result["ok"] is True
     assert result["member"]["role"] == "viewer"
 
@@ -636,18 +628,10 @@ def test_get_team_summary_with_members(db_session):
     repo = TeamMemberRepository(db_session)
     repo.create(organization_id="org-1", email="owner@test.com", role="owner")
     repo.create(organization_id="org-1", email="admin@test.com", role="admin")
-    repo.create(
-        organization_id="org-1", email="op@test.com", role="operator"
-    )
-    repo.create(
-        organization_id="org-1", email="analyst@test.com", role="analyst"
-    )
-    repo.create(
-        organization_id="org-1", email="dev@test.com", role="developer"
-    )
-    repo.create(
-        organization_id="org-1", email="viewer@test.com", role="viewer"
-    )
+    repo.create(organization_id="org-1", email="op@test.com", role="operator")
+    repo.create(organization_id="org-1", email="analyst@test.com", role="analyst")
+    repo.create(organization_id="org-1", email="dev@test.com", role="developer")
+    repo.create(organization_id="org-1", email="viewer@test.com", role="viewer")
 
     result = get_team_summary("org-1", db=db_session)
     s = result["summary"]

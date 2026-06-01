@@ -114,9 +114,7 @@ class TeamInvitationRepository:
         )
         return self.db.execute(q).scalar_one_or_none()
 
-    def get_by_org_and_email(
-        self, org_id: str, email: str
-    ) -> TeamInvitation | None:
+    def get_by_org_and_email(self, org_id: str, email: str) -> TeamInvitation | None:
         q = select(TeamInvitation).where(
             TeamInvitation.organization_id == org_id, TeamInvitation.email == email
         )
@@ -229,9 +227,7 @@ class TeamAgentAssignmentRepository:
         return row
 
     def get_by_id(self, assignment_id: str) -> TeamAgentAssignment | None:
-        q = select(TeamAgentAssignment).where(
-            TeamAgentAssignment.id == assignment_id
-        )
+        q = select(TeamAgentAssignment).where(TeamAgentAssignment.id == assignment_id)
         return self.db.execute(q).scalar_one_or_none()
 
     def list_by_org(self, org_id: str) -> list[TeamAgentAssignment]:

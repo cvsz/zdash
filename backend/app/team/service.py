@@ -478,9 +478,7 @@ def grant_workspace_access(
     try:
         repo = TeamWorkspaceAccessRepository(session)
         existing_list = repo.list_by_org_and_workspace(org_id, workspace_id)
-        existing = next(
-            (a for a in existing_list if a.member_id == member_id), None
-        )
+        existing = next((a for a in existing_list if a.member_id == member_id), None)
         if existing:
             existing.access_level = access_level
             session.commit()
@@ -661,9 +659,7 @@ def get_team_activity(
                     "action": r.action,
                     "actor": r.actor_email or "",
                     "details": str(r.metadata_json) if r.metadata_json else "",
-                    "created_at": r.created_at.isoformat()
-                    if r.created_at
-                    else None,
+                    "created_at": r.created_at.isoformat() if r.created_at else None,
                 }
             )
         return {"ok": True, "activities": activities}
@@ -672,9 +668,7 @@ def get_team_activity(
             session.close()
 
 
-def get_team_summary(
-    org_id: str, db: Session | None = None
-) -> dict[str, Any]:
+def get_team_summary(org_id: str, db: Session | None = None) -> dict[str, Any]:
     session, own_session = _session(db)
     try:
         repo = TeamMemberRepository(session)
@@ -691,9 +685,7 @@ def get_team_summary(
 
         inv_repo = TeamInvitationRepository(session)
         invitations = inv_repo.list_by_org(org_id)
-        pending_invitations = sum(
-            1 for inv in invitations if inv.status == "pending"
-        )
+        pending_invitations = sum(1 for inv in invitations if inv.status == "pending")
 
         owner_count = repo.count_by_org_and_role(org_id, "owner")
         is_last_owner = owner_count <= 1

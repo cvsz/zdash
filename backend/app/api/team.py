@@ -42,17 +42,13 @@ def _get_org(current_user: AuthSession) -> str:
 @router.get("/members")
 def api_list_members(
     workspace_id: str | None = Query(default=None),
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
         org_id = _get_org(current_user)
         result = list_members(org_id, workspace_id, db)
-        return success_response(
-            {"members": result.get("members", [])}
-        )
+        return success_response({"members": result.get("members", [])})
     except Exception as e:
         return error_response("TEAM_ERROR", str(e))
 
@@ -60,9 +56,7 @@ def api_list_members(
 @router.get("/members/{member_id}")
 def api_get_member(
     member_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
@@ -78,9 +72,7 @@ def api_get_member(
 @router.post("/invitations")
 def api_invite_member(
     body: InviteMemberRequest,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_invite])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
     db=Depends(get_db_session),
 ):
     try:
@@ -99,17 +91,13 @@ def api_invite_member(
 @router.get("/invitations")
 def api_list_invitations(
     workspace_id: str | None = Query(default=None),
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
         org_id = _get_org(current_user)
         result = list_invitations(org_id, workspace_id, db)
-        return success_response(
-            {"invitations": result.get("invitations", [])}
-        )
+        return success_response({"invitations": result.get("invitations", [])})
     except Exception as e:
         return error_response("TEAM_ERROR", str(e))
 
@@ -117,9 +105,7 @@ def api_list_invitations(
 @router.post("/invitations/{invitation_id}/resend")
 def api_resend_invitation(
     invitation_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_invite])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
     db=Depends(get_db_session),
 ):
     try:
@@ -136,9 +122,7 @@ def api_resend_invitation(
 @router.post("/invitations/{invitation_id}/revoke")
 def api_revoke_invitation(
     invitation_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_invite])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
     db=Depends(get_db_session),
 ):
     try:
@@ -156,9 +140,7 @@ def api_revoke_invitation(
 def api_update_member_role(
     member_id: str,
     body: UpdateRoleRequest,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -175,9 +157,7 @@ def api_update_member_role(
 @router.post("/members/{member_id}/suspend")
 def api_suspend_member(
     member_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -194,9 +174,7 @@ def api_suspend_member(
 @router.post("/members/{member_id}/reactivate")
 def api_reactivate_member(
     member_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -213,9 +191,7 @@ def api_reactivate_member(
 @router.delete("/members/{member_id}")
 def api_remove_member(
     member_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_remove])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_remove])),
     db=Depends(get_db_session),
 ):
     try:
@@ -232,9 +208,7 @@ def api_remove_member(
 @router.get("/workspace-access")
 def api_list_workspace_access(
     workspace_id: str = Query(...),
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -248,9 +222,7 @@ def api_list_workspace_access(
 @router.post("/workspace-access")
 def api_grant_workspace_access(
     body: GrantAccessRequest,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -269,9 +241,7 @@ def api_grant_workspace_access(
 @router.delete("/workspace-access/{access_id}")
 def api_revoke_workspace_access(
     access_id: str,
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_manage])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
     db=Depends(get_db_session),
 ):
     try:
@@ -288,17 +258,13 @@ def api_revoke_workspace_access(
 @router.get("/agent-assignments")
 def api_list_agent_assignments(
     workspace_id: str | None = Query(default=None),
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
         org_id = _get_org(current_user)
         result = list_agent_assignments(org_id, workspace_id, db)
-        return success_response(
-            {"assignments": result.get("assignments", [])}
-        )
+        return success_response({"assignments": result.get("assignments", [])})
     except Exception as e:
         return error_response("TEAM_ERROR", str(e))
 
@@ -353,9 +319,7 @@ def api_unassign_agent(
 def api_get_team_activity(
     workspace_id: str | None = Query(default=None),
     limit: int = Query(default=20, ge=1, le=100),
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
@@ -368,9 +332,7 @@ def api_get_team_activity(
 
 @router.get("/summary")
 def api_get_team_summary(
-    current_user: AuthSession = Depends(
-        require_permissions([Permission.team_read])
-    ),
+    current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
     db=Depends(get_db_session),
 ):
     try:
