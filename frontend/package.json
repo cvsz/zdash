@@ -10,9 +10,11 @@
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
+    "i18next": "^26.3.0",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.8",
     "react-router-dom": "^6.28.1",
     "recharts": "^2.15.0"
   },
