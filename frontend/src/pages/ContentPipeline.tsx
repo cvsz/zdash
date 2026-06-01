@@ -22,6 +22,7 @@ import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
 import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 import { useContentRealtime } from "../realtime/useRealtime";
 import { canPublishContent } from "../utils/safety";
 
@@ -37,6 +38,7 @@ const boardStatuses = [
 ] as const;
 
 export default function ContentPipeline() {
+  const { t } = useT();
   const realtime = useContentRealtime({ maxEvents: 18 });
   const contentStatus = useApi(getContentStatus, []);
   const itemsState = useApi(listContentItems, []);
@@ -135,13 +137,13 @@ export default function ContentPipeline() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Content Pipeline"
-        subtitle={`${AGENT_NAME_BY_ID.editor}, ${AGENT_NAME_BY_ID.graphic}, and ${AGENT_NAME_BY_ID.social} workflow control.`}
+        title={t('content.title')}
+        subtitle={t('content.subtitle_agents', { editor: AGENT_NAME_BY_ID.editor, graphic: AGENT_NAME_BY_ID.graphic, social: AGENT_NAME_BY_ID.social })}
         actions={
           <>
             <RealtimeStatusBadge connection={realtime.connection} compact />
-            <LiveIndicator connection={realtime.connection} label="Content WS" />
-            <Badge variant="warning">APPROVAL GATED</Badge>
+            <LiveIndicator connection={realtime.connection} label={t('content.content_ws')} />
+            <Badge variant="warning">{t('content.approval_gated')}</Badge>
           </>
         }
       />
@@ -149,25 +151,22 @@ export default function ContentPipeline() {
       <RealtimeConnectionBanner connection={realtime.connection} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Pipeline Enabled" value={contentStatus.data?.enabled ? "YES" : "NO"} />
-        <MetricCard label="Approval Required" value={approvalRequired ? "YES" : "NO"} />
-        <MetricCard label="SOCIAL_DRY_RUN" value={socialDryRun ? "ON" : "OFF"} />
-        <MetricCard label="Content Items" value={items.length} />
+        <MetricCard label={t('content.pipeline_enabled')} value={contentStatus.data?.enabled ? "YES" : "NO"} />
+        <MetricCard label={t('content.approval_required')} value={approvalRequired ? "YES" : "NO"} />
+        <MetricCard label={t('content.social_dry_run')} value={socialDryRun ? "ON" : "OFF"} />
+        <MetricCard label={t('content.content_items')} value={items.length} />
       </div>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Workflow</h3>
-        <p className="mt-2 text-sm text-text-secondary">
-          Elena Voss drafts and edits content, Julian Reed prepares graphics, and Maya Quinn handles scheduling and
-          approval-gated dry-run publishing.
-        </p>
+        <h3 className="text-sm font-semibold text-white">{t('content.workflow')}</h3>
+        <p className="mt-2 text-sm text-text-secondary">{t('content.workflow_description')}</p>
       </section>
 
       <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onCreateContent(event)}>
-        <h3 className="text-sm font-semibold text-white">Create Content</h3>
+        <h3 className="text-sm font-semibold text-white">{t('content.create_content')}</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <label className="text-xs text-text-secondary">
-            Title
+            {t('content.content_title')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newTitle}
@@ -175,7 +174,7 @@ export default function ContentPipeline() {
             />
           </label>
           <label className="text-xs text-text-secondary">
-            Topic
+            {t('content.content_topic')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newTopic}
@@ -183,7 +182,7 @@ export default function ContentPipeline() {
             />
           </label>
           <label className="text-xs text-text-secondary">
-            Type
+            {t('content.content_type')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newType}
@@ -193,19 +192,17 @@ export default function ContentPipeline() {
         </div>
         <div className="mt-3 flex items-center gap-2">
           <Button type="submit" variant="primary">
-            Create content
+            {t('content.create_content_btn')}
           </Button>
           <Button variant="secondary" onClick={() => void onRunPipeline()} disabled={pipelineRunning}>
-            {pipelineRunning ? "Running pipeline..." : "Run full pipeline"}
+            {pipelineRunning ? t('content.running_pipeline') : t('content.run_full_pipeline')}
           </Button>
         </div>
       </form>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Content Board</h3>
-        <p className="mt-1 text-xs text-text-dim">
-          Grouped by status: draft, edited, graphic_ready, scheduled, approved, posted, failed, rejected.
-        </p>
+        <h3 className="text-sm font-semibold text-white">{t('content.content_board')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('content.content_board_subtitle')}</p>
 
         <div className="mt-4 space-y-4">
           {boardStatuses.map((status) => (
@@ -227,10 +224,10 @@ export default function ContentPipeline() {
                         <p className="mt-1 text-xs text-text-dim">{item.topic}</p>
                         <div className="mt-2 flex flex-wrap gap-2">
                           <Badge variant={item.approval_required ? "warning" : "muted"}>
-                            {item.approval_required ? "Approval required" : "Approval optional"}
+                            {item.approval_required ? t('content.approval_required_badge') : t('content.approval_optional')}
                           </Badge>
                           <Badge variant={item.social_dry_run !== false ? "success" : "warning"}>
-                            {item.social_dry_run !== false ? "SOCIAL_DRY_RUN" : "SOCIAL_REAL_MODE"}
+                            {item.social_dry_run !== false ? t('content.social_dry_run') : t('content.social_real_mode')}
                           </Badge>
                         </div>
 
@@ -244,7 +241,7 @@ export default function ContentPipeline() {
                               )
                             }
                           >
-                            Edit
+                            {t('content.edit')}
                           </Button>
                           <Button
                             className="px-2 py-1 text-xs"
@@ -255,7 +252,7 @@ export default function ContentPipeline() {
                               )
                             }
                           >
-                            Generate graphic
+                            {t('content.generate_graphic')}
                           </Button>
                           <Button
                             className="px-2 py-1 text-xs"
@@ -270,7 +267,7 @@ export default function ContentPipeline() {
                               )
                             }
                           >
-                            Schedule
+                            {t('content.schedule')}
                           </Button>
                           <Button
                             className="px-2 py-1 text-xs"
@@ -285,7 +282,7 @@ export default function ContentPipeline() {
                               )
                             }
                           >
-                            Approve
+                            {t('content.approve')}
                           </Button>
                           <Button
                             className="px-2 py-1 text-xs"
@@ -303,12 +300,12 @@ export default function ContentPipeline() {
                               })
                             }
                           >
-                            Dry-run publish
+                            {t('content.dry_run_publish')}
                           </Button>
                         </div>
 
                         <div className="mt-3">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-text-dim">Policy notes</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide text-text-dim">{t('content.policy_notes')}</p>
                           {item.policy_notes?.length ? (
                             <ul className="mt-1 list-disc space-y-1 pl-4 text-xs text-state-warning">
                               {item.policy_notes.map((note) => (
@@ -316,10 +313,10 @@ export default function ContentPipeline() {
                               ))}
                             </ul>
                           ) : (
-                            <p className="mt-1 text-xs text-text-dim">No policy notes.</p>
+                            <p className="mt-1 text-xs text-text-dim">{t('content.no_policy_notes')}</p>
                           )}
                           {item.policy_passed === false ? (
-                            <p className="mt-1 text-xs font-semibold text-state-danger">Policy failed: action blocked until resolved.</p>
+                            <p className="mt-1 text-xs font-semibold text-state-danger">{t('content.policy_failed')}</p>
                           ) : null}
                         </div>
                       </article>
@@ -327,7 +324,7 @@ export default function ContentPipeline() {
                   })}
                 </div>
               ) : (
-                <p className="text-xs text-text-dim">No items in this status.</p>
+                <p className="text-xs text-text-dim">{t('content.no_items_in_status')}</p>
               )}
             </div>
           ))}
@@ -338,14 +335,14 @@ export default function ContentPipeline() {
       {error ? <p className="text-sm text-state-danger">{error}</p> : null}
 
       <RealtimeEventFeed
-        title="Live Content Stream"
+        title={t('content.live_content_stream')}
         events={realtime.events}
         maxItems={10}
-        emptyMessage="No live content websocket events yet."
+        emptyMessage={t('content.no_content_websocket_events')}
       />
 
       <div className="rounded-card border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-state-warning">
-        Publishing remains approval-required and dry-run by default. Mock publishing does not create real social posts.
+        {t('content.publishing_disclaimer')}
       </div>
     </div>
   );

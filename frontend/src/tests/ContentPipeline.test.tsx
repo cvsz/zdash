@@ -8,7 +8,7 @@ describe("ContentPipeline", () => {
     render(<ContentPipeline />);
 
     expect(screen.getByRole("heading", { name: "Content Pipeline", level: 2 })).toBeTruthy();
-    expect(screen.getByText("SOCIAL_DRY_RUN")).toBeTruthy();
+    expect(screen.getByText("Social Dry Run")).toBeTruthy();
     expect(screen.getByText("Approval Required")).toBeTruthy();
     expect(screen.getByText("Content Board")).toBeTruthy();
 

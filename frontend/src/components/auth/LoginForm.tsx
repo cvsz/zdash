@@ -6,6 +6,7 @@ import {
   isDefaultAdminCredentials,
 } from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
+import { useT } from "../../hooks/useT";
 
 type LoginFormProps = {
   onAuthenticated?: () => void;
@@ -13,6 +14,7 @@ type LoginFormProps = {
 
 export default function LoginForm({ onAuthenticated }: LoginFormProps) {
   const { login, loading, mode } = useAuth();
+  const { t } = useT();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,14 +29,14 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
       await login(username, password);
       onAuthenticated?.();
     } catch (caught) {
-      const message = caught instanceof Error ? caught.message : "Login failed";
+      const message = caught instanceof Error ? caught.message : t('auth.login_failed');
       setError(message);
     }
   };
 
   return (
     <div className="mx-auto w-full max-w-md rounded-xl border border-slate-800 bg-slate-900/80 p-6 shadow-lg">
-      <h1 className="text-xl font-semibold text-white">Sign in to zDash</h1>
+      <h1 className="text-xl font-semibold text-white">{t('auth.sign_in')}</h1>
       <p className="mt-1 text-sm text-slate-400">
         Session tokens are stored locally and never exposed in the UI.
       </p>
@@ -61,7 +63,7 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
 
       <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
         <label className="block text-sm text-slate-200" htmlFor="zdash-login-username">
-          Username / Email
+          {t('auth.username_email')}
           <input
             id="zdash-login-username"
             className="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white outline-none ring-cyan-500/30 transition focus:ring"
@@ -73,7 +75,7 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
         </label>
 
         <label className="block text-sm text-slate-200" htmlFor="zdash-login-password">
-          Password
+          {t('auth.password')}
           <input
             id="zdash-login-password"
             type="password"
@@ -90,7 +92,7 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
           disabled={loading}
           className="w-full rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-500 disabled:cursor-not-allowed disabled:bg-cyan-800"
         >
-          {loading ? "Signing in..." : "Sign in"}
+          {loading ? t('auth.signing_in') : t('auth.login')}
         </button>
       </form>
     </div>

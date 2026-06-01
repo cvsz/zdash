@@ -14,6 +14,7 @@ import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
 import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 import { useRiskRealtime } from "../realtime/useRealtime";
 import { formatDateTime, formatPercent } from "../utils/format";
 
@@ -30,6 +31,7 @@ function readNumber(value: unknown, fallback = 0): number {
 }
 
 export default function RiskPanel() {
+  const { t } = useT();
   const realtime = useRiskRealtime({ maxEvents: 14 });
   const riskStatus = useApi(getRiskStatus, []);
   const drawdownState = useApi(getDrawdown, []);
@@ -89,7 +91,7 @@ export default function RiskPanel() {
     try {
       const reason = haltReason.trim() || "Manual halt requested from Risk Panel.";
       const state = await haltRisk(reason);
-      setActionMessage(`Halt set: ${state.reason ?? "manual"}`);
+      setActionMessage(t('risk.halt_set', { reason: state.reason ?? "manual" }));
       setHaltReason("");
       await Promise.all([riskStatus.refetch(), drawdownState.refetch(), logsState.refetch()]);
     } catch (error) {
@@ -108,7 +110,7 @@ export default function RiskPanel() {
     try {
       const reason = resumeReason.trim();
       const state = await resumeRisk(reason, true);
-      setActionMessage(`Trading resumed: ${state.resume_reason ?? reason}`);
+      setActionMessage(t('risk.trading_resumed', { reason: state.resume_reason ?? reason }));
       setResumeReason("");
       setResumeConfirmOpen(false);
       await Promise.all([riskStatus.refetch(), drawdownState.refetch(), logsState.refetch()]);
@@ -123,13 +125,13 @@ export default function RiskPanel() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Risk Panel"
-        subtitle={`${AGENT_NAME_BY_ID.guardian} Guardian risk oversight, halt controls, and drawdown monitoring.`}
+        title={t('risk.title')}
+        subtitle={t('risk.panel_subtitle', { agent: AGENT_NAME_BY_ID.guardian })}
         actions={
           <>
             <RealtimeStatusBadge connection={realtime.connection} compact />
             <LiveIndicator connection={realtime.connection} label="Risk WS" />
-            <Badge variant={emergencyState ? "danger" : "success"}>{emergencyState ? "EMERGENCY" : "NORMAL"}</Badge>
+            <Badge variant={emergencyState ? "danger" : "success"}>{emergencyState ? t('risk.emergency') : t('risk.normal')}</Badge>
           </>
         }
       />
@@ -138,59 +140,59 @@ export default function RiskPanel() {
 
       {emergencyState ? (
         <div className="rounded-card border border-state-danger/20 bg-state-danger/20 px-4 py-3 text-sm font-semibold text-state-danger">
-          Emergency state active. Kill switch or halt protection is engaged.
+          {t('risk.emergency_active_message')}
         </div>
       ) : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Guardian Enabled" value={guardianEnabled ? "YES" : "NO"} />
-        <MetricCard label="Kill Switch" value={killSwitchActive ? "ACTIVE" : "INACTIVE"} severity={killSwitchActive ? "danger" : "success"} />
-        <MetricCard label="Halt State" value={halted ? "HALTED" : "RUNNING"} severity={halted ? "danger" : "success"} />
-        <MetricCard label="Risk Level" value={riskLevel.toUpperCase()} severity={emergencyState ? "danger" : "warning"} />
+        <MetricCard label={t('risk.guardian_enabled')} value={guardianEnabled ? t('common.yes') : t('common.no')} />
+        <MetricCard label={t('risk.kill_switch')} value={killSwitchActive ? t('risk.active') : t('risk.inactive')} severity={killSwitchActive ? "danger" : "success"} />
+        <MetricCard label={t('risk.halt_state')} value={halted ? t('risk.halted') : t('risk.running')} severity={halted ? "danger" : "success"} />
+        <MetricCard label={t('risk.risk_level')} value={riskLevel.toUpperCase()} severity={emergencyState ? "danger" : "warning"} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
-          label="Total Drawdown"
+          label={t('risk.total_drawdown')}
           value={formatPercent(totalDrawdown)}
-          delta={`Threshold ${formatPercent(thresholds.total)}`}
+          delta={`${t('risk.threshold_total')} ${formatPercent(thresholds.total)}`}
           severity={totalDrawdown >= thresholds.total ? "danger" : "muted"}
         />
         <MetricCard
-          label="Daily Drawdown"
+          label={t('risk.daily_drawdown')}
           value={formatPercent(dailyDrawdown)}
-          delta={`Threshold ${formatPercent(thresholds.daily)}`}
+          delta={`${t('risk.threshold_daily')} ${formatPercent(thresholds.daily)}`}
           severity={dailyDrawdown >= thresholds.daily ? "danger" : "muted"}
         />
-        <MetricCard label="Threshold - Total" value={formatPercent(thresholds.total)} />
-        <MetricCard label="Threshold - Daily" value={formatPercent(thresholds.daily)} />
+        <MetricCard label={t('risk.threshold_total')} value={formatPercent(thresholds.total)} />
+        <MetricCard label={t('risk.threshold_daily')} value={formatPercent(thresholds.daily)} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <section className="rounded-card border border-border bg-panel p-4">
-          <h3 className="text-sm font-semibold text-white">Manual Halt</h3>
-          <p className="mt-1 text-xs text-text-dim">Immediately halt execution paths using Guardian controls.</p>
+          <h3 className="text-sm font-semibold text-white">{t('risk.manual_halt')}</h3>
+          <p className="mt-1 text-xs text-text-dim">{t('risk.manual_halt_subtitle')}</p>
           <input
             className="mt-3 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
             value={haltReason}
             onChange={(event) => setHaltReason(event.target.value)}
-            placeholder="Halt reason"
+            placeholder={t('risk.halt_reason')}
           />
           <div className="mt-3">
             <Button variant="danger" disabled={processing} onClick={() => void onManualHalt()}>
-              {processing ? "Applying..." : "Manual halt"}
+              {processing ? t('risk.applying') : t('risk.manual_halt_btn')}
             </Button>
           </div>
         </section>
 
         <section className="rounded-card border border-border bg-panel p-4">
-          <h3 className="text-sm font-semibold text-white">Manual Resume</h3>
-          <p className="mt-1 text-xs text-text-dim">Resume requires explicit reason and confirmation dialog.</p>
+          <h3 className="text-sm font-semibold text-white">{t('risk.manual_resume')}</h3>
+          <p className="mt-1 text-xs text-text-dim">{t('risk.manual_resume_subtitle')}</p>
           <input
             className="mt-3 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary outline-none ring-cyan-500/60 focus:ring"
             value={resumeReason}
             onChange={(event) => setResumeReason(event.target.value)}
-            placeholder="Resume reason"
+            placeholder={t('risk.resume_reason')}
           />
           <div className="mt-3">
             <Button
@@ -198,7 +200,7 @@ export default function RiskPanel() {
               disabled={processing || resumeReason.trim().length === 0}
               onClick={() => setResumeConfirmOpen(true)}
             >
-              Resume trading
+              {t('risk.resume_trading')}
             </Button>
           </div>
         </section>
@@ -208,34 +210,34 @@ export default function RiskPanel() {
       {actionError ? <p className="text-sm text-state-danger">{actionError}</p> : null}
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Risk Event Log (Subset)</h3>
-        <p className="mt-1 text-xs text-text-dim">Recent events related to risk, Guardian, halt, and kill-switch state.</p>
+        <h3 className="text-sm font-semibold text-white">{t('risk.risk_event_log')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('risk.risk_event_log_subtitle')}</p>
         <div className="mt-3">
           <DataTable<EventLog>
             rows={riskEvents}
             loading={logsState.loading}
             error={logsState.error}
             rowKey={(row) => row.id}
-            emptyMessage="No risk events available."
+            emptyMessage={t('risk.no_risk_events')}
             columns={[
               {
                 key: "time",
-                header: "Time",
+                header: t('risk.time'),
                 render: (row) => formatDateTime(row.created_at ?? row.ts),
               },
               {
                 key: "category",
-                header: "Category",
+                header: t('risk.category'),
                 render: (row) => String(row.category ?? row.type ?? "risk"),
               },
               {
                 key: "source",
-                header: "Source",
+                header: t('risk.source'),
                 render: (row) => row.source,
               },
               {
                 key: "message",
-                header: "Message",
+                header: t('risk.message'),
                 render: (row) => row.message,
               },
             ]}
@@ -244,17 +246,17 @@ export default function RiskPanel() {
       </section>
 
       <RealtimeEventFeed
-        title="Live Risk Stream"
+        title={t('risk.live_risk_stream')}
         events={realtime.events}
         maxItems={10}
-        emptyMessage="No live risk websocket events yet."
+        emptyMessage={t('risk.no_risk_websocket_events')}
       />
 
       <ConfirmDialog
         open={resumeConfirmOpen}
-        title="Confirm manual resume"
-        message="Resume is guarded and will be audited. Confirm to continue with the provided reason."
-        confirmLabel="Confirm resume"
+        title={t('risk.confirm_resume')}
+        message={t('risk.confirm_resume_message')}
+        confirmLabel={t('risk.confirm_resume_label')}
         onConfirm={() => void onConfirmResume()}
         onCancel={() => setResumeConfirmOpen(false)}
         isConfirming={processing}

@@ -11,6 +11,7 @@ import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { useLogs } from "../hooks/useLogs";
 import { usePolling } from "../hooks/usePolling";
 import { useRealtime } from "../realtime/useRealtime";
+import { useT } from "../hooks/useT";
 import { formatDateTime } from "../utils/format";
 
 const categories = ["all", "system", "agent", "trading", "risk", "scheduler", "iot", "backtest", "content"];
@@ -25,6 +26,7 @@ function matchesCategory(log: EventLog, category: string): boolean {
 }
 
 export default function SessionLogs() {
+  const { t } = useT();
   const realtime = useRealtime({ maxEvents: 24 });
   const logsState = useLogs();
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -87,12 +89,12 @@ export default function SessionLogs() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Session Logs"
-        subtitle="Event logs with category/source/type filters, payload inspection, and auto-refresh control."
+        title={t('session_logs.title')}
+        subtitle={t('session_logs.subtitle')}
         actions={
           <>
             <RealtimeStatusBadge connection={realtime.connection} compact />
-            <Badge variant={autoRefresh ? "success" : "muted"}>{autoRefresh ? "AUTO REFRESH ON" : "AUTO REFRESH OFF"}</Badge>
+            <Badge variant={autoRefresh ? "success" : "muted"}>{autoRefresh ? t('session_logs.auto_refresh_on') : t('session_logs.auto_refresh_off')}</Badge>
           </>
         }
       />
@@ -100,17 +102,17 @@ export default function SessionLogs() {
       <RealtimeConnectionBanner connection={realtime.connection} />
 
       <RealtimeEventFeed
-        title="Live Websocket Feed"
+        title={t('session_logs.live_websocket_feed')}
         events={realtime.events}
         maxItems={10}
-        emptyMessage="No websocket activity yet."
+        emptyMessage={t('session_logs.no_websocket_activity')}
       />
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Filters</h3>
+        <h3 className="text-sm font-semibold text-white">{t('session_logs.filters')}</h3>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <label className="text-xs text-text-secondary">
-            Category
+            {t('session_logs.category')}
             <select
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={categoryFilter}
@@ -125,7 +127,7 @@ export default function SessionLogs() {
           </label>
 
           <label className="text-xs text-text-secondary">
-            Event type
+            {t('session_logs.event_type')}
             <select
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.typeFilter}
@@ -140,7 +142,7 @@ export default function SessionLogs() {
           </label>
 
           <label className="text-xs text-text-secondary">
-            Source
+            {t('session_logs.log_source')}
             <select
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.sourceFilter}
@@ -155,12 +157,12 @@ export default function SessionLogs() {
           </label>
 
           <label className="text-xs text-text-secondary">
-            Search
+            {t('session_logs.search')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={logsState.filters.searchTerm}
               onChange={(event) => logsState.setSearchTerm(event.target.value)}
-              placeholder="Search logs"
+              placeholder={t('session_logs.search_logs')}
             />
           </label>
         </div>
@@ -170,50 +172,50 @@ export default function SessionLogs() {
             variant="secondary"
             onClick={() => setAutoRefresh((value) => !value)}
           >
-            {autoRefresh ? "Disable auto-refresh" : "Enable auto-refresh"}
+            {autoRefresh ? t('session_logs.disable_auto_refresh') : t('session_logs.enable_auto_refresh')}
           </Button>
           <Button variant="ghost" onClick={() => poller.runNow()}>
-            Refresh now
+            {t('session_logs.refresh_now')}
           </Button>
         </div>
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Event Logs Table</h3>
+        <h3 className="text-sm font-semibold text-white">{t('session_logs.event_logs_table')}</h3>
         <div className="mt-3">
           <DataTable<EventLog>
             rows={filteredLogs}
             loading={logsState.loading}
             error={logsState.error}
             rowKey={(row) => row.id}
-            emptyMessage="No logs match current filters."
+            emptyMessage={t('session_logs.no_logs_match')}
             columns={[
               {
                 key: "time",
-                header: "Time",
+                header: t('session_logs.time'),
                 render: (row) => formatDateTime(row.created_at ?? row.ts),
               },
               {
                 key: "category",
-                header: "Category",
+                header: t('session_logs.category'),
                 render: (row) => String(row.category ?? row.type ?? "system"),
               },
               {
                 key: "source",
-                header: "Source",
+                header: t('session_logs.source'),
                 render: (row) => row.source,
               },
               {
                 key: "message",
-                header: "Message",
+                header: t('session_logs.message'),
                 render: (row) => row.message,
               },
               {
                 key: "json",
-                header: "Payload",
+                header: t('session_logs.payload'),
                 render: (row) => (
                   <Button className="px-2 py-1 text-xs" onClick={() => setSelectedLog(row)}>
-                    View JSON
+                    {t('session_logs.view_json')}
                   </Button>
                 ),
               },
@@ -223,16 +225,16 @@ export default function SessionLogs() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">JSON Payload Viewer</h3>
+        <h3 className="text-sm font-semibold text-white">{t('session_logs.json_payload_viewer')}</h3>
         <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-canvas/80 p-3 text-xs text-text-secondary">
-          {selectedLog?.payload ? JSON.stringify(selectedLog.payload, null, 2) : "No payload selected."}
+          {selectedLog?.payload ? JSON.stringify(selectedLog.payload, null, 2) : t('session_logs.no_payload_selected')}
         </pre>
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Recent Errors</h3>
+        <h3 className="text-sm font-semibold text-white">{t('session_logs.recent_errors')}</h3>
         {recentErrors.length === 0 ? (
-          <p className="mt-2 text-sm text-text-dim">No recent errors in current filter set.</p>
+          <p className="mt-2 text-sm text-text-dim">{t('session_logs.no_recent_errors')}</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {recentErrors.map((entry) => (

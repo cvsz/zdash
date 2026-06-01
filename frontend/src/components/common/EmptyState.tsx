@@ -1,9 +1,12 @@
+import { useT } from "../../hooks/useT";
+
 type EmptyStateProps = {
   message: string;
   hint?: string;
 };
 
 export default function EmptyState({ message, hint }: EmptyStateProps) {
+  const { t } = useT();
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-4 text-sm text-slate-300">
       <p>{message}</p>

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useEnterprise } from "../hooks/useEnterprise";
 import { OnboardingChecklist } from "../components/enterprise/OnboardingChecklist";
+import { useT } from "../hooks/useT";
 
 export default function Onboarding() {
+  const { t } = useT();
   const { onboarding, completeStep, resetOnboarding, loading, error } = useEnterprise();
   const [dryRunRunning, setDryRunRunning] = useState<string | null>(null);
   const [dryRunOutput, setDryRunOutput] = useState<string | null>(null);
@@ -13,12 +15,12 @@ export default function Onboarding() {
     try {
       // Simulate quick action (always dry-run for safety)
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      setDryRunOutput(`✔ Dry-run simulator succeeded: ${actionKey} successfully simulated in offline mode.`);
+      setDryRunOutput(`✔ ${t('onboarding.dry_run_simulator_success')}: ${actionKey}`);
       if (onboarding && onboarding.pending_steps.includes(stepToComplete)) {
         await completeStep(stepToComplete);
       }
     } catch (err: any) {
-      setDryRunOutput(`✕ Simulator error: ${err.message}`);
+      setDryRunOutput(`✕ ${t('onboarding.dry_run_simulator_error')}: ${err.message}`);
     } finally {
       setDryRunRunning(null);
     }
@@ -34,8 +36,8 @@ export default function Onboarding() {
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-8 text-white">
       <div>
-        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">System Onboarding & Safety Verification</h2>
-        <p className="text-neutral-400">Complete setup tasks and verify sandbox guidelines before active automation starts.</p>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">{t('onboarding.title')}</h2>
+        <p className="text-neutral-400">{t('onboarding.subtitle')}</p>
       </div>
 
       {error && (
@@ -51,10 +53,10 @@ export default function Onboarding() {
           {/* Safety Checklist Column */}
           <section className="p-6 rounded-xl border border-state-danger/20 bg-rose-500/5 space-y-4">
             <h3 className="text-lg font-bold text-state-danger flex items-center gap-2">
-              <span>🛡</span> Safety Guidelines & Sandbox Rules
+              <span>🛡</span> {t('onboarding.safety_guidelines')}
             </h3>
             <p className="text-xs text-neutral-400">
-              Before activating any live execution loops, ensure the following safety gates remain closed and validated.
+              {t('onboarding.safety_guidelines_desc')}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -69,9 +71,9 @@ export default function Onboarding() {
 
           {/* Quick Actions (Dry-Run Labeled) */}
           <section className="p-6 rounded-xl border border-neutral-800 bg-neutral-950/20 space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Quick Dry-Run Actions</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('onboarding.quick_dry_run_actions')}</h3>
             <p className="text-xs text-neutral-500">
-              Run test procedures instantly to check operational pipelines. All actions below run in simulation mode.
+              {t('onboarding.quick_actions_desc')}
             </p>
 
             <div className="flex flex-wrap gap-4 pt-2">
@@ -80,7 +82,7 @@ export default function Onboarding() {
                 disabled={!!dryRunRunning}
                 className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
-                <span>🔍</span> Run Dry-Run Scan
+                <span>🔍</span> {t('onboarding.run_dry_run_scan')}
               </button>
 
               <button
@@ -88,7 +90,7 @@ export default function Onboarding() {
                 disabled={!!dryRunRunning}
                 className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
-                <span>📊</span> Run Backtest
+                <span>📊</span> {t('onboarding.run_backtest')}
               </button>
 
               <button
@@ -96,27 +98,27 @@ export default function Onboarding() {
                 disabled={!!dryRunRunning}
                 className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition disabled:opacity-50"
               >
-                <span>✏</span> Create Content Item
+                <span>✏</span> {t('onboarding.create_content_item')}
               </button>
 
               <a
                 href="/risk"
                 className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
               >
-                <span>🛡</span> Review Risk Panel
+                <span>🛡</span> {t('onboarding.review_risk_panel')}
               </a>
 
               <a
                 href="/billing"
                 className="py-2 px-4 rounded-card bg-neutral-900 hover:bg-neutral-850 text-neutral-250 border border-neutral-800 hover:border-neutral-700 text-xs font-semibold flex items-center gap-2 transition"
               >
-                <span>💳</span> Review Billing
+                <span>💳</span> {t('onboarding.review_billing')}
               </a>
             </div>
 
             {dryRunRunning && (
               <div className="p-3 bg-neutral-900 border border-neutral-850 rounded-card text-xs font-mono text-violet-400 animate-pulse">
-                ⏳ Simulating {dryRunRunning} action. Please wait...
+                ⏳ {t('onboarding.simulating_action')} {dryRunRunning}. {t('common.loading')}
               </div>
             )}
 

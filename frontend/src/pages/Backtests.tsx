@@ -25,6 +25,7 @@ import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 import { formatPercent } from "../utils/format";
 
 function getMonthlyRows(result: BacktestResult): Array<{ month: string; value: number }> {
@@ -44,6 +45,7 @@ function getMonthlyRows(result: BacktestResult): Array<{ month: string; value: n
 }
 
 export default function Backtests() {
+  const { t } = useT();
   const backtestingStatus = useApi(getBacktestingStatus, []);
   const strategiesState = useApi(listStrategies, []);
   const resultsState = useApi(listBacktestResults, []);
@@ -158,24 +160,24 @@ export default function Backtests() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Backtests"
-        subtitle={`${AGENT_NAME_BY_ID.joe} Strategy Lab with simulation-only backtesting and optimization.`}
-        actions={<Badge variant="warning">LIVE TRADING DISABLED</Badge>}
+        title={t('backtests.backtests')}
+        subtitle={t('backtests.backtests_subtitle', { agent: AGENT_NAME_BY_ID.joe })}
+        actions={<Badge variant="warning">{t('backtests.live_trading_disabled')}</Badge>}
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Backtesting Enabled" value={backtestingStatus.data?.enabled ? "YES" : "NO"} />
-        <MetricCard label="Dataset Source" value={String(backtestingStatus.data?.dataset_source ?? "unknown")} />
-        <MetricCard label="Primary Strategy" value={String(backtestingStatus.data?.primary_strategy ?? "-")} />
-        <MetricCard label="Stored Results" value={results.length} />
+        <MetricCard label={t('backtests.backtesting_enabled')} value={backtestingStatus.data?.enabled ? "YES" : "NO"} />
+        <MetricCard label={t('backtests.dataset_source')} value={String(backtestingStatus.data?.dataset_source ?? "unknown")} />
+        <MetricCard label={t('backtests.primary_strategy')} value={String(backtestingStatus.data?.primary_strategy ?? "-")} />
+        <MetricCard label={t('backtests.stored_results')} value={results.length} />
       </div>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Strategy List</h3>
-        <p className="mt-1 text-xs text-text-dim">Available strategies for simulation runs.</p>
+        <h3 className="text-sm font-semibold text-white">{t('backtests.strategy_list')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('backtests.strategy_list_subtitle')}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {strategyNames.length === 0 ? (
-            <Badge variant="muted">No strategies</Badge>
+            <Badge variant="muted">{t('backtests.no_strategies')}</Badge>
           ) : (
             strategyNames.map((name) => (
               <Badge key={name} variant="normal">
@@ -188,10 +190,10 @@ export default function Backtests() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunBacktest(event)}>
-          <h3 className="text-sm font-semibold text-white">Run Backtest</h3>
+          <h3 className="text-sm font-semibold text-white">{t('backtests.run_backtest')}</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
             <label className="text-xs text-text-secondary">
-              Strategy
+              {t('backtests.strategy')}
               <input
                 className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runStrategy}
@@ -199,7 +201,7 @@ export default function Backtests() {
               />
             </label>
             <label className="text-xs text-text-secondary">
-              Symbol
+              {t('backtests.symbol')}
               <input
                 className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runSymbol}
@@ -207,7 +209,7 @@ export default function Backtests() {
               />
             </label>
             <label className="text-xs text-text-secondary">
-              Timeframe
+              {t('backtests.timeframe')}
               <input
                 className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={runTimeframe}
@@ -217,16 +219,16 @@ export default function Backtests() {
           </div>
           <div className="mt-3">
             <Button type="submit" variant="primary" disabled={runningBacktest}>
-              {runningBacktest ? "Running..." : "Run backtest"}
+              {runningBacktest ? t('backtests.running') : t('backtests.run')}
             </Button>
           </div>
         </form>
 
         <form className="rounded-card border border-border bg-panel p-4" onSubmit={(event) => void onRunOptimization(event)}>
-          <h3 className="text-sm font-semibold text-white">Optimization</h3>
+          <h3 className="text-sm font-semibold text-white">{t('backtests.optimization')}</h3>
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             <label className="text-xs text-text-secondary">
-              Sort metric
+              {t('backtests.sort_metric')}
               <select
                 className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
                 value={optimizationMetric}
@@ -240,7 +242,7 @@ export default function Backtests() {
           </div>
           <div className="mt-3">
             <Button type="submit" variant="secondary" disabled={runningOptimization}>
-              {runningOptimization ? "Optimizing..." : "Run optimization"}
+              {runningOptimization ? t('backtests.optimizing') : t('backtests.run_optimization')}
             </Button>
           </div>
         </form>
@@ -248,13 +250,13 @@ export default function Backtests() {
 
       {selectedResult ? (
         <section className="rounded-card border border-border bg-panel p-4">
-          <h3 className="text-sm font-semibold text-white">Backtest Results and Metrics</h3>
+          <h3 className="text-sm font-semibold text-white">{t('backtests.backtest_results_and_metrics')}</h3>
           <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-            <MetricCard label="Win Rate" value={formatPercent(selectedResult.metrics.win_rate)} />
-            <MetricCard label="Profit Factor" value={selectedResult.metrics.profit_factor.toFixed(2)} />
-            <MetricCard label="Net Profit" value={formatPercent(selectedResult.metrics.net_profit_percent)} />
-            <MetricCard label="Max Drawdown" value={formatPercent(selectedResult.metrics.max_drawdown_percent)} severity="warning" />
-            <MetricCard label="Total Trades" value={selectedResult.metrics.total_trades} />
+            <MetricCard label={t('backtests.win_rate')} value={formatPercent(selectedResult.metrics.win_rate)} />
+            <MetricCard label={t('backtests.profit_factor')} value={selectedResult.metrics.profit_factor.toFixed(2)} />
+            <MetricCard label={t('backtests.net_profit')} value={formatPercent(selectedResult.metrics.net_profit_percent)} />
+            <MetricCard label={t('backtests.max_drawdown')} value={formatPercent(selectedResult.metrics.max_drawdown_percent)} severity="warning" />
+            <MetricCard label={t('backtests.total_trades')} value={selectedResult.metrics.total_trades} />
           </div>
 
           <div className="mt-4 h-64 rounded-md border border-border bg-canvas-lighter/60 p-2">
@@ -273,10 +275,10 @@ export default function Backtests() {
             <DataTable<{ month: string; value: number }>
               rows={monthlyRows}
               rowKey={(row) => row.month}
-              emptyMessage="No monthly returns available."
+              emptyMessage={t('backtests.no_monthly_returns')}
               columns={[
-                { key: "month", header: "Month", render: (row) => row.month },
-                { key: "value", header: "Return", render: (row) => formatPercent(row.value) },
+                { key: "month", header: t('backtests.month'), render: (row) => row.month },
+                { key: "value", header: t('backtests.return'), render: (row) => formatPercent(row.value) },
               ]}
             />
           </div>
@@ -284,29 +286,29 @@ export default function Backtests() {
       ) : null}
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Result History</h3>
+        <h3 className="text-sm font-semibold text-white">{t('backtests.result_history')}</h3>
         <div className="mt-3">
           <DataTable<BacktestResult>
             rows={results}
             loading={resultsState.loading}
             error={resultsState.error}
             rowKey={(row) => row.id}
-            emptyMessage="No backtest results available."
+            emptyMessage={t('backtests.no_backtest_results')}
             columns={[
-              { key: "id", header: "Result ID", render: (row) => row.id },
-              { key: "strategy", header: "Strategy", render: (row) => row.strategy },
-              { key: "symbol", header: "Symbol", render: (row) => row.symbol },
+              { key: "id", header: t('backtests.result_id'), render: (row) => row.id },
+              { key: "strategy", header: t('backtests.strategy'), render: (row) => row.strategy },
+              { key: "symbol", header: t('backtests.symbol'), render: (row) => row.symbol },
               {
                 key: "profit",
-                header: "Net Profit",
+                header: t('backtests.net_profit_short'),
                 render: (row) => formatPercent(row.metrics.net_profit_percent),
               },
               {
                 key: "select",
-                header: "Action",
+                header: t('backtests.action'),
                 render: (row) => (
                   <Button className="px-2 py-1 text-xs" onClick={() => setSelectedResultId(row.id)}>
-                    View
+                    {t('backtests.view')}
                   </Button>
                 ),
               },
@@ -316,39 +318,38 @@ export default function Backtests() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Ranked Optimization Results</h3>
+        <h3 className="text-sm font-semibold text-white">{t('backtests.ranked_optimization_results')}</h3>
         {optimization ? (
           <div className="mt-3 space-y-2">
             <p className="text-sm text-text-secondary">
-              Best metric: {optimization.sort_metric}. Executed {optimization.executed_combinations}/
-              {optimization.total_combinations} combinations.
+              {t('backtests.best_metric', { metric: optimization.sort_metric })} {t('backtests.combinations_executed', { executed: optimization.executed_combinations, total: optimization.total_combinations })}
             </p>
             <DataTable<BacktestResult>
               rows={optimization.ranked_results}
               rowKey={(row) => row.id}
-              emptyMessage="No ranked results available."
+              emptyMessage={t('backtests.no_ranked_results')}
               columns={[
-                { key: "strategy", header: "Strategy", render: (row) => row.strategy },
-                { key: "profit", header: "Net %", render: (row) => formatPercent(row.metrics.net_profit_percent) },
-                { key: "pf", header: "Profit Factor", render: (row) => row.metrics.profit_factor.toFixed(2) },
+                { key: "strategy", header: t('backtests.strategy'), render: (row) => row.strategy },
+                { key: "profit", header: t('backtests.net_percent'), render: (row) => formatPercent(row.metrics.net_profit_percent) },
+                { key: "pf", header: t('backtests.profit_factor_short'), render: (row) => row.metrics.profit_factor.toFixed(2) },
               ]}
             />
           </div>
         ) : (
-          <p className="mt-2 text-sm text-text-dim">Run optimization to view ranked results.</p>
+          <p className="mt-2 text-sm text-text-dim">{t('backtests.run_optimization_to_view')}</p>
         )}
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Promotion Check Panel</h3>
-        <p className="mt-1 text-xs text-text-dim">Promotion never enables live trading automatically.</p>
+        <h3 className="text-sm font-semibold text-white">{t('backtests.promotion_check_panel')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('backtests.promotion_check_subtitle')}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
             disabled={!selectedResult || checkingPromotion}
             onClick={() => void onCheckPromotion()}
           >
-            {checkingPromotion ? "Checking..." : "Run promotion check"}
+            {checkingPromotion ? t('backtests.checking') : t('backtests.run_promotion_check')}
           </Button>
           <Badge variant="warning">{promotionStatus}</Badge>
         </div>
@@ -358,8 +359,7 @@ export default function Backtests() {
       {error ? <p className="text-sm text-state-danger">{error}</p> : null}
 
       <div className="rounded-card border border-amber-300/40 bg-amber-400/10 px-4 py-3 text-xs text-state-warning">
-        Backtest results are not guaranteed future performance. Promotion checks only qualify strategies for additional
-        simulation workflows and do not enable live trading.
+        {t('backtests.backtest_disclaimer')}
       </div>
     </div>
   );

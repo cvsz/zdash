@@ -1,3 +1,4 @@
+import { useT } from "../../hooks/useT";
 import Badge from "../common/Badge";
 import type { RealtimeConnectionState } from "../../realtime/types";
 
@@ -7,6 +8,7 @@ type RealtimeStatusBadgeProps = {
 };
 
 export default function RealtimeStatusBadge({ connection, compact = false }: RealtimeStatusBadgeProps) {
+  const { t } = useT();
   const variant = connection.connected
     ? connection.stale
       ? "warning"
@@ -15,11 +17,11 @@ export default function RealtimeStatusBadge({ connection, compact = false }: Rea
 
   const label = connection.connected
     ? connection.stale
-      ? "STALE"
-      : "CONNECTED"
+      ? t('realtime.stale')
+      : t('realtime.status_badge_connected')
     : connection.connecting
-      ? "CONNECTING"
-      : "DISCONNECTED";
+      ? t('realtime.live_indicator_connecting')
+      : t('realtime.status_badge_disconnected');
 
   const suffix = compact ? "" : ` · ${connection.channel.toUpperCase()}`;
 

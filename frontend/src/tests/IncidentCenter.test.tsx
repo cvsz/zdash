@@ -10,6 +10,6 @@ describe('IncidentCenter', () => {
         <IncidentCenter />
       </BrowserRouter>,
     )
-    expect(screen.getByText('Incident Ops')).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Incidents', level: 1 })).toBeTruthy()
   })
 })

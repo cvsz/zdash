@@ -61,7 +61,7 @@ describe("LoginForm", () => {
       target: { value: "safe-password" },
     });
 
-    fireEvent.submit(screen.getByRole("button", { name: "Sign in" }));
+    fireEvent.submit(screen.getByRole("button", { name: "Log In" }));
 
     await waitFor(() => {
       expect(login).toHaveBeenCalledWith("operator@example.com", "safe-password");

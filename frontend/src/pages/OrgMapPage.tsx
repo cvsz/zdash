@@ -1,5 +1,6 @@
 import Badge from "../components/common/Badge";
 import PageHeader from "../components/layout/PageHeader";
+import { useT } from "../hooks/useT";
 
 const ownership = [
   { owner: "Victor Hale", module: "Risk" },
@@ -11,15 +12,16 @@ const ownership = [
 ];
 
 export default function OrgMapPage() {
+  const { t } = useT();
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Org Map"
-        subtitle="Canonical zDash command structure and module ownership."
+        title={t('org_map.title')}
+        subtitle={t('org_map.subtitle')}
       />
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Command Chain</h3>
+        <h3 className="text-sm font-semibold text-white">{t('org_map.command_chain')}</h3>
         <pre className="mt-3 overflow-x-auto rounded-md border border-border bg-canvas/80 p-3 text-sm text-text-secondary">
 {`Alexander Prime
 └── Sophia Lane
@@ -34,7 +36,7 @@ export default function OrgMapPage() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Module Ownership</h3>
+        <h3 className="text-sm font-semibold text-white">{t('org_map.module_ownership')}</h3>
         <div className="mt-3 grid gap-2 md:grid-cols-2">
           {ownership.map((item) => (
             <div key={item.owner} className="rounded-md border border-border bg-canvas/80 p-3">
@@ -46,7 +48,7 @@ export default function OrgMapPage() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Roles</h3>
+        <h3 className="text-sm font-semibold text-white">{t('org_map.roles')}</h3>
         <div className="mt-3 flex flex-wrap gap-2">
           {[
             "Alexander Prime",

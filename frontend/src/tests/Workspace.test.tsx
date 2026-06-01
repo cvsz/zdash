@@ -6,5 +6,5 @@ import { waitForStableUi } from './utils/settle';
 test('shows workspace', async () => {
   render(<Workspace />);
   await waitForStableUi();
-  expect(await screen.findByText('Workspace Overview')).toBeInTheDocument();
+  expect(await screen.findByText('Workspace')).toBeInTheDocument();
 });

@@ -1,3 +1,4 @@
+import { useT } from "../../hooks/useT";
 import type { RealtimeEnvelope } from "../../realtime/types";
 import { formatDateTime } from "../../utils/format";
 
@@ -27,15 +28,16 @@ export default function RealtimeEventFeed({
   title,
   events,
   maxItems = 8,
-  emptyMessage = "No realtime events yet.",
+  emptyMessage,
 }: RealtimeEventFeedProps) {
+  const { t } = useT();
   const visible = events.slice(0, maxItems);
 
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
       <h3 className="text-sm font-semibold text-white">{title}</h3>
       {visible.length === 0 ? (
-        <p className="mt-2 text-xs text-slate-400">{emptyMessage}</p>
+        <p className="mt-2 text-xs text-slate-400">{emptyMessage ?? t('realtime.event_feed_empty')}</p>
       ) : (
         <ul className="mt-3 space-y-2">
           {visible.map((event, index) => {

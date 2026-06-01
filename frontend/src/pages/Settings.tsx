@@ -12,6 +12,7 @@ import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/layout/PageHeader";
 import { useAuth } from "../hooks/useAuth";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 
 type SettingRow = {
   key: string;
@@ -19,6 +20,7 @@ type SettingRow = {
 };
 
 export default function Settings() {
+  const { t } = useT();
   const { user, mode } = useAuth();
   const tradingStatus = useApi(getTradingStatus, []);
   const contentStatus = useApi(getContentStatus, []);
@@ -100,18 +102,18 @@ export default function Settings() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Settings"
-        subtitle="Read-only runtime and safety configuration summary."
+        title={t('settings.title')}
+        subtitle={t('settings.subtitle')}
       />
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Configuration Summary</h3>
+        <h3 className="text-sm font-semibold text-white">{t('settings.config_summary')}</h3>
         <p className="mt-1 text-xs text-text-dim">
-          This view is read-only and intentionally excludes API keys, tokens, or secret values.
+          {t('settings.config_summary_note')}
         </p>
         {user?.username === DEFAULT_ADMIN_USERNAME && (
           <p className="mt-2 rounded-md border border-state-warning/30 bg-state-warning/10 px-3 py-2 text-xs text-state-warning">
-            Warning: default admin username detected. Rotate credentials before production use.
+            {t('settings.default_admin_warning')}
           </p>
         )}
         <div className="mt-3">
@@ -135,8 +137,8 @@ export default function Settings() {
             }
             rowKey={(row) => row.key}
             columns={[
-              { key: "key", header: "Setting", render: (row) => row.key },
-              { key: "value", header: "Value", render: (row) => row.value },
+              { key: "key", header: t('settings.setting'), render: (row) => row.key },
+              { key: "value", header: t('settings.value'), render: (row) => row.value },
             ]}
           />
         </div>

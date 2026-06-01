@@ -3,6 +3,7 @@ import Button from "../components/common/Button";
 import Badge from "../components/common/Badge";
 import AgentAssignmentBoard from "../components/team/AgentAssignmentBoard";
 import { useTeam } from "../hooks/useTeam";
+import { useT } from "../hooks/useT";
 import type { TeamMember } from "../api/types";
 
 const TABS = ["Overview", "Members", "Invitations", "Workspace Access", "Agent Assignments", "Activity"] as const;
@@ -34,6 +35,7 @@ const statusBadgeVariant = (status: string) => {
 };
 
 export default function TeamRoster() {
+  const { t } = useT();
   const [activeTab, setActiveTab] = useState<TabName>("Overview");
   const [searchQuery, setSearchQuery] = useState("");
   const {
@@ -105,7 +107,7 @@ export default function TeamRoster() {
 
   async function handleGrantAccess() {
     if (!grantMemberId) {
-      setGrantError("Please select a member.");
+      setGrantError(t('team.please_select_member'));
       return;
     }
     setGrantError(null);
@@ -114,7 +116,7 @@ export default function TeamRoster() {
       setGrantMemberId("");
       setGrantAccessLevel("read");
     } catch (err: any) {
-      setGrantError(err?.message ?? "Failed to grant access.");
+      setGrantError(err?.message ?? t('team.failed_to_grant_access'));
     }
   }
 
@@ -429,7 +431,7 @@ export default function TeamRoster() {
               </div>
             ) : (
               <div className="flex items-center justify-center py-8 text-sm text-text-dim">
-                No workspace access entries.
+                {t('team.no_workspace_access')}
               </div>
             )}
           </div>
@@ -484,16 +486,16 @@ export default function TeamRoster() {
       {confirmMemberId && confirmAction ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-border bg-panel-solid p-6 shadow-2xl">
-            <p className="text-sm font-semibold text-text-primary">Are you sure?</p>
+            <p className="text-sm font-semibold text-text-primary">{t('common.are_you_sure')}</p>
             <p className="mt-2 text-sm text-text-secondary">
-              This will {confirmAction} the selected member. {confirmAction === "remove" ? "This action cannot be undone." : ""}
+              {t('team.this_will')} {confirmAction} {t('team.member')}. {confirmAction === "remove" ? t('common.this_action_cannot_be_undone') : ""}
             </p>
             <div className="mt-4 flex gap-3">
               <Button variant="danger" onClick={handleConfirmAction}>
-                Yes, {confirmAction}
+                {t('team.yes_' + confirmAction)}
               </Button>
               <Button variant="secondary" onClick={() => { setConfirmMemberId(null); setConfirmAction(null); }}>
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           </div>

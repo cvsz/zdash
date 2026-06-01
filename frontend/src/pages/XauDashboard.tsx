@@ -19,6 +19,7 @@ import SignalTable from "../components/trading/SignalTable";
 import XauScannerPanel from "../components/trading/XauScannerPanel";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 
 const defaultSnapshot = {
   balance: 10000,
@@ -31,6 +32,7 @@ const defaultSnapshot = {
 };
 
 export default function XauDashboard() {
+  const { t } = useT();
   const tradingStatus = useApi(getTradingStatus, []);
   const [scanLoading, setScanLoading] = useState(false);
   const [executionLoading, setExecutionLoading] = useState(false);
@@ -160,45 +162,45 @@ export default function XauDashboard() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="XAU Dashboard"
-        subtitle={`${AGENT_NAME_BY_ID.trading} specialist workflow for XAUUSD M5 simulation.`}
+        title={t('trading.xau_title')}
+        subtitle={`${AGENT_NAME_BY_ID.trading} ${t('trading.subtitle')}`}
         actions={
           <Badge variant={dryRunEnabled ? "success" : "danger"}>
-            {dryRunEnabled ? "DRY_RUN" : "REAL_MODE"}
+            {dryRunEnabled ? t('trading.dry_run') : t('trading.live_mode_banner')}
           </Badge>
         }
       />
 
-      <DryRunBanner text="DRY_RUN enabled: all execution stays simulated until explicit guarded enablement." />
+      <DryRunBanner text={t('trading.dry_run_banner')} />
 
       <AITraderSimulationCard />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Scanner Status" value={scanLoading ? "SCANNING" : "READY"} />
-        <MetricCard label="Signals" value={signalStats.count} />
+        <MetricCard label={t('trading.scanner_status')} value={scanLoading ? t('trading.scanner_status_scanning') : t('trading.scanner_status_ready')} />
+        <MetricCard label={t('trading.signals')} value={signalStats.count} />
         <MetricCard
-          label="Avg Confidence"
+          label={t('trading.avg_confidence')}
           value={`${(signalStats.averageConfidence * 100).toFixed(1)}%`}
         />
-        <MetricCard label="Funnel Filter" value="21/10/3 ACTIVE" delta="Order block + trend confirmation" />
+        <MetricCard label={t('trading.funnel_filter')} value="21/10/3 ACTIVE" delta="Order block + trend confirmation" />
       </div>
 
       <XauScannerPanel scanResult={scanResult} loading={scanLoading} onScan={() => void performScan()} />
 
       <SectionCard
-        title="Signal Validation and AI Summary"
-        subtitle="Validation checks run before dry-run execution and risk approval."
-        actions={<Badge variant={validationVariant}>{validation ? (validation.valid ? "VALID" : "INVALID") : "PENDING"}</Badge>}
+        title={t('trading.signal_validation')}
+        subtitle={t('trading.signal_validation_subtitle')}
+        actions={<Badge variant={validationVariant}>{validation ? (validation.valid ? t('trading.valid') : t('trading.invalid')) : t('trading.pending')}</Badge>}
       >
         <div className="space-y-3 text-sm text-text-secondary">
           <p>
-            <span className="font-semibold text-text-primary">AI summary:</span> {scanSummary}
+            <span className="font-semibold text-text-primary">{t('trading.ai_summary')}:</span> {scanSummary}
           </p>
           <p>
-            <span className="font-semibold text-text-primary">Latest scan:</span> {scanTimestamp}
+            <span className="font-semibold text-text-primary">{t('trading.latest_scan')}:</span> {scanTimestamp}
           </p>
           <p>
-            <span className="font-semibold text-text-primary">Validation reason:</span> {validation?.reason ?? "No signal selected."}
+            <span className="font-semibold text-text-primary">{t('trading.validation_reason')}:</span> {validation?.reason ?? t('trading.no_signal_selected')}
           </p>
           {validation?.warnings?.length ? (
             <ul className="list-disc space-y-1 pl-5 text-amber-200">
@@ -211,37 +213,37 @@ export default function XauDashboard() {
       </SectionCard>
 
       <SectionCard
-        title="Latest Signals"
-        subtitle="XAUUSD M5 output table from the scan engine."
-        actions={selectedSignal ? <Badge variant="normal">Selected: {selectedSignal.symbol}</Badge> : null}
+        title={t('trading.latest_signals')}
+        subtitle={t('trading.latest_signals_subtitle')}
+        actions={selectedSignal ? <Badge variant="normal">{t('trading.selected')}: {selectedSignal.symbol}</Badge> : null}
       >
         <SignalTable signals={signals} onSelect={onSelectSignal} />
       </SectionCard>
 
-      <SectionCard title="Risk Approval Status" subtitle="Guardian approval must pass before any execution path.">
+      <SectionCard title={t('trading.risk_approval')} subtitle={t('trading.risk_approval_subtitle')}>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
             disabled={!selectedSignal || riskLoading}
             onClick={() => void onCheckRiskApproval()}
           >
-            {riskLoading ? "Checking..." : "Check risk approval"}
+            {riskLoading ? t('trading.checking') : t('trading.check_risk_approval')}
           </Button>
           <Badge variant={riskVariant}>
-            {riskDecision ? (riskDecision.approved ? "APPROVED" : "NOT APPROVED") : "NOT CHECKED"}
+            {riskDecision ? (riskDecision.approved ? t('trading.approved') : t('trading.not_approved')) : t('trading.not_checked')}
           </Badge>
           {riskDecision ? <span className="text-sm text-text-secondary">{riskDecision.reason}</span> : null}
         </div>
       </SectionCard>
 
-      <SectionCard title="Dry-run Execution" subtitle="No live order execution is exposed by default.">
+      <SectionCard title={t('trading.dry_run_execution')} subtitle={t('trading.dry_run_execution_subtitle')}>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="primary"
             disabled={!selectedSignal || executionLoading}
             onClick={() => void onDryRunExecute()}
           >
-            {executionLoading ? "Executing..." : "Dry-run execute"}
+            {executionLoading ? t('trading.executing') : t('trading.dry_run_execute')}
           </Button>
           <Badge variant={executionStatus === "failed" ? "danger" : executionStatus === "idle" ? "muted" : "success"}>
             {executionStatus.toUpperCase()}
@@ -257,8 +259,7 @@ export default function XauDashboard() {
       ) : null}
 
       <p className="rounded-card border border-border bg-panel/50 px-4 py-3 text-xs text-text-secondary">
-        Disclaimer: This dashboard is not financial advice. Signals, approvals, and execution controls are for
-        simulation and risk-reviewed workflows.
+        {t('trading.disclaimer')}
       </p>
     </div>
   );

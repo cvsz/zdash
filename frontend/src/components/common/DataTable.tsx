@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
+import { useT } from "../../hooks/useT";
 import EmptyState from "./EmptyState";
+
 import ErrorState from "./ErrorState";
 import LoadingState from "./LoadingState";
 
@@ -26,8 +28,9 @@ export default function DataTable<T>({
   rowKey,
   loading = false,
   error = null,
-  emptyMessage = "No data available.",
+  emptyMessage,
 }: DataTableProps<T>) {
+  const { t } = useT();
   if (loading) {
     return <LoadingState />;
   }
@@ -37,7 +40,7 @@ export default function DataTable<T>({
   }
 
   if (rows.length === 0) {
-    return <EmptyState message={emptyMessage} />;
+    return <EmptyState message={emptyMessage ?? t('common.no_data')} />;
   }
 
   return (

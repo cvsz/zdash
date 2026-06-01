@@ -14,8 +14,10 @@ import AuditLogTable from "../components/admin/AuditLogTable";
 import UserTable from "../components/admin/UserTable";
 import PageHeader from "../components/layout/PageHeader";
 import { useAuth } from "../hooks/useAuth";
+import { useT } from "../hooks/useT";
 
 export default function Admin() {
+  const { t } = useT();
   const { user } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
@@ -37,7 +39,7 @@ export default function Admin() {
       setAuditLogs(nextAuditLogs);
       setSafetyCheck(nextSafetyCheck);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Failed to load admin data.");
+      setError(caught instanceof Error ? caught.message : t('admin.failed_to_load_admin'));
     } finally {
       setLoading(false);
     }
@@ -88,24 +90,23 @@ export default function Admin() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Admin"
-        subtitle="Role-gated user management and audit review surfaces."
+        title={t('admin.title')}
+        subtitle={t('admin.subtitle')}
       />
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Admin Session</h3>
+        <h3 className="text-sm font-semibold text-white">{t('admin.admin_session')}</h3>
         <p className="mt-1 text-xs text-text-dim">
-          Current user: {user?.username} ({user?.role})
+          {t('admin.current_user', { username: user?.username, role: user?.role })}
         </p>
         {safetyCheck && (
           <p className="mt-2 text-xs text-text-secondary">
-            Safety status: {safetyCheck.status.toUpperCase()} · Score {safetyCheck.score}
+            {t('admin.safety_status', { status: safetyCheck.status.toUpperCase(), score: safetyCheck.score })}
           </p>
         )}
         {hasDefaultAdminWarning && (
           <p className="mt-2 rounded-md border border-state-warning/30 bg-state-warning/10 px-3 py-2 text-xs text-state-warning">
-            Warning: default admin credentials may still be in use. Rotate credentials
-            before production use.
+            {t('admin.default_credentials_warning')}
           </p>
         )}
         {safetyCheck?.blockers && safetyCheck.blockers.length > 0 && (

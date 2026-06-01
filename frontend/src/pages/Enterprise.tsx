@@ -5,8 +5,10 @@ import { BrandingEditor } from "../components/enterprise/BrandingEditor";
 import { ExportImportPanel } from "../components/enterprise/ExportImportPanel";
 import { OnboardingChecklist } from "../components/enterprise/OnboardingChecklist";
 import { CustomerHealthCard } from "../components/enterprise/CustomerHealthCard";
+import { useT } from "../hooks/useT";
 
 export default function Enterprise() {
+  const { t } = useT();
   const {
     license,
     branding,
@@ -27,8 +29,8 @@ export default function Enterprise() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8 text-white">
       <div>
-        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">Enterprise Operations</h2>
-        <p className="text-neutral-400">Manage operator licensing, system exports, onboarding steps, and white-label branding configurations.</p>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">{t('enterprise.title')}</h2>
+        <p className="text-neutral-400">{t('enterprise.subtitle')}</p>
       </div>
 
       {error && (
@@ -46,13 +48,13 @@ export default function Enterprise() {
         <>
           {/* Customer Health Score */}
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Operational Engagement</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('enterprise.operational_engagement')}</h3>
             <CustomerHealthCard health={health} />
           </section>
 
           {/* Licensing Status */}
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Software License</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('enterprise.software_license')}</h3>
             <LicenseStatusCard
               license={license}
               onApply={applyLicense}
@@ -62,7 +64,7 @@ export default function Enterprise() {
 
           {/* White-Label Customizer */}
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300 font-semibold">Tenant Whitelabeling Settings</h3>
+            <h3 className="text-lg font-bold text-neutral-300 font-semibold">{t('enterprise.tenant_whitelabeling')}</h3>
             <BrandingEditor
               settings={branding}
               onUpdate={updateBranding}
@@ -72,7 +74,7 @@ export default function Enterprise() {
 
           {/* Export Panel with Secret confirmation check */}
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">System Backups & Configuration Exports</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('enterprise.system_backups')}</h3>
             <ExportImportPanel
               exportsList={exportsList}
               onCreateExport={createExport}
@@ -81,7 +83,7 @@ export default function Enterprise() {
 
           {/* Onboarding checklist */}
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Organization Readiness Onboarding Checklist</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('enterprise.onboarding_title')}</h3>
             <OnboardingChecklist
               onboarding={onboarding}
               onCompleteStep={completeStep}

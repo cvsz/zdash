@@ -2,14 +2,16 @@ import PageHeader from "../components/layout/PageHeader";
 import SectionCard from "../components/common/SectionCard";
 import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
 import { useRealtimeContext } from "../realtime/context";
+import { useT } from "../hooks/useT";
 
 export default function Notifications() {
+  const { t } = useT();
   const { events } = useRealtimeContext();
   return (
     <div className="space-y-6">
-      <PageHeader title="Notifications" subtitle="Live notification center (simulation-safe)." />
-      <SectionCard title="Recent Notifications">
-        <RealtimeEventFeed title="Realtime Notifications" events={events.slice(0, 50)} />
+      <PageHeader title={t('notifications.title')} subtitle={t('notifications.subtitle')} />
+      <SectionCard title={t('notifications.recent_notifications')}>
+        <RealtimeEventFeed title={t('notifications.title')} events={events.slice(0, 50)} />
       </SectionCard>
     </div>
   );

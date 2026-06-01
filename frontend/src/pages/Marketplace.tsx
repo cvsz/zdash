@@ -4,8 +4,10 @@ import { PluginGrid } from "../components/marketplace/PluginGrid";
 import { InstalledPluginTable } from "../components/marketplace/InstalledPluginTable";
 import { PluginDetailPanel } from "../components/marketplace/PluginDetailPanel";
 import { PluginManifest } from "../api/types";
+import { useT } from "../hooks/useT";
 
 export default function Marketplace() {
+  const { t } = useT();
   const {
     plugins,
     installations,
@@ -90,8 +92,8 @@ export default function Marketplace() {
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8 text-white relative">
       <div>
-        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">Plug-in Marketplace</h2>
-        <p className="text-neutral-400">Expand dashboard functionality with verified third-party tools and IoT controls.</p>
+        <h2 className="text-3xl font-extrabold mb-2 tracking-tight">{t('marketplace.title')}</h2>
+        <p className="text-neutral-400">{t('marketplace.subtitle')}</p>
       </div>
 
       {error && (
@@ -111,7 +113,7 @@ export default function Marketplace() {
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
-                placeholder="Search plugins..."
+                placeholder={t('marketplace.search_plugins')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-violet-500 text-sm"
@@ -122,7 +124,7 @@ export default function Marketplace() {
               onChange={(e) => setCategory(e.target.value)}
               className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-violet-500 text-sm"
             >
-              <option value="">All Categories</option>
+              <option value="">{t('marketplace.all_categories')}</option>
               {categories.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
@@ -132,15 +134,15 @@ export default function Marketplace() {
               onChange={(e) => setStatus(e.target.value)}
               className="px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 focus:outline-none focus:border-violet-500 text-sm"
             >
-              <option value="">All Statuses</option>
-              <option value="approved">Approved</option>
-              <option value="draft">Draft</option>
-              <option value="disabled">Disabled</option>
+              <option value="">{t('marketplace.all_statuses')}</option>
+              <option value="approved">{t('marketplace.approved')}</option>
+              <option value="draft">{t('marketplace.draft')}</option>
+              <option value="disabled">{t('marketplace.disabled')}</option>
             </select>
           </div>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Installed Plug-ins</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('marketplace.installed_plugins')}</h3>
             <InstalledPluginTable
               installations={installations}
               plugins={plugins}
@@ -152,7 +154,7 @@ export default function Marketplace() {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-bold text-neutral-300">Browse Available Plugins</h3>
+            <h3 className="text-lg font-bold text-neutral-300">{t('marketplace.browse_available')}</h3>
             <PluginGrid
               plugins={plugins}
               installations={installations}

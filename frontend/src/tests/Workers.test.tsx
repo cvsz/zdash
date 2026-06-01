@@ -6,8 +6,8 @@ import { waitForStableUi } from './utils/settle';
 test('renders workers header', async () => {
   render(<Workers />);
   await waitForStableUi();
-  await waitForElementToBeRemoved(() => screen.queryByText(/Loading workers data/i), { timeout: 2000 }).catch(() => {});
-  expect(await screen.findByText('Workers & Queues')).toBeInTheDocument();
+  await waitForElementToBeRemoved(() => screen.queryByText(/Loading/i), { timeout: 2000 }).catch(() => {});
+  expect(await screen.findByText('Workers')).toBeInTheDocument();
 });
 
 test('renders default queue from mock data', async () => {
@@ -20,6 +20,6 @@ test('renders default queue from mock data', async () => {
 test('renders recent tasks section', async () => {
   render(<Workers />);
   await waitForStableUi();
-  const recentTasks = await screen.findByText('Recent Tasks');
+  const recentTasks = await screen.findByText(/Recent Tasks/);
   expect(recentTasks).toBeInTheDocument();
 });

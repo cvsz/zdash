@@ -9,7 +9,7 @@ describe("RiskPanel", () => {
     render(<RiskPanel />);
     await waitForStableUi();
 
-    expect(await screen.findByText("Risk Panel")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Risk Management", level: 2 })).toBeTruthy();
     expect(await screen.findByText("Kill Switch")).toBeTruthy();
     expect(await screen.findByText("Total Drawdown")).toBeTruthy();
     expect(await screen.findByText("Manual Halt")).toBeTruthy();
@@ -22,15 +22,15 @@ describe("RiskPanel", () => {
     render(<RiskPanel />);
     await waitForStableUi();
 
-    const resumeButton = screen.getByText("Resume trading") as HTMLButtonElement;
+    const resumeButton = screen.getByText("Resume Trading") as HTMLButtonElement;
     expect(resumeButton.disabled).toBe(true);
 
     fireEvent.change(screen.getByPlaceholderText("Resume reason"), {
       target: { value: "Risk normalized" },
     });
 
-    expect((screen.getByText("Resume trading") as HTMLButtonElement).disabled).toBe(false);
-    fireEvent.click(screen.getByText("Resume trading"));
+    expect((screen.getByText("Resume Trading") as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(screen.getByText("Resume Trading"));
 
     expect(await screen.findByText("Confirm manual resume")).toBeTruthy();
   });

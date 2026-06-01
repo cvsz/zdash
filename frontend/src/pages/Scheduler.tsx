@@ -23,6 +23,7 @@ import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
 import { useSchedulerRealtime } from "../realtime/useRealtime";
+import { useT } from "../hooks/useT";
 import { formatDateTime, formatDurationMs } from "../utils/format";
 
 const jobTypes = [
@@ -36,6 +37,7 @@ const jobTypes = [
 ] as const;
 
 export default function Scheduler() {
+  const { t } = useT();
   const realtime = useSchedulerRealtime({ maxEvents: 16 });
   const schedulerStatus = useApi(getSchedulerStatus, []);
 
@@ -140,14 +142,14 @@ export default function Scheduler() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Scheduler"
-        subtitle={`${AGENT_NAME_BY_ID.friday} scheduler management, job safety labels, and run controls.`}
+        title={t('scheduler.title')}
+        subtitle={t('scheduler.subtitle')}
         actions={
           <>
             <RealtimeStatusBadge connection={realtime.connection} compact />
-            <LiveIndicator connection={realtime.connection} label="Scheduler WS" />
+            <LiveIndicator connection={realtime.connection} label={t('scheduler.scheduler_ws')} />
             <Badge variant={schedulerRunning ? "success" : "warning"}>
-              {schedulerRunning ? "RUNNING" : "IDLE"}
+              {schedulerRunning ? t('scheduler.running') : t('scheduler.idle')}
             </Badge>
           </>
         }
@@ -156,15 +158,15 @@ export default function Scheduler() {
       <RealtimeConnectionBanner connection={realtime.connection} />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Scheduler Enabled" value={schedulerEnabled ? "YES" : "NO"} />
-        <MetricCard label="Scheduler Running" value={schedulerRunning ? "YES" : "NO"} />
-        <MetricCard label="Configured Jobs" value={jobs.length} />
-        <MetricCard label="Run History" value={runs.length} />
+        <MetricCard label={t('scheduler.scheduler_enabled')} value={schedulerEnabled ? "YES" : "NO"} />
+        <MetricCard label={t('scheduler.scheduler_running')} value={schedulerRunning ? "YES" : "NO"} />
+        <MetricCard label={t('scheduler.configured_jobs')} value={jobs.length} />
+        <MetricCard label={t('scheduler.run_history')} value={runs.length} />
       </div>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Default Jobs</h3>
-        <p className="mt-1 text-xs text-text-dim">Baseline jobs exposed by scheduler and safety policy.</p>
+        <h3 className="text-sm font-semibold text-white">{t('scheduler.default_jobs')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('scheduler.default_jobs_subtitle')}</p>
         <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
           {defaultJobs.map((job) => (
             <div key={job.id} className="rounded-md border border-border bg-canvas-lighter/60 p-3">
@@ -176,10 +178,10 @@ export default function Scheduler() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Create Job</h3>
+        <h3 className="text-sm font-semibold text-white">{t('scheduler.create_job')}</h3>
         <form className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4" onSubmit={(event) => void onCreateJob(event)}>
           <label className="text-xs text-text-secondary">
-            Name
+            {t('scheduler.name')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobName}
@@ -187,7 +189,7 @@ export default function Scheduler() {
             />
           </label>
           <label className="text-xs text-text-secondary">
-            Job type
+            {t('scheduler.job_type')}
             <select
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobType}
@@ -201,7 +203,7 @@ export default function Scheduler() {
             </select>
           </label>
           <label className="text-xs text-text-secondary">
-            Schedule
+            {t('scheduler.schedule')}
             <select
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={newJobScheduleType}
@@ -213,7 +215,7 @@ export default function Scheduler() {
             </select>
           </label>
           <label className="text-xs text-text-secondary">
-            Interval (sec)
+            {t('scheduler.interval_seconds')}
             <input
               type="number"
               min={10}
@@ -224,7 +226,7 @@ export default function Scheduler() {
           </label>
           <div className="md:col-span-2 xl:col-span-4">
             <Button type="submit" variant="primary" disabled={creating}>
-              {creating ? "Creating..." : "Create job"}
+              {creating ? t('scheduler.creating') : t('scheduler.create')}
             </Button>
           </div>
         </form>
@@ -232,31 +234,29 @@ export default function Scheduler() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Job Table</h3>
-        <p className="mt-1 text-xs text-text-dim">
-          `trading_scan` is risk-guarded, `content_pipeline` is approval/no-auto-publish, `iot_power_cycle` requires confirmation.
-        </p>
+        <h3 className="text-sm font-semibold text-white">{t('scheduler.job_table')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('scheduler.job_table_subtitle')}</p>
         <div className="mt-3">
           <DataTable<ScheduledJob>
             rows={jobs}
             loading={loadingJobs}
             error={jobsError}
             rowKey={(row) => row.id}
-            emptyMessage="No scheduler jobs found."
+            emptyMessage={t('scheduler.no_jobs_found')}
             columns={[
               {
                 key: "name",
-                header: "Job",
+                header: t('scheduler.job'),
                 render: (row) => row.name,
               },
               {
                 key: "type",
-                header: "Type",
+                header: t('scheduler.type'),
                 render: (row) => row.job_type,
               },
               {
                 key: "status",
-                header: "Status",
+                header: t('scheduler.status'),
                 render: (row) => (
                   <Badge
                     variant={
@@ -275,23 +275,23 @@ export default function Scheduler() {
               },
               {
                 key: "safety",
-                header: "Safety",
+                header: t('scheduler.safety'),
                 render: (row) => {
                   if (row.job_type === "trading_scan") {
-                    return <Badge variant="warning">Risk-guarded</Badge>;
+                    return <Badge variant="warning">{t('scheduler.risk_guarded')}</Badge>;
                   }
                   if (row.job_type === "content_pipeline") {
-                    return <Badge variant="warning">Approval / no auto-publish</Badge>;
+                    return <Badge variant="warning">{t('scheduler.approval_no_auto_publish')}</Badge>;
                   }
                   if (row.job_type === "iot_power_cycle") {
-                    return <Badge variant="danger">Confirmation required</Badge>;
+                    return <Badge variant="danger">{t('scheduler.confirmation_required')}</Badge>;
                   }
-                  return <Badge variant="muted">Standard</Badge>;
+                  return <Badge variant="muted">{t('scheduler.standard')}</Badge>;
                 },
               },
               {
                 key: "controls",
-                header: "Controls",
+                header: t('scheduler.controls'),
                 render: (row) => {
                   const busy = busyJobId === row.id;
                   return (
@@ -306,7 +306,7 @@ export default function Scheduler() {
                           })
                         }
                       >
-                        Run
+                        {t('common.run')}
                       </Button>
                       <Button
                         className="px-2 py-1 text-xs"
@@ -318,7 +318,7 @@ export default function Scheduler() {
                           })
                         }
                       >
-                        Pause
+                        {t('common.pause')}
                       </Button>
                       <Button
                         className="px-2 py-1 text-xs"
@@ -330,7 +330,7 @@ export default function Scheduler() {
                           })
                         }
                       >
-                        Resume
+                        {t('common.resume')}
                       </Button>
                       <Button
                         className="px-2 py-1 text-xs"
@@ -342,7 +342,7 @@ export default function Scheduler() {
                           })
                         }
                       >
-                        Delete
+                        {t('common.delete')}
                       </Button>
                     </div>
                   );
@@ -354,38 +354,38 @@ export default function Scheduler() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Job Run History</h3>
+        <h3 className="text-sm font-semibold text-white">{t('scheduler.job_run_history')}</h3>
         <div className="mt-3">
           <DataTable<JobRunResult>
             rows={runs}
             loading={loadingRuns}
             error={runsError}
             rowKey={(row, index) => `${row.job_id}-${row.started_at}-${index}`}
-            emptyMessage="No scheduler runs available."
+            emptyMessage={t('scheduler.no_scheduler_runs')}
             columns={[
               {
                 key: "job",
-                header: "Job",
+                header: t('scheduler.job'),
                 render: (row) => row.job_id,
               },
               {
                 key: "type",
-                header: "Type",
+                header: t('scheduler.type'),
                 render: (row) => row.job_type,
               },
               {
                 key: "status",
-                header: "Status",
+                header: t('scheduler.status'),
                 render: (row) => row.status,
               },
               {
                 key: "started",
-                header: "Started",
+                header: t('scheduler.started'),
                 render: (row) => formatDateTime(row.started_at),
               },
               {
                 key: "duration",
-                header: "Duration",
+                header: t('scheduler.duration'),
                 render: (row) => formatDurationMs(row.duration_ms),
               },
             ]}
@@ -394,10 +394,10 @@ export default function Scheduler() {
       </section>
 
       <RealtimeEventFeed
-        title="Live Scheduler Stream"
+        title={t('scheduler.live_scheduler_stream')}
         events={realtime.events}
         maxItems={10}
-        emptyMessage="No live scheduler websocket events yet."
+        emptyMessage={t('scheduler.no_scheduler_websocket_events')}
       />
     </div>
   );

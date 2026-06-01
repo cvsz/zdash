@@ -9,11 +9,13 @@ import MetricCard from "../components/common/MetricCard";
 import PageHeader from "../components/layout/PageHeader";
 import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
+import { useT } from "../hooks/useT";
 
 const REQUIRED_TEXT = "CONFIRM_POWER_ACTION";
 const actionOrder: Array<IoTActionResult["action"]> = ["status", "turn_on", "turn_off", "power_cycle"];
 
 export default function IoTControl() {
+  const { t } = useT();
   const statusState = useApi(getIoTStatus, []);
 
   const [latestResult, setLatestResult] = useState<IoTActionResult | null>(null);
@@ -38,10 +40,10 @@ export default function IoTControl() {
 
   const confirmationRequired = useMemo(() => {
     if (dryRun) {
-      return "Power cycle confirmation dialog required; action remains simulated.";
+      return t('iot.confirmation_required_dry_run');
     }
-    return `Real mode requires typed confirmation text: ${REQUIRED_TEXT}.`;
-  }, [dryRun]);
+    return t('iot.confirmation_required_real', { text: REQUIRED_TEXT });
+  }, [t, dryRun]);
 
   async function performAction(action: IoTActionResult["action"]) {
     setBusyAction(action);
@@ -61,8 +63,8 @@ export default function IoTControl() {
       }
       setMessage(
         dryRun
-          ? "Action simulated in IOT_DRY_RUN mode."
-          : "Action submitted in guarded real mode.",
+          ? t('iot.action_simulated')
+          : t('iot.action_submitted_guarded'),
       );
     } catch (caught) {
       const text = caught instanceof Error ? caught.message : String(caught);
@@ -75,24 +77,24 @@ export default function IoTControl() {
   return (
     <div className="space-y-5">
       <PageHeader
-        title="IoT Control"
-        subtitle={`${AGENT_NAME_BY_ID.friday} owns scheduler-linked IoT safety orchestration.`}
-        actions={<Badge variant={dryRun ? "success" : "warning"}>{dryRun ? "IOT_DRY_RUN" : "REAL_MODE"}</Badge>}
+        title={t('iot.title')}
+        subtitle={t('iot.panel_subtitle', { agent: AGENT_NAME_BY_ID.friday })}
+        actions={<Badge variant={dryRun ? "success" : "warning"}>{dryRun ? t('iot.iot_dry_run') : t('iot.real_guarded')}</Badge>}
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="IoT Enabled" value={iotEnabled ? "YES" : "NO"} />
-        <MetricCard label="IOT_DRY_RUN" value={dryRun ? "ON" : "OFF"} />
-        <MetricCard label="Device Alias" value={deviceAlias} />
-        <MetricCard label="Device Mode" value={dryRun ? "MOCK / SIMULATED" : "REAL / GUARDED"} />
+        <MetricCard label={t('iot.iot_enabled')} value={iotEnabled ? t('common.yes') : t('common.no')} />
+        <MetricCard label={t('iot.iot_dry_run')} value={dryRun ? t('common.on') : t('common.off')} />
+        <MetricCard label={t('iot.device_alias')} value={deviceAlias} />
+        <MetricCard label={t('iot.device_mode')} value={dryRun ? t('iot.mock_simulated') : t('iot.real_guarded')} />
       </div>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Safety Conditions</h3>
+        <h3 className="text-sm font-semibold text-white">{t('iot.safety_conditions')}</h3>
         <p className="mt-2 text-sm text-text-secondary">{confirmationRequired}</p>
         {!dryRun ? (
           <label className="mt-3 block text-xs text-text-secondary">
-            Required confirmation text
+            {t('iot.required_confirmation_text')}
             <input
               className="mt-1 w-full rounded-md border border-border bg-canvas px-3 py-2 text-sm text-text-primary"
               value={typedConfirmation}
@@ -104,12 +106,14 @@ export default function IoTControl() {
       </section>
 
       <section className="rounded-card border border-border bg-panel p-4">
-        <h3 className="text-sm font-semibold text-white">Actions</h3>
-        <p className="mt-1 text-xs text-text-dim">Available actions: status, turn_on, turn_off, power_cycle.</p>
+        <h3 className="text-sm font-semibold text-white">{t('iot.actions')}</h3>
+        <p className="mt-1 text-xs text-text-dim">{t('iot.actions_subtitle')}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {actionOrder.map((action) => {
             const busy = busyAction === action;
             const blockedInRealMode = !dryRun && action !== "status" && !realModeConfirmationSatisfied;
+
+            const actionLabel = action === "turn_on" ? t('iot.power_on') : action === "turn_off" ? t('iot.power_off') : action === "power_cycle" ? t('iot.reboot') : t('common.status');
 
             if (action === "power_cycle") {
               return (
@@ -119,7 +123,7 @@ export default function IoTControl() {
                   disabled={busy || blockedInRealMode}
                   onClick={() => setPowerCycleConfirmOpen(true)}
                 >
-                  {busy ? "Running..." : action}
+                  {busy ? t('iot.running') : actionLabel}
                 </Button>
               );
             }
@@ -131,7 +135,7 @@ export default function IoTControl() {
                 disabled={busy || blockedInRealMode}
                 onClick={() => void performAction(action)}
               >
-                {busy ? "Running..." : action}
+                {busy ? t('iot.running') : actionLabel}
               </Button>
             );
           })}
@@ -140,13 +144,13 @@ export default function IoTControl() {
 
       {activeResult ? (
         <section className="rounded-card border border-border bg-panel p-4">
-          <h3 className="text-sm font-semibold text-white">Latest Result</h3>
+          <h3 className="text-sm font-semibold text-white">{t('iot.latest_result')}</h3>
           <p className="mt-2 text-sm text-text-secondary">
-            Action: <span className="font-semibold text-text-primary">{activeResult.action}</span>
+            {t('iot.action_label')}: <span className="font-semibold text-text-primary">{activeResult.action}</span>
           </p>
-          <p className="mt-1 text-sm text-text-secondary">Message: {activeResult.message}</p>
+          <p className="mt-1 text-sm text-text-secondary">{t('iot.message_label')}: {activeResult.message}</p>
           <p className="mt-1 text-sm text-text-secondary">
-            Simulation state: {activeResult.dry_run ? "Simulated output" : "Real mode output"}
+            {t('iot.simulation_state')}: {activeResult.dry_run ? t('iot.simulated_output') : t('iot.real_mode_output')}
           </p>
         </section>
       ) : null}
@@ -156,10 +160,10 @@ export default function IoTControl() {
 
       <ConfirmDialog
         open={powerCycleConfirmOpen}
-        title="Confirm power cycle"
-        message="Power cycle requires confirmation. In dry-run mode the result remains simulated."
+        title={t('iot.confirm_power_cycle')}
+        message={t('iot.confirm_power_cycle_message')}
         confirmationText={dryRun ? undefined : REQUIRED_TEXT}
-        confirmLabel="Confirm power cycle"
+        confirmLabel={t('iot.confirm_power_cycle_label')}
         onConfirm={() => {
           setPowerCycleConfirmOpen(false);
           void performAction("power_cycle");

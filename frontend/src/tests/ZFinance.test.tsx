@@ -12,20 +12,20 @@ describe("ZFinance", () => {
   it("renders page title header", () => {
     render(<ZFinance />);
 
-    expect(screen.getByRole("heading", { name: "zFinance" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Z Finance" })).toBeTruthy();
   });
 
   it("renders subtitle with read-only disclaimer", () => {
     render(<ZFinance />);
 
-    expect(screen.getByText(/Read-only safe-link adapter/)).toBeTruthy();
+    expect(screen.getByText(/Financial portfolio tracking/)).toBeTruthy();
   });
 
   it("renders warning badges", () => {
     render(<ZFinance />);
 
-    expect(screen.getByText("Read-only")).toBeTruthy();
-    expect(screen.getByText("No scraping")).toBeTruthy();
-    expect(screen.getByText("Not financial advice")).toBeTruthy();
+    expect(screen.getByText("Read Only")).toBeTruthy();
+    expect(screen.getByText("No Scraping")).toBeTruthy();
+    expect(screen.getByText("Not Financial Advice")).toBeTruthy();
   });
 });

@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 
+import { useT } from "../../hooks/useT";
 import SafetyBanner from "../ui/SafetyBanner";
 import { getSafetyBannerText } from "../../utils/safety";
 import Sidebar from "./Sidebar";
@@ -14,6 +15,7 @@ const showSafetyBanners =
   "true";
 
 export default function AppLayout({ children }: AppLayoutProps) {
+  const { t } = useT();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -30,6 +32,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="mx-auto w-full max-w-[1240px] flex-1 px-4 py-6 md:px-6">
           {children}
         </div>
+
+        <footer className="border-t border-border px-4 py-3 text-center text-xs text-text-dim">
+          {t('common.footer', { version: '0.1.0' })}
+        </footer>
       </main>
     </div>
   );

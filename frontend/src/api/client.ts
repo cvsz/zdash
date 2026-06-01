@@ -1,3 +1,4 @@
+import i18n from "../i18n";
 import { mockHealth, mockLogs } from "./mockData";
 import { ApiError, type ApiErrorPayload, type ApiResponse } from "./types";
 
@@ -77,7 +78,7 @@ function normalizeApiError(
   }
 
   if (error instanceof DOMException && error.name === "AbortError") {
-    return new ApiError("Request timed out", {
+    return new ApiError(i18n.t('api.timeout'), {
       code: "TIMEOUT",
       status,
       path,
@@ -86,7 +87,7 @@ function normalizeApiError(
   }
 
   if (error instanceof TypeError) {
-    return new ApiError("Backend is unavailable", {
+    return new ApiError(i18n.t('api.network_error'), {
       code: "NETWORK_ERROR",
       status,
       path,
@@ -103,12 +104,12 @@ function normalizeApiError(
     });
   }
 
-  return new ApiError("Unknown request error", {
-    code: "REQUEST_FAILED",
-    status,
-    path,
-    details: error,
-  });
+    return new ApiError(i18n.t('api.unknown_error'), {
+      code: "REQUEST_FAILED",
+      status,
+      path,
+      details: error,
+    });
 }
 
 function shouldUseMockFallback<T>(
@@ -176,7 +177,7 @@ async function request<T>(
       payload = await response.json();
     } catch (error) {
       throw normalizeApiError(
-        new ApiError("Invalid JSON response", {
+        new ApiError(i18n.t('api.invalid_json'), {
           code: "INVALID_RESPONSE",
           status: response.status,
           path,
@@ -205,7 +206,7 @@ async function request<T>(
         status: response.status,
         payload,
       });
-      throw new ApiError("Invalid API envelope", {
+      throw new ApiError(i18n.t('api.invalid_envelope'), {
         code: "INVALID_ENVELOPE",
         status: response.status,
         path,

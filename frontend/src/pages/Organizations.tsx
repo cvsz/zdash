@@ -4,24 +4,26 @@ import { OrganizationTable } from "../components/tenancy/OrganizationTable";
 import { WorkspaceTable } from "../components/tenancy/WorkspaceTable";
 import { InviteUserForm } from "../components/tenancy/InviteUserForm";
 import { useTenancy } from "../hooks/useTenancy";
+import { useT } from "../hooks/useT";
 
 export default function Organizations() {
+  const { t } = useT();
   const { organizations, workspaces, loading } = useTenancy();
 
   return (
     <div className="flex flex-col space-y-6">
       <PageHeader 
-        title="Organizations" 
-        subtitle="Manage your enterprise organizations, workspaces, and team members." 
+        title={t('organizations.title')} 
+        subtitle={t('organizations.subtitle')} 
       />
       {loading ? (
-        <div className="text-text-dim">Loading tenancy data...</div>
+        <div className="text-text-dim">{t('organizations.loading')}</div>
       ) : (
         <>
           <OrganizationTable organizations={organizations} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             <div className="flex flex-col space-y-4">
-              <h3 className="text-xl font-medium text-white">Workspaces</h3>
+              <h3 className="text-xl font-medium text-white">{t('organizations.workspaces')}</h3>
               <WorkspaceTable workspaces={workspaces} />
             </div>
             <div className="flex flex-col space-y-4">

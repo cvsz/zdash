@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { useT } from "../../hooks/useT";
 import Button from "./Button";
 
 type ConfirmDialogProps = {
@@ -19,12 +20,13 @@ export default function ConfirmDialog({
   title,
   message,
   confirmationText,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
   isConfirming = false,
 }: ConfirmDialogProps) {
+  const { t } = useT();
   const [typedText, setTypedText] = useState("");
 
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function ConfirmDialog({
         {confirmationText ? (
           <div className="mt-4">
             <p className="mb-2 text-xs text-slate-400">
-              Type <span className="font-semibold text-slate-200">{confirmationText}</span> to confirm.
+              {t('confirm_dialog.type_to_confirm')} <span className="font-semibold text-slate-200">{confirmationText}</span>
             </p>
             <input
               value={typedText}
@@ -62,14 +64,14 @@ export default function ConfirmDialog({
 
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="ghost" onClick={onCancel}>
-            {cancelLabel}
+            {cancelLabel ?? t('common.cancel')}
           </Button>
           <Button
             variant="danger"
             onClick={onConfirm}
             disabled={!confirmationSatisfied || isConfirming}
           >
-            {confirmLabel}
+            {confirmLabel ?? t('common.confirm')}
           </Button>
         </div>
       </div>

@@ -3,6 +3,7 @@ import ActivityTimeline from "../components/realtime/ActivityTimeline";
 import PresencePanel from "../components/realtime/PresencePanel";
 import WebsocketHealthCard from "../components/system/WebsocketHealthCard";
 import { apiClient } from "../api/client";
+import { useT } from "../hooks/useT";
 
 type IncidentItem = {
   id: string;
@@ -26,6 +27,7 @@ function normalizeIncidents(value: unknown): IncidentItem[] {
 }
 
 export default function IncidentCenter() {
+  const { t } = useT();
   const [incidents, setIncidents] = useState<IncidentItem[]>([]);
 
   const load = () =>
@@ -40,7 +42,7 @@ export default function IncidentCenter() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Incident Ops</h1>
+      <h1 className="text-xl font-semibold">{t('incidents.title')}</h1>
       <WebsocketHealthCard />
       <PresencePanel />
       <ul>
@@ -48,20 +50,20 @@ export default function IncidentCenter() {
           <li key={incident.id}>
             {incident.title} [{incident.status}]{" "}
             <button onClick={() => apiClient.post(`/api/incidents/${incident.id}/ack`, {}).then(load)}>
-              Ack
+              {t('incidents.ack')}
             </button>{" "}
             <button
               onClick={() => {
-                if (confirm("Resolve incident?")) {
+                if (confirm(t('incidents.resolve_incident_confirm'))) {
                   apiClient
                     .post(`/api/incidents/${incident.id}/resolve`, {
-                      notes: "resolved from dashboard",
+                      notes: t('incidents.resolved_from_dashboard'),
                     })
                     .then(load);
                 }
               }}
             >
-              Resolve
+              {t('incidents.resolve')}
             </button>
           </li>
         ))}

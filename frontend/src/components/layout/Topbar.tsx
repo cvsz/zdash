@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 
 import { useSystemStatus } from "../../hooks/useSystemStatus";
 import { useAuth } from "../../hooks/useAuth";
+import { useT } from "../../hooks/useT";
 import Badge from "../common/Badge";
 import ConnectionStatus from "../system/ConnectionStatus";
 import NotificationCenter from "../system/NotificationCenter";
@@ -18,6 +19,7 @@ type TopbarProps = {
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const { data, loading } = useSystemStatus();
   const { user, logout } = useAuth();
+  const { t } = useT();
   const [branding, setBranding] = useState<BrandingSettings | null>(null);
 
   useEffect(() => {
@@ -28,11 +30,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   const systemLabel =
     loading || !data?.health?.status
-      ? "Loading"
+      ? t('common.loading')
       : String(data.health.status).toUpperCase();
   const riskLabel =
     loading || !data?.risk?.risk_level
-      ? "Risk Loading"
+      ? t('topbar.risk_loading')
       : `Risk ${String(data.risk.risk_level).toUpperCase()}`;
 
   return (
@@ -46,15 +48,15 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             type="button"
             onClick={onMenuClick}
             className="rounded-button p-2 text-text-secondary transition hover:bg-panel-hover md:hidden"
-            aria-label="Toggle navigation"
+            aria-label={t('topbar.toggle_navigation')}
           >
             <Menu className="h-5 w-5" />
           </button>
           <div>
             <p className="text-sm font-semibold text-text-primary">
-              {branding?.brand_name || "Operational Dashboard"}
+              {branding?.brand_name || t('topbar.operational_dashboard')}
             </p>
-            <p className="text-[11px] text-text-dim">Dry-run safe defaults active</p>
+            <p className="text-[11px] text-text-dim">{t('topbar.dry_run_safe_active')}</p>
           </div>
           <div className="ml-6 hidden items-center gap-4 border-l border-border pl-6 md:flex">
             <OrganizationSwitcher />
@@ -77,7 +79,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             }}
             className="rounded-button border border-border px-3 py-1 text-xs text-text-secondary transition hover:bg-panel-hover"
           >
-            Logout
+            {t('topbar.logout')}
           </button>
         </div>
       </div>

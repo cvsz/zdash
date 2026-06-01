@@ -20,7 +20,7 @@ describe("App routing", () => {
   it("sidebar navigation exists", async () => {
     renderAt("/");
     await waitForStableUi();
-    expect((await screen.findAllByText("Team Roster")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("Team")).length).toBeGreaterThan(0);
     const sessionLogsLinks = await screen.findAllByText("Session Logs");
     expect(sessionLogsLinks.length).toBeGreaterThan(0);
   });
@@ -35,7 +35,7 @@ describe("App routing", () => {
   it("renders risk route", async () => {
     renderAt("/risk");
     await waitForStableUi();
-    expect(await screen.findByRole("heading", { name: "Risk Panel", level: 2 })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Risk Management", level: 2 })).toBeTruthy();
     expect(await screen.findByText("Manual Halt")).toBeTruthy();
   });
 
@@ -50,12 +50,12 @@ describe("App routing", () => {
     renderAt("/content");
     await waitForStableUi();
     expect(await screen.findByRole("heading", { name: "Content Pipeline", level: 2 })).toBeTruthy();
-    expect((await screen.findAllByText("SOCIAL_DRY_RUN")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText("Social Dry Run")).length).toBeGreaterThan(0);
   });
 
   it("renders not-found route", async () => {
     renderAt("/does-not-exist");
     await waitForStableUi();
-    expect(await screen.findByText("Page not found")).toBeTruthy();
+    expect(await screen.findByText("404 — Page Not Found")).toBeTruthy();
   });
 });
