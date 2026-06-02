@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useT } from '../../hooks/useT';
 
 export const InviteUserForm: React.FC = () => {
+  const { t } = useT();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("member");
   const [invited, setInvited] = useState(false);
@@ -18,13 +20,13 @@ export const InviteUserForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 p-4 rounded-lg flex flex-col space-y-4">
       <div>
-        <h3 className="text-lg font-medium text-white">Invite User</h3>
-        <p className="text-sm text-slate-400">Invite a new member to this organization.</p>
+        <h3 className="text-lg font-medium text-white">{t('tenancy.invite_user_title')}</h3>
+        <p className="text-sm text-slate-400">{t('organizations.invite_description')}</p>
       </div>
       <div className="flex items-center space-x-2">
         <input
           type="email"
-          placeholder="Email address"
+          placeholder={t('tenancy.invite_user_email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="flex-1 bg-slate-800 border border-slate-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
@@ -35,15 +37,15 @@ export const InviteUserForm: React.FC = () => {
           onChange={(e) => setRole(e.target.value)}
           className="bg-slate-800 border border-slate-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
         >
-          <option value="admin">Admin</option>
-          <option value="member">Member</option>
-          <option value="viewer">Viewer</option>
+          <option value="admin">{t('organizations.role_admin')}</option>
+          <option value="member">{t('organizations.role_member')}</option>
+          <option value="viewer">{t('organizations.role_viewer')}</option>
         </select>
         <button
           type="submit"
           className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
         >
-          {invited ? "Invited!" : "Invite"}
+          {invited ? t('common.success') : t('common.invite')}
         </button>
       </div>
     </form>

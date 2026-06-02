@@ -1,7 +1,9 @@
 import React from "react";
 import { useTenancy } from "../../hooks/useTenancy";
+import { useT } from '../../hooks/useT';
 
 export const WorkspaceSwitcher: React.FC = () => {
+  const { t } = useT();
   const { workspaces = [], activeWorkspace, switchWorkspace } = useTenancy();
 
   if (!Array.isArray(workspaces) || workspaces.length === 0) return null;
@@ -9,7 +11,7 @@ export const WorkspaceSwitcher: React.FC = () => {
   return (
     <div className="flex items-center space-x-2">
       <label htmlFor="workspace-switcher" className="text-sm text-gray-400">
-        Workspace:
+        {t('tenancy.workspace_switcher_label')}:
       </label>
       <select
         id="workspace-switcher"

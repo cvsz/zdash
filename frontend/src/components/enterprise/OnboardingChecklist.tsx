@@ -1,5 +1,6 @@
 import React from "react";
 import { OnboardingChecklist as OnboardingType } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 interface OnboardingChecklistProps {
   onboarding: OnboardingType | null;
@@ -14,6 +15,8 @@ export function OnboardingChecklist({
   onReset,
   isDryRunLabeled = false,
 }: OnboardingChecklistProps) {
+  const { t } = useT();
+
   if (!onboarding) {
     return (
       <div className="p-6 rounded-xl border border-neutral-800 bg-neutral-950/20 animate-pulse space-y-4">
@@ -24,7 +27,7 @@ export function OnboardingChecklist({
   }
 
   const handleToggle = async (step: string, isCompleted: boolean) => {
-    if (isCompleted) return; // cannot uncheck via UI for safety audits logs
+    if (isCompleted) return;
     try {
       await onCompleteStep(step);
     } catch (err) {
@@ -38,13 +41,13 @@ export function OnboardingChecklist({
     <div className="p-6 rounded-xl border border-neutral-800 bg-neutral-950/20 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
         <div>
-          <h4 className="text-xl font-bold text-white">System Onboarding Checklist</h4>
-          <p className="text-xs text-neutral-500 mt-1">Complete initial steps to activate production-grade modules.</p>
+          <h4 className="text-xl font-bold text-white">{t('enterprise.system_onboarding_title')}</h4>
+          <p className="text-xs text-neutral-500 mt-1">{t('enterprise.onboarding_desc')}</p>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <span className="text-[10px] text-neutral-500 uppercase font-bold tracking-wider">Progress</span>
+            <span className="text-[10px] text-neutral-500 uppercase font-bold tracking-wider">{t('enterprise.progress')}</span>
             <span className="text-lg font-extrabold text-white block">{onboarding.progress_percent}%</span>
           </div>
 
@@ -52,7 +55,7 @@ export function OnboardingChecklist({
             onClick={onReset}
             className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 hover:border-neutral-750 text-neutral-300 rounded text-xs font-semibold transition"
           >
-            Reset
+            {t('enterprise.reset')}
           </button>
         </div>
       </div>
@@ -95,7 +98,7 @@ export function OnboardingChecklist({
                 </span>
                 {isDryRunLabeled && step.includes("scan") && (
                   <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] uppercase font-bold tracking-wider">
-                    Dry-Run Safe
+                    {t('enterprise.dry_run_safe')}
                   </span>
                 )}
               </div>

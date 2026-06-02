@@ -1,6 +1,8 @@
 import React from "react";
+import { useT } from "../../hooks/useT";
 
 export function InstalledPlugins() {
+  const { t } = useT();
   const plugins = [
     { id: "zdash-discord-hook", name: "Discord Webhook", status: "Enabled" },
   ];
@@ -16,12 +18,12 @@ export function InstalledPlugins() {
             </span>
           </div>
           <div className="space-x-2">
-            <button className="text-sm text-neutral-400 hover:text-white px-3 py-1">Settings</button>
-            <button className="text-sm text-red-400 hover:text-red-300 px-3 py-1">Uninstall</button>
+            <button className="text-sm text-neutral-400 hover:text-white px-3 py-1">{t('marketplace.installed_settings_button')}</button>
+            <button className="text-sm text-red-400 hover:text-red-300 px-3 py-1">{t('marketplace.installed_uninstall_button')}</button>
           </div>
         </div>
       ))}
-      {plugins.length === 0 && <p className="text-neutral-500">No plugins installed.</p>}
+      {plugins.length === 0 && <p className="text-neutral-500">{t('marketplace.installed_table_empty')}</p>}
     </div>
   );
 }

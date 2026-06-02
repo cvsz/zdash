@@ -175,7 +175,7 @@ class OptimizationRequest(BaseModel):
     timeframe: str = "M5"
     dataset: str = "mock"
     initial_balance: float = 10000
-    parameter_grid: dict[str, list[Any]]
+    parameter_grid: dict[str, list[Any]] = Field(default_factory=dict)
     sort_metric: str = "profit_factor"
     max_combinations: int = 100
 

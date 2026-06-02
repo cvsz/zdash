@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PluginManifest, PluginInstallation } from "../../api/types";
 import { PluginCard } from "./PluginCard";
+import { useT } from "../../hooks/useT";
 
 interface PluginGridProps {
   plugins: PluginManifest[];
@@ -14,6 +15,7 @@ function text(value: unknown, fallback = ""): string {
 }
 
 export function PluginGrid({ plugins, installations, onInstall, onViewDetails }: PluginGridProps) {
+  const { t } = useT();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -44,7 +46,7 @@ export function PluginGrid({ plugins, installations, onInstall, onViewDetails }:
             id="marketplace-plugin-search"
             name="marketplace-plugin-search"
             type="text"
-            placeholder="Search plugins by name or description..."
+            placeholder={t('marketplace.plugin_grid_search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-4 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-200 placeholder-neutral-500 focus:outline-none focus:border-violet-500 text-sm"
@@ -70,7 +72,7 @@ export function PluginGrid({ plugins, installations, onInstall, onViewDetails }:
 
       {filteredPlugins.length === 0 ? (
         <div className="p-12 text-center text-neutral-500 text-sm border border-neutral-850 rounded-xl bg-neutral-950/20">
-          No plug-ins match your filter criteria.
+          {t('marketplace.plugin_grid_no_match')}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

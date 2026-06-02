@@ -1,21 +1,24 @@
 import React from "react";
 import type { TaskItem } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 interface Props {
   tasks: TaskItem[];
 }
 
 export const WorkerRunTable: React.FC<Props> = ({ tasks }) => {
+  const { t } = useT();
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
       <table className="min-w-full text-left text-sm text-gray-300">
         <thead className="bg-slate-800 border-b border-slate-700">
           <tr>
-            <th className="px-4 py-3 font-medium">Task ID</th>
-            <th className="px-4 py-3 font-medium">Type</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Created At</th>
-            <th className="px-4 py-3 font-medium">Retries</th>
+            <th className="px-4 py-3 font-medium">{t('workers.task_id')}</th>
+            <th className="px-4 py-3 font-medium">{t('workers.task_type')}</th>
+            <th className="px-4 py-3 font-medium">{t('workers.status')}</th>
+            <th className="px-4 py-3 font-medium">{t('workers.created')}</th>
+            <th className="px-4 py-3 font-medium">{t('workers.worker_run_table_heartbeat')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
@@ -40,7 +43,7 @@ export const WorkerRunTable: React.FC<Props> = ({ tasks }) => {
           {tasks.length === 0 && (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                No tasks found.
+                {t('workers.no_tasks')}
               </td>
             </tr>
           )}

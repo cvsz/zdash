@@ -75,7 +75,7 @@ describe("Enterprise Page", () => {
     render(<Enterprise />);
 
     // Renders license details
-    expect(await screen.findByText("50 operators")).toBeTruthy();
+    expect(await screen.findByText("50 Operators")).toBeTruthy();
     expect(await screen.findByText("Zeaz Inc")).toBeTruthy();
 
     // Renders whitelabel branding editor settings name

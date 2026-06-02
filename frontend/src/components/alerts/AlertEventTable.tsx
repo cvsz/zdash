@@ -1,20 +1,23 @@
 import React from "react";
 import type { AlertEvent } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 interface Props {
   events: AlertEvent[];
 }
 
 export const AlertEventTable: React.FC<Props> = ({ events }) => {
+  const { t } = useT();
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
       <table className="min-w-full text-left text-sm text-gray-300">
         <thead className="bg-slate-800 border-b border-slate-700">
           <tr>
-            <th className="px-4 py-3 font-medium">Message</th>
-            <th className="px-4 py-3 font-medium">Severity</th>
-            <th className="px-4 py-3 font-medium">Status</th>
-            <th className="px-4 py-3 font-medium">Triggered At</th>
+            <th className="px-4 py-3 font-medium">{t('alerts.event_table_message')}</th>
+            <th className="px-4 py-3 font-medium">{t('alerts.event_table_severity')}</th>
+            <th className="px-4 py-3 font-medium">{t('common.status')}</th>
+            <th className="px-4 py-3 font-medium">{t('alerts.triggered_at')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
@@ -46,7 +49,7 @@ export const AlertEventTable: React.FC<Props> = ({ events }) => {
           {events.length === 0 && (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
-                No alert events found.
+                {t('alerts.event_table_empty')}
               </td>
             </tr>
           )}

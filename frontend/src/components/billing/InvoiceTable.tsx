@@ -1,15 +1,17 @@
 import React from "react";
 import { Invoice } from "../../api/types";
+import { useT } from "../../hooks/useT";
 
 interface InvoiceTableProps {
   invoices: Invoice[];
 }
 
 export function InvoiceTable({ invoices }: InvoiceTableProps) {
+  const { t } = useT();
   if (invoices.length === 0) {
     return (
       <div className="p-8 text-center text-neutral-500 text-sm border border-neutral-800 rounded-xl bg-neutral-950/20">
-        No invoices found.
+        {t('billing.invoice_table_empty')}
       </div>
     );
   }
@@ -19,11 +21,11 @@ export function InvoiceTable({ invoices }: InvoiceTableProps) {
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-neutral-850 bg-neutral-900/10 text-neutral-400 text-xs font-semibold uppercase tracking-wider">
-            <th className="p-4">Invoice #</th>
-            <th className="p-4">Date</th>
-            <th className="p-4">Amount</th>
-            <th className="p-4">Status</th>
-            <th className="p-4 text-right">Receipt</th>
+            <th className="p-4">{t('billing.invoice_number')}</th>
+            <th className="p-4">{t('billing.date')}</th>
+            <th className="p-4">{t('billing.amount')}</th>
+            <th className="p-4">{t('billing.invoice_table_status')}</th>
+            <th className="p-4 text-right">{t('billing.receipt')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-850 text-sm text-neutral-300">
@@ -55,10 +57,10 @@ export function InvoiceTable({ invoices }: InvoiceTableProps) {
                     rel="noreferrer"
                     className="text-violet-400 hover:text-violet-300 underline font-medium text-xs transition duration-150"
                   >
-                    Download PDF
+                    {t('billing.download_pdf')}
                   </a>
                 ) : (
-                  <span className="text-neutral-600 text-xs">Unavailable</span>
+                  <span className="text-neutral-600 text-xs">{t('billing.unavailable')}</span>
                 )}
               </td>
             </tr>

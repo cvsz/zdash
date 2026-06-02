@@ -1,7 +1,9 @@
 import React from "react";
 import { useTenancy } from "../../hooks/useTenancy";
+import { useT } from '../../hooks/useT';
 
 export const OrganizationSwitcher: React.FC = () => {
+  const { t } = useT();
   const { organizations = [], activeOrg, switchOrganization } = useTenancy();
 
   if (!Array.isArray(organizations) || organizations.length === 0) return null;
@@ -9,7 +11,7 @@ export const OrganizationSwitcher: React.FC = () => {
   return (
     <div className="flex items-center space-x-2">
       <label htmlFor="organization-switcher" className="text-sm text-gray-400">
-        Org:
+        {t('tenancy.organization_switcher_label')}:
       </label>
       <select
         id="organization-switcher"

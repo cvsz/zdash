@@ -1,7 +1,9 @@
 import React from "react";
 import { useUsage } from "../../hooks/useUsage";
+import { useT } from "../../hooks/useT";
 
 export function QuotaBanner() {
+  const { t } = useT();
   const { summary, getMetricProgress, loading } = useUsage();
 
   if (loading || !summary) return null;
@@ -31,15 +33,15 @@ export function QuotaBanner() {
           <div className="flex items-center gap-3">
             <span className="text-xl">❌</span>
             <div>
-              <span className="font-bold">Quota Exceeded!</span> You have reached limits for{" "}
-              <span className="font-semibold capitalize">{exceededList.join(", ")}</span>. Operations in these categories are currently blocked.
+              <span className="font-bold">{t('usage.quota_exceeded')}!</span> {t('usage.quota_exceeded_desc')}{" "}
+              <span className="font-semibold capitalize">{exceededList.join(", ")}</span>. {t('usage.quota_exceeded_suffix')}
             </div>
           </div>
           <a
             href="/billing"
             className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition duration-150 border border-rose-500/30"
           >
-            Upgrade Plan
+            {t('usage.upgrade_plan')}
           </a>
         </div>
       )}
@@ -49,7 +51,7 @@ export function QuotaBanner() {
           <div className="flex items-center gap-3">
             <span className="text-xl">⚠</span>
             <div>
-              <span className="font-bold">Usage Warning:</span> You are approaching limits (&gt;80%) for{" "}
+              <span className="font-bold">{t('usage.usage_warning')}:</span> {t('usage.usage_warning_desc')}{" "}
               <span className="font-semibold capitalize">{warningList.join(", ")}</span>. Upgrading your plan is recommended.
             </div>
           </div>
@@ -57,7 +59,7 @@ export function QuotaBanner() {
             href="/billing"
             className="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition duration-150 border border-amber-500/30"
           >
-            View Billing
+            {t('usage.view_billing')}
           </a>
         </div>
       )}

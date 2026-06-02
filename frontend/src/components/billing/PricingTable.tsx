@@ -1,5 +1,6 @@
 import React from "react";
 import { BillingPlan } from "../../api/types";
+import { useT } from "../../hooks/useT";
 
 interface PricingTableProps {
   plans: BillingPlan[];
@@ -33,17 +34,18 @@ function getLimit(plan: BillingPlan, keys: string[] = []): unknown {
 }
 
 export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps) {
+  const { t } = useT();
   const safePlans = Array.isArray(plans) ? plans : [];
 
   const comparisonFeatures: ComparisonItem[] = [
-    { name: "Backtest Run Limits", keys: ["backtest_runs", "backtests_per_month"], isLimit: true },
-    { name: "Content Quota", keys: ["content_generation_tokens", "content_items_per_month"], isLimit: true },
-    { name: "Max Plug-ins", keys: ["marketplace_plugins"], isLimit: true },
-    { name: "IoT / Scheduler Controls", keys: ["iot_actions", "scheduler_jobs"], isLimit: true },
-    { name: "Advanced Signal Scan", tierRequired: "pro" },
-    { name: "Guardian Drawdown Guard", tierRequired: "pro" },
-    { name: "Audit Logging & Exports", tierRequired: "enterprise" },
-    { name: "White-Label Domain Support", tierRequired: "enterprise" },
+    { name: t('billing.feature_backtest'), keys: ["backtest_runs", "backtests_per_month"], isLimit: true },
+    { name: t('billing.feature_content'), keys: ["content_generation_tokens", "content_items_per_month"], isLimit: true },
+    { name: t('billing.feature_plugins'), keys: ["marketplace_plugins"], isLimit: true },
+    { name: t('billing.feature_iot'), keys: ["iot_actions", "scheduler_jobs"], isLimit: true },
+    { name: t('billing.feature_signal_scan'), tierRequired: "pro" },
+    { name: t('billing.feature_drawdown_guard'), tierRequired: "pro" },
+    { name: t('billing.feature_audit'), tierRequired: "enterprise" },
+    { name: t('billing.feature_whitelabel'), tierRequired: "enterprise" },
   ];
 
   const checkFeature = (plan: BillingPlan, item: ComparisonItem) => {
@@ -63,7 +65,7 @@ export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps
       <table className="w-full text-left border-collapse min-w-[600px]">
         <thead>
           <tr className="border-b border-neutral-800 bg-neutral-900/30">
-            <th className="p-4 text-sm font-semibold text-neutral-400">Features</th>
+            <th className="p-4 text-sm font-semibold text-neutral-400">{t('billing.features_header')}</th>
             {safePlans.map((p) => (
               <th key={p.id} className="p-4 text-sm font-bold text-white capitalize text-center">
                 {p.name ?? p.tier}
@@ -94,19 +96,19 @@ export function PricingTable({ plans, currentTier, onSelect }: PricingTableProps
             </tr>
           ))}
           <tr className="bg-neutral-900/10">
-            <td className="p-4 text-sm font-semibold text-neutral-400">Action</td>
+            <td className="p-4 text-sm font-semibold text-neutral-400">{t('billing.action_header')}</td>
             {safePlans.map((p) => (
               <td key={p.id} className="p-4 text-center">
                 {p.tier === currentTier ? (
                   <span className="text-xs font-semibold text-violet-400 px-3 py-1 bg-violet-500/10 rounded-full border border-violet-500/20">
-                    Active
+                    {t('billing.active')}
                   </span>
                 ) : (
                   <button
                     onClick={() => onSelect(p.id)}
                     className="px-4 py-1.5 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-850 hover:border-neutral-700 text-xs font-medium transition duration-150"
                   >
-                    Select
+                    {t('billing.select')}
                   </button>
                 )}
               </td>

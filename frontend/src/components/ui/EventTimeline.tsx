@@ -1,5 +1,6 @@
 import GlassCard from './GlassCard'
 import StatusBadge from './StatusBadge'
+import { useT } from '../../hooks/useT'
 
 type TimelineEvent = {
   id: string
@@ -16,7 +17,9 @@ type EventTimelineProps = {
   maxItems?: number
 }
 
-export default function EventTimeline({ title, events, emptyMessage = 'No events.', maxItems = 10 }: EventTimelineProps) {
+export default function EventTimeline({ title, events, emptyMessage, maxItems = 10 }: EventTimelineProps) {
+  const { t } = useT()
+  const noEvents = emptyMessage ?? t('event_timeline.no_events')
   const display = events.slice(0, maxItems)
 
   return (
@@ -24,7 +27,7 @@ export default function EventTimeline({ title, events, emptyMessage = 'No events
       <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">{title}</p>
 
       {display.length === 0 ? (
-        <p className="mt-3 text-xs text-text-dim">{emptyMessage}</p>
+        <p className="mt-3 text-xs text-text-dim">{noEvents}</p>
       ) : (
         <div className="mt-3 space-y-1">
           {display.map((event) => (

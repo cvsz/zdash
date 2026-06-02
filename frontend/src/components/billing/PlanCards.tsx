@@ -1,11 +1,13 @@
 import React from "react";
+import { useT } from "../../hooks/useT";
 
 export function PlanCards() {
+  const { t } = useT();
   const plans = [
-    { name: "Free", price: "$0", features: ["Basic Analytics", "1 Workspace"] },
-    { name: "Starter", price: "$49", features: ["Trading Scanner", "5 Workspaces", "Standard Support"] },
-    { name: "Pro", price: "$199", features: ["Backtesting", "AI Analysis", "Priority Support"] },
-    { name: "Enterprise", price: "Custom", features: ["SSO", "Dedicated Account Manager", "Custom Deployment"] },
+    { name: t('billing.plan_free_name'), price: t('billing.plan_price_free'), features: [t('billing.feature_basic_analytics'), t('billing.feature_1_workspace')] },
+    { name: t('billing.plan_starter_name'), price: t('billing.plan_price_starter'), features: [t('billing.feature_trading_scanner'), t('billing.feature_5_workspaces'), t('billing.feature_standard_support')] },
+    { name: t('billing.plan_pro_name'), price: t('billing.plan_price_pro'), features: [t('billing.feature_backtesting'), t('billing.feature_ai_analysis'), t('billing.feature_priority_support')] },
+    { name: t('billing.plan_enterprise_name'), price: t('billing.plan_price_enterprise'), features: [t('billing.feature_sso'), t('billing.feature_dedicated_manager'), t('billing.feature_custom_deployment')] },
   ];
 
   return (
@@ -20,7 +22,7 @@ export function PlanCards() {
             ))}
           </ul>
           <button className="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded text-white font-medium">
-            Select Plan
+            {t('billing.select_plan')}
           </button>
         </div>
       ))}

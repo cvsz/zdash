@@ -1,5 +1,6 @@
 import React from "react";
 import { UsageSummary } from "../../api/types";
+import { useT } from "../../hooks/useT";
 
 interface UsageMeterCardProps {
   summary: UsageSummary | null;
@@ -13,6 +14,7 @@ interface UsageMeterCardProps {
 }
 
 export function UsageMeterCard({ summary, getMetricProgress }: UsageMeterCardProps) {
+  const { t } = useT();
   if (!summary) {
     return (
       <div className="p-6 rounded-xl border border-neutral-800 bg-neutral-950/20 animate-pulse space-y-4">
@@ -24,22 +26,22 @@ export function UsageMeterCard({ summary, getMetricProgress }: UsageMeterCardPro
   }
 
   const trackedMetrics = [
-    { label: "Backtest Runs", key: "backtest_runs" },
-    { label: "Content Gen Tokens", key: "content_generation_tokens" },
-    { label: "Marketplace Plugins", key: "marketplace_plugins" },
-    { label: "IoT Actions", key: "iot_actions" },
+    { label: t('usage.backtest_runs'), key: "backtest_runs" },
+    { label: t('usage.content_gen_tokens'), key: "content_generation_tokens" },
+    { label: t('usage.marketplace_plugins'), key: "marketplace_plugins" },
+    { label: t('usage.iot_actions'), key: "iot_actions" },
   ];
 
   return (
     <div className="p-6 rounded-xl border border-neutral-800 bg-neutral-950/20 flex flex-col gap-6">
       <div className="flex justify-between items-start">
         <div>
-          <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Usage & Quotas</div>
-          <h4 className="text-xl font-bold text-white mt-1">Resource Consumption</h4>
+          <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">{t('billing.usage_title')}</div>
+          <h4 className="text-xl font-bold text-white mt-1">{t('usage.resource_consumption')}</h4>
         </div>
         {summary.reset_timestamp && (
           <div className="text-right">
-            <span className="text-neutral-500 text-xs block uppercase font-medium">Next Reset</span>
+            <span className="text-neutral-500 text-xs block uppercase font-medium">{t('usage.next_reset')}</span>
             <span className="text-sm font-medium text-neutral-300">
               {new Date(summary.reset_timestamp).toLocaleDateString()}
             </span>
@@ -78,12 +80,12 @@ export function UsageMeterCard({ summary, getMetricProgress }: UsageMeterCardPro
               {prog.exceeded ? (
                 <div className="text-rose-400 text-xs flex items-center gap-1">
                   <span>❌</span>
-                  <span>Limit exceeded! Some operations in this category are blocked. Upgrade your plan to resume.</span>
+                  <span>{t('usage.limit_exceeded_desc')}</span>
                 </div>
               ) : prog.warning ? (
                 <div className="text-amber-400 text-xs flex items-center gap-1">
                   <span>⚠</span>
-                  <span>Approaching usage limit ({Math.round(prog.percent)}% consumed). Recommend upgrading soon.</span>
+                  <span>{t('usage.limit_warning_desc', { percent: Math.round(prog.percent) })}</span>
                 </div>
               ) : null}
             </div>

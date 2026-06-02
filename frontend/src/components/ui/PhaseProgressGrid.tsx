@@ -1,4 +1,5 @@
 import GlassCard from './GlassCard'
+import { useT } from '../../hooks/useT'
 
 type Phase = {
   id: string
@@ -20,13 +21,14 @@ const statusStyles: Record<string, string> = {
 }
 
 export default function PhaseProgressGrid({ phases, totalPhases }: PhaseProgressGridProps) {
+  const { t } = useT()
   const completed = phases.filter((p) => p.status === 'done').length
   const percent = totalPhases > 0 ? Math.round((completed / totalPhases) * 100) : 0
 
   return (
     <GlassCard className="p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">Phase Progress</p>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-text-muted">{t('phase_progress.title')}</p>
         <p className="text-xs text-text-dim">
           {completed}/{totalPhases} ({percent}%)
         </p>

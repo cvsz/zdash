@@ -1,6 +1,8 @@
 import React from "react";
+import { useT } from "../../hooks/useT";
 
 export function PluginDirectory() {
+  const { t } = useT();
   const plugins = [
     { id: "zdash-risk-summary", name: "Risk Summary", desc: "Summarize daily risk metrics." },
     { id: "zdash-slack-notify", name: "Slack Alerts", desc: "Send alerts directly to your Slack workspace." },
@@ -15,7 +17,7 @@ export function PluginDirectory() {
             <p className="text-sm text-neutral-400">{p.desc}</p>
           </div>
           <button className="bg-neutral-700 hover:bg-neutral-600 px-4 py-2 rounded text-sm">
-            Install
+            {t('marketplace.directory_install_button')}
           </button>
         </div>
       ))}

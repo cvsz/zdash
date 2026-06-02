@@ -141,7 +141,7 @@ describe("Admin page", () => {
 
     await screen.findByText("auth.login.success");
 
-    fireEvent.change(screen.getByPlaceholderText("Filter action"), {
+    fireEvent.change(screen.getByPlaceholderText("Action"), {
       target: { value: "admin.user.create" },
     });
 

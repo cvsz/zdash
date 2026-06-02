@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import type { AuditLogEntry } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 type AuditLogTableProps = {
   items: AuditLogEntry[];
@@ -13,6 +14,7 @@ export default function AuditLogTable({
   loading = false,
   error,
 }: AuditLogTableProps) {
+  const { t } = useT();
   const [actionFilter, setActionFilter] = useState("");
   const [resourceFilter, setResourceFilter] = useState("");
   const [userFilter, setUserFilter] = useState("");
@@ -38,27 +40,27 @@ export default function AuditLogTable({
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-white">Audit Logs</h3>
-        <span className="text-xs text-slate-400">{filteredItems.length} records</span>
+        <h3 className="text-sm font-semibold text-white">{t('admin.audit_log')}</h3>
+        <span className="text-xs text-slate-400">{filteredItems.length} {t('common.details')}</span>
       </div>
 
       <div className="mt-3 grid gap-2 md:grid-cols-3">
         <input
           value={actionFilter}
           onChange={(event) => setActionFilter(event.target.value)}
-          placeholder="Filter action"
+          placeholder={t('admin.action')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
         />
         <input
           value={resourceFilter}
           onChange={(event) => setResourceFilter(event.target.value)}
-          placeholder="Filter resource"
+          placeholder={t('audit_log.resource')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
         />
         <input
           value={userFilter}
           onChange={(event) => setUserFilter(event.target.value)}
-          placeholder="Filter user"
+          placeholder={t('audit_log.user')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
         />
       </div>
@@ -73,25 +75,25 @@ export default function AuditLogTable({
         <table className="min-w-full divide-y divide-slate-800 text-sm">
           <thead className="bg-slate-950/50 text-left text-xs uppercase tracking-wide text-slate-400">
             <tr>
-              <th className="px-3 py-2">Time</th>
-              <th className="px-3 py-2">Action</th>
-              <th className="px-3 py-2">Resource</th>
-              <th className="px-3 py-2">User</th>
-              <th className="px-3 py-2">Result</th>
+              <th className="px-3 py-2">{t('common.time')}</th>
+              <th className="px-3 py-2">{t('audit_log.action')}</th>
+              <th className="px-3 py-2">{t('audit_log.resource')}</th>
+              <th className="px-3 py-2">{t('audit_log.user')}</th>
+              <th className="px-3 py-2">{t('audit_log.details')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
             {loading && (
               <tr>
                 <td className="px-3 py-3 text-slate-400" colSpan={5}>
-                  Loading audit logs...
+                  {t('admin.audit_log')}...
                 </td>
               </tr>
             )}
             {!loading && filteredItems.length === 0 && (
               <tr>
                 <td className="px-3 py-3 text-slate-400" colSpan={5}>
-                  No audit entries for current filters.
+                  {t('audit_log.no_logs')}
                 </td>
               </tr>
             )}

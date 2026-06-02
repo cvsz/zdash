@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 
 import { useAuth } from "../../hooks/useAuth";
 import { useT } from "../../hooks/useT";
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -79,7 +80,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="border-t border-border px-4 py-3">
-        <p className="text-[10px] text-text-dim">
+        <LanguageSwitcher />
+        <p className="mt-2 text-[10px] text-text-dim">
           {t('sidebar.dry_run_active')}
         </p>
       </div>

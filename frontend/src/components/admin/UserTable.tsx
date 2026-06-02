@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 
 import type { AdminUser } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 type CreateUserInput = {
   email: string;
@@ -26,6 +27,7 @@ export default function UserTable({
   onCreateUser,
   onSetActive,
 }: UserTableProps) {
+  const { t } = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("viewer");
@@ -48,20 +50,20 @@ export default function UserTable({
       setRole("viewer");
       setDisplayName("");
     } catch (caught) {
-      setSubmitError(caught instanceof Error ? caught.message : "Failed to create user");
+      setSubmitError(caught instanceof Error ? caught.message : t('errors.create_failed'));
     }
   };
 
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
-      <h3 className="text-sm font-semibold text-white">Users</h3>
-      <p className="mt-1 text-xs text-slate-400">Current user: {currentUsername}</p>
+      <h3 className="text-sm font-semibold text-white">{t('admin.users')}</h3>
+      <p className="mt-1 text-xs text-slate-400">{t('admin.current_user', { username: currentUsername, role: '' })}</p>
 
       <form className="mt-3 grid gap-2 md:grid-cols-5" onSubmit={handleCreateUser}>
         <input
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="Email"
+          placeholder={t('common.email')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
           required
         />
@@ -69,14 +71,14 @@ export default function UserTable({
           value={password}
           type="password"
           onChange={(event) => setPassword(event.target.value)}
-          placeholder="Password"
+          placeholder={t('auth.password')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
           required
         />
         <input
           value={displayName}
           onChange={(event) => setDisplayName(event.target.value)}
-          placeholder="Display name"
+          placeholder={t('settings.display_name')}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
         />
         <select
@@ -84,16 +86,16 @@ export default function UserTable({
           onChange={(event) => setRole(event.target.value)}
           className="rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
         >
-          <option value="viewer">viewer</option>
-          <option value="analyst">analyst</option>
-          <option value="operator">operator</option>
-          <option value="admin">admin</option>
+          <option value="viewer">{t('team.role_viewer')}</option>
+          <option value="analyst">{t('team.role_analyst')}</option>
+          <option value="operator">{t('team.role_operator')}</option>
+          <option value="admin">{t('team.role_admin')}</option>
         </select>
         <button
           type="submit"
           className="rounded-md bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-500"
         >
-          Create User
+          {t('user_table.title')}
         </button>
       </form>
 
@@ -107,25 +109,25 @@ export default function UserTable({
         <table className="min-w-full divide-y divide-slate-800 text-sm">
           <thead className="bg-slate-950/50 text-left text-xs uppercase tracking-wide text-slate-400">
             <tr>
-              <th className="px-3 py-2">Email</th>
-              <th className="px-3 py-2">Display Name</th>
-              <th className="px-3 py-2">Role</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Action</th>
+              <th className="px-3 py-2">{t('user_table.email')}</th>
+              <th className="px-3 py-2">{t('user_table.username')}</th>
+              <th className="px-3 py-2">{t('user_table.role')}</th>
+              <th className="px-3 py-2">{t('user_table.status')}</th>
+              <th className="px-3 py-2">{t('user_table.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800">
             {loading && (
               <tr>
                 <td className="px-3 py-3 text-slate-400" colSpan={5}>
-                  Loading users...
+                  {t('common.loading')}
                 </td>
               </tr>
             )}
             {!loading && users.length === 0 && (
               <tr>
                 <td className="px-3 py-3 text-slate-400" colSpan={5}>
-                  No users found.
+                  {t('user_table.no_users')}
                 </td>
               </tr>
             )}
@@ -142,7 +144,7 @@ export default function UserTable({
                     </td>
                     <td className="px-3 py-2 text-slate-300">{user.role}</td>
                     <td className="px-3 py-2 text-slate-300">
-                      {user.is_active ? "active" : "inactive"}
+                      {user.is_active ? t('common.active') : t('common.inactive')}
                     </td>
                     <td className="px-3 py-2">
                       {user.is_active ? (
@@ -154,7 +156,7 @@ export default function UserTable({
                           }}
                           className="rounded-md border border-rose-700 px-3 py-1 text-xs text-rose-200 transition hover:bg-rose-800/30 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                          Deactivate
+                          {t('user_table.deactivate')}
                         </button>
                       ) : (
                         <button
@@ -164,7 +166,7 @@ export default function UserTable({
                           }}
                           className="rounded-md border border-emerald-700 px-3 py-1 text-xs text-emerald-200 transition hover:bg-emerald-800/30"
                         >
-                          Activate
+                          {t('user_table.activate')}
                         </button>
                       )}
                     </td>

@@ -1,20 +1,23 @@
 import React from "react";
 import type { Workspace } from "../../api/types";
+import { useT } from '../../hooks/useT';
 
 interface Props {
   workspaces: Workspace[];
 }
 
 export const WorkspaceTable: React.FC<Props> = ({ workspaces }) => {
+  const { t } = useT();
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden">
       <table className="min-w-full text-left text-sm text-gray-300">
         <thead className="bg-slate-800 border-b border-slate-700">
           <tr>
-            <th className="px-4 py-3 font-medium">Name</th>
-            <th className="px-4 py-3 font-medium">Slug</th>
-            <th className="px-4 py-3 font-medium">Environment</th>
-            <th className="px-4 py-3 font-medium">Status</th>
+            <th className="px-4 py-3 font-medium">{t('workspace_table.name')}</th>
+            <th className="px-4 py-3 font-medium">{t('workspace_table.slug')}</th>
+            <th className="px-4 py-3 font-medium">{t('workspace_table.environment')}</th>
+            <th className="px-4 py-3 font-medium">{t('common.status')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
@@ -29,9 +32,9 @@ export const WorkspaceTable: React.FC<Props> = ({ workspaces }) => {
               </td>
               <td className="px-4 py-3">
                 {ws.is_active ? (
-                  <span className="text-emerald-400 font-medium">Active</span>
+                  <span className="text-emerald-400 font-medium">{t('common.active')}</span>
                 ) : (
-                  <span className="text-slate-500">Inactive</span>
+                  <span className="text-slate-500">{t('common.inactive')}</span>
                 )}
               </td>
             </tr>
@@ -39,7 +42,7 @@ export const WorkspaceTable: React.FC<Props> = ({ workspaces }) => {
           {workspaces.length === 0 && (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
-                No workspaces found.
+                {t('workspace_table.empty')}
               </td>
             </tr>
           )}
