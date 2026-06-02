@@ -53,6 +53,17 @@ def test_post_backtesting_optimize_and_optimizations() -> None:
     assert list_body["data"]["optimizations"]
 
 
+def test_post_backtesting_optimize_without_parameter_grid() -> None:
+    optimize_body = backtesting_api.optimize(
+        OptimizationRequest(
+            strategy="ob_aggressive",
+            max_combinations=1,
+        )
+    )
+    _assert_envelope(optimize_body)
+    assert optimize_body["ok"] is True
+
+
 def test_promotion_check_and_report_endpoints() -> None:
     run_body = backtesting_api.run(BacktestRequest(strategy="ob_aggressive"))
     result_id = run_body["data"]["result"]["id"]

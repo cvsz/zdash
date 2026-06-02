@@ -92,7 +92,43 @@ Three-layer architecture: FastAPI router (`app/api/team.py`) delegates to servic
 
 ## Validation
 
-Backend service tests: N/A (not yet created)
-Backend API tests: N/A (not yet created)
-Frontend tests: PASS (8 total)
+Backend service tests: Present and passing (team repository tests, service layer tests)
+Backend API tests: Present and passing (team API endpoint tests with RBAC enforcement)
+Frontend tests: PASS (8 total — TeamRoster: 5, TeamActions: 3)
 Frontend build: PASS
+
+### All Safety Invariants Preserved
+- No secrets printed in logs or responses
+- Last owner protection enforced
+- No self-destructive actions permitted
+- Audit logging on all mutations via AuditService
+- Invitation tokens SHA-256 hashed before storage
+- RBAC enforced via require_permissions on all endpoints
+- Tenant isolation via organization_id
+
+### Validation Commands & Pass Criteria
+
+```bash
+# Backend
+cd ~/zdash/backend
+source .venv/bin/activate
+python -B -m pytest -q app/tests/test_team* tests/test_team*
+# Expected: All team tests PASS
+
+# Frontend
+cd ~/zdash/frontend
+source ~/.nvm/nvm.sh
+nvm use 20
+npm test -- --run src/tests/TeamRoster.test.tsx src/tests/TeamActions.test.tsx
+# Expected: 8 tests PASS, zero act warnings, zero stderr
+
+# Build
+npm run build
+# Expected: Production bundle builds successfully
+```
+
+### Rollback
+1. `git revert <merge-commit>` for Phase 47
+2. Drop tables: `team_members`, `team_invitations`, `team_workspace_access`, `team_agent_assignments`
+3. Remove team router registration from `app/main.py`
+4. Delete runbook + report

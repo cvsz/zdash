@@ -96,6 +96,12 @@ make validate-fast     # safety scan + tests + build
 | 40 | Go-Live Rehearsal | Safety locks, evidence capture, rehearsal workflow |
 | 41 | Release Automation | Readiness check, evidence collection, candidate creation |
 | 42 | Public Release | README update, CHANGELOG, version freeze, quick start |
+| 43 | API Mock Harness | Frontend API mock harness for test stability, mock service worker pattern |
+| 44 | Lint Cleanup | act-warning cleanup, async test stabilization, frontend lint remediation |
+| 45 | Zero-Stderr | Zero-stderr frontend validation, error boundary hardening |
+| 46 | Real Plugin Marketplace | DB-backed plugin marketplace, builtin actions, dry-run gated |
+| 47 | Real Team Workspace | DB-backed team workspace with RBAC, invitations, agent assignments |
+| 48 | P0–P2 Hardening | Optimize fix, docs sync, SBOM, SLO definitions, incident response, backup/restore, dependency policy, release attestation, verifier |
 
 ---
 
@@ -131,6 +137,10 @@ Frontend (React/Vite :5173) ──▶ Backend (FastAPI :8005) ──▶ Database
 | Strategy promotion | Disabled by default |
 | Main dashboard | Team roster is now rendered on `/` |
 | Team route | `/team` remains available |
+| Marketplace | Real DB-backed with dry-run action runner by default |
+| Team workspace | Real DB-backed team workspace with RBAC, invitations |
+| Plugin execution | Dry-run/sandbox-gated by default |
+| Strategy promotion | Disabled by default unless explicitly enabled |
 
 Common local endpoints:
 
@@ -1221,6 +1231,18 @@ This project is licensed under the MIT License. See `LICENSE`.
 
 ## Collaboration
 - Workspace collaboration endpoints are dry-run safe and federation remains mock-only.
+
+## Phase 46 Real Plugin Marketplace
+
+Phase 46 delivers a functioning plugin marketplace with approval workflow, installation management, categories, and enterprise-grade plugin lifecycle. Marketplace plugins remain sandboxed by default with dry-run enforcement.
+
+## Phase 47 Real Team Workspace
+
+Phase 47 adds multi-member team workspace with RBAC, invitations, workspace access control, agent assignments, activity tracking, and audit logging. All team actions are gated by permissions.
+
+## Phase 48 P0–P2 Hardening
+
+Phase 48 completes P0–P2 hardening: backtesting optimize payload compatibility (parameter_grid defaults, max_drawdown_percent sorting), frontend normalization, validation stability, documentation sync (README, CHANGELOG, release notes), SBOM generation, SLO definitions, incident response runbook, backup/restore proof, dependency update policy, signed release attestation, and P0–P2 completion verifier.
 
 ## Phase 09 Enterprise Cloud Scale
 

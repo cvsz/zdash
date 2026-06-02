@@ -453,9 +453,16 @@ export const getBacktestResult = async (resultId: string) => {
 };
 
 export const runOptimization = async (payload: Record<string, unknown>) => {
+  const normalizedPayload = {
+    ...payload,
+    parameter_grid:
+      typeof payload.parameter_grid === 'object' && payload.parameter_grid !== null && !Array.isArray(payload.parameter_grid)
+        ? payload.parameter_grid
+        : {},
+  };
   const data = await apiClient.post<{ optimization: OptimizationResult }>(
     "/api/backtesting/optimize",
-    payload,
+    normalizedPayload,
     {
       optimization: {
         id: "opt-mock-1",

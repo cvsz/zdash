@@ -63,11 +63,36 @@ seeded on startup, frontend fully wired.
 
 ## Validation
 
-- 490+ backend tests pass
-- 96+ frontend tests pass
-- Frontend build succeeds (2332 module build)
+- 610 backend tests pass (includes 37 marketplace-specific tests: 14 registry, 12 API envelope, 11 action runner)
+- 110 frontend tests pass (includes 7 marketplace action UI tests)
+- Frontend build succeeds
 - Zero stderr during test runs
 - Zero React act() warnings
+
+## Safety Model
+
+### Built-in Plugin Actions (Dry-Run Default)
+All builtin plugin actions use `dry_run=True` by default. The plugin runtime (`app/marketplace/plugin_runtime.py`) wraps every action in audit logging and event emission. No builtin action can execute live trades, real IoT mutations, or real social posts — these are blocked by the safety gate in `app/marketplace/safety.py`.
+
+### Unknown Entrypoints
+Unknown entrypoints (non-builtin URIs) return an error response and never execute arbitrary code. The plugin runtime validates entrypoint URIs against the registered builtin registry before any execution attempt.
+
+### Real Third-Party Plugin Runtime
+Real external/third-party plugin execution is **not enabled by default**. The current architecture supports only `builtin://` entrypoints. Future external plugin support will require:
+1. **Signed manifests** — cryptographic verification of plugin origin and integrity
+2. **Sandbox execution** — isolated process or container runtime with resource limits
+3. **Permission review** — explicit user approval for each permission scope
+4. **Audit logging** — full action traceability for external plugins
+
+### Safety Compliance
+- [x] All actions default to `dry_run=True`
+- [x] Builtin entrypoints use `builtin://` URI scheme (no filesystem execution)
+- [x] Secret redaction in audit/event payloads
+- [x] RBAC on all endpoints (marketplace_read/install/manage/run_plugin)
+- [x] Tenant isolation via organization_id
+- [x] Safety gate blocks live_trade, real_iot, real_social
+- [x] Unknown entrypoints return error, never execute arbitrary code
+- [x] Rollback plan: revert migrations, clear plugin_* tables, remove code
 
 ## Rollback
 

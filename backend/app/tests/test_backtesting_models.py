@@ -100,3 +100,25 @@ def test_optimizer_accepts_empty_parameter_grid():
 
     assert result.executed_combinations == 1
     assert result.total_combinations == 1
+
+
+def test_optimizer_accepts_max_drawdown_percent_sort_metric():
+    from app.backtesting.models import OptimizationRequest
+    from app.backtesting.optimizer import ParameterOptimizer
+
+    req = OptimizationRequest(
+        strategy="ob_aggressive",
+        symbol="XAUUSD",
+        timeframe="M5",
+        parameter_grid={"lookback": [8, 12], "risk_reward": [1.5, 2.0]},
+        sort_metric="max_drawdown_percent",
+        max_combinations=4,
+    )
+
+    result = ParameterOptimizer().optimize(req)
+
+    assert result.sort_metric == "max_drawdown_percent"
+    assert len(result.ranked_results) == 4
+
+    drawdowns = [r.metrics.max_drawdown_percent for r in result.ranked_results]
+    assert drawdowns == sorted(drawdowns), "max_drawdown_percent should sort ascending"

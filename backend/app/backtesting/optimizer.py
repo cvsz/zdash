@@ -20,6 +20,7 @@ class ParameterOptimizer:
         "win_rate",
         "expectancy",
         "sharpe_like_score",
+        "max_drawdown_percent",
     }
 
     def __init__(self, strategy_lab: StrategyLab | None = None) -> None:
@@ -72,7 +73,10 @@ class ParameterOptimizer:
             )
             results.append(self.lab.run_backtest(backtest_request))
 
-        results.sort(key=lambda r: getattr(r.metrics, sort_metric), reverse=True)
+        results.sort(
+            key=lambda r: getattr(r.metrics, sort_metric),
+            reverse=sort_metric != "max_drawdown_percent",
+        )
         finished = datetime.now(timezone.utc)
         return OptimizationResult(
             id=str(uuid4()),

@@ -566,6 +566,22 @@ release-evidence: ## Collect release evidence to docs/reports/generated/
 release-readiness: ## Verify release readiness prerequisites
 	bash scripts/release/verify-release-readiness.sh
 
+.PHONY: sbom
+sbom: ## Generate SBOM for frontend and backend
+	@bash scripts/release/generate-sbom.sh
+
+.PHONY: backup-restore-proof
+backup-restore-proof: ## Run backup/restore proof script
+	@bash scripts/release/backup-restore-proof.sh
+
+.PHONY: release-attestation
+release-attestation: ## Create release attestation
+	@bash scripts/release/create-release-attestation.sh
+
+.PHONY: phase48-validate
+phase48-validate: ## Validate P0-P2 completion
+	@bash scripts/release/verify-p0-p2-completion.sh
+
 .PHONY: phase41-validate
 phase41-validate: ## Validate Phase 41 release automation deliverables
 	@echo "=== Phase 41 Validation ==="; \
