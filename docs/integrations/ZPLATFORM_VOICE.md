@@ -38,7 +38,7 @@ WebSocket:       ws://127.0.0.1:8450/v1/realtime
 
 ## zDash backend configuration
 
-Copy the values from `.env.zplatform-voice.example` into the backend environment:
+Copy the voice values from `.env.production.example` into the backend environment:
 
 ```env
 ZPLATFORM_VOICE_ENABLED=true
