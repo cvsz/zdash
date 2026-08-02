@@ -45,8 +45,7 @@ class VoiceIntegrationConfig:
             .strip()
             .rstrip("/"),
             service_token=os.getenv("ZPLATFORM_VOICE_SERVICE_TOKEN", "").strip(),
-            model=os.getenv("ZPLATFORM_VOICE_MODEL", "qwen3:8b").strip()
-            or "qwen3:8b",
+            model=os.getenv("ZPLATFORM_VOICE_MODEL", "qwen3:8b").strip() or "qwen3:8b",
             request_timeout_seconds=_environment_float(
                 "ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS", 5.0
             ),
