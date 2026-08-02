@@ -3,7 +3,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.auth.dependencies import get_current_user
 from app.auth.models import AuthSession
@@ -26,6 +26,14 @@ class VoiceSessionRequest(BaseModel):
         min_length=1,
         max_length=8000,
     )
+
+    @field_validator("instructions")
+    @classmethod
+    def validate_instructions(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Voice instructions must not be blank")
+        return normalized
 
 
 def _tenant_id(request: Request) -> str:
@@ -97,6 +105,6 @@ async def create_voice_session(
             "expires_at": grant.expires_at.isoformat(),
             "ticket_transport": grant.ticket_transport,
             "model": config.model,
-            "instructions": payload.instructions.strip(),
+            "instructions": payload.instructions,
         }
     )
