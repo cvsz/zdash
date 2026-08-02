@@ -53,6 +53,7 @@ from app.api import (
     sovereign,
     team,
     tenancy,
+    voice,
     workers,
 )
 from app.api.routes import incidents
@@ -196,6 +197,7 @@ app.include_router(workspaces.router)
 app.include_router(team.router)
 app.include_router(audit.router)
 app.include_router(notifications.router)
+app.include_router(voice.router)
 app.include_router(workers.router)
 app.include_router(tenancy.router)
 app.include_router(sovereign.router)
