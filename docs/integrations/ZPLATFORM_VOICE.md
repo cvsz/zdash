@@ -38,7 +38,7 @@ WebSocket:       ws://127.0.0.1:8450/v1/realtime
 
 ## zDash backend configuration
 
-Copy the voice values from `.env.production.example` into the backend environment:
+The committed configuration contract lives in the repository root `.env.example`. Put deployment-specific values in an untracked `.env.production` file:
 
 ```env
 ZPLATFORM_VOICE_ENABLED=true
@@ -49,6 +49,19 @@ ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS=5
 ```
 
 Never use a `VITE_` prefix for the service token. Vite-prefixed variables are compiled into browser assets.
+
+## GitHub Environment synchronization
+
+Synchronize the production values into the GitHub `production` Environment from the repository root:
+
+```bash
+make env-sync ENV_FILE=.env.production GH_ENV=production REPO=cvsz/zdash
+make env-check GH_ENV=production REPO=cvsz/zdash
+```
+
+The sync script classifies `ZPLATFORM_VOICE_SERVICE_TOKEN` as a GitHub Environment **secret**. The remaining `ZPLATFORM_*` settings are GitHub Environment **variables**. Use the script's `--delete-stale` mode only after reviewing a dry run; stale cleanup is limited to managed prefixes, including `ZPLATFORM_`.
+
+Do not commit `.env.production`, print the service token, or expose it through frontend build arguments.
 
 ## z-platform configuration
 
