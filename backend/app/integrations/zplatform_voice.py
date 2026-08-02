@@ -21,6 +21,13 @@ class VoiceGatewayRejected(VoiceIntegrationError):
     """Raised when the trusted voice gateway rejects a ticket request."""
 
 
+def _environment_float(name: str, default: float) -> float:
+    try:
+        return float(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return -1
+
+
 @dataclass(frozen=True)
 class VoiceIntegrationConfig:
     enabled: bool
@@ -37,8 +44,8 @@ class VoiceIntegrationConfig:
             gateway_url=os.getenv("ZPLATFORM_VOICE_GATEWAY_URL", "").strip().rstrip("/"),
             service_token=os.getenv("ZPLATFORM_VOICE_SERVICE_TOKEN", "").strip(),
             model=os.getenv("ZPLATFORM_VOICE_MODEL", "qwen3:8b").strip() or "qwen3:8b",
-            request_timeout_seconds=float(
-                os.getenv("ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS", "5")
+            request_timeout_seconds=_environment_float(
+                "ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS", 5.0
             ),
         )
 
