@@ -332,7 +332,7 @@ export class RealtimeVoiceClient {
     const samples = pcm16ToFloat32(base64ToBytes(base64Audio));
     if (!samples.length) return;
     const buffer = audioContext.createBuffer(1, samples.length, PIPELINE_SAMPLE_RATE);
-    buffer.copyToChannel(samples, 0);
+    buffer.copyToChannel(Float32Array.from(samples), 0);
 
     const source = audioContext.createBufferSource();
     source.buffer = buffer;
