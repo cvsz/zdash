@@ -41,9 +41,12 @@ class VoiceIntegrationConfig:
         return cls(
             enabled=os.getenv("ZPLATFORM_VOICE_ENABLED", "false").strip().lower()
             == "true",
-            gateway_url=os.getenv("ZPLATFORM_VOICE_GATEWAY_URL", "").strip().rstrip("/"),
+            gateway_url=os.getenv("ZPLATFORM_VOICE_GATEWAY_URL", "")
+            .strip()
+            .rstrip("/"),
             service_token=os.getenv("ZPLATFORM_VOICE_SERVICE_TOKEN", "").strip(),
-            model=os.getenv("ZPLATFORM_VOICE_MODEL", "qwen3:8b").strip() or "qwen3:8b",
+            model=os.getenv("ZPLATFORM_VOICE_MODEL", "qwen3:8b").strip()
+            or "qwen3:8b",
             request_timeout_seconds=_environment_float(
                 "ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS", 5.0
             ),
@@ -133,7 +136,9 @@ async def issue_voice_ticket(
         try:
             payload = response.json()
             candidate = payload.get("error") if isinstance(payload, dict) else None
-            if isinstance(candidate, dict) and isinstance(candidate.get("message"), str):
+            if isinstance(candidate, dict) and isinstance(
+                candidate.get("message"), str
+            ):
                 message = candidate["message"]
         except ValueError:
             pass
@@ -142,4 +147,6 @@ async def issue_voice_ticket(
     try:
         return VoiceGatewayGrant.model_validate(response.json())
     except (ValueError, TypeError) as exc:
-        raise VoiceGatewayRejected("Voice gateway returned an invalid response") from exc
+        raise VoiceGatewayRejected(
+            "Voice gateway returned an invalid response"
+        ) from exc
