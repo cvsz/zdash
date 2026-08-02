@@ -12,12 +12,14 @@ type SidebarProps = {
 type NavItem = {
   to: string;
   labelKey: string;
+  fallbackLabel?: string;
   roles: string[];
 };
 
 const navItems: NavItem[] = [
   { to: "/", labelKey: "nav.dashboard", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/team", labelKey: "nav.team", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/voice", labelKey: "nav.voice", fallbackLabel: "Voice Agent", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/xau", labelKey: "nav.xau", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/risk", labelKey: "nav.risk", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/alerts", labelKey: "nav.alerts", roles: ["admin", "operator", "analyst", "viewer"] },
@@ -74,7 +76,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               }`
             }
           >
-            {t(item.labelKey)}
+            {t(item.labelKey, { defaultValue: item.fallbackLabel ?? item.labelKey })}
           </NavLink>
           ))}
       </nav>
