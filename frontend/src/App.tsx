@@ -22,6 +22,7 @@ import Scheduler from "./pages/Scheduler";
 import SessionLogs from "./pages/SessionLogs";
 import Settings from "./pages/Settings";
 import TeamRoster from "./pages/TeamRoster";
+import VoiceAgent from "./pages/VoiceAgent";
 import XauDashboard from "./pages/XauDashboard";
 import SystemHealth from "./pages/SystemHealth";
 import EventTimeline from "./pages/EventTimeline";
@@ -45,6 +46,7 @@ function ProtectedDashboardRoutes() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/team" element={<TeamRoster />} />
+          <Route path="/voice" element={<VoiceAgent />} />
           <Route path="/xau" element={<XauDashboard />} />
           <Route path="/risk" element={<RiskPanel />} />
           <Route path="/alerts" element={<Alerts />} />
