@@ -13,7 +13,7 @@ def test_local_compose_uses_one_loopback_entrypoint() -> None:
 
     assert "name: ${COMPOSE_PROJECT_NAME:-zdash-local}" in compose
     assert compose.count("ports:") == 1
-    assert '${ZDASH_BIND_ADDRESS:-127.0.0.1}:${ZDASH_HTTP_PORT:-18080}:80' in compose
+    assert "${ZDASH_BIND_ADDRESS:-127.0.0.1}:${ZDASH_HTTP_PORT:-18080}:80" in compose
     assert '"80:80"' not in compose
     assert '"443:443"' not in compose
     assert '"8005:8005"' not in compose
