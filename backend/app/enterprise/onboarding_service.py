@@ -76,12 +76,12 @@ def mark_step_complete(
         if step in pending_steps:
             new_pending = list(pending_steps)
             new_pending.remove(step)
-            chk.pending_steps = new_pending
+            setattr(chk, "pending_steps", new_pending)
 
             new_completed = list(completed_steps)
             if step not in new_completed:
                 new_completed.append(step)
-            chk.completed_steps = new_completed
+            setattr(chk, "completed_steps", new_completed)
 
             total_steps = len(new_completed) + len(new_pending)
             progress_percent = (
@@ -89,8 +89,8 @@ def mark_step_complete(
                 if total_steps > 0
                 else 100.0
             )
-            chk.progress_percent = progress_percent
-            chk.updated_at = utc_now()
+            setattr(chk, "progress_percent", progress_percent)
+            setattr(chk, "updated_at", utc_now())
             db.commit()
 
     return {"ok": True}
@@ -108,10 +108,10 @@ def reset_checklist(
 
         chk = db.execute(query).scalar()
         if chk:
-            chk.completed_steps = []
-            chk.pending_steps = DEFAULT_STEPS
-            chk.progress_percent = 0.0
-            chk.updated_at = utc_now()
+            setattr(chk, "completed_steps", [])
+            setattr(chk, "pending_steps", DEFAULT_STEPS)
+            setattr(chk, "progress_percent", 0.0)
+            setattr(chk, "updated_at", utc_now())
             db.commit()
     return {"ok": True}
 
