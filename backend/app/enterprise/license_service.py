@@ -54,14 +54,14 @@ def apply_license(organization_id: str, license_key: str) -> dict[str, Any]:
             lic = EnterpriseLicense(
                 organization_id=organization_id,
                 license_key_hash=hash_license(license_key),
-                status=LicenseStatus.active,  # type: ignore[arg-type]
+                status=LicenseStatus.active,
                 tier="enterprise",
             )
             db.add(lic)
         else:
-            lic.license_key_hash = hash_license(license_key)
-            lic.status = LicenseStatus.active
-            lic.updated_at = utc_now()
+            setattr(lic, "license_key_hash", hash_license(license_key))
+            setattr(lic, "status", LicenseStatus.active)
+            setattr(lic, "updated_at", utc_now())
 
         db.commit()
     return {"ok": True, "status": "active"}
@@ -75,8 +75,8 @@ def revoke_license(organization_id: str) -> dict[str, Any]:
             )
         ).scalar()
         if lic:
-            lic.status = LicenseStatus.revoked
-            lic.updated_at = utc_now()
+            setattr(lic, "status", LicenseStatus.revoked)
+            setattr(lic, "updated_at", utc_now())
             db.commit()
     return {"ok": True, "status": "revoked"}
 
