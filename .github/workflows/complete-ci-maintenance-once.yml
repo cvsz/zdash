@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   maintain:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,16 +18,15 @@ jobs:
         with:
           ref: fix/complete-main-ci-20260805
 
-      - name: Upgrade official setup actions
+      - name: Build maintained workflow copies
         run: |
+          rm -rf ci-maintenance-output
           find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 \
             | xargs -0 sed -Ei \
               -e 's#actions/checkout@v[0-9]+#actions/checkout@v7#g' \
               -e 's#actions/setup-python@v[0-9]+#actions/setup-python@v7#g' \
               -e 's#actions/setup-node@v[0-9]+#actions/setup-node@v7#g'
 
-      - name: Repair E2E workflow heredoc indentation
-        run: |
           awk '
             /python3 - <</ { in_python_heredoc=1; print; next }
             in_python_heredoc && $0 == "PY" { print "          PY"; in_python_heredoc=0; next }
@@ -35,23 +35,25 @@ jobs:
           ' .github/workflows/e2e.yml > .github/workflows/e2e.yml.tmp
           mv .github/workflows/e2e.yml.tmp .github/workflows/e2e.yml
 
-      - name: Remove temporary diagnostics and workflow
-        run: |
+          mkdir -p ci-maintenance-output
+          cp .github/workflows/*.yml ci-maintenance-output/
+          rm -f ci-maintenance-output/complete-ci-maintenance-once.yml
+          git restore .github/workflows
           rm -f ruff-residual.txt
-          rm .github/workflows/complete-ci-maintenance-once.yml
 
-      - name: Validate maintenance diff
+      - name: Validate exported output
         run: |
           git diff --check
-          if grep -R -nE 'actions/(checkout@v[0-6]|setup-python@v[0-6]|setup-node@v[0-6])' .github/workflows; then
+          if grep -R -nE 'actions/(checkout@v[0-6]|setup-python@v[0-6]|setup-node@v[0-6])' ci-maintenance-output; then
             echo 'Legacy official action major remains' >&2
             exit 1
           fi
+          test -s ci-maintenance-output/e2e.yml
 
-      - name: Commit maintenance results
+      - name: Commit exported output
         run: |
-          git add -A
+          git add ci-maintenance-output ruff-residual.txt || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "ci: modernize Actions and repair E2E workflow"
+          git commit -m "ci: export validated workflow maintenance output"
           git push origin HEAD:fix/complete-main-ci-20260805
