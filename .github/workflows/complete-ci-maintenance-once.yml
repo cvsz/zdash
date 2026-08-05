@@ -1,0 +1,57 @@
+name: Complete CI maintenance once
+
+on:
+  push:
+    branches:
+      - fix/complete-main-ci-20260805
+
+permissions:
+  contents: write
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: fix/complete-main-ci-20260805
+
+      - name: Upgrade official setup actions
+        run: |
+          find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) -print0 \
+            | xargs -0 sed -Ei \
+              -e 's#actions/checkout@v[0-9]+#actions/checkout@v7#g' \
+              -e 's#actions/setup-python@v[0-9]+#actions/setup-python@v7#g' \
+              -e 's#actions/setup-node@v[0-9]+#actions/setup-node@v7#g'
+
+      - name: Repair E2E workflow heredoc indentation
+        run: |
+          awk '
+            /python3 - <</ { in_python_heredoc=1; print; next }
+            in_python_heredoc && $0 == "PY" { print "          PY"; in_python_heredoc=0; next }
+            in_python_heredoc && NF { print "          " $0; next }
+            { print }
+          ' .github/workflows/e2e.yml > .github/workflows/e2e.yml.tmp
+          mv .github/workflows/e2e.yml.tmp .github/workflows/e2e.yml
+
+      - name: Remove temporary diagnostics and workflow
+        run: |
+          rm -f ruff-residual.txt
+          rm .github/workflows/complete-ci-maintenance-once.yml
+
+      - name: Validate maintenance diff
+        run: |
+          git diff --check
+          if grep -R -nE 'actions/(checkout@v[0-6]|setup-python@v[0-6]|setup-node@v[0-6])' .github/workflows; then
+            echo 'Legacy official action major remains' >&2
+            exit 1
+          fi
+
+      - name: Commit maintenance results
+        run: |
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "ci: modernize Actions and repair E2E workflow"
+          git push origin HEAD:fix/complete-main-ci-20260805
