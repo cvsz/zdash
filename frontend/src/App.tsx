@@ -12,6 +12,7 @@ import ContentPipeline from "./pages/ContentPipeline";
 import Dashboard from "./pages/Dashboard";
 import IoTControl from "./pages/IoTControl";
 import Login from "./pages/Login";
+import MarketingDashboard from "./pages/MarketingDashboard";
 import NotFound from "./pages/NotFound";
 import Organizations from "./pages/Organizations";
 import Workspace from "./pages/Workspace";
@@ -54,6 +55,7 @@ function ProtectedDashboardRoutes() {
           <Route path="/scheduler" element={<Scheduler />} />
           <Route path="/backtests" element={<Backtests />} />
           <Route path="/content" element={<ContentPipeline />} />
+          <Route path="/marketing" element={<MarketingDashboard />} />
           <Route path="/iot" element={<IoTControl />} />
           <Route path="/org" element={<OrgMapPage />} />
           <Route path="/organizations" element={<Organizations />} />

@@ -7,6 +7,7 @@ type MetricCardProps = {
   label: string;
   value: string | number;
   delta?: string;
+  hint?: string;
   severity?: BadgeVariant;
 };
 
@@ -14,6 +15,7 @@ export default function MetricCard({
   label,
   value,
   delta,
+  hint,
   severity = "muted",
 }: MetricCardProps) {
   const { t } = useT();
@@ -21,6 +23,7 @@ export default function MetricCard({
     <SectionCard className="h-full">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
       <p className="mt-2 text-2xl font-semibold text-white">{typeof value === 'number' ? value : (value || t('metric_card_no_value'))}</p>
+      {hint ? <p className="mt-2 pr-14 text-xs leading-5 text-text-dim">{hint}</p> : null}
       {delta ? (
         <div className="mt-3">
           <Badge variant={severity}>{delta}</Badge>
