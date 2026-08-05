@@ -1,10 +1,32 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { getLogs } from "../api/endpoints";
 import type { EventLog } from "../api/types";
 
+type RealtimeStatus =
+  | "connecting"
+  | "connected"
+  | "polling"
+  | "disconnected";
+
+export function resolveRealtimeBaseUrl(): string {
+  const configuredWsBase = import.meta.env.VITE_WS_BASE_URL?.trim();
+  if (configuredWsBase && /^wss?:\/\//i.test(configuredWsBase)) {
+    return configuredWsBase.replace(/\/+$/, "");
+  }
+
+  const configuredApiBase = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configuredApiBase && /^https?:\/\//i.test(configuredApiBase)) {
+    return configuredApiBase.replace(/^http/i, "ws").replace(/\/+$/, "");
+  }
+
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.host}`;
+}
+
 export function useRealtimeEvents() {
   const [events, setEvents] = useState<EventLog[]>([]);
-  const [status, setStatus] = useState<"connecting" | "connected" | "polling" | "disconnected">("connecting");
+  const [status, setStatus] = useState<RealtimeStatus>("connecting");
   const statusRef = useRef(status);
 
   useEffect(() => {
@@ -13,25 +35,28 @@ export function useRealtimeEvents() {
 
   useEffect(() => {
     let mounted = true;
-    const baseUrl = import.meta.env.VITE_WS_BASE_URL || import.meta.env.VITE_API_BASE_URL?.replace("http", "ws") || "ws://localhost:8005";
-    const wsUrl = baseUrl + "/api/realtime/ws";
+    const wsUrl = `${resolveRealtimeBaseUrl()}/api/realtime/ws`;
     let ws: WebSocket | null = null;
     let pollInterval: number | null = null;
 
     const startPolling = () => {
-      if (!mounted) return;
-      if (statusRef.current === "polling") return;
+      if (!mounted || statusRef.current === "polling") return;
+
       setStatus("polling");
       const poll = async () => {
         try {
           const fetchedEvents = await getLogs();
           if (mounted) setEvents(fetchedEvents);
-        } catch (e) {
-          console.error("Polling error", e);
+        } catch (error) {
+          console.error("Polling error", error);
         }
       };
-      poll();
-      pollInterval = window.setInterval(poll, Number(import.meta.env.VITE_POLL_INTERVAL_MS || 5000));
+
+      void poll();
+      pollInterval = window.setInterval(
+        poll,
+        Number(import.meta.env.VITE_POLL_INTERVAL_MS || 5000),
+      );
     };
 
     try {
@@ -41,28 +66,23 @@ export function useRealtimeEvents() {
       };
       ws.onmessage = (event) => {
         if (!mounted) return;
+
         try {
           const parsed = JSON.parse(event.data) as EventLog;
-          setEvents((prev) => [parsed, ...prev]);
-        } catch (e) {}
-      };
-      ws.onerror = () => {
-        if (mounted) {
-           startPolling();
+          setEvents((previous) => [parsed, ...previous]);
+        } catch {
+          console.warn("Ignored malformed realtime event");
         }
       };
-      ws.onclose = () => {
-        if (mounted) {
-           startPolling();
-        }
-      };
-    } catch (e) {
-       startPolling();
+      ws.onerror = startPolling;
+      ws.onclose = startPolling;
+    } catch {
+      startPolling();
     }
 
     return () => {
       mounted = false;
-      if (ws) ws.close();
+      ws?.close();
       if (pollInterval !== null) clearInterval(pollInterval);
     };
   }, []);
