@@ -1,0 +1,233 @@
+name: e2e
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: zdash
+          POSTGRES_PASSWORD: zdash-test
+          POSTGRES_DB: zdash_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U zdash -d zdash_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgresql+psycopg://zdash:zdash-test@127.0.0.1:5432/zdash_test
+      DRY_RUN: "true"
+      LIVE_TRADING_ACK: "false"
+      MT5_ENABLED: "false"
+      PRODUCTION_ALLOW_LIVE_ACTIONS: "false"
+      RISK_GUARDIAN_ENABLED: "true"
+      BILLING_PROVIDER: mock
+      BILLING_ENABLED: "true"
+      BILLING_FAIL_CLOSED: "false"
+      SOCIAL_DRY_RUN: "true"
+      SOCIAL_APPROVAL_REQUIRED: "true"
+      CORS_ALLOW_ORIGINS: http://127.0.0.1:5173,http://localhost:5173
+
+    defaults:
+      run:
+        shell: bash --noprofile --norc -euo pipefail {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          cd backend
+          pip install -e '.[dev]'
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci --legacy-peer-deps --no-audit --fund=false
+
+      - name: Backend lint and format check
+        run: |
+          cd backend
+          python -m ruff format --check app tests
+          python -m ruff check app tests
+
+      - name: Run DB migrations
+        run: |
+          cd backend
+          alembic -c alembic.ini upgrade head
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          python -m pytest -q --tb=short
+
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Start backend
+        run: |
+          mkdir -p /tmp/zdash-e2e
+          cd backend
+          nohup uvicorn app.main:app --host 127.0.0.1 --port 8005 > /tmp/zdash-e2e/backend.log 2>&1 &
+          echo "$!" > /tmp/zdash-e2e/backend.pid
+          echo "Backend PID: $(cat /tmp/zdash-e2e/backend.pid)"
+
+      - name: Wait for backend
+        run: |
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:8005/health > /tmp/zdash-e2e/health.json 2>/tmp/zdash-e2e/health.err; then
+              echo "Backend ready"
+              python3 -m json.tool /tmp/zdash-e2e/health.json
+              exit 0
+            fi
+
+            if ! kill -0 "$(cat /tmp/zdash-e2e/backend.pid)" 2>/dev/null; then
+              echo "Backend process exited early"
+              cat /tmp/zdash-e2e/backend.log || true
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          echo "Backend failed to become healthy"
+          cat /tmp/zdash-e2e/backend.log || true
+          cat /tmp/zdash-e2e/health.err || true
+          exit 1
+
+      - name: Auth bootstrap and login
+        id: auth
+        run: |
+          echo "=== Bootstrap Admin ==="
+          curl -fsS -X POST http://127.0.0.1:8005/api/auth/bootstrap-admin \
+            -H "Content-Type: application/json" \
+            -d '{"username":"admin","password":"admin123"}' \
+            > /tmp/zdash-e2e/bootstrap.json
+
+          python3 -m json.tool /tmp/zdash-e2e/bootstrap.json
+
+          echo "=== Login ==="
+          curl -fsS -X POST http://127.0.0.1:8005/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"username":"admin","password":"admin123"}' \
+            > /tmp/zdash-e2e/login.json
+
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("/tmp/zdash-e2e/login.json").read_text())
+          value = (payload.get("data") or {}).get("access_token")
+          if not value:
+              raise SystemExit("missing access token in login response")
+          print(f"auth_bearer=Bearer {value}")
+          PY
+
+          echo "Login succeeded"
+
+      - name: Smoke test API envelopes
+        env:
+          AUTH: ${{ steps.auth.outputs.auth_bearer }}
+        run: |
+          check_envelope() {
+            local method="$1"
+            local path="$2"
+            local body="${3:-}"
+
+            echo "=== ${method} ${path} ==="
+
+            if [ -n "$body" ]; then
+              curl -fsS -X "$method" "http://127.0.0.1:8005${path}" \
+                -H "Authorization: ${AUTH}" \
+                -H "Content-Type: application/json" \
+                -d "$body" > /tmp/zdash-e2e/response.json
+            else
+              curl -fsS -X "$method" "http://127.0.0.1:8005${path}" \
+                -H "Authorization: ${AUTH}" > /tmp/zdash-e2e/response.json
+            fi
+
+            python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path("/tmp/zdash-e2e/response.json").read_text())
+          required = {"ok", "data", "error"}
+          missing = sorted(required - set(data.keys()))
+          if missing:
+              raise SystemExit(f"Invalid API envelope. Missing: {missing}. Payload: {data}")
+          print(json.dumps(data, indent=2)[:1600])
+          PY
+          }
+
+          check_envelope GET /health
+          check_envelope GET /api/admin/safety-check
+          check_envelope GET /api/marketplace/categories
+          check_envelope GET /api/marketplace/plugins
+          check_envelope GET /api/marketplace/installations
+          check_envelope GET /api/billing/plans
+          check_envelope GET /api/incidents
+
+          PLUGIN_ID="$(curl -fsS http://127.0.0.1:8005/api/marketplace/plugins \
+            -H "Authorization: ${AUTH}" \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['plugins'][0]['id'])")"
+
+          check_envelope GET "/api/marketplace/plugins/${PLUGIN_ID}"
+          check_envelope POST /api/marketplace/install "{\"plugin_id\":\"${PLUGIN_ID}\",\"workspace_id\":\"ws-1\",\"config\":{}}"
+
+      - name: Upload backend diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-diagnostics
+          path: |
+            /tmp/zdash-e2e/*.log
+            /tmp/zdash-e2e/*.json
+            /tmp/zdash-e2e/*.err
+          if-no-files-found: ignore
+
+      - name: Cleanup
+        if: always()
+        run: |
+          if [ -f /tmp/zdash-e2e/backend.pid ]; then
+            kill "$(cat /tmp/zdash-e2e/backend.pid)" 2>/dev/null || true
+          fi
+          pkill -f "uvicorn app.main:app" 2>/dev/null || true
+          echo "Backend stopped"
