@@ -50,16 +50,16 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "20"
           cache: npm
@@ -151,15 +151,15 @@ jobs:
             > /tmp/zdash-e2e/login.json
 
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
-import json
-from pathlib import Path
+          import json
+          from pathlib import Path
 
-payload = json.loads(Path("/tmp/zdash-e2e/login.json").read_text())
-value = (payload.get("data") or {}).get("access_token")
-if not value:
-    raise SystemExit("missing access token in login response")
-print(f"auth_bearer=Bearer {value}")
-PY
+          payload = json.loads(Path("/tmp/zdash-e2e/login.json").read_text())
+          value = (payload.get("data") or {}).get("access_token")
+          if not value:
+              raise SystemExit("missing access token in login response")
+          print(f"auth_bearer=Bearer {value}")
+          PY
 
           echo "Login succeeded"
 
@@ -185,16 +185,16 @@ PY
             fi
 
             python3 - <<'PY'
-import json
-from pathlib import Path
+          import json
+          from pathlib import Path
 
-data = json.loads(Path("/tmp/zdash-e2e/response.json").read_text())
-required = {"ok", "data", "error"}
-missing = sorted(required - set(data.keys()))
-if missing:
-    raise SystemExit(f"Invalid API envelope. Missing: {missing}. Payload: {data}")
-print(json.dumps(data, indent=2)[:1600])
-PY
+          data = json.loads(Path("/tmp/zdash-e2e/response.json").read_text())
+          required = {"ok", "data", "error"}
+          missing = sorted(required - set(data.keys()))
+          if missing:
+              raise SystemExit(f"Invalid API envelope. Missing: {missing}. Payload: {data}")
+          print(json.dumps(data, indent=2)[:1600])
+          PY
           }
 
           check_envelope GET /health
