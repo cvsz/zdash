@@ -31,9 +31,9 @@ def create_export_bundle(request: dict[str, Any]) -> dict[str, Any]:
         db.refresh(bundle)
 
         # Async generation placeholder
-        bundle.status = ExportStatus.completed
-        bundle.file_path = f"/tmp/exports/{bundle.id}.zip"
-        bundle.completed_at = utc_now()
+        setattr(bundle, "status", ExportStatus.completed)
+        setattr(bundle, "file_path", f"/tmp/exports/{bundle.id}.zip")
+        setattr(bundle, "completed_at", utc_now())
         db.commit()
         db.refresh(bundle)
 
