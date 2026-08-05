@@ -27,6 +27,7 @@ const navItems: NavItem[] = [
   { to: "/scheduler", labelKey: "nav.scheduler", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/backtests", labelKey: "nav.backtests", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/content", labelKey: "nav.content", roles: ["admin", "operator", "analyst", "viewer"] },
+  { to: "/marketing", labelKey: "nav.marketing", fallbackLabel: "Marketing Intelligence", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/iot", labelKey: "nav.iot", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/organizations", labelKey: "nav.organizations", roles: ["admin", "operator", "analyst", "viewer"] },
   { to: "/workspace", labelKey: "nav.workspace", roles: ["admin", "operator", "analyst", "viewer"] },
