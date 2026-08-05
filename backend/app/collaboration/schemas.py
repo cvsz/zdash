@@ -1,5 +1,7 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+
+from datetime import UTC, datetime
+
 from pydantic import BaseModel, Field
 
 PRESENCE_STATES = {
@@ -23,7 +25,7 @@ class PresenceUpdate(BaseModel):
 
 class PresenceRecord(PresenceUpdate):
     user_id: str
-    last_seen: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_seen: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class NoteCreate(BaseModel):
@@ -48,5 +50,5 @@ class TimelineEvent(BaseModel):
     event_type: str
     actor: str
     message: str
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     metadata: dict = Field(default_factory=dict)

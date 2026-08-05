@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -13,9 +13,7 @@ class RealtimeEvent(BaseModel):
     source: str
     severity: str = "info"
     payload: dict[str, Any] = Field(default_factory=dict)
-    timestamp: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 class RealtimeEnvelope(BaseModel):

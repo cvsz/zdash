@@ -1,5 +1,6 @@
 import logging
-from typing import Optional, Dict, Any
+from typing import Any
+
 from app.billing.entitlement_service import check_quota
 from app.billing.models import EntitlementDecision
 from app.billing.usage_meter import record_usage
@@ -30,8 +31,8 @@ def consume(
     workspace_id: str,
     metric: str,
     quantity: float = 1.0,
-    source: Optional[str] = None,
-    resource_id: Optional[str] = None,
+    source: str | None = None,
+    resource_id: str | None = None,
 ) -> EntitlementDecision:
 
     decision = can_consume(organization_id, workspace_id, metric, quantity)
@@ -92,6 +93,6 @@ def consume(
 
 
 def get_quota_status(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     return {"ok": True, "status": "Quota status is currently tracked per metric."}

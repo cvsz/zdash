@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.backtesting.models import Candle
 from app.backtesting.strategy_base import BaseStrategy
@@ -20,7 +20,7 @@ class DummyStrategy(BaseStrategy):
 
 def _candle() -> Candle:
     return Candle(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         open=2300.0,
         high=2301.0,
         low=2299.0,

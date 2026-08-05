@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -71,8 +71,8 @@ def test_datetime_fields_are_timezone_aware() -> None:
         language="en",
         tone="professional",
         topic="timezone",
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
     assert item.created_at.tzinfo is not None
     assert item.updated_at.tzinfo is not None

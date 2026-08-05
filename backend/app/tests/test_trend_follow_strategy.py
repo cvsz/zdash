@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -7,7 +7,7 @@ from app.backtesting.strategies.trend_follow import TrendFollowStrategy
 
 
 def _build_cross_dataset() -> list[Candle]:
-    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 1, tzinfo=UTC)
     candles: list[Candle] = []
     price = 2200.0
     for i in range(40):

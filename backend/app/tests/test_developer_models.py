@@ -1,4 +1,4 @@
-from app.developer.models import ApiKeyStatus, ApiKeyScope
+from app.developer.models import ApiKeyScope, ApiKeyStatus
 
 
 def test_api_key_status_enum():

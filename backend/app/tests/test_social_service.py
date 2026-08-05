@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -26,7 +26,7 @@ def _seed_content(service: SocialService, *, topic: str = "zDash update"):
 def test_schedule_content() -> None:
     service = SocialService(InMemoryContentStore())
     item = _seed_content(service)
-    scheduled_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    scheduled_at = datetime.now(UTC) + timedelta(hours=1)
     updated = service.schedule_content(
         ScheduleContentRequest(content_id=item.id, scheduled_at=scheduled_at)
     )

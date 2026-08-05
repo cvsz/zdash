@@ -1,14 +1,15 @@
+from datetime import UTC, datetime
+
 from app.billing.models import (
-    PlanTier,
-    SubscriptionStatus,
     BillingPlan,
+    EntitlementDecision,
+    Invoice,
+    PlanTier,
     Subscription,
+    SubscriptionStatus,
     UsageRecord,
     UsageSummary,
-    Invoice,
-    EntitlementDecision,
 )
-from datetime import datetime, timezone
 
 
 def test_plan_tier_enum():
@@ -81,7 +82,7 @@ def test_entitlement_decision_model():
         feature="feature.scheduler",
         reason="Quota OK",
         plan_tier="pro",
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
     assert decision.allowed is True
     assert decision.feature == "feature.scheduler"

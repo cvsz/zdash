@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.core.responses import ok
 from app.lessons.retrieval_service import retrieve_lessons
 

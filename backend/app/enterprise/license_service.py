@@ -1,21 +1,23 @@
 import hashlib
-from typing import Dict, Any
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy import select
+
 from app.db.session import SessionLocal
 from app.enterprise.models import EnterpriseLicense
 from app.enterprise.models_enums import LicenseStatus
-from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def hash_license(key: str) -> str:
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-def get_license_status(organization_id: str) -> Dict[str, Any]:
+def get_license_status(organization_id: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(
@@ -35,7 +37,7 @@ def get_license_status(organization_id: str) -> Dict[str, Any]:
         return ret
 
 
-def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
+def apply_license(organization_id: str, license_key: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(
@@ -57,15 +59,15 @@ def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
             )
             db.add(lic)
         else:
-            setattr(lic, "license_key_hash", hash_license(license_key))
-            setattr(lic, "status", LicenseStatus.active)
-            setattr(lic, "updated_at", utc_now())
+            lic.license_key_hash = hash_license(license_key)
+            lic.status = LicenseStatus.active
+            lic.updated_at = utc_now()
 
         db.commit()
     return {"ok": True, "status": "active"}
 
 
-def revoke_license(organization_id: str) -> Dict[str, Any]:
+def revoke_license(organization_id: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(
@@ -73,8 +75,8 @@ def revoke_license(organization_id: str) -> Dict[str, Any]:
             )
         ).scalar()
         if lic:
-            setattr(lic, "status", LicenseStatus.revoked)
-            setattr(lic, "updated_at", utc_now())
+            lic.status = LicenseStatus.revoked
+            lic.updated_at = utc_now()
             db.commit()
     return {"ok": True, "status": "revoked"}
 

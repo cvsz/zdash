@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from jose import JWTError, jwt
@@ -8,9 +8,7 @@ from app.core.config import get_settings
 
 def create_access_token(sub: str, role: str) -> str:
     s = get_settings()
-    exp = datetime.now(timezone.utc) + timedelta(
-        minutes=s.jwt_access_token_expire_minutes
-    )
+    exp = datetime.now(UTC) + timedelta(minutes=s.jwt_access_token_expire_minutes)
     return jwt.encode(
         {"sub": sub, "role": role, "exp": exp, "type": "access"},
         s.jwt_secret_key,
@@ -20,7 +18,7 @@ def create_access_token(sub: str, role: str) -> str:
 
 def create_refresh_token(sub: str, role: str) -> str:
     s = get_settings()
-    exp = datetime.now(timezone.utc) + timedelta(days=s.jwt_refresh_token_expire_days)
+    exp = datetime.now(UTC) + timedelta(days=s.jwt_refresh_token_expire_days)
     return jwt.encode(
         {"sub": sub, "role": role, "exp": exp, "type": "refresh", "jti": str(uuid4())},
         s.jwt_secret_key,

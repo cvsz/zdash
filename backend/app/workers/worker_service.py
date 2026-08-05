@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from app.core.events import event_bus
 from app.workers.queue import queue
+
 from .tasks import run_task
 
 

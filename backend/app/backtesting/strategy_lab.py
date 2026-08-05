@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from math import isfinite
 from typing import Any, cast
 from uuid import uuid4
@@ -47,7 +47,7 @@ class StrategyLab:
         return self._strategies[name]
 
     def run_backtest(self, request: BacktestRequest) -> BacktestResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         candles = self._datasets.load(
             request.dataset, request.symbol, request.timeframe
         )
@@ -195,7 +195,7 @@ class StrategyLab:
             # configured.
             index = exit_index + 1
 
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         metrics = self._metrics.calculate(
             trades, request.initial_balance, balance, equity_curve
         )

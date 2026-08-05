@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.content.models import (
     ContentPlatform,
@@ -60,9 +60,7 @@ def test_pipeline_schedule_approve_publish_wrappers() -> None:
         CreateContentRequest(topic="Educational simulation strategy note")
     )
     content_id = result.content_id
-    scheduled = pipeline.schedule(
-        content_id, datetime.now(timezone.utc) + timedelta(minutes=15)
-    )
+    scheduled = pipeline.schedule(content_id, datetime.now(UTC) + timedelta(minutes=15))
     assert scheduled.ok is True
     approved = pipeline.approve(content_id)
     assert approved.ok is True

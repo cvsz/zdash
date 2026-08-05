@@ -1,4 +1,5 @@
 from fastapi import Depends, HTTPException, Request
+
 from app.auth.dependencies import get_current_user
 from app.auth.models import AuthSession
 from app.core.config import get_settings

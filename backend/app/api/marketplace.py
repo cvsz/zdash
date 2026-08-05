@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends
 from typing import Any
+
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import select
 
 from app.auth.dependencies import require_permissions
 from app.auth.models import AuthSession
 from app.auth.rbac import Permission
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
+from app.core.responses import error_response, success_response
 from app.db.session import SessionLocal
 from app.marketplace.models import (
     PluginManifest,
@@ -14,24 +18,21 @@ from app.marketplace.models import (
     manifest_to_dict,
 )
 from app.marketplace.plugin_registry import (
-    list_plugins,
     get_plugin,
+    list_plugins,
     register_plugin_manifest,
     validate_plugin_manifest,
 )
 from app.marketplace.plugin_service import (
-    list_installations,
-    install_plugin,
-    enable_plugin,
     disable_plugin,
-    uninstall_plugin,
+    enable_plugin,
+    install_plugin,
+    list_installations,
     run_plugin_action,
+    uninstall_plugin,
 )
-from app.billing.entitlement_service import require_feature
-from app.billing.quota_service import consume
 from app.tenancy.dependencies import get_tenant_context
 from app.tenancy.tenant_context import TenantContext
-from app.core.responses import success_response, error_response
 
 router = APIRouter(prefix="/api/marketplace", tags=["marketplace"])
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.core.config import get_settings
 from app.trading.models import SignalValidationResult, TradingSignal
@@ -44,7 +44,7 @@ class SignalValidationService:
                 "hold signals are non-executable and should remain dry-run only"
             )
 
-        age_seconds = (datetime.now(timezone.utc) - signal.created_at).total_seconds()
+        age_seconds = (datetime.now(UTC) - signal.created_at).total_seconds()
         if age_seconds > self.settings.trading_max_signal_age_seconds:
             problems.append("signal is too old for execution")
 

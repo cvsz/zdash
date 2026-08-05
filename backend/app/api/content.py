@@ -8,6 +8,8 @@ from app.audit.models import AuditLogCreate
 from app.auth.dependencies import require_authenticated, require_permission
 from app.auth.models import AuthSession
 from app.auth.rbac import Permission
+from app.billing.entitlement_service import require_feature
+from app.billing.quota_service import consume
 from app.content.models import (
     ApproveContentRequest,
     ContentStatus,
@@ -22,8 +24,6 @@ from app.content.reports import ContentReportBuilder
 from app.core.responses import fail, ok
 from app.db.session import get_db_session
 from app.observability.metrics import metrics_store
-from app.billing.entitlement_service import require_feature
-from app.billing.quota_service import consume
 from app.tenancy.dependencies import get_tenant_context
 from app.tenancy.tenant_context import TenantContext
 

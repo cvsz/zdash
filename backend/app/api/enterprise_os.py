@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.core.responses import ok
 from app.enterprise_os.enterprise_os_report_service import enterprise_os_report
 

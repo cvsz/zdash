@@ -6,12 +6,12 @@ side effects on external systems.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy.orm import Session
 
-from .models import PluginActionRun, PluginActionResult
+from .models import PluginActionResult, PluginActionRun
 from .plugin_registry import get_plugin
 
 
@@ -53,7 +53,7 @@ def run_action(
             message=f"plugin {plugin_id} not found",
             output={},
             dry_run=True,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
     entrypoint = getattr(manifest, "entrypoint", "") or ""
@@ -79,7 +79,7 @@ def run_action(
             message=f"unknown entrypoint: {entrypoint}",
             output={},
             dry_run=True,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )
 
     if installation_id:
@@ -92,7 +92,7 @@ def run_action(
         message="dry-run completed",
         output=output,
         dry_run=True,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
 
 

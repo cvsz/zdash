@@ -8,7 +8,7 @@ against the plugin_manifests table.
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import or_
@@ -16,7 +16,6 @@ from sqlalchemy.orm import Session
 
 from .builtins import BUILTINS
 from .models import PluginManifest, PluginStatus, manifest_to_dict
-
 
 # ------------------------------------------------------------------ #
 # Seed                                                                  #
@@ -169,7 +168,7 @@ def register_plugin_manifest(
             "source_type": manifest.source_type or "builtin",
             "source_ref": manifest.source_ref,
             "checksum": manifest.checksum,
-            "updated_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(UTC),
         }
         for key, value in updates.items():
             setattr(existing, key, value)

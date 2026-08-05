@@ -5,6 +5,10 @@ from typing import Protocol
 from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session
 
+from app.billing.models import (
+    Subscription,
+    UsageRecord,
+)
 from app.db.models import (
     AuditLog,
     BacktestResult,
@@ -18,10 +22,6 @@ from app.db.models import (
     SchedulerJob,
     SchedulerRun,
     User,
-)
-from app.billing.models import (
-    Subscription,
-    UsageRecord,
 )
 from app.marketplace.models import PluginActionRun, PluginInstallation, PluginManifest
 

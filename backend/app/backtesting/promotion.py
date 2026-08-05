@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.backtesting.models import BacktestResult, StrategyPromotionDecision
 from app.core.config import get_settings
@@ -42,5 +42,5 @@ class StrategyPromotionGate:
             reason=reason,
             metrics=metrics,
             gates=gates,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
         )

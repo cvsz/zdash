@@ -1,17 +1,18 @@
 import pytest
+
+from app.billing.entitlement_service import check_feature
+from app.billing.mock_billing_adapter import MockBillingAdapter
 from app.billing.models import PlanTier, SubscriptionStatus
 from app.billing.plan_catalog import get_plan
-from app.billing.entitlement_service import check_feature
-from app.billing.usage_meter import record_usage, get_metric_summary
 from app.billing.quota_service import consume
-from app.billing.mock_billing_adapter import MockBillingAdapter
+from app.billing.usage_meter import get_metric_summary, record_usage
+from app.db.session import SessionLocal
+from app.enterprise.branding_service import get_branding, update_branding
+from app.enterprise.export_service import create_export_bundle
+from app.enterprise.license_service import apply_license, validate_license
 from app.marketplace.plugin_registry import get_plugin
 from app.marketplace.plugin_service import install_plugin
 from app.marketplace.safety import check_plugin_action
-from app.enterprise.license_service import apply_license, validate_license
-from app.enterprise.branding_service import update_branding, get_branding
-from app.enterprise.export_service import create_export_bundle
-from app.db.session import SessionLocal
 
 
 @pytest.fixture(autouse=True)
@@ -97,11 +98,10 @@ def test_plugin_service():
     ws_id = "test-ws"
     install_plugin(org_id, "zdash-risk-summary", ws_id, {})
     # Need to check entitlement or mock it
-    pass
 
 
 def test_plugin_safety():
-    ok, msg = check_plugin_action("fetch_external", {"url": "http://evil.com"})
+    ok, _msg = check_plugin_action("fetch_external", {"url": "http://evil.com"})
     assert ok is True
 
 

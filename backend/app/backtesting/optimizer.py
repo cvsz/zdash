@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -44,7 +44,7 @@ class ParameterOptimizer:
         return [dict(zip(keys, combo)) for combo in itertools.product(*values)]
 
     def optimize(self, request: OptimizationRequest) -> OptimizationResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         combos = self.expand_grid(request.parameter_grid)
         warnings: list[str] = []
         total = len(combos)
@@ -77,7 +77,7 @@ class ParameterOptimizer:
             key=lambda r: getattr(r.metrics, sort_metric),
             reverse=sort_metric != "max_drawdown_percent",
         )
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         return OptimizationResult(
             id=str(uuid4()),
             request=request,

@@ -1,10 +1,11 @@
+from datetime import UTC, datetime
 from enum import Enum
+
 from pydantic import BaseModel, Field
-from datetime import datetime, timezone
 
 
 def now():
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class MacroScenarioType(str, Enum):

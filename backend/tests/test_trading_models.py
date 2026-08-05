@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -7,7 +7,7 @@ from app.trading.models import Candle, ExecutionRequest, TradingSignal
 
 def test_candle_validation() -> None:
     candle = Candle(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         open=2300.0,
         high=2302.0,
         low=2298.0,
@@ -20,7 +20,7 @@ def test_candle_validation() -> None:
 def test_candle_invalid_bounds() -> None:
     with pytest.raises(ValueError):
         Candle(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             open=2300.0,
             high=2299.0,
             low=2298.0,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.content.models import (
     ApproveContentRequest,
@@ -75,7 +75,7 @@ class SocialService:
             item.id,
             {
                 "status": ContentStatus.approved,
-                "approved_at": datetime.now(timezone.utc),
+                "approved_at": datetime.now(UTC),
             },
         )
         self._emit_content_event(
@@ -186,7 +186,7 @@ class SocialService:
                 item.id,
                 {
                     "status": ContentStatus.posted,
-                    "posted_at": datetime.now(timezone.utc),
+                    "posted_at": datetime.now(UTC),
                 },
             )
         return results

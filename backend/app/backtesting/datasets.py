@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import csv
 import math
-from datetime import datetime, timedelta, timezone
+from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Iterable
 
 from app.backtesting.models import Candle
 
@@ -12,8 +12,8 @@ from app.backtesting.models import Candle
 class DatasetProvider:
     def __init__(
         self,
-        mock_provider: "MockDatasetProvider | None" = None,
-        csv_provider: "CsvDatasetProvider | None" = None,
+        mock_provider: MockDatasetProvider | None = None,
+        csv_provider: CsvDatasetProvider | None = None,
     ) -> None:
         self._mock_provider = mock_provider or MockDatasetProvider()
         self._csv_provider = csv_provider or CsvDatasetProvider()
@@ -34,7 +34,7 @@ class MockDatasetProvider:
         if symbol != "XAUUSD" or timeframe != "M5":
             raise ValueError("mock dataset supports only XAUUSD M5")
 
-        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        start = datetime(2026, 1, 1, tzinfo=UTC)
         out: list[Candle] = []
         price = 2300.0
         for i in range(self._candle_count):

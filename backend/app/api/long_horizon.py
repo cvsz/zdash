@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.core.responses import ok
 from app.long_horizon.horizon_report_service import horizon_report
 

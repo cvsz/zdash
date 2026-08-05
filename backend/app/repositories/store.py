@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlmodel import Session, col, select
@@ -37,7 +37,7 @@ class Repository:
         else:
             agent.role = role
             agent.status = status
-            agent.updated_at = datetime.now(timezone.utc)
+            agent.updated_at = datetime.now(UTC)
         self.session.flush()
         return agent
 
@@ -137,7 +137,7 @@ class Repository:
         self, job_id: str, name: str, interval_seconds: int, status: str
     ) -> SchedulerJobRecord:
         row = self.session.get(SchedulerJobRecord, job_id)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if row is None:
             row = SchedulerJobRecord(
                 id=job_id,
@@ -223,7 +223,7 @@ class Repository:
             return None
         for key, value in updates.items():
             setattr(row, key, value)
-        row.updated_at = datetime.now(timezone.utc)
+        row.updated_at = datetime.now(UTC)
         self.session.flush()
         return row
 

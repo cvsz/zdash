@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 # mypy: disable-error-code=call-arg
-
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import Column, JSON, Text
+from sqlalchemy import JSON, Column, Text
 from sqlmodel import Field, SQLModel
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class AgentRecord(SQLModel, table=True):

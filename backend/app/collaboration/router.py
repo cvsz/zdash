@@ -10,6 +10,7 @@ from fastapi import (
     WebSocket,
     WebSocketDisconnect,
 )
+
 from app.auth.dependencies import get_current_user
 from app.auth.jwt import decode_token
 from app.auth.models import AuthSession

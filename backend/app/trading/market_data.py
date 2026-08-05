@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from math import sin
 
 from app.trading.models import Candle
@@ -8,7 +8,7 @@ from app.trading.models import Candle
 
 def generate_mock_xauusd_m5_candles(limit: int = 300) -> list[Candle]:
     safe_limit = max(limit, 300)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     base_price = 2325.0
     candles: list[Candle] = []
 

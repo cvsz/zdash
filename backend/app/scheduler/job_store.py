@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from threading import Lock
 from uuid import uuid4
 
@@ -8,8 +8,8 @@ from app.scheduler.models import (
     CreateJobRequest,
     JobRunResult,
     JobStatus,
-    ScheduleType,
     ScheduledJob,
+    ScheduleType,
 )
 
 
@@ -32,7 +32,7 @@ class InMemoryJobStore:
         schedule_type: ScheduleType, interval_seconds: int | None
     ) -> datetime | None:
         if schedule_type == ScheduleType.interval and interval_seconds:
-            return datetime.now(timezone.utc) + timedelta(seconds=interval_seconds)
+            return datetime.now(UTC) + timedelta(seconds=interval_seconds)
         return None
 
     def list_jobs(self) -> list[ScheduledJob]:
@@ -45,7 +45,7 @@ class InMemoryJobStore:
             return job.model_copy(deep=True) if job is not None else None
 
     def create_job(self, request: CreateJobRequest) -> ScheduledJob:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         job = ScheduledJob(
             id=str(uuid4()),
             name=request.name,
@@ -75,7 +75,7 @@ class InMemoryJobStore:
 
             merged = current.model_dump()
             merged.update(patch)
-            merged["updated_at"] = datetime.now(timezone.utc)
+            merged["updated_at"] = datetime.now(UTC)
             updated = ScheduledJob.model_validate(merged)
             self._jobs[job_id] = updated
             return updated.model_copy(deep=True)
@@ -130,7 +130,7 @@ class InMemoryJobStore:
                     "last_run_at": result.finished_at,
                     "run_count": run_count,
                     "fail_count": fail_count,
-                    "updated_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(UTC),
                     "next_run_at": self._next_run_at(
                         current.schedule_type, current.interval_seconds
                     ),

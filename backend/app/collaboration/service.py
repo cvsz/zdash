@@ -3,7 +3,7 @@ from __future__ import annotations
 import html
 import re
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from .schemas import (
     NoteCreate,
@@ -23,7 +23,7 @@ class CollaborationService:
 
     def sanitize_markdown(self, text: str) -> str:
         text = html.escape(text)
-        return re.sub(r"javascript:", "", text, flags=re.I)
+        return re.sub(r"javascript:", "", text, flags=re.IGNORECASE)
 
     def upsert_presence(self, user_id: str, payload: PresenceUpdate) -> PresenceRecord:
         rec = PresenceRecord(**payload.model_dump(), user_id=user_id)
@@ -31,7 +31,7 @@ class CollaborationService:
         return rec
 
     def list_presence(self, workspace_id: str) -> list[PresenceRecord]:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         ws = self.presence.get(workspace_id, {})
         alive = []
         for sid, rec in list(ws.items()):
@@ -42,7 +42,7 @@ class CollaborationService:
         return alive
 
     def create_note(self, user_id: str, payload: NoteCreate) -> NoteRecord:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         note = NoteRecord(
             id=str(uuid.uuid4()),
             created_by=user_id,
@@ -67,7 +67,7 @@ class CollaborationService:
         for n in self.notes.get(workspace_id, []):
             if n.id == note_id and not n.deleted:
                 n.resolved = True
-                n.updated_at = datetime.now(timezone.utc)
+                n.updated_at = datetime.now(UTC)
                 self.add_event(
                     workspace_id,
                     "workspace.note.resolved",

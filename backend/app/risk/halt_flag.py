@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from threading import Lock
 
 from app.core.config import get_settings
@@ -29,7 +29,7 @@ class HaltFlagStore:
         if not clean_source:
             raise ValueError("Halt source is required.")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         with self._lock:
             self._state = HaltState(
                 halted=True,
@@ -54,7 +54,7 @@ class HaltFlagStore:
         if self._settings.require_resume_reason and not clean_reason:
             raise ValueError("Resume reason is required.")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         with self._lock:
             current = self._state.model_copy(deep=True)
             self._state = HaltState(

@@ -1,5 +1,6 @@
 from datetime import datetime
-from .models import SLOForecast, ForecastHorizon
+
+from .models import ForecastHorizon, SLOForecast
 
 
 class SLOForecaster:

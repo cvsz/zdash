@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.ai_trader.service import AITraderService
 from app.risk.models import AccountSnapshot
@@ -8,7 +8,7 @@ from app.trading.models import Candle
 
 
 def _candles(direction: str = "up", count: int = 30) -> list[Candle]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     items: list[Candle] = []
     base = 2300.0
     for i in range(count):

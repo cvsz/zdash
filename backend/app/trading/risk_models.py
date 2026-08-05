@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -28,9 +28,7 @@ class Signal(BaseModel):
     ai_summary: str = ""
     validation_status: str = "pending"
     risk_status: str = "unchecked"
-    created_at: str = Field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    created_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
 
     def to_trading_signal(self) -> TradingSignal:
         entry = (
@@ -68,7 +66,7 @@ class Signal(BaseModel):
                 "validation_status": self.validation_status,
                 "risk_status": self.risk_status,
             },
-            created_at=datetime.fromisoformat(self.created_at.replace("Z", "+00:00")),
+            created_at=datetime.fromisoformat(self.created_at),
         )
 
 

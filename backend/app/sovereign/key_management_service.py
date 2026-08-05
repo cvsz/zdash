@@ -1,6 +1,7 @@
 import hashlib
-from .models import KMSKeyRecord
+
 from .kms_adapters import MockKMSAdapter
+from .models import KMSKeyRecord
 
 
 class KeyManagementService:

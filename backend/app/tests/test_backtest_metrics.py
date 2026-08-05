@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.backtesting.metrics import BacktestMetricsCalculator
 from app.backtesting.models import SimulatedTrade
@@ -34,7 +34,7 @@ def _trade(
 
 def test_zero_trades_safe() -> None:
     metrics = BacktestMetricsCalculator().calculate(
-        [], 10000, 10000, [(datetime.now(timezone.utc), 10000)]
+        [], 10000, 10000, [(datetime.now(UTC), 10000)]
     )
     assert metrics.total_trades == 0
     assert metrics.win_rate == 0
@@ -42,7 +42,7 @@ def test_zero_trades_safe() -> None:
 
 
 def test_win_rate_and_profit_factor_calculation() -> None:
-    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 1, tzinfo=UTC)
     trades = [
         _trade(
             pnl=100.0, entry_time=start, exit_time=start + timedelta(minutes=5), rr=2.0
@@ -69,7 +69,7 @@ def test_win_rate_and_profit_factor_calculation() -> None:
 
 
 def test_drawdown_and_consecutive_losses_calculation() -> None:
-    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 1, tzinfo=UTC)
     trades = [
         _trade(pnl=100, entry_time=start, exit_time=start + timedelta(minutes=5)),
         _trade(
@@ -105,7 +105,7 @@ def test_drawdown_and_consecutive_losses_calculation() -> None:
 
 
 def test_monthly_return_table() -> None:
-    start = datetime(2026, 1, 31, 23, 50, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 31, 23, 50, tzinfo=UTC)
     trades = [
         _trade(pnl=120, entry_time=start, exit_time=start + timedelta(minutes=5)),
         _trade(

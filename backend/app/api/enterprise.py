@@ -7,7 +7,6 @@ from app.auth.dependencies import require_permissions
 from app.auth.rbac import Permission, has_permission
 from app.billing.entitlement_service import require_feature
 from app.core.responses import error_response, success_response
-
 from app.enterprise.branding_service import (
     get_branding,
     reset_branding,
@@ -24,8 +23,8 @@ from app.enterprise.license_service import (
     revoke_license,
 )
 from app.enterprise.onboarding_service import (
-    get_customer_health,
     get_checklist,
+    get_customer_health,
     mark_step_complete,
     reset_checklist,
 )

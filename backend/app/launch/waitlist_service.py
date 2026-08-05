@@ -1,6 +1,8 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+
+from datetime import UTC, datetime
 from uuid import uuid4
+
 from .models import WaitlistEntry, WaitlistStatus
 
 
@@ -12,7 +14,7 @@ class WaitlistService:
         for e in self._entries.values():
             if e.email == request["email"]:
                 return e
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         entry = WaitlistEntry(
             id=str(uuid4()), created_at=now, updated_at=now, **request
         )
@@ -25,5 +27,5 @@ class WaitlistService:
     def update_status(self, entry_id: str, status: WaitlistStatus) -> WaitlistEntry:
         entry = self._entries[entry_id]
         entry.status = status
-        entry.updated_at = datetime.now(timezone.utc)
+        entry.updated_at = datetime.now(UTC)
         return entry

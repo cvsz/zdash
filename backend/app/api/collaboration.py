@@ -1,3 +1,3 @@
-from app.collaboration.router import router as router
+from app.collaboration.router import router
 
 __all__ = ["router"]

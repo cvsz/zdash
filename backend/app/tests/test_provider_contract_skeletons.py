@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from app.core.config import get_settings
 
 # Provider Adapter Contract Tests.
@@ -141,17 +142,17 @@ class TestMt5AdapterContract:
     def _make_signal(self, **kw):
         from app.trading.models import TradingSignal
 
-        defaults = dict(
-            symbol="XAUUSD",
-            timeframe="M5",
-            direction="buy",
-            strategy="test",
-            confidence=0.8,
-            entry=2000.0,
-            stop_loss=1990.0,
-            take_profit=2020.0,
-            reason="contract test",
-        )
+        defaults = {
+            "symbol": "XAUUSD",
+            "timeframe": "M5",
+            "direction": "buy",
+            "strategy": "test",
+            "confidence": 0.8,
+            "entry": 2000.0,
+            "stop_loss": 1990.0,
+            "take_profit": 2020.0,
+            "reason": "contract test",
+        }
         defaults.update(kw)
         return TradingSignal(**defaults)
 
@@ -292,8 +293,8 @@ class TestTapoAdapterContract:
 
 class TestSocialAdapterContract:
     def test_missing_credential(self, monkeypatch):
-        from app.content.social_adapters import XAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import XAdapter
 
         adapter = XAdapter(token="")
         result = adapter.publish(ContentPlatform.x, "hello", None)
@@ -301,8 +302,8 @@ class TestSocialAdapterContract:
         assert result.external_id is None
 
     def test_provider_disabled(self, monkeypatch):
-        from app.content.social_adapters import MockSocialMediaAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import MockSocialMediaAdapter
 
         adapter = MockSocialMediaAdapter()
         result = adapter.publish(ContentPlatform.x, "hello", None)
@@ -310,8 +311,8 @@ class TestSocialAdapterContract:
         assert result.dry_run is True
 
     def test_dry_run_true(self, monkeypatch):
-        from app.content.social_adapters import MockSocialMediaAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import MockSocialMediaAdapter
 
         _settings(monkeypatch, SOCIAL_DRY_RUN="true")
         adapter = MockSocialMediaAdapter()
@@ -320,24 +321,24 @@ class TestSocialAdapterContract:
         assert result.ok is True
 
     def test_approval_missing(self, monkeypatch):
-        from app.content.social_adapters import _CredentialGuardedStubAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import _CredentialGuardedStubAdapter
 
         adapter = _CredentialGuardedStubAdapter("test", token="valid-token")
         result = adapter.publish(ContentPlatform.generic, "test", None)
         assert result.ok is False
 
     def test_invalid_payload(self, monkeypatch):
-        from app.content.social_adapters import MockSocialMediaAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import MockSocialMediaAdapter
 
         adapter = MockSocialMediaAdapter()
         result = adapter.publish(ContentPlatform.generic, "", None)
         assert isinstance(result, object)
 
     def test_safe_response_shape(self, monkeypatch):
-        from app.content.social_adapters import MockSocialMediaAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import MockSocialMediaAdapter
 
         adapter = MockSocialMediaAdapter()
         result = adapter.publish(ContentPlatform.x, "hello", None)
@@ -421,8 +422,8 @@ class TestStripeAdapterContract:
 
     def test_missing_credential(self):
         # Use mock adapter to test missing credential behavior
-        from app.content.social_adapters import _CredentialGuardedStubAdapter
         from app.content.models import ContentPlatform
+        from app.content.social_adapters import _CredentialGuardedStubAdapter
 
         adapter = _CredentialGuardedStubAdapter("stripe", token="")
         result = adapter.publish(ContentPlatform.generic, "test", None)

@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.trading.funnel_filter import FunnelFilter
 from app.trading.models import Candle
 
 
 def _build_candles(start: float, step: float, count: int = 60) -> list[Candle]:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     candles: list[Candle] = []
     for idx in range(count):
         price = start + (step * idx)

@@ -249,5 +249,5 @@ async def api_webhook(request: Request) -> dict:
         return success_response(result)
     except HTTPException:
         raise
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -1,5 +1,5 @@
-from app.marketplace.plugin_registry import list_plugins, get_plugin
 from app.marketplace.builtins import BUILTINS
+from app.marketplace.plugin_registry import get_plugin, list_plugins
 
 
 def test_list_plugins():

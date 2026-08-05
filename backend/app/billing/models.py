@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional
 from enum import Enum
+
 from pydantic import BaseModel
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, JSON, String, Text, func
+from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -32,7 +32,7 @@ class BillingPlan(Base, Timestamped):
     name: Mapped[str] = mapped_column(String, default="")
     description: Mapped[str] = mapped_column(Text, default="")
     price_monthly: Mapped[float] = mapped_column(Float, default=0.0)
-    price_yearly: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    price_yearly: Mapped[float | None] = mapped_column(Float, nullable=True)
     currency: Mapped[str] = mapped_column(String, default="USD")
     features: Mapped[list] = mapped_column(JSON, default=list)
     limits: Mapped[dict] = mapped_column(JSON, default=dict)
@@ -50,13 +50,13 @@ class Subscription(Base, Timestamped):
     provider: Mapped[str] = mapped_column(String, default="mock")
     provider_customer_id: Mapped[str] = mapped_column(String, default="")
     provider_subscription_id: Mapped[str] = mapped_column(String, default="")
-    trial_ends_at: Mapped[Optional[datetime]] = mapped_column(
+    trial_ends_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    current_period_start: Mapped[Optional[datetime]] = mapped_column(
+    current_period_start: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    current_period_end: Mapped[Optional[datetime]] = mapped_column(
+    current_period_end: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
     cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -90,10 +90,10 @@ class Invoice(Base, Timestamped):
     currency: Mapped[str] = mapped_column(String, default="USD")
     hosted_invoice_url: Mapped[str] = mapped_column(String, default="")
     invoice_pdf_url: Mapped[str] = mapped_column(String, default="")
-    due_at: Mapped[Optional[datetime]] = mapped_column(
+    due_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
-    paid_at: Mapped[Optional[datetime]] = mapped_column(
+    paid_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 
@@ -103,9 +103,9 @@ class EntitlementDecision(BaseModel):
     feature: str
     reason: str
     plan_tier: str
-    required_tier: Optional[str] = None
-    quota: Optional[float] = None
-    usage: Optional[float] = None
+    required_tier: str | None = None
+    quota: float | None = None
+    usage: float | None = None
     timestamp: datetime
 
 
@@ -116,5 +116,5 @@ class UsageSummary(BaseModel):
     used: float
     limit: float
     remaining: float
-    reset_at: Optional[datetime] = None
+    reset_at: datetime | None = None
     percent_used: float

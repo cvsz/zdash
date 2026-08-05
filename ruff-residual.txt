@@ -1,0 +1,3864 @@
+PLR0124 Name compared with itself, consider replacing `result != result`
+  --> app/ai_trader/features.py:49:8
+   |
+47 |     except (TypeError, ValueError):
+48 |         return default
+49 |     if result != result or result in {float("inf"), float("-inf")}:  # NaN/Inf guard
+   |        ^^^^^^
+50 |         return default
+51 |     return result
+   |
+
+PLR0124 Name compared with itself, consider replacing `value == value`
+  --> app/ai_trader/features.py:55:43
+   |
+54 | def _mean(values: list[float]) -> float:
+55 |     clean = [value for value in values if value == value]
+   |                                           ^^^^^
+56 |     return sum(clean) / len(clean) if clean else 0.0
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/ai_trader/features.py:96:12
+   |
+94 |     try:
+95 |         ordered = sorted(candles, key=lambda item: item.timestamp)
+96 |     except Exception:
+   |            ^^^^^^^^^
+97 |         ordered = list(candles)
+98 |         warnings.append("could not sort candles by timestamp")
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:154:46
+    |
+153 | @router.get("/safety-check")
+154 | def safety_check(current_user: AuthSession = Depends(get_current_user)):
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     try:
+156 |         _require_admin(current_user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:167:33
+    |
+165 |     limit: int = 100,
+166 |     offset: int = 0,
+167 |     current_user: AuthSession = Depends(get_current_user),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+168 |     session: Session = Depends(get_db_session),
+169 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:168:24
+    |
+166 |     offset: int = 0,
+167 |     current_user: AuthSession = Depends(get_current_user),
+168 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+169 | ):
+170 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:181:33
+    |
+179 | @router.get("/users")
+180 | def users(
+181 |     current_user: AuthSession = Depends(get_current_user),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+182 |     session: Session = Depends(get_db_session),
+183 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:182:24
+    |
+180 | def users(
+181 |     current_user: AuthSession = Depends(get_current_user),
+182 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+183 | ):
+184 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:197:33
+    |
+195 | def create_user(
+196 |     req: CreateUserRequest,
+197 |     current_user: AuthSession = Depends(get_current_user),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+198 |     session: Session = Depends(get_db_session),
+199 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:198:24
+    |
+196 |     req: CreateUserRequest,
+197 |     current_user: AuthSession = Depends(get_current_user),
+198 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+199 | ):
+200 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:238:33
+    |
+236 |     user_id: str,
+237 |     req: UpdateUserRequest,
+238 |     current_user: AuthSession = Depends(get_current_user),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+239 |     session: Session = Depends(get_db_session),
+240 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:239:24
+    |
+237 |     req: UpdateUserRequest,
+238 |     current_user: AuthSession = Depends(get_current_user),
+239 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+240 | ):
+241 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:277:33
+    |
+275 | def delete_user(
+276 |     user_id: str,
+277 |     current_user: AuthSession = Depends(get_current_user),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+278 |     session: Session = Depends(get_db_session),
+279 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/admin.py:278:24
+    |
+276 |     user_id: str,
+277 |     current_user: AuthSession = Depends(get_current_user),
+278 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+279 | ):
+280 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/agents.py:46:12
+   |
+44 |     except ValueError as exc:
+45 |         return fail("AGENT_NOT_FOUND", str(exc))
+46 |     except Exception as exc:  # pragma: no cover
+   |            ^^^^^^^^^
+47 |         return fail("MESSAGE_FLOW_ERROR", str(exc))
+48 |     return ok(result)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/audit.py:15:33
+   |
+13 |     limit: int = 100,
+14 |     offset: int = 0,
+15 |     current_user: CurrentUser = Depends(require_roles("admin", "operator")),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 | ):
+17 |     with session_scope() as session:
+   |
+
+B008 Do not perform function call `require_roles` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/audit.py:15:41
+   |
+13 |     limit: int = 100,
+14 |     offset: int = 0,
+15 |     current_user: CurrentUser = Depends(require_roles("admin", "operator")),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+16 | ):
+17 |     with session_scope() as session:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/auth.py:38:49
+   |
+37 | @router.post("/login")
+38 | def login(req: LoginRequest, session: Session = Depends(get_db_session)):
+   |                                                 ^^^^^^^^^^^^^^^^^^^^^^^
+39 |     now = time.time()
+40 |     bucket = _login_attempts[req.username]
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/auth.py:81:53
+   |
+80 | @router.post("/refresh")
+81 | def refresh(req: RefreshRequest, session: Session = Depends(get_db_session)):
+   |                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+82 |     token_pair = _auth_service(session).refresh(req.refresh_token)
+83 |     if token_pair is None:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/auth.py:111:51
+    |
+110 | @router.post("/logout")
+111 | def logout(req: LogoutRequest, session: Session = Depends(get_db_session)):
+    |                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+112 |     revoked = _auth_service(session).logout(req.refresh_token)
+113 |     AuditService(session).log(
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/auth.py:128:21
+    |
+127 | @router.get("/me")
+128 | def me(current_user=Depends(get_current_user)):
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+129 |     return ok({"username": current_user.username, "role": current_user.role})
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/auth.py:135:24
+    |
+133 | def bootstrap_admin(
+134 |     req: BootstrapAdminRequest | None = None,
+135 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+136 | ):
+137 |     request = req or BootstrapAdminRequest()
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/backtesting.py:50:33
+   |
+48 | def run(
+49 |     req: BacktestRequest,
+50 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+51 |     session: Session = Depends(get_db_session),
+52 |     _f: str = Depends(require_feature("feature.backtesting")),
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/backtesting.py:50:41
+   |
+48 | def run(
+49 |     req: BacktestRequest,
+50 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+51 |     session: Session = Depends(get_db_session),
+52 |     _f: str = Depends(require_feature("feature.backtesting")),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/backtesting.py:51:24
+   |
+49 |     req: BacktestRequest,
+50 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+51 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+52 |     _f: str = Depends(require_feature("feature.backtesting")),
+53 |     tenant: TenantContext = Depends(get_tenant_context),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/backtesting.py:53:29
+   |
+51 |     session: Session = Depends(get_db_session),
+52 |     _f: str = Depends(require_feature("feature.backtesting")),
+53 |     tenant: TenantContext = Depends(get_tenant_context),
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+54 | ):
+55 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/backtesting.py:76:12
+   |
+74 |         )
+75 |         return ok({"result": result.model_dump(mode="json")})
+76 |     except Exception as exc:
+   |            ^^^^^^^^^
+77 |         return fail("BACKTEST_FAILED", str(exc))
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:106:33
+    |
+104 | def optimize(
+105 |     req: OptimizationRequest,
+106 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+107 |     session: Session = Depends(get_db_session),
+108 |     _f: str = Depends(require_feature("feature.optimization")),
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:106:41
+    |
+104 | def optimize(
+105 |     req: OptimizationRequest,
+106 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+107 |     session: Session = Depends(get_db_session),
+108 |     _f: str = Depends(require_feature("feature.optimization")),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:107:24
+    |
+105 |     req: OptimizationRequest,
+106 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+107 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+108 |     _f: str = Depends(require_feature("feature.optimization")),
+109 |     tenant: TenantContext = Depends(get_tenant_context),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:109:29
+    |
+107 |     session: Session = Depends(get_db_session),
+108 |     _f: str = Depends(require_feature("feature.optimization")),
+109 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+110 | ):
+111 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/backtesting.py:132:12
+    |
+130 |         )
+131 |         return ok({"optimization": optimization.model_dump(mode="json")})
+132 |     except Exception as exc:
+    |            ^^^^^^^^^
+133 |         return fail("OPTIMIZER_FAILED", str(exc))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:151:33
+    |
+149 | def promotion(
+150 |     result_id: str,
+151 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+152 |     session: Session = Depends(get_db_session),
+153 | ):
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:151:41
+    |
+149 | def promotion(
+150 |     result_id: str,
+151 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+152 |     session: Session = Depends(get_db_session),
+153 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/backtesting.py:152:24
+    |
+150 |     result_id: str,
+151 |     current_user: AuthSession = Depends(require_permission(Permission.RUN_BACKTESTS)),
+152 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+153 | ):
+154 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/backtesting.py:168:12
+    |
+166 |         )
+167 |         return ok({"decision": decision.model_dump(mode="json")})
+168 |     except Exception as exc:
+    |            ^^^^^^^^^
+169 |         return fail("PROMOTION_CHECK_FAILED", str(exc))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/billing.py:95:33
+   |
+93 | @router.get("/status")
+94 | def api_get_status(
+95 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+96 | ) -> dict:
+97 |     try:
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/billing.py:95:41
+   |
+93 | @router.get("/status")
+94 | def api_get_status(
+95 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+96 | ) -> dict:
+97 |     try:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:115:33
+    |
+113 | @router.get("/subscription")
+114 | def api_get_subscription(
+115 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+116 | ) -> dict:
+117 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:115:41
+    |
+113 | @router.get("/subscription")
+114 | def api_get_subscription(
+115 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+116 | ) -> dict:
+117 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:127:33
+    |
+125 |   def api_checkout(
+126 |       req: CheckoutRequest,
+127 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+128 | |         require_permissions([Permission.billing_manage])
+129 | |     ),
+    | |_____^
+130 |   ) -> dict:
+131 |       org = _org_id(current_user)
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:128:9
+    |
+126 |     req: CheckoutRequest,
+127 |     current_user: AuthSession = Depends(
+128 |         require_permissions([Permission.billing_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+129 |     ),
+130 | ) -> dict:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:149:33
+    |
+147 |   @router.post("/portal")
+148 |   def api_portal(
+149 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+150 | |         require_permissions([Permission.billing_manage])
+151 | |     ),
+    | |_____^
+152 |   ) -> dict:
+153 |       org = _org_id(current_user)
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:150:9
+    |
+148 | def api_portal(
+149 |     current_user: AuthSession = Depends(
+150 |         require_permissions([Permission.billing_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+151 |     ),
+152 | ) -> dict:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:164:33
+    |
+162 |   @router.post("/cancel")
+163 |   def api_cancel(
+164 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+165 | |         require_permissions([Permission.billing_manage])
+166 | |     ),
+    | |_____^
+167 |   ) -> dict:
+168 |       org = _org_id(current_user)
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:165:9
+    |
+163 | def api_cancel(
+164 |     current_user: AuthSession = Depends(
+165 |         require_permissions([Permission.billing_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+166 |     ),
+167 | ) -> dict:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:183:33
+    |
+181 |   def api_apply_mock_plan(
+182 |       req: ApplyMockPlanRequest,
+183 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+184 | |         require_permissions([Permission.billing_apply_mock_plan])
+185 | |     ),
+    | |_____^
+186 |   ) -> dict:
+187 |       org = _org_id(current_user)
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:184:9
+    |
+182 |     req: ApplyMockPlanRequest,
+183 |     current_user: AuthSession = Depends(
+184 |         require_permissions([Permission.billing_apply_mock_plan])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+185 |     ),
+186 | ) -> dict:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:201:33
+    |
+199 | @router.get("/usage")
+200 | def api_get_usage(
+201 |     current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+202 | ) -> dict:
+203 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:201:41
+    |
+199 | @router.get("/usage")
+200 | def api_get_usage(
+201 |     current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+202 | ) -> dict:
+203 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:215:33
+    |
+213 | def api_get_metric_usage(
+214 |     metric: str,
+215 |     current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+216 | ) -> dict:
+217 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:215:41
+    |
+213 | def api_get_metric_usage(
+214 |     metric: str,
+215 |     current_user: AuthSession = Depends(require_permissions([Permission.usage_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+216 | ) -> dict:
+217 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:228:33
+    |
+226 | @router.get("/invoices")
+227 | def api_get_invoices(
+228 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+229 | ) -> dict:
+230 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/billing.py:228:41
+    |
+226 | @router.get("/invoices")
+227 | def api_get_invoices(
+228 |     current_user: AuthSession = Depends(require_permissions([Permission.billing_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+229 | ) -> dict:
+230 |     try:
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/content.py:57:33
+   |
+55 | def create(
+56 |     req: CreateContentRequest,
+57 |     current_user: AuthSession = Depends(require_authenticated),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+58 |     session: Session = Depends(get_db_session),
+59 |     _f: str = Depends(require_feature("feature.content_pipeline")),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/content.py:58:24
+   |
+56 |     req: CreateContentRequest,
+57 |     current_user: AuthSession = Depends(require_authenticated),
+58 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+59 |     _f: str = Depends(require_feature("feature.content_pipeline")),
+60 |     tenant: TenantContext = Depends(get_tenant_context),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/content.py:60:29
+   |
+58 |     session: Session = Depends(get_db_session),
+59 |     _f: str = Depends(require_feature("feature.content_pipeline")),
+60 |     tenant: TenantContext = Depends(get_tenant_context),
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 | ):
+62 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/content.py:83:12
+   |
+81 |         )
+82 |         return ok({"item": item.model_dump(mode="json")})
+83 |     except Exception as exc:
+   |            ^^^^^^^^^
+84 |         return fail("CONTENT_CREATE_FAILED", str(exc))
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/content.py:96:12
+   |
+94 |             {"item": _pipeline().editor.edit_content(req).model_dump(mode="json")}
+95 |         )
+96 |     except Exception as exc:
+   |            ^^^^^^^^^
+97 |         return fail("CONTENT_EDIT_FAILED", str(exc))
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/content.py:108:12
+    |
+106 |         item = _pipeline().graphic.generate_graphic(req)
+107 |         return ok({"item": item.model_dump(mode="json")})
+108 |     except Exception as exc:
+    |            ^^^^^^^^^
+109 |         return fail("CONTENT_GRAPHIC_FAILED", str(exc))
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/content.py:120:12
+    |
+118 |         item = _pipeline().social.schedule_content(req)
+119 |         return ok({"item": item.model_dump(mode="json")})
+120 |     except Exception as exc:
+    |            ^^^^^^^^^
+121 |         return fail("CONTENT_SCHEDULE_FAILED", str(exc))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:127:33
+    |
+125 |   def approve(
+126 |       req: ApproveContentRequest,
+127 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+128 | |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+129 | |     ),
+    | |_____^
+130 |       session: Session = Depends(get_db_session),
+131 |   ):
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:128:9
+    |
+126 |     req: ApproveContentRequest,
+127 |     current_user: AuthSession = Depends(
+128 |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+129 |     ),
+130 |     session: Session = Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:130:24
+    |
+128 |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+129 |     ),
+130 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+131 | ):
+132 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/content.py:146:12
+    |
+144 |         )
+145 |         return ok({"item": item.model_dump(mode="json")})
+146 |     except Exception as exc:
+    |            ^^^^^^^^^
+147 |         return fail("CONTENT_APPROVAL_FAILED", str(exc))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:153:33
+    |
+151 |   def post(
+152 |       req: PublishContentRequest,
+153 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+154 | |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+155 | |     ),
+    | |_____^
+156 |       session: Session = Depends(get_db_session),
+157 |   ):
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:154:9
+    |
+152 |     req: PublishContentRequest,
+153 |     current_user: AuthSession = Depends(
+154 |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     ),
+156 |     session: Session = Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/content.py:156:24
+    |
+154 |         require_permission(Permission.MANAGE_CONTENT_APPROVAL)
+155 |     ),
+156 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+157 | ):
+158 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/content.py:172:12
+    |
+170 |         )
+171 |         return ok({"results": [result.model_dump(mode="json") for result in results]})
+172 |     except Exception as exc:
+    |            ^^^^^^^^^
+173 |         return fail("CONTENT_PUBLISH_FAILED", str(exc))
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/content.py:184:12
+    |
+182 |         result = _pipeline().run_full_pipeline(req)
+183 |         return ok({"run": result.model_dump(mode="json")})
+184 |     except Exception as exc:
+    |            ^^^^^^^^^
+185 |         return fail("CONTENT_PIPELINE_FAILED", str(exc))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:67:25
+   |
+65 | @router.get("/status")
+66 | def api_status(
+67 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 | ):
+69 |     org_id = _org_id(current_user)
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:67:33
+   |
+65 | @router.get("/status")
+66 | def api_status(
+67 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+68 | ):
+69 |     org_id = _org_id(current_user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:81:25
+   |
+79 | @router.get("/license")
+80 | def api_license_status(
+81 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+82 | ):
+83 |     return success_response(get_license_status(_org_id(current_user)))
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:81:33
+   |
+79 | @router.get("/license")
+80 | def api_license_status(
+81 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+82 | ):
+83 |     return success_response(get_license_status(_org_id(current_user)))
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:89:25
+   |
+87 |   def api_license_apply(
+88 |       req: ApplyLicenseRequest,
+89 |       current_user: Any = Depends(
+   |  _________________________^
+90 | |         require_permissions([Permission.enterprise_license_manage])
+91 | |     ),
+   | |_____^
+92 |   ):
+93 |       return success_response(apply_license(_org_id(current_user), req.license_key))
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/enterprise.py:90:9
+   |
+88 |     req: ApplyLicenseRequest,
+89 |     current_user: Any = Depends(
+90 |         require_permissions([Permission.enterprise_license_manage])
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+91 |     ),
+92 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:98:25
+    |
+ 96 |   @router.post("/license/revoke")
+ 97 |   def api_license_revoke(
+ 98 |       current_user: Any = Depends(
+    |  _________________________^
+ 99 | |         require_permissions([Permission.enterprise_license_manage])
+100 | |     ),
+    | |_____^
+101 |   ):
+102 |       return success_response(revoke_license(_org_id(current_user)))
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:99:9
+    |
+ 97 | def api_license_revoke(
+ 98 |     current_user: Any = Depends(
+ 99 |         require_permissions([Permission.enterprise_license_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+100 |     ),
+101 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:107:25
+    |
+105 | @router.get("/branding")
+106 | def api_branding(
+107 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+108 | ):
+109 |     return success_response(get_branding(_org_id(current_user), _ws_id(current_user)))
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:107:33
+    |
+105 | @router.get("/branding")
+106 | def api_branding(
+107 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+108 | ):
+109 |     return success_response(get_branding(_org_id(current_user), _ws_id(current_user)))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:115:25
+    |
+113 |   def api_branding_patch(
+114 |       body: dict,
+115 |       current_user: Any = Depends(
+    |  _________________________^
+116 | |         require_permissions([Permission.enterprise_branding_manage])
+117 | |     ),
+    | |_____^
+118 |   ):
+119 |       return success_response(
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:116:9
+    |
+114 |     body: dict,
+115 |     current_user: Any = Depends(
+116 |         require_permissions([Permission.enterprise_branding_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+117 |     ),
+118 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:126:25
+    |
+124 |   @router.post("/branding/reset")
+125 |   def api_branding_reset(
+126 |       current_user: Any = Depends(
+    |  _________________________^
+127 | |         require_permissions([Permission.enterprise_branding_manage])
+128 | |     ),
+    | |_____^
+129 |   ):
+130 |       return success_response(reset_branding(_org_id(current_user), _ws_id(current_user)))
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:127:9
+    |
+125 | def api_branding_reset(
+126 |     current_user: Any = Depends(
+127 |         require_permissions([Permission.enterprise_branding_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+128 |     ),
+129 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:135:25
+    |
+133 | @router.get("/exports")
+134 | def api_exports(
+135 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+136 | ):
+137 |     return success_response({"exports": list_export_bundles(_org_id(current_user))})
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:135:33
+    |
+133 | @router.get("/exports")
+134 | def api_exports(
+135 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+136 | ):
+137 |     return success_response({"exports": list_export_bundles(_org_id(current_user))})
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:143:25
+    |
+141 | def api_create_export(
+142 |     req: ExportRequest,
+143 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 |     _f: str = Depends(require_feature("feature.enterprise_export")),
+145 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:143:33
+    |
+141 | def api_create_export(
+142 |     req: ExportRequest,
+143 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 |     _f: str = Depends(require_feature("feature.enterprise_export")),
+145 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:172:25
+    |
+170 | def api_export_get(
+171 |     bundle_id: str,
+172 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+173 | ):
+174 |     return success_response(get_export_bundle(_org_id(current_user), bundle_id))
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:172:33
+    |
+170 | def api_export_get(
+171 |     bundle_id: str,
+172 |     current_user: Any = Depends(require_permissions([Permission.enterprise_export])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+173 | ):
+174 |     return success_response(get_export_bundle(_org_id(current_user), bundle_id))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:179:25
+    |
+177 | @router.get("/onboarding")
+178 | def api_onboarding(
+179 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+180 | ):
+181 |     return success_response(get_checklist(_org_id(current_user), _ws_id(current_user)))
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:179:33
+    |
+177 | @router.get("/onboarding")
+178 | def api_onboarding(
+179 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+180 | ):
+181 |     return success_response(get_checklist(_org_id(current_user), _ws_id(current_user)))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:187:25
+    |
+185 |   def api_onboarding_step(
+186 |       req: OnboardingStepRequest,
+187 |       current_user: Any = Depends(
+    |  _________________________^
+188 | |         require_permissions([Permission.enterprise_onboarding_manage])
+189 | |     ),
+    | |_____^
+190 |   ):
+191 |       return success_response(
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:188:9
+    |
+186 |     req: OnboardingStepRequest,
+187 |     current_user: Any = Depends(
+188 |         require_permissions([Permission.enterprise_onboarding_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+189 |     ),
+190 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:198:25
+    |
+196 |   @router.post("/onboarding/reset")
+197 |   def api_onboarding_reset(
+198 |       current_user: Any = Depends(
+    |  _________________________^
+199 | |         require_permissions([Permission.enterprise_onboarding_manage])
+200 | |     ),
+    | |_____^
+201 |   ):
+202 |       return success_response(
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:199:9
+    |
+197 | def api_onboarding_reset(
+198 |     current_user: Any = Depends(
+199 |         require_permissions([Permission.enterprise_onboarding_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+200 |     ),
+201 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:209:25
+    |
+207 | @router.get("/customer-health")
+208 | def api_health(
+209 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+210 | ):
+211 |     return success_response(
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/enterprise.py:209:33
+    |
+207 | @router.get("/customer-health")
+208 | def api_health(
+209 |     current_user: Any = Depends(require_permissions([Permission.enterprise_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+210 | ):
+211 |     return success_response(
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:48:33
+   |
+46 |   def action(
+47 |       req: IoTAction,
+48 |       current_user: AuthSession = Depends(
+   |  _________________________________^
+49 | |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+50 | |     ),
+   | |_____^
+51 |       session: Session = Depends(get_db_session),
+52 |   ) -> dict:
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:49:9
+   |
+47 |     req: IoTAction,
+48 |     current_user: AuthSession = Depends(
+49 |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+50 |     ),
+51 |     session: Session = Depends(get_db_session),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:51:24
+   |
+49 |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+50 |     ),
+51 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+52 | ) -> dict:
+53 |     result = _service().execute(req)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:72:33
+   |
+70 |   def power_cycle(
+71 |       req: IoTPowerCycleRequest | None = None,
+72 |       current_user: AuthSession = Depends(
+   |  _________________________________^
+73 | |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+74 | |     ),
+   | |_____^
+75 |       session: Session = Depends(get_db_session),
+76 |   ) -> dict:
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:73:9
+   |
+71 |     req: IoTPowerCycleRequest | None = None,
+72 |     current_user: AuthSession = Depends(
+73 |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+74 |     ),
+75 |     session: Session = Depends(get_db_session),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/iot.py:75:24
+   |
+73 |         require_permission(Permission.CONTROL_DRY_RUN_IOT)
+74 |     ),
+75 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+76 | ) -> dict:
+77 |     settings = get_settings()
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/marketplace.py:84:25
+   |
+82 | @router.get("/categories")
+83 | def api_categories(
+84 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+85 | ):
+86 |     try:
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/marketplace.py:84:33
+   |
+82 | @router.get("/categories")
+83 | def api_categories(
+84 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+85 | ):
+86 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:112:12
+    |
+110 |         )
+111 |         return success_response({"categories": categories})
+112 |     except Exception as e:
+    |            ^^^^^^^^^
+113 |         return error_response("CATEGORIES_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:121:25
+    |
+119 |     category: str | None = None,
+120 |     status: str | None = None,
+121 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+122 | ):
+123 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:121:33
+    |
+119 |     category: str | None = None,
+120 |     status: str | None = None,
+121 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+122 | ):
+123 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:126:12
+    |
+124 |         plugins = list_plugins(search=search, category=category, status=status)
+125 |         return success_response({"plugins": plugins})
+126 |     except Exception as e:
+    |            ^^^^^^^^^
+127 |         return error_response("PLUGINS_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:133:25
+    |
+131 | def api_plugin(
+132 |     plugin_id: str,
+133 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+134 | ):
+135 |     try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:133:33
+    |
+131 | def api_plugin(
+132 |     plugin_id: str,
+133 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+134 | ):
+135 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:143:12
+    |
+141 |         )
+142 |         return success_response({"plugin": plugin_data})
+143 |     except Exception as e:
+    |            ^^^^^^^^^
+144 |         return error_response("PLUGIN_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:149:25
+    |
+147 | @router.get("/installations")
+148 | def api_installations(
+149 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+150 |     tenant: TenantContext = Depends(get_tenant_context),
+151 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:149:33
+    |
+147 | @router.get("/installations")
+148 | def api_installations(
+149 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+150 |     tenant: TenantContext = Depends(get_tenant_context),
+151 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:150:29
+    |
+148 | def api_installations(
+149 |     current_user: Any = Depends(require_permissions([Permission.marketplace_read])),
+150 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+151 | ):
+152 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:159:12
+    |
+157 |         res = [installation_to_dict(inst) for inst in insts]
+158 |         return success_response({"installations": res})
+159 |     except Exception as e:
+    |            ^^^^^^^^^
+160 |         return error_response("INSTALLATIONS_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:166:25
+    |
+164 | def api_install(
+165 |     body: InstallPluginRequest,
+166 |     current_user: Any = Depends(require_permissions([Permission.marketplace_install])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+167 |     _f: str = Depends(require_feature("feature.marketplace")),
+168 |     tenant: TenantContext = Depends(get_tenant_context),
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:166:33
+    |
+164 | def api_install(
+165 |     body: InstallPluginRequest,
+166 |     current_user: Any = Depends(require_permissions([Permission.marketplace_install])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+167 |     _f: str = Depends(require_feature("feature.marketplace")),
+168 |     tenant: TenantContext = Depends(get_tenant_context),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:168:29
+    |
+166 |     current_user: Any = Depends(require_permissions([Permission.marketplace_install])),
+167 |     _f: str = Depends(require_feature("feature.marketplace")),
+168 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+169 | ):
+170 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:190:12
+    |
+188 |             return error_response("INSTALL_FAILED", res.get("error", "Unknown error"))
+189 |         return success_response(res)
+190 |     except Exception as e:
+    |            ^^^^^^^^^
+191 |         return error_response("INSTALL_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:197:25
+    |
+195 | def api_enable(
+196 |     installation_id: str,
+197 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+198 |     tenant: TenantContext = Depends(get_tenant_context),
+199 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:197:33
+    |
+195 | def api_enable(
+196 |     installation_id: str,
+197 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+198 |     tenant: TenantContext = Depends(get_tenant_context),
+199 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:198:29
+    |
+196 |     installation_id: str,
+197 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+198 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+199 | ):
+200 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:208:12
+    |
+206 |             return error_response("ENABLE_FAILED", res.get("error", "Unknown error"))
+207 |         return success_response(res)
+208 |     except Exception as e:
+    |            ^^^^^^^^^
+209 |         return error_response("ENABLE_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:215:25
+    |
+213 | def api_disable(
+214 |     installation_id: str,
+215 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+216 |     tenant: TenantContext = Depends(get_tenant_context),
+217 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:215:33
+    |
+213 | def api_disable(
+214 |     installation_id: str,
+215 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+216 |     tenant: TenantContext = Depends(get_tenant_context),
+217 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:216:29
+    |
+214 |     installation_id: str,
+215 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+216 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+217 | ):
+218 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:226:12
+    |
+224 |             return error_response("DISABLE_FAILED", res.get("error", "Unknown error"))
+225 |         return success_response(res)
+226 |     except Exception as e:
+    |            ^^^^^^^^^
+227 |         return error_response("DISABLE_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:233:25
+    |
+231 | def api_uninstall(
+232 |     installation_id: str,
+233 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+234 |     tenant: TenantContext = Depends(get_tenant_context),
+235 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:233:33
+    |
+231 | def api_uninstall(
+232 |     installation_id: str,
+233 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+234 |     tenant: TenantContext = Depends(get_tenant_context),
+235 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:234:29
+    |
+232 |     installation_id: str,
+233 |     current_user: Any = Depends(require_permissions([Permission.marketplace_manage])),
+234 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+235 | ):
+236 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:244:12
+    |
+242 |             return error_response("UNINSTALL_FAILED", res.get("error", "Unknown error"))
+243 |         return success_response(res)
+244 |     except Exception as e:
+    |            ^^^^^^^^^
+245 |         return error_response("UNINSTALL_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:252:25
+    |
+250 |       installation_id: str,
+251 |       body: RunPluginRequest,
+252 |       current_user: Any = Depends(
+    |  _________________________^
+253 | |         require_permissions([Permission.marketplace_run_plugin])
+254 | |     ),
+    | |_____^
+255 |       tenant: TenantContext = Depends(get_tenant_context),
+256 |   ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:253:9
+    |
+251 |     body: RunPluginRequest,
+252 |     current_user: Any = Depends(
+253 |         require_permissions([Permission.marketplace_run_plugin])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+254 |     ),
+255 |     tenant: TenantContext = Depends(get_tenant_context),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:255:29
+    |
+253 |         require_permissions([Permission.marketplace_run_plugin])
+254 |     ),
+255 |     tenant: TenantContext = Depends(get_tenant_context),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+256 | ):
+257 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:269:12
+    |
+267 |             return error_response("RUN_FAILED", res.get("error", "Unknown error"))
+268 |         return success_response(res)
+269 |     except Exception as e:
+    |            ^^^^^^^^^
+270 |         return error_response("RUN_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:276:33
+    |
+274 |   def api_register_manifest(
+275 |       body: RegisterManifestRequest,
+276 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+277 | |         require_permissions([Permission.marketplace_manage])
+278 | |     ),
+    | |_____^
+279 |   ):
+280 |       try:
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/marketplace.py:277:9
+    |
+275 |     body: RegisterManifestRequest,
+276 |     current_user: AuthSession = Depends(
+277 |         require_permissions([Permission.marketplace_manage])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+278 |     ),
+279 | ):
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/marketplace.py:314:12
+    |
+313 |         return success_response({"manifest": result})
+314 |     except Exception as e:
+    |            ^^^^^^^^^
+315 |         return error_response("REGISTER_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/metrics.py:16:56
+   |
+15 | def _require_metrics_access(
+16 |     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+   |                                                        ^^^^^^^^^^^^^^^^^^^^^^
+17 | ) -> None:
+18 |     settings = get_settings()
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:46:20
+   |
+44 | @router.get("/status")
+45 | def status(
+46 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     user: AuthSession = Depends(get_current_user),
+48 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:47:25
+   |
+45 | def status(
+46 |     tenant_context=Depends(get_tenant_context),
+47 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+48 | ):
+49 |     _require_read_access(user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:66:20
+   |
+64 | @router.get("/rules")
+65 | def rules(
+66 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+67 |     user: AuthSession = Depends(get_current_user),
+68 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:67:25
+   |
+65 | def rules(
+66 |     tenant_context=Depends(get_tenant_context),
+67 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+68 | ):
+69 |     _require_read_access(user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:85:20
+   |
+83 | def create_rule(
+84 |     payload: AlertRuleCreateRequest,
+85 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |     user: AuthSession = Depends(get_current_user),
+87 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/notifications.py:86:25
+   |
+84 |     payload: AlertRuleCreateRequest,
+85 |     tenant_context=Depends(get_tenant_context),
+86 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+87 | ):
+88 |     _require_manage_access(user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:103:20
+    |
+101 |     rule_id: str,
+102 |     payload: AlertRuleUpdateRequest,
+103 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+104 |     user: AuthSession = Depends(get_current_user),
+105 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:104:25
+    |
+102 |     payload: AlertRuleUpdateRequest,
+103 |     tenant_context=Depends(get_tenant_context),
+104 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+105 | ):
+106 |     _require_manage_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:126:20
+    |
+124 | def delete_rule(
+125 |     rule_id: str,
+126 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+127 |     user: AuthSession = Depends(get_current_user),
+128 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:127:25
+    |
+125 |     rule_id: str,
+126 |     tenant_context=Depends(get_tenant_context),
+127 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+128 | ):
+129 |     _require_manage_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:148:20
+    |
+146 | @router.get("/events")
+147 | def events(
+148 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+149 |     user: AuthSession = Depends(get_current_user),
+150 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:149:25
+    |
+147 | def events(
+148 |     tenant_context=Depends(get_tenant_context),
+149 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+150 | ):
+151 |     _require_read_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:165:20
+    |
+163 | @router.get("/channels")
+164 | def channels(
+165 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+166 |     user: AuthSession = Depends(get_current_user),
+167 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:166:25
+    |
+164 | def channels(
+165 |     tenant_context=Depends(get_tenant_context),
+166 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+167 | ):
+168 |     _require_read_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:184:20
+    |
+182 | def create_channel(
+183 |     payload: NotificationChannelCreateRequest,
+184 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+185 |     user: AuthSession = Depends(get_current_user),
+186 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:185:25
+    |
+183 |     payload: NotificationChannelCreateRequest,
+184 |     tenant_context=Depends(get_tenant_context),
+185 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+186 | ):
+187 |     _require_manage_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:202:20
+    |
+200 |     channel_id: str,
+201 |     payload: NotificationChannelUpdateRequest,
+202 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+203 |     user: AuthSession = Depends(get_current_user),
+204 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:203:25
+    |
+201 |     payload: NotificationChannelUpdateRequest,
+202 |     tenant_context=Depends(get_tenant_context),
+203 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+204 | ):
+205 |     _require_manage_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:227:20
+    |
+225 | def delete_channel(
+226 |     channel_id: str,
+227 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+228 |     user: AuthSession = Depends(get_current_user),
+229 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:228:25
+    |
+226 |     channel_id: str,
+227 |     tenant_context=Depends(get_tenant_context),
+228 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+229 | ):
+230 |     _require_manage_access(user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:252:20
+    |
+250 | def test_notification(
+251 |     payload: NotificationTestRequest,
+252 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+253 |     user: AuthSession = Depends(get_current_user),
+254 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/notifications.py:253:25
+    |
+251 |     payload: NotificationTestRequest,
+252 |     tenant_context=Depends(get_tenant_context),
+253 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+254 | ):
+255 |     _require_manage_access(user)
+    |
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/api/predictive_sre.py:32:26
+   |
+30 |             "enabled": True,
+31 |             "mode": "advisory",
+32 |             "timestamp": datetime.utcnow().isoformat(),
+   |                          ^^^^^^^^^^^^^^^^^
+33 |         }
+34 |     )
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/risk.py:88:33
+   |
+86 |   def halt(
+87 |       req: HaltRequest,
+88 |       current_user: AuthSession = Depends(
+   |  _________________________________^
+89 | |         require_permission(Permission.HALT_RESUME_RISK)
+90 | |     ),
+   | |_____^
+91 |       session: Session = Depends(get_db_session),
+92 |   ) -> dict:
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/risk.py:89:9
+   |
+87 |     req: HaltRequest,
+88 |     current_user: AuthSession = Depends(
+89 |         require_permission(Permission.HALT_RESUME_RISK)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+90 |     ),
+91 |     session: Session = Depends(get_db_session),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/risk.py:91:24
+   |
+89 |         require_permission(Permission.HALT_RESUME_RISK)
+90 |     ),
+91 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+92 | ) -> dict:
+93 |     service = get_guardian_service()
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/risk.py:123:33
+    |
+121 |   def resume(
+122 |       req: ResumeRequest,
+123 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+124 | |         require_permission(Permission.HALT_RESUME_RISK)
+125 | |     ),
+    | |_____^
+126 |       session: Session = Depends(get_db_session),
+127 |   ) -> dict:
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/risk.py:124:9
+    |
+122 |     req: ResumeRequest,
+123 |     current_user: AuthSession = Depends(
+124 |         require_permission(Permission.HALT_RESUME_RISK)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+125 |     ),
+126 |     session: Session = Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/risk.py:126:24
+    |
+124 |         require_permission(Permission.HALT_RESUME_RISK)
+125 |     ),
+126 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+127 | ) -> dict:
+128 |     service = get_guardian_service()
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/routes/incidents.py:14:46
+   |
+13 | @router.get("")
+14 | async def list_incidents(user: AuthSession = Depends(get_current_user)) -> dict:
+   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |     _ = user
+16 |     return ok({"items": get_incident_service().list_incidents()})
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/routes/incidents.py:21:40
+   |
+19 | @router.post("")
+20 | async def create_incident(
+21 |     payload: dict, user: AuthSession = Depends(get_current_user)
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+22 | ) -> dict:
+23 |     if user.role not in {"operator", "admin"}:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/routes/incidents.py:36:43
+   |
+34 | @router.post("/{incident_id}/ack")
+35 | async def ack_incident(
+36 |     incident_id: str, user: AuthSession = Depends(get_current_user)
+   |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+37 | ) -> dict:
+38 |     if user.role not in {"operator", "admin"}:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/routes/incidents.py:47:58
+   |
+45 | @router.post("/{incident_id}/resolve")
+46 | async def resolve_incident(
+47 |     incident_id: str, payload: dict, user: AuthSession = Depends(get_current_user)
+   |                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+48 | ) -> dict:
+49 |     if user.role != "admin":
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:55:33
+   |
+53 |   def create_job(
+54 |       req: CreateJobRequest,
+55 |       current_user: AuthSession = Depends(
+   |  _________________________________^
+56 | |         require_permission(Permission.MANAGE_SCHEDULER)
+57 | |     ),
+   | |_____^
+58 |       session: Session = Depends(get_db_session),
+59 |       _f: str = Depends(require_feature("feature.scheduler")),
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:56:9
+   |
+54 |     req: CreateJobRequest,
+55 |     current_user: AuthSession = Depends(
+56 |         require_permission(Permission.MANAGE_SCHEDULER)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     ),
+58 |     session: Session = Depends(get_db_session),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:58:24
+   |
+56 |         require_permission(Permission.MANAGE_SCHEDULER)
+57 |     ),
+58 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+59 |     _f: str = Depends(require_feature("feature.scheduler")),
+60 |     tenant: TenantContext = Depends(get_tenant_context),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:60:29
+   |
+58 |     session: Session = Depends(get_db_session),
+59 |     _f: str = Depends(require_feature("feature.scheduler")),
+60 |     tenant: TenantContext = Depends(get_tenant_context),
+   |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+61 | ) -> dict:
+62 |     try:
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:91:33
+   |
+89 |   def run_job(
+90 |       job_id: str,
+91 |       current_user: AuthSession = Depends(
+   |  _________________________________^
+92 | |         require_permission(Permission.MANAGE_SCHEDULER)
+93 | |     ),
+   | |_____^
+94 |       session: Session = Depends(get_db_session),
+95 |   ) -> dict:
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:92:9
+   |
+90 |     job_id: str,
+91 |     current_user: AuthSession = Depends(
+92 |         require_permission(Permission.MANAGE_SCHEDULER)
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+93 |     ),
+94 |     session: Session = Depends(get_db_session),
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/scheduler.py:94:24
+   |
+92 |         require_permission(Permission.MANAGE_SCHEDULER)
+93 |     ),
+94 |     session: Session = Depends(get_db_session),
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^
+95 | ) -> dict:
+96 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/scheduler.py:100:12
+    |
+ 98 |     except JobNotFoundError as exc:
+ 99 |         return fail("SCHEDULER_JOB_NOT_FOUND", str(exc))
+100 |     except Exception as exc:
+    |            ^^^^^^^^^
+101 |         return fail("SCHEDULER_JOB_RUN_FAILED", str(exc))
+102 |     scheduler_job_total.labels(action="run").inc()
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/scheduler.py:127:12
+    |
+125 |     except JobNotFoundError as exc:
+126 |         return fail("SCHEDULER_JOB_NOT_FOUND", str(exc))
+127 |     except Exception as exc:
+    |            ^^^^^^^^^
+128 |         return fail("SCHEDULER_JOB_PAUSE_FAILED", str(exc))
+129 |     scheduler_job_total.labels(action="pause").inc()
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/scheduler.py:142:12
+    |
+140 |     except JobNotFoundError as exc:
+141 |         return fail("SCHEDULER_JOB_NOT_FOUND", str(exc))
+142 |     except Exception as exc:
+    |            ^^^^^^^^^
+143 |         return fail("SCHEDULER_JOB_RESUME_FAILED", str(exc))
+144 |     scheduler_job_total.labels(action="resume").inc()
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/scheduler.py:151:33
+    |
+149 |   def delete_job(
+150 |       job_id: str,
+151 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+152 | |         require_permission(Permission.MANAGE_SCHEDULER)
+153 | |     ),
+    | |_____^
+154 |       session: Session = Depends(get_db_session),
+155 |   ) -> dict:
+    |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/scheduler.py:152:9
+    |
+150 |     job_id: str,
+151 |     current_user: AuthSession = Depends(
+152 |         require_permission(Permission.MANAGE_SCHEDULER)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+153 |     ),
+154 |     session: Session = Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/scheduler.py:154:24
+    |
+152 |         require_permission(Permission.MANAGE_SCHEDULER)
+153 |     ),
+154 |     session: Session = Depends(get_db_session),
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+155 | ) -> dict:
+156 |     deleted = _service().delete_job(job_id)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:45:33
+   |
+43 | def api_list_members(
+44 |     workspace_id: str | None = Query(default=None),
+45 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+46 |     db=Depends(get_db_session),
+47 | ):
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:45:41
+   |
+43 | def api_list_members(
+44 |     workspace_id: str | None = Query(default=None),
+45 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+46 |     db=Depends(get_db_session),
+47 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:46:8
+   |
+44 |     workspace_id: str | None = Query(default=None),
+45 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+46 |     db=Depends(get_db_session),
+   |        ^^^^^^^^^^^^^^^^^^^^^^^
+47 | ):
+48 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/team.py:52:12
+   |
+50 |         result = list_members(org_id, workspace_id, db)
+51 |         return success_response({"members": result.get("members", [])})
+52 |     except Exception as e:
+   |            ^^^^^^^^^
+53 |         return error_response("TEAM_ERROR", str(e))
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:59:33
+   |
+57 | def api_get_member(
+58 |     member_id: str,
+59 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+60 |     db=Depends(get_db_session),
+61 | ):
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:59:41
+   |
+57 | def api_get_member(
+58 |     member_id: str,
+59 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+60 |     db=Depends(get_db_session),
+61 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:60:8
+   |
+58 |     member_id: str,
+59 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+60 |     db=Depends(get_db_session),
+   |        ^^^^^^^^^^^^^^^^^^^^^^^
+61 | ):
+62 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/team.py:68:12
+   |
+66 |             return error_response("NOT_FOUND", result.get("error", ""))
+67 |         return success_response({"member": result["member"]})
+68 |     except Exception as e:
+   |            ^^^^^^^^^
+69 |         return error_response("TEAM_ERROR", str(e))
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:75:33
+   |
+73 | def api_invite_member(
+74 |     body: InviteMemberRequest,
+75 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     db=Depends(get_db_session),
+77 | ):
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:75:41
+   |
+73 | def api_invite_member(
+74 |     body: InviteMemberRequest,
+75 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+76 |     db=Depends(get_db_session),
+77 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:76:8
+   |
+74 |     body: InviteMemberRequest,
+75 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+76 |     db=Depends(get_db_session),
+   |        ^^^^^^^^^^^^^^^^^^^^^^^
+77 | ):
+78 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/api/team.py:87:12
+   |
+85 |             return error_response("INVITE_FAILED", result.get("error", ""))
+86 |         return success_response({"invitation": result["invitation"]})
+87 |     except Exception as e:
+   |            ^^^^^^^^^
+88 |         return error_response("TEAM_ERROR", str(e))
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:94:33
+   |
+92 | def api_list_invitations(
+93 |     workspace_id: str | None = Query(default=None),
+94 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+95 |     db=Depends(get_db_session),
+96 | ):
+   |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:94:41
+   |
+92 | def api_list_invitations(
+93 |     workspace_id: str | None = Query(default=None),
+94 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+95 |     db=Depends(get_db_session),
+96 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/team.py:95:8
+   |
+93 |     workspace_id: str | None = Query(default=None),
+94 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+95 |     db=Depends(get_db_session),
+   |        ^^^^^^^^^^^^^^^^^^^^^^^
+96 | ):
+97 |     try:
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:101:12
+    |
+ 99 |         result = list_invitations(org_id, workspace_id, db)
+100 |         return success_response({"invitations": result.get("invitations", [])})
+101 |     except Exception as e:
+    |            ^^^^^^^^^
+102 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:108:33
+    |
+106 | def api_resend_invitation(
+107 |     invitation_id: str,
+108 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+109 |     db=Depends(get_db_session),
+110 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:108:41
+    |
+106 | def api_resend_invitation(
+107 |     invitation_id: str,
+108 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+109 |     db=Depends(get_db_session),
+110 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:109:8
+    |
+107 |     invitation_id: str,
+108 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+109 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+110 | ):
+111 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:118:12
+    |
+116 |             return error_response("RESEND_FAILED", result.get("error", ""))
+117 |         return success_response({"invitation": result["invitation"]})
+118 |     except Exception as e:
+    |            ^^^^^^^^^
+119 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:125:33
+    |
+123 | def api_revoke_invitation(
+124 |     invitation_id: str,
+125 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+126 |     db=Depends(get_db_session),
+127 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:125:41
+    |
+123 | def api_revoke_invitation(
+124 |     invitation_id: str,
+125 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+126 |     db=Depends(get_db_session),
+127 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:126:8
+    |
+124 |     invitation_id: str,
+125 |     current_user: AuthSession = Depends(require_permissions([Permission.team_invite])),
+126 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+127 | ):
+128 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:135:12
+    |
+133 |             return error_response("REVOKE_FAILED", result.get("error", ""))
+134 |         return success_response({"invitation": result["invitation"]})
+135 |     except Exception as e:
+    |            ^^^^^^^^^
+136 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:143:33
+    |
+141 |     member_id: str,
+142 |     body: UpdateRoleRequest,
+143 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 |     db=Depends(get_db_session),
+145 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:143:41
+    |
+141 |     member_id: str,
+142 |     body: UpdateRoleRequest,
+143 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+144 |     db=Depends(get_db_session),
+145 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:144:8
+    |
+142 |     body: UpdateRoleRequest,
+143 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+144 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+145 | ):
+146 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:153:12
+    |
+151 |             return error_response("UPDATE_FAILED", result.get("error", ""))
+152 |         return success_response({"member": result["member"]})
+153 |     except Exception as e:
+    |            ^^^^^^^^^
+154 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:160:33
+    |
+158 | def api_suspend_member(
+159 |     member_id: str,
+160 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+161 |     db=Depends(get_db_session),
+162 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:160:41
+    |
+158 | def api_suspend_member(
+159 |     member_id: str,
+160 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+161 |     db=Depends(get_db_session),
+162 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:161:8
+    |
+159 |     member_id: str,
+160 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+161 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+162 | ):
+163 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:170:12
+    |
+168 |             return error_response("SUSPEND_FAILED", result.get("error", ""))
+169 |         return success_response({"member": result["member"]})
+170 |     except Exception as e:
+    |            ^^^^^^^^^
+171 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:177:33
+    |
+175 | def api_reactivate_member(
+176 |     member_id: str,
+177 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+178 |     db=Depends(get_db_session),
+179 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:177:41
+    |
+175 | def api_reactivate_member(
+176 |     member_id: str,
+177 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+178 |     db=Depends(get_db_session),
+179 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:178:8
+    |
+176 |     member_id: str,
+177 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+178 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+179 | ):
+180 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:187:12
+    |
+185 |             return error_response("REACTIVATE_FAILED", result.get("error", ""))
+186 |         return success_response({"member": result["member"]})
+187 |     except Exception as e:
+    |            ^^^^^^^^^
+188 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:194:33
+    |
+192 | def api_remove_member(
+193 |     member_id: str,
+194 |     current_user: AuthSession = Depends(require_permissions([Permission.team_remove])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+195 |     db=Depends(get_db_session),
+196 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:194:41
+    |
+192 | def api_remove_member(
+193 |     member_id: str,
+194 |     current_user: AuthSession = Depends(require_permissions([Permission.team_remove])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+195 |     db=Depends(get_db_session),
+196 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:195:8
+    |
+193 |     member_id: str,
+194 |     current_user: AuthSession = Depends(require_permissions([Permission.team_remove])),
+195 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+196 | ):
+197 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:204:12
+    |
+202 |             return error_response("REMOVE_FAILED", result.get("error", ""))
+203 |         return success_response({})
+204 |     except Exception as e:
+    |            ^^^^^^^^^
+205 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:211:33
+    |
+209 | def api_list_workspace_access(
+210 |     workspace_id: str = Query(...),
+211 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+212 |     db=Depends(get_db_session),
+213 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:211:41
+    |
+209 | def api_list_workspace_access(
+210 |     workspace_id: str = Query(...),
+211 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+212 |     db=Depends(get_db_session),
+213 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:212:8
+    |
+210 |     workspace_id: str = Query(...),
+211 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+212 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+213 | ):
+214 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:218:12
+    |
+216 |         result = list_workspace_access(org_id, workspace_id, db)
+217 |         return success_response({"access": result.get("access", [])})
+218 |     except Exception as e:
+    |            ^^^^^^^^^
+219 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:225:33
+    |
+223 | def api_grant_workspace_access(
+224 |     body: GrantAccessRequest,
+225 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+226 |     db=Depends(get_db_session),
+227 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:225:41
+    |
+223 | def api_grant_workspace_access(
+224 |     body: GrantAccessRequest,
+225 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+226 |     db=Depends(get_db_session),
+227 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:226:8
+    |
+224 |     body: GrantAccessRequest,
+225 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+226 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+227 | ):
+228 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:237:12
+    |
+235 |             return error_response("GRANT_FAILED", result.get("error", ""))
+236 |         return success_response({"access": result["access"]})
+237 |     except Exception as e:
+    |            ^^^^^^^^^
+238 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:244:33
+    |
+242 | def api_revoke_workspace_access(
+243 |     access_id: str,
+244 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+245 |     db=Depends(get_db_session),
+246 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:244:41
+    |
+242 | def api_revoke_workspace_access(
+243 |     access_id: str,
+244 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+245 |     db=Depends(get_db_session),
+246 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:245:8
+    |
+243 |     access_id: str,
+244 |     current_user: AuthSession = Depends(require_permissions([Permission.team_manage])),
+245 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+246 | ):
+247 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:254:12
+    |
+252 |             return error_response("REVOKE_FAILED", result.get("error", ""))
+253 |         return success_response({})
+254 |     except Exception as e:
+    |            ^^^^^^^^^
+255 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:261:33
+    |
+259 | def api_list_agent_assignments(
+260 |     workspace_id: str | None = Query(default=None),
+261 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+262 |     db=Depends(get_db_session),
+263 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:261:41
+    |
+259 | def api_list_agent_assignments(
+260 |     workspace_id: str | None = Query(default=None),
+261 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+262 |     db=Depends(get_db_session),
+263 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:262:8
+    |
+260 |     workspace_id: str | None = Query(default=None),
+261 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+262 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+263 | ):
+264 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:268:12
+    |
+266 |         result = list_agent_assignments(org_id, workspace_id, db)
+267 |         return success_response({"assignments": result.get("assignments", [])})
+268 |     except Exception as e:
+    |            ^^^^^^^^^
+269 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:275:33
+    |
+273 |   def api_assign_agent(
+274 |       body: AssignAgentRequest,
+275 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+276 | |         require_permissions([Permission.team_assign_agents])
+277 | |     ),
+    | |_____^
+278 |       db=Depends(get_db_session),
+279 |   ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:276:9
+    |
+274 |     body: AssignAgentRequest,
+275 |     current_user: AuthSession = Depends(
+276 |         require_permissions([Permission.team_assign_agents])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+277 |     ),
+278 |     db=Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:278:8
+    |
+276 |         require_permissions([Permission.team_assign_agents])
+277 |     ),
+278 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+279 | ):
+280 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:295:12
+    |
+293 |             return error_response("ASSIGN_FAILED", result.get("error", ""))
+294 |         return success_response({"assignment": result["assignment"]})
+295 |     except Exception as e:
+    |            ^^^^^^^^^
+296 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:302:33
+    |
+300 |   def api_unassign_agent(
+301 |       assignment_id: str,
+302 |       current_user: AuthSession = Depends(
+    |  _________________________________^
+303 | |         require_permissions([Permission.team_assign_agents])
+304 | |     ),
+    | |_____^
+305 |       db=Depends(get_db_session),
+306 |   ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:303:9
+    |
+301 |     assignment_id: str,
+302 |     current_user: AuthSession = Depends(
+303 |         require_permissions([Permission.team_assign_agents])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+304 |     ),
+305 |     db=Depends(get_db_session),
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:305:8
+    |
+303 |         require_permissions([Permission.team_assign_agents])
+304 |     ),
+305 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+306 | ):
+307 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:314:12
+    |
+312 |             return error_response("UNASSIGN_FAILED", result.get("error", ""))
+313 |         return success_response({})
+314 |     except Exception as e:
+    |            ^^^^^^^^^
+315 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:322:33
+    |
+320 |     workspace_id: str | None = Query(default=None),
+321 |     limit: int = Query(default=20, ge=1, le=100),
+322 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+323 |     db=Depends(get_db_session),
+324 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:322:41
+    |
+320 |     workspace_id: str | None = Query(default=None),
+321 |     limit: int = Query(default=20, ge=1, le=100),
+322 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+323 |     db=Depends(get_db_session),
+324 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:323:8
+    |
+321 |     limit: int = Query(default=20, ge=1, le=100),
+322 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+323 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+324 | ):
+325 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:329:12
+    |
+327 |         result = get_team_activity(org_id, workspace_id, limit, db)
+328 |         return success_response({"activities": result.get("activities", [])})
+329 |     except Exception as e:
+    |            ^^^^^^^^^
+330 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:335:33
+    |
+333 | @router.get("/summary")
+334 | def api_get_team_summary(
+335 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+336 |     db=Depends(get_db_session),
+337 | ):
+    |
+
+B008 Do not perform function call `require_permissions` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:335:41
+    |
+333 | @router.get("/summary")
+334 | def api_get_team_summary(
+335 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+336 |     db=Depends(get_db_session),
+337 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/team.py:336:8
+    |
+334 | def api_get_team_summary(
+335 |     current_user: AuthSession = Depends(require_permissions([Permission.team_read])),
+336 |     db=Depends(get_db_session),
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+337 | ):
+338 |     try:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/api/team.py:344:12
+    |
+342 |             return error_response("SUMMARY_ERROR", result.get("error", ""))
+343 |         return success_response({"summary": result["summary"]})
+344 |     except Exception as e:
+    |            ^^^^^^^^^
+345 |         return error_response("TEAM_ERROR", str(e))
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:39:20
+   |
+37 | @router.get("/context")
+38 | def context(
+39 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+40 | ) -> dict:
+41 |     return ok({"context": tenant_context.__dict__})
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:45:39
+   |
+44 | @router.get("/organizations")
+45 | def organizations(user: AuthSession = Depends(get_current_user)) -> dict:
+   |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+46 |     items = [
+47 |         item.model_dump() for item in tenant_service.list_accessible_organizations(user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:55:25
+   |
+53 | def create_organization(
+54 |     payload: OrganizationCreateRequest,
+55 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+56 | ) -> dict:
+57 |     organization = tenant_service.create_organization(payload, user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:65:25
+   |
+63 | def get_organization(
+64 |     organization_id: str,
+65 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+66 | ) -> dict:
+67 |     organization = tenant_service.get_organization(organization_id)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:82:25
+   |
+80 |     organization_id: str,
+81 |     payload: OrganizationUpdateRequest,
+82 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+83 | ) -> dict:
+84 |     _require_org_admin(organization_id, user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/tenancy.py:95:25
+   |
+93 | def list_workspaces(
+94 |     organization_id: str,
+95 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+96 | ) -> dict:
+97 |     organization = tenant_service.get_organization(organization_id)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/tenancy.py:116:25
+    |
+114 |     organization_id: str,
+115 |     payload: WorkspaceCreateRequest,
+116 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+117 | ) -> dict:
+118 |     _require_org_admin(organization_id, user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/tenancy.py:130:25
+    |
+128 | def get_workspace(
+129 |     workspace_id: str,
+130 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+131 | ) -> dict:
+132 |     workspace = tenant_service.get_workspace(workspace_id)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/tenancy.py:144:25
+    |
+142 |     workspace_id: str,
+143 |     payload: WorkspaceUpdateRequest,
+144 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+145 | ) -> dict:
+146 |     workspace = tenant_service.get_workspace(workspace_id)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/tenancy.py:161:25
+    |
+159 |     organization_id: str,
+160 |     payload: MemberCreateRequest,
+161 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+162 | ) -> dict:
+163 |     _require_org_admin(organization_id, user)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/tenancy.py:180:25
+    |
+178 |     workspace_id: str,
+179 |     payload: MemberCreateRequest,
+180 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+181 | ) -> dict:
+182 |     workspace = tenant_service.get_workspace(workspace_id)
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/voice.py:46:46
+   |
+45 | @router.get("/status")
+46 | def voice_status(current_user: AuthSession = Depends(get_current_user)):
+   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^
+47 |     config = VoiceIntegrationConfig.from_env()
+48 |     configured = bool(config.gateway_url and config.service_token)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/voice.py:63:33
+   |
+61 |     payload: VoiceSessionRequest,
+62 |     request: Request,
+63 |     current_user: AuthSession = Depends(get_current_user),
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+64 | ):
+65 |     request_id = request.headers.get("X-Request-Id", "").strip() or str(uuid4())
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:43:20
+   |
+41 | @router.get("/status")
+42 | def status(
+43 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+44 |     _: AuthSession = Depends(get_current_user),
+45 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:44:22
+   |
+42 | def status(
+43 |     tenant_context=Depends(get_tenant_context),
+44 |     _: AuthSession = Depends(get_current_user),
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+45 | ):
+46 |     snapshot = queue.status_snapshot()
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:56:20
+   |
+54 | @router.get("/tasks")
+55 | def tasks(
+56 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+57 |     _: AuthSession = Depends(get_current_user),
+58 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:57:22
+   |
+55 | def tasks(
+56 |     tenant_context=Depends(get_tenant_context),
+57 |     _: AuthSession = Depends(get_current_user),
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+58 | ):
+59 |     items = queue.list_tasks(
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:68:20
+   |
+66 | def create(
+67 |     payload: WorkerTaskCreateRequest,
+68 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+69 |     user: AuthSession = Depends(get_current_user),
+70 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:69:25
+   |
+67 |     payload: WorkerTaskCreateRequest,
+68 |     tenant_context=Depends(get_tenant_context),
+69 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+70 | ):
+71 |     _require_task_permission(payload.task_type, user)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:96:20
+   |
+94 | def task_detail(
+95 |     task_id: str,
+96 |     tenant_context=Depends(get_tenant_context),
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+97 |     _: AuthSession = Depends(get_current_user),
+98 | ):
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workers.py:97:22
+   |
+95 |     task_id: str,
+96 |     tenant_context=Depends(get_tenant_context),
+97 |     _: AuthSession = Depends(get_current_user),
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+98 | ):
+99 |     task = queue.get_task(task_id)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/workers.py:113:20
+    |
+111 | def cancel_task(
+112 |     task_id: str,
+113 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+114 |     user: AuthSession = Depends(get_current_user),
+115 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/workers.py:114:25
+    |
+112 |     task_id: str,
+113 |     tenant_context=Depends(get_tenant_context),
+114 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+115 | ):
+116 |     if not has_permission(user.role, Permission.MANAGE_WORKERS):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/workers.py:139:20
+    |
+137 | def retry_task(
+138 |     task_id: str,
+139 |     tenant_context=Depends(get_tenant_context),
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+140 |     user: AuthSession = Depends(get_current_user),
+141 | ):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/api/workers.py:140:25
+    |
+138 |     task_id: str,
+139 |     tenant_context=Depends(get_tenant_context),
+140 |     user: AuthSession = Depends(get_current_user),
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+141 | ):
+142 |     if not has_permission(user.role, Permission.MANAGE_WORKERS):
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workspaces.py:31:28
+   |
+30 | @router.get("/peers")
+31 | def peers(_: AuthSession = Depends(require_permission(Permission.READ_TENANCY))):
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+32 |     return ok({"items": _peers})
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workspaces.py:31:36
+   |
+30 | @router.get("/peers")
+31 | def peers(_: AuthSession = Depends(require_permission(Permission.READ_TENANCY))):
+   |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+32 |     return ok({"items": _peers})
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workspaces.py:38:22
+   |
+36 | def register(
+37 |     payload: FederationRegisterRequest,
+38 |     _: AuthSession = Depends(require_permission(Permission.MANAGE_TENANCY)),
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 | ):
+40 |     peer = {"name": payload.name, "registered": True, "active": False}
+   |
+
+B008 Do not perform function call `require_permission` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/api/workspaces.py:38:30
+   |
+36 | def register(
+37 |     payload: FederationRegisterRequest,
+38 |     _: AuthSession = Depends(require_permission(Permission.MANAGE_TENANCY)),
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+39 | ):
+40 |     peer = {"name": payload.name, "registered": True, "active": False}
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/auth/dependencies.py:15:56
+   |
+14 | def get_current_user(
+15 |     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+   |                                                        ^^^^^^^^^^^^^^^^^^^^^^
+16 | ) -> AuthSession:
+17 |     settings = get_settings()
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/auth/dependencies.py:48:47
+   |
+48 | def require_authenticated(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+   |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^
+49 |     return user
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/auth/dependencies.py:53:41
+   |
+52 | def require_permission(permission: Permission):
+53 |     def _dependency(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |         if not has_permission(user.role, permission):
+55 |             raise HTTPException(
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/auth/dependencies.py:67:41
+   |
+65 |     """Dependency factory: user must have ALL listed permissions (or be admin)."""
+66 |
+67 |     def _dependency(user: AuthSession = Depends(get_current_user)) -> AuthSession:
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+68 |         for perm in permissions:
+69 |             if not has_permission(user.role, perm):
+   |
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> app/backtesting/models.py:71:9
+   |
+69 |               if not (self.stop_loss < self.entry < self.take_profit):
+70 |                   raise ValueError("buy signals require stop_loss < entry < take_profit")
+71 | /         elif self.direction == "sell":
+72 | |             if not (self.take_profit < self.entry < self.stop_loss):
+   | |____________________________________________________________________^
+73 |                   raise ValueError("sell signals require take_profit < entry < stop_loss")
+74 |           return self
+   |
+help: Combine `if` statements using `and`
+
+RUF012 Mutable default value for class attribute
+  --> app/backtesting/optimizer.py:17:20
+   |
+16 |   class ParameterOptimizer:
+17 |       SORT_METRICS = {
+   |  ____________________^
+18 | |         "profit_factor",
+19 | |         "net_profit_percent",
+20 | |         "win_rate",
+21 | |         "expectancy",
+22 | |         "sharpe_like_score",
+23 | |         "max_drawdown_percent",
+24 | |     }
+   | |_____^
+25 |
+26 |       def __init__(self, strategy_lab: StrategyLab | None = None) -> None:
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+RUF012 Mutable default value for class attribute
+  --> app/backtesting/strategies/ob_aggressive.py:11:26
+   |
+ 9 |   class OBAggressiveStrategy(BaseStrategy):
+10 |       name = "ob_aggressive"
+11 |       default_parameters = {
+   |  __________________________^
+12 | |         "lookback": 12,
+13 | |         "risk_reward": 2.0,
+14 | |         "confidence_threshold": 0.55,
+15 | |         "atr_multiplier": 1.2,
+16 | |     }
+   | |_____^
+17 |
+18 |       def validate_parameters(self, parameters: dict) -> dict:
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+RUF012 Mutable default value for class attribute
+  --> app/backtesting/strategies/ob_conservative.py:11:26
+   |
+ 9 |   class OBConservativeStrategy(BaseStrategy):
+10 |       name = "ob_conservative"
+11 |       default_parameters = {
+   |  __________________________^
+12 | |         "lookback": 24,
+13 | |         "risk_reward": 1.8,
+14 | |         "confidence_threshold": 0.68,
+15 | |         "atr_multiplier": 1.8,
+16 | |     }
+   | |_____^
+17 |
+18 |       def validate_parameters(self, parameters: dict) -> dict:
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+RUF012 Mutable default value for class attribute
+  --> app/backtesting/strategies/trend_follow.py:11:26
+   |
+ 9 |   class TrendFollowStrategy(BaseStrategy):
+10 |       name = "trend_follow"
+11 |       default_parameters = {
+   |  __________________________^
+12 | |         "short_window": 10,
+13 | |         "long_window": 30,
+14 | |         "risk_reward": 1.5,
+15 | |         "confidence_threshold": 0.6,
+16 | |         "atr_multiplier": 1.5,
+17 | |     }
+   | |_____^
+18 |
+19 |       def validate_parameters(self, parameters: dict) -> dict:
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+RUF012 Mutable default value for class attribute
+  --> app/backtesting/strategy_base.py:12:32
+   |
+10 | class BaseStrategy(ABC):
+11 |     name: str = "base"
+12 |     default_parameters: dict = {}
+   |                                ^^
+13 |
+14 |     @abstractmethod
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/billing/entitlement_service.py:102:45
+    |
+101 | def require_feature(feature: str) -> Callable:
+102 |     def _dependency(tenant: TenantContext = Depends(get_tenant_context)) -> str:
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+103 |         if not settings.billing_enabled:
+104 |             return feature
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/billing/entitlement_service.py:117:45
+    |
+116 | def require_quota(metric: str, increment: float = 1.0) -> Callable:
+117 |     def _dependency(tenant: TenantContext = Depends(get_tenant_context)) -> str:
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+118 |         if not settings.billing_enabled:
+119 |             return metric
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/billing/usage_meter.py:74:12
+   |
+73 |         return {"ok": True}
+74 |     except Exception as e:
+   |            ^^^^^^^^^
+75 |         logger.error(f"Usage metering failed: {e}")
+76 |         # Failure must not crash core system
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/billing/usage_meter.py:100:12
+    |
+ 98 |             "used": used,
+ 99 |         }
+100 |     except Exception as e:
+    |            ^^^^^^^^^
+101 |         logger.error(f"Failed to get metric summary: {e}")
+102 |         return {
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/billing/usage_meter.py:140:12
+    |
+138 |                 )
+139 |         return out
+140 |     except Exception as e:
+    |            ^^^^^^^^^
+141 |         logger.error(f"Failed to get usage summary: {e}")
+142 |         return []
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:27:54
+   |
+26 | @router.get("/presence")
+27 | def get_presence(workspace_id: str, _: AuthSession = Depends(get_current_user)):
+   |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+28 |     return ok(
+29 |         {
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:39:50
+   |
+37 | @router.post("/presence")
+38 | def post_presence(
+39 |     payload: PresenceUpdate, user: AuthSession = Depends(get_current_user)
+   |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+40 | ):
+41 |     return ok(
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:51:51
+   |
+50 | @router.get("/notes")
+51 | def get_notes(workspace_id: str, _: AuthSession = Depends(get_current_user)):
+   |                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+52 |     return ok(
+53 |         {"items": [n.model_dump(mode="json") for n in service.list_notes(workspace_id)]}
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:58:57
+   |
+57 | @router.post("/notes")
+58 | def post_notes(payload: NoteCreate, user: AuthSession = Depends(get_current_user)):
+   |                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+59 |     return ok(
+60 |         {"item": service.create_note(user.username, payload).model_dump(mode="json")}
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:66:58
+   |
+64 | @router.patch("/notes/{note_id}/resolve")
+65 | def resolve_note(
+66 |     note_id: str, workspace_id: str, user: AuthSession = Depends(get_current_user)
+   |                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+67 | ):
+68 |     note = service.resolve_note(workspace_id, note_id, user.username)
+   |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/collaboration/router.py:80:22
+   |
+78 |     limit: int = Query(50, ge=1, le=200),
+79 |     event_type: str | None = None,
+80 |     _: AuthSession = Depends(get_current_user),
+   |                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+81 | ):
+82 |     items, next_cursor = service.list_timeline(workspace_id, cursor, limit, event_type)
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/content/editor_service.py:127:16
+    |
+125 |         try:
+126 |             generated = self.text_generator(deterministic_prompt)
+127 |         except Exception:
+    |                ^^^^^^^^^
+128 |             return deterministic_prompt
+129 |         normalized = (generated or "").strip()
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/content/pipeline.py:106:16
+    |
+104 |                 },
+105 |             )
+106 |         except Exception as exc:
+    |                ^^^^^^^^^
+107 |             ok = False
+108 |             if content_id:
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/content/pipeline.py:161:16
+    |
+159 |             status = item.status
+160 |             message = "draft and edit completed"
+161 |         except Exception as exc:
+    |                ^^^^^^^^^
+162 |             ok = False
+163 |             status = ContentStatus.failed
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/content/pipeline.py:203:16
+    |
+201 |             status = item.status
+202 |             message = "graphic generation completed"
+203 |         except Exception as exc:
+    |                ^^^^^^^^^
+204 |             ok = False
+205 |             status = ContentStatus.failed
+    |
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+   --> app/core/config.py:566:9
+    |
+564 |       if settings.is_production:
+565 |           database_url = settings.database_url.strip()
+566 | /         if not settings.production_safety_lock:
+567 | |             if not settings.production_allow_live_actions:
+    | |__________________________________________________________^
+568 |                   raise RuntimeError(
+569 |                       "PRODUCTION_SAFETY_LOCK can be disabled only with explicit PRODUCTION_ALLOW_LIVE_ACTIONS=true."
+    |
+help: Combine `if` statements using `and`
+
+S110 `try`-`except`-`pass` detected, consider logging the exception
+   --> app/core/events.py:166:9
+    |
+165 |               metrics_store.increment_events()
+166 | /         except Exception:  # pragma: no cover
+167 | |             pass
+    | |________________^
+168 |           try:
+169 |               from app.realtime import publish_event
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/core/events.py:166:16
+    |
+165 |             metrics_store.increment_events()
+166 |         except Exception:  # pragma: no cover
+    |                ^^^^^^^^^
+167 |             pass
+168 |         try:
+    |
+
+S110 `try`-`except`-`pass` detected, consider logging the exception
+   --> app/core/events.py:172:9
+    |
+171 |               publish_event(event)
+172 | /         except Exception:  # pragma: no cover
+173 | |             pass
+    | |________________^
+174 |           return event
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/core/events.py:172:16
+    |
+171 |             publish_event(event)
+172 |         except Exception:  # pragma: no cover
+    |                ^^^^^^^^^
+173 |             pass
+174 |         return event
+    |
+
+RUF012 Mutable default value for class attribute
+ --> app/launch/telemetry_service.py:2:19
+  |
+1 | class TelemetryService:
+2 |     SECRET_KEYS = {"token", "password", "secret", "api_key"}
+  |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3 |
+4 |     def redact_payload(self, payload: dict) -> dict:
+  |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/ops/incident_service.py:27:29
+   |
+25 |         i = self._items[incident_id]
+26 |         i.status = IncidentStatus.acknowledged
+27 |         i.acknowledged_at = datetime.utcnow()
+   |                             ^^^^^^^^^^^^^^^^^
+28 |         i.assigned_to = user_id
+29 |         return i
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/ops/incident_service.py:37:24
+   |
+35 |         i.status = status
+36 |         i.metadata["notes"] = notes
+37 |         i.updated_at = datetime.utcnow()
+   |                        ^^^^^^^^^^^^^^^^^
+38 |         return i
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/ops/incident_service.py:43:25
+   |
+41 |         i = self._items[incident_id]
+42 |         i.status = IncidentStatus.resolved
+43 |         i.resolved_at = datetime.utcnow()
+   |                         ^^^^^^^^^^^^^^^^^
+44 |         i.metadata["resolution_notes"] = notes
+45 |         return i
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/anomaly_detector.py:20:15
+   |
+19 |     def forecast_anomalies(self, tenant_context, horizon: ForecastHorizon):
+20 |         now = datetime.utcnow()
+   |               ^^^^^^^^^^^^^^^^^
+21 |         conf = 0.72
+22 |         item = AnomalyForecast(
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/capacity_planner.py:32:24
+   |
+30 |             cost_impact_estimate=self.estimate_cost_impact(),
+31 |             risk_if_no_action="possible saturation",
+32 |             created_at=datetime.utcnow(),
+   |                        ^^^^^^^^^^^^^^^^^
+33 |         )
+34 |         self._items.append(o)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/error_budget_service.py:22:28
+   |
+20 |             forecast_burn_rate=1.6,
+21 |             remaining_budget_percent=48.0,
+22 |             exhaustion_eta=datetime.utcnow() + timedelta(days=5),
+   |                            ^^^^^^^^^^^^^^^^^
+23 |             confidence=0.69,
+24 |             recommended_actions=["throttle background jobs"],
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/error_budget_service.py:25:24
+   |
+23 |             confidence=0.69,
+24 |             recommended_actions=["throttle background jobs"],
+25 |             created_at=datetime.utcnow(),
+   |                        ^^^^^^^^^^^^^^^^^
+26 |         )
+27 |         self._items.append(o)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/incident_predictor.py:33:24
+   |
+31 |             evidence=["p95 latency up 22%"],
+32 |             status=PredictionStatus.generated,
+33 |             created_at=datetime.utcnow(),
+   |                        ^^^^^^^^^^^^^^^^^
+34 |             expires_at=datetime.utcnow() + timedelta(hours=6),
+35 |         )
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/incident_predictor.py:34:24
+   |
+32 |             status=PredictionStatus.generated,
+33 |             created_at=datetime.utcnow(),
+34 |             expires_at=datetime.utcnow() + timedelta(hours=6),
+   |                        ^^^^^^^^^^^^^^^^^
+35 |         )
+36 |         self._items.append(p)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/reliability_advisor.py:24:24
+   |
+22 |             cost_impact="moderate",
+23 |             status=PredictionStatus.generated,
+24 |             created_at=datetime.utcnow(),
+   |                        ^^^^^^^^^^^^^^^^^
+25 |         )
+26 |         self._items.append(r)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/slo_forecaster.py:27:24
+   |
+25 |             horizon=horizon,
+26 |             explanation="Traffic growth pressure",
+27 |             created_at=datetime.utcnow(),
+   |                        ^^^^^^^^^^^^^^^^^
+28 |         )
+29 |         self._items.append(o)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+DTZ003 `datetime.datetime.utcnow()` used
+  --> app/predictive_sre/sre_report_service.py:14:27
+   |
+12 |             "workspace_id": tenant_context["workspace_id"],
+13 |             "summary": "Advisory report with confidence-scored forecasts.",
+14 |             "created_at": datetime.utcnow().isoformat(),
+   |                           ^^^^^^^^^^^^^^^^^
+15 |         }
+16 |         self._items.append(r)
+   |
+help: Use `datetime.datetime.now(tz=...)` instead
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/realtime/broadcaster.py:94:16
+   |
+92 |         try:
+93 |             future.result()
+94 |         except Exception:
+   |                ^^^^^^^^^
+95 |             # Background websocket broadcast failures are handled by the manager.
+96 |             return
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/realtime/manager.py:85:20
+   |
+83 |                 delivered += 1
+84 |                 await self.mark_activity(channel, client_id)
+85 |             except Exception:
+   |                    ^^^^^^^^^
+86 |                 stale_ids.append(client_id)
+   |
+
+PYI063 Use PEP 570 syntax for positional-only parameters
+  --> app/realtime/schemas.py:31:31
+   |
+29 |     payload: dict[str, Any] = Field(default_factory=dict)
+30 |
+31 |     def model_post_init(self, __context: Any) -> None:
+   |                               ^^^^^^^^^
+32 |         if not self.message and isinstance(self.data.get("message"), str):
+33 |             self.message = self.data["message"]
+   |
+help: Add `/` to function signature
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+   --> app/risk/high_risk_policy.py:193:29
+    |
+192 |     async def _dependency(
+193 |         user: AuthSession = Depends(get_current_user),
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^
+194 |     ) -> None:
+195 |         req = HighRiskActionRequest(
+    |
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> app/scheduler/models.py:80:9
+   |
+78 |               if self.interval_seconds is None or self.interval_seconds <= 0:
+79 |                   raise ValueError("interval jobs require interval_seconds > 0")
+80 | /         elif self.schedule_type == ScheduleType.cron:
+81 | |             if not self.cron or not self.cron.strip():
+   | |______________________________________________________^
+82 |                   raise ValueError("cron jobs require cron string")
+83 |           return self
+   |
+help: Combine `if` statements using `and`
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/scheduler/scheduler_service.py:154:16
+    |
+152 |         try:
+153 |             ok, status, message, output = run_scheduled_job(job)
+154 |         except Exception as exc:
+    |                ^^^^^^^^^
+155 |             ok = False
+156 |             status = "failed"
+    |
+
+S110 `try`-`except`-`pass` detected, consider logging the exception
+   --> app/team/service.py:118:5
+    |
+116 |               )
+117 |           )
+118 | /     except Exception:
+119 | |         pass
+    | |____________^
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/team/service.py:118:12
+    |
+116 |             )
+117 |         )
+118 |     except Exception:
+    |            ^^^^^^^^^
+119 |         pass
+    |
+
+B008 Do not perform function call `Depends` in argument defaults; instead, perform the call within the function, or read the default from a module-level singleton variable
+  --> app/tenancy/dependencies.py:12:25
+   |
+10 | def get_tenant_context(
+11 |     request: Request,
+12 |     user: AuthSession = Depends(get_current_user),
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+13 | ) -> TenantContext:
+14 |     settings = get_settings()
+   |
+
+B017 Do not assert blind exception: `Exception`
+   --> app/tests/test_high_risk_action_policy.py:360:14
+    |
+358 |         user = AuthSession(username="viewer-user", role="viewer")
+359 |
+360 |         with pytest.raises(Exception):
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^
+361 |             import asyncio
+    |
+
+RUF012 Mutable default value for class attribute
+  --> app/tests/test_strategy_base.py:9:26
+   |
+ 7 | class DummyStrategy(BaseStrategy):
+ 8 |     name = "dummy"
+ 9 |     default_parameters = {"alpha": 1, "beta": 2}
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^
+10 |
+11 |     def generate_signal(self, candles, index, parameters):
+   |
+help: Consider initializing in `__init__` or annotating with `typing.ClassVar`
+
+SIM102 Use a single `if` statement instead of nested `if` statements
+  --> app/trading/execution_engine.py:47:9
+   |
+45 |           entry = payload.get("entry")
+46 |           entry_zone = payload.get("entry_zone")
+47 | /         if entry is None:
+48 | |             if isinstance(entry_zone, (list, tuple)) and len(entry_zone) == 2:
+   | |______________________________________________________________________________^
+49 |                   low, high = entry_zone
+50 |                   if isinstance(low, (int, float)) and isinstance(high, (int, float)):
+   |
+help: Combine `if` statements using `and`
+
+TRY004 Prefer `TypeError` exception for invalid type
+   --> app/trading/execution_engine.py:122:13
+    |
+120 |           raw_snapshot = self.mt5_adapter.get_account_snapshot()
+121 |           if not isinstance(raw_snapshot, dict):
+122 | /             raise ValueError(
+123 | |                 "MT5 adapter returned an invalid account snapshot payload."
+124 | |             )
+    | |_____________^
+125 |
+126 |           balance = float(raw_snapshot.get("balance", 10000.0))
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+   --> app/trading/execution_engine.py:178:16
+    |
+176 |                 snapshot=resolved_snapshot,
+177 |             )
+178 |         except Exception as exc:
+    |                ^^^^^^^^^
+179 |             risk_decision = RiskDecision(
+180 |                 approved=False,
+    |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/trading/mt5_adapter.py:24:16
+   |
+23 |             return mt5
+24 |         except Exception:
+   |                ^^^^^^^^^
+25 |             return None
+   |
+
+BLE001 Do not catch blind exception: `Exception`
+  --> app/workers/worker_service.py:30:12
+   |
+28 |             )
+29 |         return queue.complete(task.id, result)
+30 |     except Exception as exc:
+   |            ^^^^^^^^^
+31 |         event_bus.emit(
+32 |             "worker.task.failed",
+   |
+
+Found 347 errors.

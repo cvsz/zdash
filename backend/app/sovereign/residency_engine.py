@@ -1,8 +1,8 @@
 from .models import (
+    DataRegion,
     DataResidencyRule,
     ResidencyDecision,
     ResidencyEnforcementMode,
-    DataRegion,
 )
 
 

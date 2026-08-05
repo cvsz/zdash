@@ -1,6 +1,6 @@
 from app.api import risk
-from app.risk.models import AccountSnapshot
 from app.risk.guardian_service import reset_guardian_service
+from app.risk.models import AccountSnapshot
 
 
 def assert_envelope(payload: dict) -> None:
