@@ -1,64 +1,42 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# ============================================================
-# zDash Production Installer / Updater / Validator
-# Repo: https://github.com/cvsz/zdash.git
-# Target: Ubuntu 22.04 / 24.04 server or VMware VM
+# zDash safe production installer / recovery wrapper
+# This file replaces install-zdash-prod.sh; the original installer is retained
+# as install-zdash-prod-legacy.sh.
 #
-# Design goals:
-# - production-grade local deployment baseline
-# - no paid cloud dependency by default
-# - Docker Compose stack: Postgres, Redis, Backend, Frontend, NGINX
-# - systemd service, healthcheck, backup, update helpers
-# - strict zDash safety lock: dry-run only, no live trading, no live infra mutation
-# ============================================================
+# Purpose:
+# - preserve production secrets from the existing runtime environment
+# - repair a PostgreSQL role password after an earlier installer rotated it
+# - run the existing install-zdash-prod.sh without rotating persistent secrets
+# - collect useful diagnostics when the backend remains unhealthy
+#
+# Usage:
+#   sudo ZDASH_DOMAIN=zdash.zeaz.dev ./install-zdash-prod.sh
+#   sudo ./install-zdash-prod.sh --repair-only
+#
+# Optional:
+#   ZDASH_REPO=/home/cvsz/zdash
+#   INSTALL_ROOT=/opt/zdash
+#   RUNTIME_DIR=/opt/zdash/runtime
+#   BACKEND_HEALTH_TIMEOUT=180
 
 APP_NAME="${APP_NAME:-zdash}"
-REPO_URL="${REPO_URL:-https://github.com/cvsz/zdash.git}"
-REPO_BRANCH="${REPO_BRANCH:-main}"
-
 INSTALL_ROOT="${INSTALL_ROOT:-/opt/zdash}"
-APP_DIR="${APP_DIR:-$INSTALL_ROOT/app}"
 RUNTIME_DIR="${RUNTIME_DIR:-$INSTALL_ROOT/runtime}"
-BACKUP_DIR="${BACKUP_DIR:-$INSTALL_ROOT/backups}"
-LOG_DIR="${LOG_DIR:-$INSTALL_ROOT/logs}"
-
-ZDASH_DOMAIN="${ZDASH_DOMAIN:-localhost}"
-ZDASH_PUBLIC_URL="${ZDASH_PUBLIC_URL:-https://$ZDASH_DOMAIN}"
-ZDASH_EMAIL="${ZDASH_EMAIL:-admin@example.local}"
-
-HTTP_PORT="${HTTP_PORT:-80}"
-HTTPS_PORT="${HTTPS_PORT:-443}"
-BACKEND_PORT="${BACKEND_PORT:-8005}"
-FRONTEND_INTERNAL_PORT="${FRONTEND_INTERNAL_PORT:-80}"
-
-POSTGRES_DB="${POSTGRES_DB:-zdash}"
-POSTGRES_USER="${POSTGRES_USER:-zdash}"
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
-REDIS_PASSWORD="${REDIS_PASSWORD:-}"
-JWT_SECRET_KEY="${JWT_SECRET_KEY:-}"
-BOOTSTRAP_ADMIN_USERNAME="${BOOTSTRAP_ADMIN_USERNAME:-admin}"
-BOOTSTRAP_ADMIN_PASSWORD="${BOOTSTRAP_ADMIN_PASSWORD:-}"
-
-RUN_TESTS="${RUN_TESTS:-false}"
-RUN_FRONTEND_TESTS="${RUN_FRONTEND_TESTS:-false}"
-ENABLE_UFW="${ENABLE_UFW:-true}"
-FORCE_REBUILD="${FORCE_REBUILD:-true}"
-SKIP_PULL="${SKIP_PULL:-false}"
-INSTALL_DOCKER="${INSTALL_DOCKER:-true}"
-
-ENV_FILE="$RUNTIME_DIR/.env.production"
-COMPOSE_FILE="$RUNTIME_DIR/docker-compose.yml"
-NGINX_CONF="$RUNTIME_DIR/nginx/zdash.conf"
-CERT_DIR="$RUNTIME_DIR/certs"
+ENV_FILE="${ENV_FILE:-$RUNTIME_DIR/.env.production}"
+COMPOSE_FILE="${COMPOSE_FILE:-$RUNTIME_DIR/docker-compose.yml}"
+DIAG_DIR="${DIAG_DIR:-$INSTALL_ROOT/logs/recovery}"
+BACKEND_HEALTH_TIMEOUT="${BACKEND_HEALTH_TIMEOUT:-180}"
+BASE_INSTALLER_REF="${BASE_INSTALLER_REF:-b015e7980edd1677649aa56f6bc59f032ee47a38}"
+REPAIR_ONLY=false
 
 log() {
   printf '\n\033[1;36m[%s]\033[0m %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
 }
 
 warn() {
-  printf '\n\033[1;33m[WARN]\033[0m %s\n' "$*"
+  printf '\n\033[1;33m[WARN]\033[0m %s\n' "$*" >&2
 }
 
 die() {
@@ -66,771 +44,388 @@ die() {
   exit 1
 }
 
-need_root() {
-  if [ "${EUID:-$(id -u)}" -ne 0 ]; then
-    die "Run as root: sudo $0"
-  fi
+usage() {
+  cat <<'EOF'
+Usage:
+  sudo ZDASH_DOMAIN=zdash.zeaz.dev ./install-zdash-prod.sh
+  sudo ./install-zdash-prod.sh --repair-only
+
+Options:
+  --repair-only   Repair the current stack without running the installer.
+  -h, --help      Show this help.
+
+Environment:
+  ZDASH_REPO              Path to the zDash checkout.
+  INSTALL_ROOT            Default: /opt/zdash
+  RUNTIME_DIR             Default: /opt/zdash/runtime
+  ENV_FILE                Default: <runtime>/.env.production
+  COMPOSE_FILE            Default: <runtime>/docker-compose.yml
+  BACKEND_HEALTH_TIMEOUT  Default: 180 seconds
+EOF
 }
 
-need_cmd() {
-  command -v "$1" >/dev/null 2>&1
-}
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --repair-only)
+      REPAIR_ONLY=true
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      die "Unknown argument: $1"
+      ;;
+  esac
+  shift
+done
 
-secret_hex() {
-  openssl rand -hex 32
-}
+[ "${EUID:-$(id -u)}" -eq 0 ] || die "Run with sudo/root."
 
-apt_install() {
-  DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
-}
+command -v docker >/dev/null 2>&1 || die "Docker is not installed."
+docker compose version >/dev/null 2>&1 || die "Docker Compose plugin is unavailable."
 
-preflight() {
-  log "Running preflight checks"
-
-  if ! grep -qiE 'ubuntu|debian' /etc/os-release; then
-    warn "This installer is tested on Ubuntu/Debian only. Continuing best-effort."
-  fi
-
-  local mem_mb disk_mb
-  mem_mb="$(awk '/MemTotal/ {print int($2/1024)}' /proc/meminfo)"
-  disk_mb="$(df -Pm / | awk 'NR==2 {print $4}')"
-
-  if [ "$mem_mb" -lt 2048 ]; then
-    warn "Low memory detected: ${mem_mb}MB. Recommended: 4GB+."
-  fi
-
-  if [ "$disk_mb" -lt 10240 ]; then
-    warn "Low free disk detected: ${disk_mb}MB. Recommended: 20GB+."
-  fi
-}
-
-install_packages() {
-  log "Installing base packages"
-  apt-get update
-  apt_install \
-    ca-certificates \
-    curl \
-    git \
-    jq \
-    openssl \
-    ufw \
-    cron \
-    rsync \
-    tar \
-    gzip \
-    lsb-release \
-    gnupg \
-    python3 \
-    python3-venv \
-    python3-pip
-}
-
-install_docker() {
-  if [ "$INSTALL_DOCKER" != "true" ]; then
-    log "Skipping Docker install because INSTALL_DOCKER=false"
-    return
-  fi
-
-  if need_cmd docker && docker compose version >/dev/null 2>&1; then
-    log "Docker and Compose already installed"
-    systemctl enable --now docker || true
-    return
-  fi
-
-  log "Installing Docker Engine from Ubuntu packages"
-  apt-get update
-  apt_install docker.io docker-compose-v2 || apt_install docker.io docker-compose-plugin
-  systemctl enable --now docker
-
-  if ! docker compose version >/dev/null 2>&1; then
-    die "Docker Compose plugin is not available after installation."
-  fi
-}
-
-prepare_dirs() {
-  log "Preparing runtime directories"
-  mkdir -p "$INSTALL_ROOT" "$APP_DIR" "$RUNTIME_DIR" "$BACKUP_DIR" "$LOG_DIR"
-  mkdir -p "$RUNTIME_DIR/nginx" "$RUNTIME_DIR/scripts" "$CERT_DIR" "$LOG_DIR/nginx"
-}
-
-resolve_source_repo() {
-  # When this script is executed from a checked-out cvsz/zdash repo, use that repo.
-  # When executed from elsewhere, clone/update /opt/zdash/app.
+resolve_repo() {
   local script_dir
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-  if [ -d "$script_dir/.git" ] && [ -d "$script_dir/backend" ] && [ -d "$script_dir/frontend" ]; then
-    APP_DIR="$script_dir"
-    log "Using current zDash checkout: $APP_DIR"
+  if [ -n "${ZDASH_REPO:-}" ]; then
+    printf '%s\n' "$ZDASH_REPO"
     return
   fi
 
-  if [ -d "$APP_DIR/.git" ]; then
-    log "Using existing zDash checkout: $APP_DIR"
+  if { [ -f "$script_dir/install-zdash-prod-legacy.sh" ] || [ -f "$script_dir/install-zdash-prod.sh" ]; } &&
+     [ -d "$script_dir/backend" ] &&
+     [ -d "$script_dir/frontend" ]; then
+    printf '%s\n' "$script_dir"
     return
   fi
 
-  log "Cloning zDash into $APP_DIR"
-  rm -rf "$APP_DIR"
-  git clone --branch "$REPO_BRANCH" "$REPO_URL" "$APP_DIR"
-}
-
-update_repo() {
-  if [ "$SKIP_PULL" = "true" ]; then
-    log "Skipping git pull because SKIP_PULL=true"
+  if { [ -f "$PWD/install-zdash-prod-legacy.sh" ] || [ -f "$PWD/install-zdash-prod.sh" ]; } &&
+     [ -d "$PWD/backend" ] &&
+     [ -d "$PWD/frontend" ]; then
+    printf '%s\n' "$PWD"
     return
   fi
 
-  if [ ! -d "$APP_DIR/.git" ]; then
-    warn "$APP_DIR is not a git repo. Skipping pull."
+  if [ -f "$INSTALL_ROOT/app/install-zdash-prod-legacy.sh" ] || [ -f "$INSTALL_ROOT/app/install-zdash-prod.sh" ]; then
+    printf '%s\n' "$INSTALL_ROOT/app"
     return
   fi
 
-  log "Checking repository status"
-  git -C "$APP_DIR" status --short || true
+  die "Cannot locate zDash checkout. Set ZDASH_REPO=/path/to/zdash."
+}
 
-  if [ -n "$(git -C "$APP_DIR" status --porcelain)" ]; then
-    warn "Working tree has local changes. Skipping pull to avoid overwriting work."
+ZDASH_REPO="$(resolve_repo)"
+INSTALLER="${LEGACY_INSTALLER:-$ZDASH_REPO/install-zdash-prod-legacy.sh}"
+
+materialize_legacy_installer() {
+  if [ -f "$INSTALLER" ]; then
     return
   fi
 
-  log "Updating zDash branch $REPO_BRANCH"
-  git -C "$APP_DIR" fetch origin "$REPO_BRANCH"
-  git -C "$APP_DIR" checkout "$REPO_BRANCH"
-  git -C "$APP_DIR" pull --ff-only origin "$REPO_BRANCH"
-}
+  command -v git >/dev/null 2>&1 ||
+    die "Legacy installer is absent and git is unavailable."
 
-generate_secrets() {
-  log "Generating missing secrets"
-  POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$(secret_hex)}"
-  REDIS_PASSWORD="${REDIS_PASSWORD:-$(secret_hex)}"
-  JWT_SECRET_KEY="${JWT_SECRET_KEY:-$(secret_hex)}"
-  BOOTSTRAP_ADMIN_PASSWORD="${BOOTSTRAP_ADMIN_PASSWORD:-$(secret_hex)}"
-}
-
-write_env() {
-  log "Writing production environment file: $ENV_FILE"
-
-  cat > "$ENV_FILE" <<EOF
-APP_NAME=zDash
-APP_ENV=production
-LOG_LEVEL=INFO
-
-BACKEND_HOST=0.0.0.0
-BACKEND_PORT=$BACKEND_PORT
-
-DATABASE_URL=postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
-DB_ECHO=false
-DB_POOL_SIZE=10
-DB_MAX_OVERFLOW=20
-
-PRODUCTION_SAFETY_LOCK=true
-PRODUCTION_ALLOW_LIVE_ACTIONS=false
-
-AUTH_ENABLED=true
-AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION=true
-METRICS_AUTH_REQUIRED=true
-METRICS_ALLOW_UNAUTHENTICATED_DEV=false
-
-JWT_SECRET_KEY=$JWT_SECRET_KEY
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
-JWT_REFRESH_TOKEN_EXPIRE_DAYS=7
-
-BOOTSTRAP_ADMIN_USERNAME=$BOOTSTRAP_ADMIN_USERNAME
-BOOTSTRAP_ADMIN_PASSWORD=$BOOTSTRAP_ADMIN_PASSWORD
-DEFAULT_ADMIN_PASSWORD=$BOOTSTRAP_ADMIN_PASSWORD
-
-CLAUDE_API_KEY=
-CLAUDE_MODEL=claude-sonnet-4-5
-AI_PROVIDER=mock
-
-TRADING_ENABLED=true
-DRY_RUN=true
-LIVE_TRADING_ACK=false
-MT5_ENABLED=false
-MT5_LOGIN=
-MT5_PASSWORD=
-MT5_SERVER=
-MT5_PATH=
-TRADING_DEFAULT_SYMBOL=XAUUSD
-TRADING_DEFAULT_TIMEFRAME=M5
-TRADING_DEFAULT_STRATEGY=trend_momentum_v1
-TRADING_MAX_SIGNAL_AGE_SECONDS=300
-FUNNEL_FAST_PERIOD=21
-FUNNEL_MEDIUM_PERIOD=10
-FUNNEL_SLOW_PERIOD=3
-AI_TRADING_ANALYSIS_ENABLED=true
-AI_TRADING_PROVIDER=mock
-
-RISK_GUARDIAN_ENABLED=true
-MAX_DAILY_DRAWDOWN_PERCENT=5.0
-MAX_TOTAL_DRAWDOWN_PERCENT=20.0
-EMERGENCY_KILL_SWITCH_DRAWDOWN_PERCENT=50.0
-SOFT_HALT_DRAWDOWN_LEVEL_1=5.0
-SOFT_HALT_DRAWDOWN_LEVEL_2=10.0
-SOFT_HALT_DRAWDOWN_LEVEL_3=20.0
-ALLOW_MANUAL_RESUME=true
-REQUIRE_RESUME_REASON=true
-HARD_HALT_ON_DAILY_DRAWDOWN=false
-
-SCHEDULER_ENABLED=true
-SCHEDULER_TIMEZONE=Asia/Bangkok
-SCHEDULER_DEFAULT_MAX_RUNTIME_SECONDS=300
-SCHEDULER_ALLOW_MANUAL_RUN=true
-SCHEDULER_STORE=in_memory
-FRIDAY_AGENT_ENABLED=true
-
-CONTENT_PIPELINE_ENABLED=true
-CONTENT_STORE=in_memory
-EDITOR_AGENT_ENABLED=true
-GRAPHIC_AGENT_ENABLED=true
-SOCIAL_AGENT_ENABLED=true
-CONTENT_DEFAULT_BRAND=zDash
-CONTENT_DEFAULT_LANGUAGE=en
-CONTENT_DEFAULT_TONE=professional
-CONTENT_REQUIRE_POLICY_CHECK=true
-IMAGE_GENERATION_PROVIDER=mock
-IMAGE_DRY_RUN=true
-IMAGE_OUTPUT_DIR=backend/data/content/images
-SOCIAL_PROVIDER=mock
-SOCIAL_DRY_RUN=true
-SOCIAL_APPROVAL_REQUIRED=true
-SOCIAL_AUTO_POST_ENABLED=false
-SOCIAL_REAL_POSTING_APPROVED=false
-SOCIAL_DEFAULT_PLATFORMS=x,tiktok,facebook,instagram,linkedin
-
-IOT_ENABLED=true
-IOT_DRY_RUN=true
-IOT_REQUIRE_CONFIRMATION=true
-IOT_REAL_ACTIONS_APPROVED=false
-TAPO_USERNAME=
-TAPO_PASSWORD=
-TAPO_DEVICE_IP=
-TAPO_DEVICE_ALIAS=zdash-power-node
-
-MULTI_TENANT_ENABLED=true
-DEFAULT_ORG_NAME=zDash Production
-DEFAULT_WORKSPACE_NAME=Main Workspace
-TENANT_HEADER_NAME=X-ZDash-Tenant
-WORKSPACE_HEADER_NAME=X-ZDash-Workspace
-
-WORKER_QUEUE_BACKEND=memory
-WORKER_MAX_RETRIES=3
-
-CLOUDFLARE_DRY_RUN=true
-NOTIFICATION_DRY_RUN=true
-
-POSTGRES_DB=$POSTGRES_DB
-POSTGRES_USER=$POSTGRES_USER
-POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-REDIS_PASSWORD=$REDIS_PASSWORD
-
-ZDASH_DOMAIN=$ZDASH_DOMAIN
-ZDASH_PUBLIC_URL=$ZDASH_PUBLIC_URL
-EOF
-
-  chmod 600 "$ENV_FILE"
-}
-
-write_nginx_conf() {
-  log "Writing reverse proxy config: $NGINX_CONF"
-
-  cat > "$NGINX_CONF" <<EOF
-server {
-  listen 80;
-  server_name $ZDASH_DOMAIN;
-
-  location / {
-    return 301 https://\$host\$request_uri;
-  }
-
-  location = /health {
-    access_log off;
-    return 200 "ok\n";
-  }
-}
-
-server {
-  listen 443 ssl http2;
-  server_name $ZDASH_DOMAIN;
-
-  ssl_certificate /etc/nginx/certs/fullchain.pem;
-  ssl_certificate_key /etc/nginx/certs/privkey.pem;
-  ssl_protocols TLSv1.2 TLSv1.3;
-  ssl_session_cache shared:SSL:10m;
-  ssl_session_timeout 10m;
-
-  client_max_body_size 50m;
-
-  add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-  add_header X-Content-Type-Options nosniff always;
-  add_header X-Frame-Options SAMEORIGIN always;
-  add_header Referrer-Policy strict-origin-when-cross-origin always;
-  add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
-
-  gzip on;
-  gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
-
-  location /api/ {
-    proxy_pass http://backend:8005/api/;
-    proxy_http_version 1.1;
-    proxy_set_header Host \$host;
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_read_timeout 120s;
-  }
-
-  location /metrics {
-    proxy_pass http://backend:8005/metrics;
-    proxy_http_version 1.1;
-    proxy_set_header Host \$host;
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto https;
-  }
-
-  location /ws {
-    proxy_pass http://backend:8005/ws;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade \$http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host \$host;
-    proxy_read_timeout 3600s;
-  }
-
-  location / {
-    proxy_pass http://frontend:80;
-    proxy_http_version 1.1;
-    proxy_set_header Host \$host;
-    proxy_set_header X-Real-IP \$remote_addr;
-    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto https;
-  }
-
-  location = /health {
-    access_log off;
-    return 200 "ok\n";
-  }
-}
-EOF
-}
-
-generate_cert() {
-  log "Ensuring TLS certificate exists"
-
-  if [ -s "$CERT_DIR/fullchain.pem" ] && [ -s "$CERT_DIR/privkey.pem" ]; then
-    echo "Existing certificate found in $CERT_DIR"
-    return
+  if ! git -C "$ZDASH_REPO" cat-file -e \
+      "${BASE_INSTALLER_REF}:install-zdash-prod.sh" 2>/dev/null; then
+    die "Cannot recover the original installer from git ref $BASE_INSTALLER_REF."
   fi
 
-  openssl req -x509 -nodes -newkey rsa:4096 -days 3650 \
-    -keyout "$CERT_DIR/privkey.pem" \
-    -out "$CERT_DIR/fullchain.pem" \
-    -subj "/CN=$ZDASH_DOMAIN" \
-    -addext "subjectAltName=DNS:$ZDASH_DOMAIN,DNS:localhost,IP:127.0.0.1"
+  INSTALLER="$ZDASH_REPO/install-zdash-prod-legacy.sh"
 
-  chmod 600 "$CERT_DIR/privkey.pem"
-}
-
-write_compose() {
-  log "Writing Docker Compose file: $COMPOSE_FILE"
-
-  cat > "$COMPOSE_FILE" <<EOF
-services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: zdash-postgres
-    restart: unless-stopped
-    env_file:
-      - $ENV_FILE
-    environment:
-      POSTGRES_DB: \${POSTGRES_DB}
-      POSTGRES_USER: \${POSTGRES_USER}
-      POSTGRES_PASSWORD: \${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - zdash_internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \${POSTGRES_USER} -d \${POSTGRES_DB}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  redis:
-    image: redis:7-alpine
-    container_name: zdash-redis
-    restart: unless-stopped
-    env_file:
-      - $ENV_FILE
-    command: ["sh", "-c", "redis-server --appendonly yes --requirepass \"\$REDIS_PASSWORD\""]
-    volumes:
-      - redis_data:/data
-    networks:
-      - zdash_internal
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a \"\$REDIS_PASSWORD\" ping | grep PONG"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  backend:
-    build:
-      context: $APP_DIR
-      dockerfile: infra/docker/backend.Dockerfile
-    container_name: zdash-backend
-    restart: unless-stopped
-    env_file:
-      - $ENV_FILE
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    expose:
-      - "8005"
-    volumes:
-      - backend_data:/app/backend/data
-      - $LOG_DIR:/app/backend/logs
-    networks:
-      - zdash_internal
-    healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8005/health')\" || exit 1"]
-      interval: 30s
-      timeout: 10s
-      start_period: 45s
-      retries: 10
-
-  frontend:
-    build:
-      context: $APP_DIR
-      dockerfile: infra/docker/frontend.Dockerfile
-    container_name: zdash-frontend
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    expose:
-      - "80"
-    networks:
-      - zdash_internal
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://127.0.0.1/ >/dev/null || exit 1"]
-      interval: 30s
-      timeout: 10s
-      start_period: 20s
-      retries: 10
-
-  nginx:
-    image: nginx:1.27-alpine
-    container_name: zdash-nginx
-    restart: unless-stopped
-    depends_on:
-      frontend:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-    ports:
-      - "$HTTP_PORT:80"
-      - "$HTTPS_PORT:443"
-    volumes:
-      - $NGINX_CONF:/etc/nginx/conf.d/default.conf:ro
-      - $CERT_DIR:/etc/nginx/certs:ro
-      - $LOG_DIR/nginx:/var/log/nginx
-    networks:
-      - zdash_public
-      - zdash_internal
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- --no-check-certificate https://127.0.0.1/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-
-networks:
-  zdash_public:
-    driver: bridge
-  zdash_internal:
-    driver: bridge
-
-volumes:
-  postgres_data:
-  redis_data:
-  backend_data:
-EOF
-}
-
-run_backend_tests() {
-  if [ "$RUN_TESTS" != "true" ]; then
-    log "Skipping backend tests because RUN_TESTS=false"
-    return
+  # Keep the recovered implementation beside the wrapper so the legacy script
+  # resolves the current repository as its application source. Exclude the
+  # generated file locally so it does not dirty an otherwise clean checkout.
+  if [ -d "$ZDASH_REPO/.git" ]; then
+    mkdir -p "$ZDASH_REPO/.git/info"
+    touch "$ZDASH_REPO/.git/info/exclude"
+    if ! grep -qxF "/install-zdash-prod-legacy.sh" "$ZDASH_REPO/.git/info/exclude"; then
+      printf '%s\n' "/install-zdash-prod-legacy.sh" >>"$ZDASH_REPO/.git/info/exclude"
+    fi
   fi
 
-  log "Running backend lint/tests"
-  cd "$APP_DIR/backend"
-  python3 -m venv .venv
-  # shellcheck disable=SC1091
-  source .venv/bin/activate
-  python -m pip install --upgrade pip setuptools wheel
-  python -m pip install -e '.[dev]'
-  python -m ruff check app tests
-  python -B -m pytest -q
-  deactivate
+  git -C "$ZDASH_REPO" show \
+    "${BASE_INSTALLER_REF}:install-zdash-prod.sh" >"$INSTALLER"
+  chmod 700 "$INSTALLER"
+  log "Materialized the original installer from git ref $BASE_INSTALLER_REF"
 }
 
-run_frontend_tests() {
-  if [ "$RUN_FRONTEND_TESTS" != "true" ]; then
-    log "Skipping frontend host tests because RUN_FRONTEND_TESTS=false"
-    return
-  fi
+read_env_value() {
+  local key="$1"
+  local line=""
 
-  if ! need_cmd npm; then
-    warn "npm not found. Skipping frontend host tests. Docker build will still compile frontend."
-    return
-  fi
+  [ -f "$ENV_FILE" ] || return 0
+  line="$(grep -m1 -E "^${key}=" "$ENV_FILE" 2>/dev/null || true)"
+  [ -n "$line" ] || return 0
+  printf '%s' "${line#*=}"
+}
 
-  log "Running frontend tests/build on host"
-  cd "$APP_DIR/frontend"
-  npm install --legacy-peer-deps --no-audit --fund=false
-  npm test
-  npm run build
+load_runtime_identity() {
+  local value=""
+
+  # Explicit environment values always win. Existing runtime values are used only
+  # when a value was not supplied by the operator.
+  for key in \
+    POSTGRES_DB \
+    POSTGRES_USER \
+    POSTGRES_PASSWORD \
+    REDIS_PASSWORD \
+    JWT_SECRET_KEY \
+    BOOTSTRAP_ADMIN_USERNAME \
+    BOOTSTRAP_ADMIN_PASSWORD \
+    ZDASH_DOMAIN \
+    ZDASH_PUBLIC_URL
+  do
+    if [ -z "${!key:-}" ]; then
+      value="$(read_env_value "$key")"
+      if [ -n "$value" ]; then
+        printf -v "$key" '%s' "$value"
+        export "$key"
+      fi
+    fi
+  done
+
+  POSTGRES_DB="${POSTGRES_DB:-zdash}"
+  POSTGRES_USER="${POSTGRES_USER:-zdash}"
+  BOOTSTRAP_ADMIN_USERNAME="${BOOTSTRAP_ADMIN_USERNAME:-admin}"
+  ZDASH_DOMAIN="${ZDASH_DOMAIN:-zdash.zeaz.dev}"
+  ZDASH_PUBLIC_URL="${ZDASH_PUBLIC_URL:-https://$ZDASH_DOMAIN}"
+
+  export POSTGRES_DB POSTGRES_USER
+  export BOOTSTRAP_ADMIN_USERNAME ZDASH_DOMAIN ZDASH_PUBLIC_URL
+}
+
+validate_runtime_secrets() {
+  if [ -f "$ENV_FILE" ]; then
+    [ -n "${POSTGRES_PASSWORD:-}" ] ||
+      die "POSTGRES_PASSWORD is missing from $ENV_FILE."
+    [ -n "${REDIS_PASSWORD:-}" ] ||
+      die "REDIS_PASSWORD is missing from $ENV_FILE."
+    [ -n "${JWT_SECRET_KEY:-}" ] ||
+      die "JWT_SECRET_KEY is missing from $ENV_FILE."
+    [ -n "${BOOTSTRAP_ADMIN_PASSWORD:-}" ] ||
+      die "BOOTSTRAP_ADMIN_PASSWORD is missing from $ENV_FILE."
+  fi
+}
+
+backup_runtime_files() {
+  local stamp backup_dir
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  backup_dir="$INSTALL_ROOT/backups/pre-recovery-$stamp"
+  mkdir -p "$backup_dir"
+
+  [ ! -f "$ENV_FILE" ] || cp -a "$ENV_FILE" "$backup_dir/.env.production"
+  [ ! -f "$COMPOSE_FILE" ] || cp -a "$COMPOSE_FILE" "$backup_dir/docker-compose.yml"
+
+  chmod 700 "$backup_dir"
+  [ ! -f "$backup_dir/.env.production" ] || chmod 600 "$backup_dir/.env.production"
+  log "Runtime backup saved: $backup_dir"
 }
 
 dc() {
+  [ -f "$ENV_FILE" ] || die "Runtime env not found: $ENV_FILE"
+  [ -f "$COMPOSE_FILE" ] || die "Compose file not found: $COMPOSE_FILE"
   docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" "$@"
 }
 
-deploy_stack() {
-  log "Deploying zDash Docker Compose stack"
-  cd "$RUNTIME_DIR"
+container_exists() {
+  docker inspect "$1" >/dev/null 2>&1
+}
 
-  if [ "$FORCE_REBUILD" = "true" ]; then
-    dc build --pull
+container_health() {
+  docker inspect \
+    --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+    "$1" 2>/dev/null || true
+}
+
+repair_postgres_role_password() {
+  [ -n "${POSTGRES_PASSWORD:-}" ] || {
+    warn "Cannot repair PostgreSQL: POSTGRES_PASSWORD is empty."
+    return 1
+  }
+
+  container_exists zdash-postgres || {
+    warn "PostgreSQL container does not exist yet."
+    return 1
+  }
+
+  log "Aligning the PostgreSQL role password with the protected runtime environment"
+
+  # The official PostgreSQL image permits local administrative access from inside
+  # the container. psql variable quoting prevents the password from being emitted
+  # into logs or interpolated as SQL syntax.
+  if ! docker exec -i zdash-postgres \
+      psql \
+      --username "$POSTGRES_USER" \
+      --dbname "$POSTGRES_DB" \
+      --set ON_ERROR_STOP=1 \
+      --set "zdash_password=$POSTGRES_PASSWORD" <<'SQL'
+ALTER ROLE CURRENT_USER WITH LOGIN PASSWORD :'zdash_password';
+SQL
+  then
+    warn "Could not update the database role password."
+    return 1
   fi
 
-  dc up -d
+  log "PostgreSQL role password aligned successfully"
 }
 
-write_systemd() {
-  log "Writing systemd services"
-
-  cat > /etc/systemd/system/zdash.service <<EOF
-[Unit]
-Description=zDash Production Full Stack
-Requires=docker.service
-After=docker.service network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-WorkingDirectory=$RUNTIME_DIR
-ExecStart=/usr/bin/docker compose --env-file $ENV_FILE -f $COMPOSE_FILE up -d
-ExecStop=/usr/bin/docker compose --env-file $ENV_FILE -f $COMPOSE_FILE down
-TimeoutStartSec=0
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-  cat > /etc/systemd/system/zdash-backup.service <<EOF
-[Unit]
-Description=zDash backup
-
-[Service]
-Type=oneshot
-ExecStart=$RUNTIME_DIR/scripts/zdash-backup.sh
-EOF
-
-  cat > /etc/systemd/system/zdash-backup.timer <<EOF
-[Unit]
-Description=Run zDash backup daily
-
-[Timer]
-OnCalendar=*-*-* 03:15:00
-Persistent=true
-
-[Install]
-WantedBy=timers.target
-EOF
-
-  systemctl daemon-reload
-  systemctl enable zdash.service
-  systemctl enable --now zdash-backup.timer
+restart_backend() {
+  log "Restarting the backend after credential reconciliation"
+  dc up -d --no-deps backend >/dev/null
+  docker restart zdash-backend >/dev/null
 }
 
-write_helper_scripts() {
-  log "Writing helper scripts"
+wait_for_backend() {
+  local elapsed=0
+  local state=""
 
-  cat > "$RUNTIME_DIR/scripts/zdash-health.sh" <<EOF
-#!/usr/bin/env bash
-set -Eeuo pipefail
+  log "Waiting for backend health (timeout: ${BACKEND_HEALTH_TIMEOUT}s)"
+  while [ "$elapsed" -lt "$BACKEND_HEALTH_TIMEOUT" ]; do
+    state="$(container_health zdash-backend)"
+    case "$state" in
+      healthy)
+        log "Backend is healthy"
+        return 0
+        ;;
+      exited|dead)
+        warn "Backend entered state: $state"
+        return 1
+        ;;
+    esac
+    sleep 5
+    elapsed=$((elapsed + 5))
+  done
 
-echo "[\$(date -Is)] Docker services"
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" ps
-
-echo
-echo "[\$(date -Is)] Backend health"
-docker exec zdash-backend sh -lc "python -c \"import urllib.request; print(urllib.request.urlopen('http://127.0.0.1:8005/health').read().decode())\"" || true
-
-echo
-echo "[\$(date -Is)] HTTPS health"
-curl -kfsS https://127.0.0.1/health || true
-
-echo
-echo "[\$(date -Is)] Recent backend logs"
-docker logs --tail=100 zdash-backend || true
-EOF
-  chmod +x "$RUNTIME_DIR/scripts/zdash-health.sh"
-
-  cat > "$RUNTIME_DIR/scripts/zdash-logs.sh" <<EOF
-#!/usr/bin/env bash
-set -Eeuo pipefail
-service="\${1:-}"
-if [ -n "\$service" ]; then
-  docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" logs -f --tail=200 "\$service"
-else
-  docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" logs -f --tail=200
-fi
-EOF
-  chmod +x "$RUNTIME_DIR/scripts/zdash-logs.sh"
-
-  cat > "$RUNTIME_DIR/scripts/zdash-update.sh" <<EOF
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-cd "$APP_DIR"
-if [ -z "\$(git status --porcelain)" ]; then
-  git fetch origin "$REPO_BRANCH"
-  git checkout "$REPO_BRANCH"
-  git pull --ff-only origin "$REPO_BRANCH"
-else
-  echo "Working tree has local changes; skipping git pull."
-fi
-
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" build --pull
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" up -d
-"$RUNTIME_DIR/scripts/zdash-health.sh"
-EOF
-  chmod +x "$RUNTIME_DIR/scripts/zdash-update.sh"
-
-  cat > "$RUNTIME_DIR/scripts/zdash-backup.sh" <<EOF
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-stamp="\$(date +%Y%m%d-%H%M%S)"
-out_dir="$BACKUP_DIR/zdash-\$stamp"
-mkdir -p "\$out_dir"
-
-echo "[\$(date -Is)] Backup started: \$out_dir"
-
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" exec -T postgres \
-  pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > "\$out_dir/postgres.sql.gz"
-
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" config > "\$out_dir/docker-compose.rendered.yml"
-sha256sum "$ENV_FILE" > "\$out_dir/env.sha256"
-
-tar -czf "\$out_dir.tar.gz" -C "$BACKUP_DIR" "zdash-\$stamp"
-rm -rf "\$out_dir"
-find "$BACKUP_DIR" -name 'zdash-*.tar.gz' -type f -mtime +7 -delete
-
-echo "[\$(date -Is)] Backup completed: \$out_dir.tar.gz"
-EOF
-  chmod +x "$RUNTIME_DIR/scripts/zdash-backup.sh"
+  warn "Backend did not become healthy within ${BACKEND_HEALTH_TIMEOUT}s."
+  return 1
 }
 
-configure_firewall() {
-  if [ "$ENABLE_UFW" != "true" ]; then
-    log "Skipping UFW because ENABLE_UFW=false"
-    return
+collect_diagnostics() {
+  local stamp out
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$DIAG_DIR"
+  out="$DIAG_DIR/zdash-recovery-$stamp.log"
+
+  {
+    echo "zDash production recovery diagnostics"
+    echo "timestamp=$(date -Is)"
+    echo "repo=$ZDASH_REPO"
+    echo "runtime=$RUNTIME_DIR"
+    echo
+    echo "== docker compose ps =="
+    dc ps || true
+    echo
+    echo "== backend inspect =="
+    docker inspect \
+      --format 'status={{.State.Status}} health={{if .State.Health}}{{.State.Health.Status}}{{end}} exit={{.State.ExitCode}} error={{.State.Error}}' \
+      zdash-backend 2>&1 || true
+    echo
+    echo "== backend logs =="
+    dc logs --no-color --tail=300 backend 2>&1 || true
+    echo
+    echo "== postgres logs =="
+    dc logs --no-color --tail=120 postgres 2>&1 || true
+    echo
+    echo "== redis logs =="
+    dc logs --no-color --tail=120 redis 2>&1 || true
+  } >"$out"
+
+  chmod 600 "$out"
+  warn "Diagnostics written to: $out"
+}
+
+repair_current_stack() {
+  load_runtime_identity
+  validate_runtime_secrets
+  backup_runtime_files
+
+  dc up -d postgres redis >/dev/null
+  repair_postgres_role_password
+  restart_backend
+
+  if ! wait_for_backend; then
+    collect_diagnostics
+    return 1
   fi
 
-  log "Configuring UFW"
-  ufw allow OpenSSH || true
-  ufw allow "$HTTP_PORT/tcp" || true
-  ufw allow "$HTTPS_PORT/tcp" || true
-  ufw --force enable || true
+  dc up -d frontend nginx
+  dc ps
 }
 
-print_summary() {
-  local server_ip
-  server_ip="$(hostname -I | awk '{print $1}')"
+run_safe_install() {
+  materialize_legacy_installer
+  [ -f "$INSTALLER" ] || die "Legacy installer not found: $INSTALLER"
+  [ -x "$INSTALLER" ] || chmod +x "$INSTALLER"
 
-  cat <<EOF
+  load_runtime_identity
 
-============================================================
-zDash production install/update complete
-============================================================
+  if [ -f "$ENV_FILE" ]; then
+    validate_runtime_secrets
+    backup_runtime_files
 
-Repo:
-  $APP_DIR
+    # Reconcile the current role before running the installer. This repairs the
+    # common state where a prior run rewrote .env.production but PostgreSQL kept
+    # the password stored in its persistent volume.
+    if container_exists zdash-postgres; then
+      repair_postgres_role_password || true
+    fi
 
-Runtime:
-  $RUNTIME_DIR
+    log "Reusing existing production secrets; no persistent secret will be rotated"
+  else
+    log "No existing runtime environment found; the installer will generate first-run secrets"
+  fi
 
-Public URL:
-  https://$ZDASH_DOMAIN
+  log "Running the original production installer safely"
+  set +e
+  (
+    cd "$ZDASH_REPO"
+    "$INSTALLER"
+  )
+  install_rc=$?
+  set -e
 
-Local health:
-  curl -k https://127.0.0.1/health
-  $RUNTIME_DIR/scripts/zdash-health.sh
+  # Reload values because a first installation creates the environment file.
+  load_runtime_identity
 
-Server IP:
-  https://$server_ip
+  if [ "$install_rc" -ne 0 ] || [ "$(container_health zdash-backend)" != "healthy" ]; then
+    warn "Installer returned rc=$install_rc or backend is not healthy; starting automatic recovery"
+    validate_runtime_secrets
+    dc up -d postgres redis >/dev/null || true
+    repair_postgres_role_password || true
+    restart_backend || true
 
-Admin bootstrap:
-  username: $BOOTSTRAP_ADMIN_USERNAME
-  password: $BOOTSTRAP_ADMIN_PASSWORD
+    if ! wait_for_backend; then
+      collect_diagnostics
+      die "Backend recovery failed. Review the diagnostic log shown above."
+    fi
 
-Safety locks enforced:
-  DRY_RUN=true
-  LIVE_TRADING_ACK=false
-  MT5_ENABLED=false
-  PRODUCTION_ALLOW_LIVE_ACTIONS=false
-  RISK_GUARDIAN_ENABLED=true
-  SOCIAL_DRY_RUN=true
-  IOT_DRY_RUN=true
-  CLOUDFLARE_DRY_RUN=true
+    dc up -d frontend nginx
+  fi
 
-Commands:
-  systemctl status zdash
-  docker compose --env-file $ENV_FILE -f $COMPOSE_FILE ps
-  $RUNTIME_DIR/scripts/zdash-logs.sh backend
-  $RUNTIME_DIR/scripts/zdash-backup.sh
-  $RUNTIME_DIR/scripts/zdash-update.sh
+  log "Final service status"
+  dc ps
 
-TLS:
-  Self-signed cert is installed by default.
-  Replace these files with real certs or route through Cloudflare Tunnel:
-    $CERT_DIR/fullchain.pem
-    $CERT_DIR/privkey.pem
+  log "Backend HTTP health"
+  docker exec -i zdash-backend python - <<'PY'
+import urllib.request
+print(urllib.request.urlopen("http://127.0.0.1:8005/health", timeout=10).read().decode())
+PY
 
-============================================================
-
-EOF
+  printf '\nCompleted successfully.\n'
+  printf 'URL: %s\n' "$ZDASH_PUBLIC_URL"
+  printf 'Runtime environment preserved: %s\n' "$ENV_FILE"
 }
 
 main() {
-  need_root
-  preflight
-  install_packages
-  install_docker
-  prepare_dirs
-  resolve_source_repo
-  update_repo
-  generate_secrets
-  write_env
-  write_nginx_conf
-  generate_cert
-  write_compose
-  run_backend_tests
-  run_frontend_tests
-  deploy_stack
-  write_helper_scripts
-  write_systemd
-  configure_firewall
-  print_summary
+  mkdir -p "$DIAG_DIR"
+
+  if [ "$REPAIR_ONLY" = "true" ]; then
+    repair_current_stack
+  else
+    run_safe_install
+  fi
 }
 
 main "$@"
