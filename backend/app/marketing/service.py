@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from datetime import UTC, datetime
 
-from app.content.models import ContentItem
+from app.content.models import ContentItem, ContentStatus
 from app.content.pipeline import get_content_pipeline
 from app.marketing.models import (
     CampaignRecommendation,
@@ -35,26 +35,35 @@ class MarketingDashboardService:
 
     def build(self) -> MarketingDashboard:
         items = self._items()
-        scheduled = [item for item in items if item.status == "scheduled"]
+        scheduled = [item for item in items if item.status == ContentStatus.scheduled]
         awaiting_approval = [
             item
             for item in items
-            if item.approval_required
-            and item.status not in {"approved", "posted", "rejected"}
+            if item.status
+            not in {
+                ContentStatus.approved,
+                ContentStatus.posted,
+                ContentStatus.rejected,
+                ContentStatus.failed,
+            }
         ]
-        published = [item for item in items if item.status == "posted"]
+        published = [item for item in items if item.status == ContentStatus.posted]
 
         schedule = [
             ScheduleItem(
                 id=item.id,
                 title=item.title,
-                platform=", ".join(item.platforms) if item.platforms else "unassigned",
+                platform=(
+                    ", ".join(platform.value for platform in item.platforms)
+                    if item.platforms
+                    else "unassigned"
+                ),
                 scheduled_for=(
                     item.scheduled_at.isoformat()
                     if item.scheduled_at is not None
                     else "not scheduled"
                 ),
-                status=str(item.status),
+                status=item.status.value,
                 source="live",
             )
             for item in scheduled[:6]
@@ -98,7 +107,7 @@ class MarketingDashboardService:
                     key="awaiting_approval",
                     label="Awaiting approval",
                     value=len(awaiting_approval),
-                    detail="Approval-gated items not yet approved or rejected",
+                    detail="Items not yet approved, published, rejected, or failed",
                 ),
                 MarketingMetric(
                     key="scheduled",
