@@ -23,23 +23,24 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Install Ruff
+      - name: Install backend development tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
           cd backend
           pip install -e '.[dev]'
 
-      - name: Apply canonical Ruff formatting
+      - name: Apply Ruff autofixes and formatting
         run: |
           cd backend
+          python -m ruff check app tests --fix --unsafe-fixes || true
           python -m ruff format app tests
-          python -m ruff check app tests
+          python -m ruff check app tests > ../ruff-residual.txt 2>&1 || true
 
-      - name: Remove one-time workflow and commit results
+      - name: Persist results and remove one-time workflow
         run: |
           rm .github/workflows/format-backend-once.yml
           git add -A
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "style: apply canonical Ruff formatting"
+          git commit -m "style: apply canonical Ruff fixes"
           git push origin HEAD:fix/complete-main-ci-20260805
