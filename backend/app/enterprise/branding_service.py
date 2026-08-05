@@ -80,7 +80,7 @@ def update_branding(
             for k, v in patch.items():
                 if hasattr(brand, k) and k != "id" and k != "organization_id":
                     setattr(brand, k, v)
-            brand.updated_at = utc_now()
+            setattr(brand, "updated_at", utc_now())
 
         db.commit()
     return {"ok": True}
