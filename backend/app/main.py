@@ -37,6 +37,7 @@ from app.api import (
     long_horizon,
     macro_simulation,
     managed,
+    marketing,
     marketplace,
     metrics,
     mobile,
@@ -160,6 +161,7 @@ app.include_router(iot.router)
 app.include_router(backtesting.router)
 
 app.include_router(content.router)
+app.include_router(marketing.router)
 
 app.include_router(auth.router)
 app.include_router(metrics.router)
