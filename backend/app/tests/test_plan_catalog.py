@@ -1,4 +1,4 @@
-from app.billing.plan_catalog import PLANS, list_public_plans, get_plan
+from app.billing.plan_catalog import PLANS, get_plan, list_public_plans
 
 
 def test_plan_catalog_has_all_tiers():

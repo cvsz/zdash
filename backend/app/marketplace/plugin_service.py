@@ -1,7 +1,7 @@
 # mypy: ignore-errors
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import select
@@ -15,14 +15,16 @@ from app.core.events import event_bus
 from app.db.repositories import MarketplaceRepository
 from app.db.session import SessionLocal
 from app.marketplace.models import (
-    PluginInstallStatus,
     PluginInstallation,
+    PluginInstallStatus,
     PluginManifest,
     PluginStatus,
     manifest_to_dict,
 )
 from app.marketplace.plugin_registry import (
     list_plugins as registry_list_plugins,
+)
+from app.marketplace.plugin_registry import (
     seed_builtins,
 )
 from app.marketplace.plugin_runtime import run_action
@@ -32,7 +34,7 @@ SECRET_KEYS = {"secret", "password", "token", "key", "credential"}
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _session(db: Session | None) -> tuple[Session, bool]:

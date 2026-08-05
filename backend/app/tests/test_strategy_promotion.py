@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from app.backtesting.models import BacktestMetrics, BacktestRequest, BacktestResult
 from app.backtesting.promotion import StrategyPromotionGate
@@ -6,7 +6,7 @@ from app.core.config import get_settings
 
 
 def _result_with_metrics(metrics: BacktestMetrics) -> BacktestResult:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     request = BacktestRequest(strategy="ob_aggressive")
     return BacktestResult(
         id="result-1",

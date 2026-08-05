@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.api import content as content_api
 from app.content.models import (
@@ -40,7 +40,7 @@ def test_content_api_full_flow() -> None:
     schedule_body = content_api.schedule(
         ScheduleContentRequest(
             content_id=content_id,
-            scheduled_at=datetime.now(timezone.utc) + timedelta(hours=1),
+            scheduled_at=datetime.now(UTC) + timedelta(hours=1),
         )
     )
     _assert_envelope(schedule_body)

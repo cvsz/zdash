@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -16,7 +16,7 @@ class AccountSnapshot(BaseModel):
     open_positions: int = 0
     floating_pnl: float = 0.0
     realized_pnl_today: float = 0.0
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class DrawdownResult(BaseModel):
@@ -46,4 +46,4 @@ class RiskDecision(BaseModel):
     risk_level: RiskLevel
     halt_active: bool
     drawdown: DrawdownResult | None = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))

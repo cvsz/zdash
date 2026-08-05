@@ -1,15 +1,17 @@
 import logging
-from typing import Optional, List, Dict, Any
-from sqlalchemy import select, func
-from app.db.session import SessionLocal
+from typing import Any
+
+from sqlalchemy import func, select
+
 from app.billing.models import UsageRecord
 from app.core.config import settings
 from app.core.events import event_bus
+from app.db.session import SessionLocal
 
 logger = logging.getLogger(__name__)
 
 
-def sanitize_metadata(metadata: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+def sanitize_metadata(metadata: dict[str, Any] | None) -> dict[str, Any]:
     if not metadata:
         return {}
     sanitized = {}
@@ -31,10 +33,10 @@ def record_usage(
     workspace_id: str,
     metric: str,
     quantity: float = 1.0,
-    source: Optional[str] = None,
-    resource_id: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
-) -> Dict[str, Any]:
+    source: str | None = None,
+    resource_id: str | None = None,
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if not settings.usage_metering_enabled:
         return {"ok": True, "status": "metering_disabled"}
 
@@ -77,7 +79,7 @@ def record_usage(
 
 def get_metric_summary(
     organization_id: str, workspace_id: str, metric: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     try:
         with SessionLocal() as db:
             result = db.execute(
@@ -106,8 +108,8 @@ def get_metric_summary(
 
 
 def get_usage_summary(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> List[Dict[str, Any]]:
+    organization_id: str, workspace_id: str | None = None
+) -> list[dict[str, Any]]:
     try:
         with SessionLocal() as db:
             query = (
@@ -140,6 +142,6 @@ def get_usage_summary(
         return []
 
 
-def reset_period_if_needed() -> Dict[str, Any]:
+def reset_period_if_needed() -> dict[str, Any]:
     # Placeholder for scheduled task that would reset usage or create new billing periods
     return {"ok": True, "mode": settings.usage_reset_mode}

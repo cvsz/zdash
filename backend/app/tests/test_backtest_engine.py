@@ -1,3 +1,5 @@
+import itertools
+
 import pytest
 
 from app.backtesting.models import BacktestRequest
@@ -25,7 +27,7 @@ def test_backtest_has_no_overlapping_trades() -> None:
     lab = StrategyLab()
     result = lab.run_backtest(BacktestRequest(strategy="ob_aggressive"))
     closed_trades = [trade for trade in result.trades if trade.status == "closed"]
-    for prior, current in zip(closed_trades, closed_trades[1:]):
+    for prior, current in itertools.pairwise(closed_trades):
         assert prior.exit_time is not None
         assert current.entry_time >= prior.exit_time
 

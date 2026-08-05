@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -33,7 +33,7 @@ def test_social_agent_can_schedule_content() -> None:
     scheduled = social.schedule_content(
         ScheduleContentRequest(
             content_id=approved_input.id,
-            scheduled_at=datetime.now(timezone.utc) + timedelta(minutes=30),
+            scheduled_at=datetime.now(UTC) + timedelta(minutes=30),
         )
     )
     assert scheduled.status == ContentStatus.scheduled

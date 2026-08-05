@@ -1,12 +1,14 @@
-from typing import Any, Dict, Optional, cast
+from datetime import UTC, datetime
+from typing import Any, cast
+
 from sqlalchemy import select
+
 from app.db.session import SessionLocal
 from app.enterprise.models import OnboardingChecklist
-from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 DEFAULT_STEPS = [
@@ -24,8 +26,8 @@ DEFAULT_STEPS = [
 
 
 def get_checklist(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(OnboardingChecklist).where(
             OnboardingChecklist.organization_id == organization_id
@@ -52,8 +54,8 @@ def get_checklist(
 
 
 def mark_step_complete(
-    organization_id: str, workspace_id: Optional[str], step: str
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None, step: str
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(OnboardingChecklist).where(
             OnboardingChecklist.organization_id == organization_id
@@ -95,8 +97,8 @@ def mark_step_complete(
 
 
 def reset_checklist(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(OnboardingChecklist).where(
             OnboardingChecklist.organization_id == organization_id
@@ -115,8 +117,8 @@ def reset_checklist(
 
 
 def get_customer_health(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     chk = get_checklist(organization_id, workspace_id)
     score = chk.get("progress_percent", 0.0)
 

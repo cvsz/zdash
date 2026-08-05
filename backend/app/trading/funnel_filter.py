@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.core.config import get_settings
@@ -124,6 +124,6 @@ class FunnelFilter:
             metadata={
                 "funnel_state": state,
                 "volatility": round(volatility, 4),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             },
         )

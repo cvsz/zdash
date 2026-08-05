@@ -1,21 +1,23 @@
 import hashlib
-from typing import Dict, Any
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy import select
+
 from app.db.session import SessionLocal
 from app.enterprise.models import EnterpriseLicense
 from app.enterprise.models_enums import LicenseStatus
-from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def hash_license(key: str) -> str:
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-def get_license_status(organization_id: str) -> Dict[str, Any]:
+def get_license_status(organization_id: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(
@@ -35,7 +37,7 @@ def get_license_status(organization_id: str) -> Dict[str, Any]:
         return ret
 
 
-def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
+def apply_license(organization_id: str, license_key: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(
@@ -52,7 +54,7 @@ def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
             lic = EnterpriseLicense(
                 organization_id=organization_id,
                 license_key_hash=hash_license(license_key),
-                status=LicenseStatus.active,  # type: ignore[arg-type]
+                status=LicenseStatus.active,
                 tier="enterprise",
             )
             db.add(lic)
@@ -65,7 +67,7 @@ def apply_license(organization_id: str, license_key: str) -> Dict[str, Any]:
     return {"ok": True, "status": "active"}
 
 
-def revoke_license(organization_id: str) -> Dict[str, Any]:
+def revoke_license(organization_id: str) -> dict[str, Any]:
     with SessionLocal() as db:
         lic = db.execute(
             select(EnterpriseLicense).where(

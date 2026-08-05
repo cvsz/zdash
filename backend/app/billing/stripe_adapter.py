@@ -47,7 +47,7 @@ class StripeAdapter(BillingProviderAdapter):
             import stripe  # type: ignore[import-untyped]
 
             if self._has_secret_key:
-                stripe.api_key = self._secret_key  # noqa: SIM910
+                stripe.api_key = self._secret_key
             return stripe
         except ImportError as exc:
             raise ImportError(

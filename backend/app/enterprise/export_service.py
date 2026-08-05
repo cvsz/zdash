@@ -1,16 +1,18 @@
-from typing import Dict, Any, List
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy import select
+
 from app.db.session import SessionLocal
 from app.enterprise.models import ExportBundle
 from app.enterprise.models_enums import ExportStatus
-from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
-def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
+def create_export_bundle(request: dict[str, Any]) -> dict[str, Any]:
     with SessionLocal() as db:
         bundle = ExportBundle(
             organization_id=request["organization_id"],
@@ -40,7 +42,7 @@ def create_export_bundle(request: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": True, "bundle": ret}
 
 
-def get_export_bundle(organization_id: str, bundle_id: str) -> Dict[str, Any]:
+def get_export_bundle(organization_id: str, bundle_id: str) -> dict[str, Any]:
     with SessionLocal() as db:
         bundle = db.execute(
             select(ExportBundle)
@@ -55,7 +57,7 @@ def get_export_bundle(organization_id: str, bundle_id: str) -> Dict[str, Any]:
         return {"ok": True, "bundle": ret}
 
 
-def list_export_bundles(organization_id: str) -> List[Dict[str, Any]]:
+def list_export_bundles(organization_id: str) -> list[dict[str, Any]]:
     with SessionLocal() as db:
         bundles = (
             db.execute(
@@ -74,5 +76,5 @@ def list_export_bundles(organization_id: str) -> List[Dict[str, Any]]:
         return res
 
 
-def import_bundle(file_path: str) -> Dict[str, Any]:
+def import_bundle(file_path: str) -> dict[str, Any]:
     return {"ok": True, "status": "imported"}

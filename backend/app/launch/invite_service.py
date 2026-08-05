@@ -1,7 +1,9 @@
 from __future__ import annotations
-from datetime import datetime, timezone
+
+from datetime import UTC, datetime
 from hashlib import sha256
 from uuid import uuid4
+
 from .models import InviteCode
 
 
@@ -14,7 +16,7 @@ class InviteService:
 
     def create_invite_code(self, request: dict) -> tuple[InviteCode, str]:
         raw = request.get("code") or str(uuid4()).split("-")[0]
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         invite = InviteCode(
             id=str(uuid4()),
             code_hash=self._hash(raw),

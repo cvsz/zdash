@@ -4,8 +4,8 @@ from app.scheduler.models import (
     JobRunResult,
     JobStatus,
     JobType,
-    ScheduleType,
     ScheduledJob,
+    ScheduleType,
 )
 from app.scheduler.scheduler_service import (
     SchedulerService,

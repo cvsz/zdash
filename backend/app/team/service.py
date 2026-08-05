@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import hashlib
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
@@ -32,7 +32,7 @@ VALID_ASSIGNMENT_ROLES = {"owner", "reviewer", "runner", "observer"}
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _session(db: Session | None) -> tuple[Session, bool]:

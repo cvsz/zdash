@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from threading import Lock
 from uuid import uuid4
 
 from app.content.models import (
-    ContentLogEntry,
     ContentItem,
+    ContentLogEntry,
     ContentStatus,
     CreateContentRequest,
     PipelineRunResult,
@@ -25,7 +25,7 @@ class InMemoryContentStore:
         self._lock = Lock()
 
     def create_item(self, request: CreateContentRequest) -> ContentItem:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         item = ContentItem(
             id=str(uuid4()),
             title=request.topic[:100],
@@ -61,7 +61,7 @@ class InMemoryContentStore:
                 raise ContentNotFoundError(content_id)
             data = item.model_dump()
             data.update(patch)
-            data["updated_at"] = datetime.now(timezone.utc)
+            data["updated_at"] = datetime.now(UTC)
             updated = ContentItem.model_validate(data)
             self._items[content_id] = updated
             return updated

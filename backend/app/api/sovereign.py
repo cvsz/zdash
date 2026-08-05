@@ -1,23 +1,25 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from fastapi import APIRouter
 from pydantic import BaseModel
+
+from app.sovereign.compliance_dashboard import SovereignComplianceDashboard
+from app.sovereign.key_management_service import KeyManagementService
 from app.sovereign.models import (
-    RegionRecord,
     DataResidencyRule,
-    SovereignDeploymentProfile,
     KMSKeyRecord,
     PolicyBundle,
+    RegionRecord,
+    SovereignDeploymentProfile,
 )
+from app.sovereign.policy_bundle_service import PolicyBundleService
 from app.sovereign.region_registry import RegionRegistry
 from app.sovereign.residency_engine import ResidencyEngine
 from app.sovereign.sovereign_profiles import SovereignProfileService
-from app.sovereign.key_management_service import KeyManagementService
-from app.sovereign.policy_bundle_service import PolicyBundleService
-from app.sovereign.compliance_dashboard import SovereignComplianceDashboard
 
 
 def ts():
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def ok(data):

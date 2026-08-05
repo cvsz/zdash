@@ -1,21 +1,21 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 from app.audit.audit_service import AuditService
 from app.audit.models import AuditLogCreate
-from app.auth.models import AuthSession
 from app.auth.dependencies import require_authenticated, require_permission
+from app.auth.models import AuthSession
 from app.auth.rbac import Permission
-from app.core.responses import fail, ok
 from app.core.events import event_bus
+from app.core.responses import fail, ok
 from app.db.session import get_db_session
 from app.observability.metrics import metrics_store
 from app.risk.guardian_service import get_guardian_service
 from app.risk.models import AccountSnapshot
-from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/risk", tags=["risk"])
 
@@ -75,7 +75,7 @@ def drawdown(_: object = Depends(require_authenticated)) -> dict:
                 open_positions=0,
                 floating_pnl=0.0,
                 realized_pnl_today=0.0,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
             )
         )
         latest = safe.drawdown

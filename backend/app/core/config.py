@@ -511,8 +511,7 @@ def get_settings() -> Settings:
         settings.max_promotion_consecutive_losses = 8
     if settings.optimizer_max_combinations <= 0:
         settings.optimizer_max_combinations = 100
-    if settings.optimizer_max_combinations > 1000:
-        settings.optimizer_max_combinations = 1000
+    settings.optimizer_max_combinations = min(settings.optimizer_max_combinations, 1000)
     if settings.optimizer_sort_metric not in {
         "profit_factor",
         "net_profit_percent",

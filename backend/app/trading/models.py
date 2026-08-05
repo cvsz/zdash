@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Literal
 from uuid import uuid4
 
@@ -25,7 +25,7 @@ class Candle(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def _bounds_are_valid(self) -> "Candle":
+    def _bounds_are_valid(self) -> Candle:
         if self.high < max(self.open, self.close, self.low):
             raise ValueError("high must be >= open/close/low")
         if self.low > min(self.open, self.close, self.high):
@@ -45,7 +45,7 @@ class TradingSignal(BaseModel):
     take_profit: float
     reason: str
     metadata: dict[str, Any] = Field(default_factory=dict)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     @field_validator("confidence")
     @classmethod
@@ -60,7 +60,7 @@ class SignalValidationResult(BaseModel):
     reason: str
     warnings: list[str] = Field(default_factory=list)
     signal: TradingSignal | None = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 ExecutionStatus = Literal[
@@ -87,7 +87,7 @@ class ExecutionResult(BaseModel):
     message: str
     risk_decision: RiskDecision | None = None
     simulated_order_id: str | None = None
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class ScannerResult(BaseModel):
@@ -97,4 +97,4 @@ class ScannerResult(BaseModel):
     latest_signal: TradingSignal | None
     validation: SignalValidationResult | None
     ai_summary: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))

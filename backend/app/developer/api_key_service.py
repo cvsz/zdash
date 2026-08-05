@@ -1,13 +1,16 @@
 from __future__ import annotations
+
 import hashlib
 import hmac
 import secrets
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
+
 from fastapi import HTTPException
+
 from app.core.config import get_settings
 from app.developer.models import (
-    ApiKeyCreateRequest,
     ApiKeyCreatedResponse,
+    ApiKeyCreateRequest,
     ApiKeyScope,
     ApiKeyStatus,
     DeveloperApiKey,

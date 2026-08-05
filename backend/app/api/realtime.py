@@ -6,6 +6,9 @@ from typing import cast
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
+from app.billing.entitlement_service import check_feature
+from app.billing.quota_service import consume
+from app.core.config import settings
 from app.core.responses import ok
 from app.realtime import (
     bind_realtime_loop,
@@ -16,9 +19,6 @@ from app.realtime import (
 from app.realtime.events import build_event_envelope
 from app.realtime.mock_streams import start_mock_stream_if_enabled
 from app.realtime.schemas import RealtimeChannel
-from app.billing.entitlement_service import check_feature
-from app.billing.quota_service import consume
-from app.core.config import settings
 
 router = APIRouter(prefix="/api/realtime", tags=["realtime"])
 

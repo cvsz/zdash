@@ -1,5 +1,5 @@
-from app.collaboration.service import CollaborationService
 from app.collaboration.schemas import PresenceUpdate
+from app.collaboration.service import CollaborationService
 
 
 def test_presence_lifecycle():

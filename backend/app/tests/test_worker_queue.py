@@ -1,5 +1,5 @@
-from app.workers.queue import queue
 from app.tenancy.tenant_context import TenantContext
+from app.workers.queue import queue
 
 
 def test_queue_lifecycle():

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -13,7 +13,7 @@ from app.backtesting.models import (
 
 def test_candle_validation_accepts_valid_ohlc() -> None:
     candle = Candle(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         open=2300.0,
         high=2301.0,
         low=2299.5,
@@ -27,7 +27,7 @@ def test_candle_validation_accepts_valid_ohlc() -> None:
 def test_candle_validation_rejects_invalid_ohlc() -> None:
     with pytest.raises(ValidationError):
         Candle(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             open=2300.0,
             high=2299.0,
             low=2298.0,
@@ -40,7 +40,7 @@ def test_strategy_signal_direction_validation() -> None:
     with pytest.raises(ValidationError):
         StrategySignal.model_validate(
             {
-                "timestamp": datetime.now(timezone.utc),
+                "timestamp": datetime.now(UTC),
                 "symbol": "XAUUSD",
                 "timeframe": "M5",
                 "strategy": "ob_aggressive",

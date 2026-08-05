@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -105,7 +105,7 @@ class MT5Adapter:
             "equity": 10000.0,
             "margin_free": 10000.0,
             "currency": "USD",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "mode": "mock",
         }
 

@@ -16,13 +16,11 @@ class KillSwitch:
             >= self.settings.emergency_kill_switch_drawdown_percent
         ):
             return True
-        if (
+        return bool(
             self.settings.hard_halt_on_daily_drawdown
             and drawdown.daily_drawdown_percent
             >= self.settings.max_daily_drawdown_percent
-        ):
-            return True
-        return False
+        )
 
     def trigger(self, drawdown: DrawdownResult, halt_store: HaltFlagStore) -> HaltState:
         reason = (

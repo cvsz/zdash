@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from collections import defaultdict, deque
 from contextvars import ContextVar
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from fastapi import Request
@@ -63,7 +63,7 @@ def install_middleware(app):
                     "ok": False,
                     "data": None,
                     "error": {"code": "RATE_LIMITED", "message": "Too many requests"},
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
                 headers={
                     "X-Request-ID": request_id,

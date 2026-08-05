@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
 
 from fastapi import Depends, HTTPException, status
 from sqlalchemy import select
@@ -15,7 +15,7 @@ from app.tenancy.tenant_context import TenantContext
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def get_plan_for_org(organization_id: str) -> BillingPlan:

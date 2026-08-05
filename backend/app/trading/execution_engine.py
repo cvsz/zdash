@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -69,7 +69,7 @@ class ExecutionEngine:
 
         created_at = payload.get("created_at")
         if not created_at:
-            created_at = datetime.now(timezone.utc)
+            created_at = datetime.now(UTC)
 
         return TradingSignal(
             id=str(payload.get("id") or uuid4()),
@@ -100,7 +100,7 @@ class ExecutionEngine:
             return request.signal, request.dry_run, None
 
         if hasattr(request, "signal"):
-            signal = getattr(request, "signal")
+            signal = request.signal
             dry_run = getattr(request, "dry_run", True)
             snapshot = getattr(request, "snapshot", None)
             return signal, bool(dry_run), snapshot

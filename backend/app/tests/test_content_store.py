@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -38,8 +38,8 @@ def test_store_records_pipeline_runs() -> None:
         status=ContentStatus.graphic_ready,
         steps=[{"step": "create_draft", "ok": True}],
         message="ok",
-        started_at=datetime.now(timezone.utc),
-        finished_at=datetime.now(timezone.utc),
+        started_at=datetime.now(UTC),
+        finished_at=datetime.now(UTC),
         duration_ms=5,
     )
     store.record_pipeline_run(run)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 from sqlalchemy import create_engine
@@ -172,7 +172,7 @@ def test_invite_member_duplicate_pending(db_session):
         token_hash="abc",
         status="pending",
         invited_by="admin@test.com",
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=datetime.now(UTC) + timedelta(days=7),
     )
 
     result = invite_member(
@@ -366,7 +366,7 @@ def test_list_invitations_with_data(db_session):
         token_hash="abc",
         status="pending",
         invited_by="admin@test.com",
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=datetime.now(UTC) + timedelta(days=7),
     )
 
     result = list_invitations("org-1", db=db_session)
@@ -568,7 +568,7 @@ def test_get_team_activity_empty(db_session):
 
 
 def test_get_team_activity_returns_audit_logs(db_session):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     log = AuditLog(
         id="log-1",
         actor_email="admin@test.com",
@@ -590,7 +590,7 @@ def test_get_team_activity_returns_audit_logs(db_session):
 
 
 def test_get_team_activity_respects_limit(db_session):
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     for i in range(5):
         db_session.add(
             AuditLog(
@@ -654,7 +654,7 @@ def test_get_team_summary_pending_invitations(db_session):
         token_hash="abc",
         status="pending",
         invited_by="admin@test.com",
-        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+        expires_at=datetime.now(UTC) + timedelta(days=7),
     )
 
     result = get_team_summary("org-1", db=db_session)

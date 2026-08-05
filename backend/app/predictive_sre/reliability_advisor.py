@@ -1,5 +1,6 @@
 from datetime import datetime
-from .models import ReliabilityRecommendation, PredictionSeverity, PredictionStatus
+
+from .models import PredictionSeverity, PredictionStatus, ReliabilityRecommendation
 
 
 class ReliabilityAdvisor:

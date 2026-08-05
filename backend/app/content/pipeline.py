@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.content.editor_service import EditorService
@@ -31,7 +31,7 @@ class ContentPipeline:
         self.social = SocialService(self.store)
 
     def run_full_pipeline(self, request: CreateContentRequest) -> PipelineRunResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         run_id = str(uuid4())
         steps: list[dict] = []
         content_id = ""
@@ -119,7 +119,7 @@ class ContentPipeline:
                 {"run_id": run_id, "content_id": content_id},
             )
 
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         result = PipelineRunResult(
             id=run_id,
             content_id=content_id,
@@ -135,7 +135,7 @@ class ContentPipeline:
         return result
 
     def create_then_edit(self, request: CreateContentRequest) -> PipelineRunResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         run_id = str(uuid4())
         steps: list[dict] = []
         content_id = ""
@@ -163,7 +163,7 @@ class ContentPipeline:
             status = ContentStatus.failed
             message = str(exc)
             steps.append({"step": "failed", "ok": False, "error": message})
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         result = PipelineRunResult(
             id=run_id,
             content_id=content_id,
@@ -179,7 +179,7 @@ class ContentPipeline:
         return result
 
     def generate_graphic(self, content_id: str) -> PipelineRunResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         run_id = str(uuid4())
         steps: list[dict] = []
         try:
@@ -205,7 +205,7 @@ class ContentPipeline:
             status = ContentStatus.failed
             message = str(exc)
             steps.append({"step": "failed", "ok": False, "error": message})
-        finished = datetime.now(timezone.utc)
+        finished = datetime.now(UTC)
         result = PipelineRunResult(
             id=run_id,
             content_id=content_id,
@@ -231,7 +231,7 @@ class ContentPipeline:
                 content_id=content_id, scheduled_at=scheduled_at, platforms=platforms
             )
         )
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         result = PipelineRunResult(
             id=str(uuid4()),
             content_id=item.id,
@@ -252,7 +252,7 @@ class ContentPipeline:
         item = self.social.approve_content(
             ApproveContentRequest(content_id=content_id, approved_by=approved_by)
         )
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         result = PipelineRunResult(
             id=str(uuid4()),
             content_id=item.id,
@@ -279,7 +279,7 @@ class ContentPipeline:
             )
         )
         item = self.store.get_item(content_id)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         result = PipelineRunResult(
             id=str(uuid4()),
             content_id=content_id,
@@ -319,7 +319,7 @@ class ContentPipeline:
             "ok": ok,
             "content_id": content_id,
             "message": message,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
         steps.append(step)
         self._emit_pipeline_event(

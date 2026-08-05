@@ -6,10 +6,10 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from app.ai_trader.service import (
-    AITraderService,
     MODEL_VERSION,
     RISK_POLICY,
     SAFETY_NOTICE,
+    AITraderService,
 )
 from app.auth.dependencies import require_permission
 from app.auth.rbac import Permission

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable, cast
+from collections.abc import Callable
+from typing import Any, cast
 
 from app.content.models import ContentItem, CreateContentRequest, EditContentRequest
 from app.content.policy import ContentPolicyChecker

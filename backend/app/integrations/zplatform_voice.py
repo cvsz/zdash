@@ -37,7 +37,7 @@ class VoiceIntegrationConfig:
     request_timeout_seconds: float
 
     @classmethod
-    def from_env(cls) -> "VoiceIntegrationConfig":
+    def from_env(cls) -> VoiceIntegrationConfig:
         return cls(
             enabled=os.getenv("ZPLATFORM_VOICE_ENABLED", "false").strip().lower()
             == "true",

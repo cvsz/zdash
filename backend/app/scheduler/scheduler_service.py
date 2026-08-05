@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -13,8 +13,8 @@ from app.scheduler.models import (
     CreateJobRequest,
     JobRunResult,
     JobStatus,
-    ScheduleType,
     ScheduledJob,
+    ScheduleType,
 )
 
 
@@ -148,7 +148,7 @@ class SchedulerService:
             {"job_id": job.id, "manual": manual},
         )
 
-        started_at = datetime.now(timezone.utc)
+        started_at = datetime.now(UTC)
         try:
             ok, status, message, output = run_scheduled_job(job)
         except Exception as exc:
@@ -157,7 +157,7 @@ class SchedulerService:
             message = f"Scheduler execution failed: {exc}"
             output = {"error": str(exc)}
 
-        finished_at = datetime.now(timezone.utc)
+        finished_at = datetime.now(UTC)
         duration_ms = int((finished_at - started_at).total_seconds() * 1000)
 
         result = JobRunResult(
@@ -286,7 +286,7 @@ class SchedulerService:
     def _record_skipped_run(
         self, job: ScheduledJob, status: str, message: str
     ) -> JobRunResult:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         result = JobRunResult(
             job_id=job.id,
             job_type=job.job_type,

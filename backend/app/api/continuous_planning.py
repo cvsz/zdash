@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.core.responses import ok
 
 router = APIRouter(prefix="/api/continuous-planning", tags=["continuous-planning"])

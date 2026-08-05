@@ -1,13 +1,12 @@
 from sqlalchemy import text
 
-from app.db.base import Base
-import app.db.models  # noqa
-from app.db.session import engine
-
 # Import all models here so Base.metadata is populated
-import app.billing.models  # noqa
+import app.billing.models
+import app.db.models
+import app.enterprise.models
 import app.marketplace.models  # noqa
-import app.enterprise.models  # noqa
+from app.db.base import Base
+from app.db.session import engine
 
 
 def create_all() -> None:

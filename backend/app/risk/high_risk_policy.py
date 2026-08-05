@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 
@@ -47,9 +47,7 @@ class HighRiskActionDecision:
     requires_dry_run: bool = True
     requires_approval: bool = False
     requires_rollback_plan: bool = False
-    timestamp: str = field(
-        default_factory=lambda: datetime.now(timezone.utc).isoformat()
-    )
+    timestamp: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 def check_high_risk_action(req: HighRiskActionRequest) -> HighRiskActionDecision:
@@ -94,42 +92,53 @@ def check_high_risk_action(req: HighRiskActionRequest) -> HighRiskActionDecision
         blocked_by.append("Tenant scope is required for high-risk actions")
 
     # -- Risk policy gate --
-    if req.action_class in (
-        HighRiskActionClass.trading,
-        HighRiskActionClass.broker,
-        HighRiskActionClass.social_publish,
+    if (
+        req.action_class
+        in (
+            HighRiskActionClass.trading,
+            HighRiskActionClass.broker,
+            HighRiskActionClass.social_publish,
+        )
+        and settings.risk_guardian_enabled
+        and not req.risk_check_passed
     ):
-        if settings.risk_guardian_enabled and not req.risk_check_passed:
-            blocked_by.append("Risk/Guardian check did not pass")
+        blocked_by.append("Risk/Guardian check did not pass")
 
     # -- Typed confirmation gate --
-    if req.action_class in (
-        HighRiskActionClass.trading,
-        HighRiskActionClass.broker,
-        HighRiskActionClass.iot,
-        HighRiskActionClass.social_publish,
-        HighRiskActionClass.infrastructure,
-        HighRiskActionClass.support_bundle,
-        HighRiskActionClass.deployment_pack,
-        HighRiskActionClass.update_apply,
-        HighRiskActionClass.raw_shell,
-        HighRiskActionClass.credential_export,
+    if (
+        req.action_class
+        in (
+            HighRiskActionClass.trading,
+            HighRiskActionClass.broker,
+            HighRiskActionClass.iot,
+            HighRiskActionClass.social_publish,
+            HighRiskActionClass.infrastructure,
+            HighRiskActionClass.support_bundle,
+            HighRiskActionClass.deployment_pack,
+            HighRiskActionClass.update_apply,
+            HighRiskActionClass.raw_shell,
+            HighRiskActionClass.credential_export,
+        )
+        and not req.confirmation_provided
     ):
-        if not req.confirmation_provided:
-            blocked_by.append("Typed confirmation is required for this action")
+        blocked_by.append("Typed confirmation is required for this action")
 
     # -- Dry-run default gate --
-    if req.action_class in (
-        HighRiskActionClass.trading,
-        HighRiskActionClass.broker,
-        HighRiskActionClass.iot,
-        HighRiskActionClass.social_publish,
-        HighRiskActionClass.infrastructure,
-        HighRiskActionClass.plugin_execute,
-        HighRiskActionClass.update_apply,
+    if (
+        req.action_class
+        in (
+            HighRiskActionClass.trading,
+            HighRiskActionClass.broker,
+            HighRiskActionClass.iot,
+            HighRiskActionClass.social_publish,
+            HighRiskActionClass.infrastructure,
+            HighRiskActionClass.plugin_execute,
+            HighRiskActionClass.update_apply,
+        )
+        and not settings.dry_run
+        and not req.dry_run_setting
     ):
-        if not settings.dry_run and not req.dry_run_setting:
-            blocked_by.append("Action must run in dry-run mode by default")
+        blocked_by.append("Action must run in dry-run mode by default")
 
     # -- Rollback metadata --
     requires_rollback = req.action_class in (

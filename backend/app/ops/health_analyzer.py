@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from uuid import uuid4
-from .models import SystemHealthSnapshot, EnvironmentStatus
+
+from .models import EnvironmentStatus, SystemHealthSnapshot
 
 
 class HealthAnalyzer:

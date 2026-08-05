@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 from pydantic import BaseModel, Field, model_validator
@@ -42,8 +42,8 @@ class ScheduledJob(BaseModel):
     interval_seconds: int | None = Field(default=None, ge=1)
     payload: dict = Field(default_factory=dict)
     max_runtime_seconds: int = Field(default=300, ge=1)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     last_run_at: datetime | None = None
     next_run_at: datetime | None = None
     run_count: int = 0
@@ -73,7 +73,7 @@ class CreateJobRequest(BaseModel):
     max_runtime_seconds: int = Field(default=300, ge=1)
 
     @model_validator(mode="after")
-    def _validate_schedule_fields(self) -> "CreateJobRequest":
+    def _validate_schedule_fields(self) -> CreateJobRequest:
         if self.schedule_type == ScheduleType.interval:
             if self.interval_seconds is None or self.interval_seconds <= 0:
                 raise ValueError("interval jobs require interval_seconds > 0")

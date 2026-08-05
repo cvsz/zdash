@@ -1,4 +1,4 @@
-from .models import RegionRecord, DataRegion
+from .models import DataRegion, RegionRecord
 
 
 class RegionRegistry:

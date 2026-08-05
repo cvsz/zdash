@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.parse import quote
 
 GOOGLE_FINANCE_BETA_BASE_URL = "https://www.google.com/finance/beta"
@@ -30,7 +30,7 @@ DEFAULT_WATCHLIST: tuple[FinanceInstrument, ...] = (
 
 
 def utc_timestamp() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def section_url(section: str = "home") -> str:

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from app.trading.execution_engine import ExecutionEngine
 from app.trading.models import TradingSignal
@@ -38,7 +38,7 @@ def test_invalid_sl_tp_fails() -> None:
 
 def test_old_signal_fails() -> None:
     service = SignalValidationService()
-    old_time = datetime.now(timezone.utc) - timedelta(hours=2)
+    old_time = datetime.now(UTC) - timedelta(hours=2)
     signal = _base_signal().model_copy(update={"created_at": old_time})
     result = service.validate(signal)
 

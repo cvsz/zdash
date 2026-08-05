@@ -27,9 +27,7 @@ class ClaudeAdapter(AIAdapter):
         self._fallback = MockAIAdapter()
 
     def _should_fallback(self) -> bool:
-        if not self.settings.claude_api_key:
-            return True
-        return False
+        return bool(not self.settings.claude_api_key)
 
     def generate_response(
         self, prompt: str, context: dict[str, Any] | None = None

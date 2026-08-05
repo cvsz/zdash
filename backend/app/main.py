@@ -1,12 +1,12 @@
-import logging
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.agents.registry import bootstrap_agents
 from app.api import (
@@ -17,47 +17,46 @@ from app.api import (
     auth,
     backtesting,
     billing,
+    collaboration,
     content,
+    continuous_planning,
+    developer,
+    digital_twin,
+    edge,
     enterprise,
+    enterprise_os,
+    global_ops,
+    google_finance,
+    governance_refinement,
     health,
+    integrations,
     iot,
+    launch,
+    lessons,
     logs,
+    long_horizon,
+    macro_simulation,
+    managed,
     marketplace,
     metrics,
+    mobile,
+    notifications,
+    ops,
+    partner,
+    predictive_sre,
+    realtime,
     risk,
     scheduler,
-    trading,
-    ops,
-    integrations,
-    google_finance,
-    managed,
-    developer,
-    partner,
-    mobile,
-    launch,
-    realtime,
-    predictive_sre,
-    digital_twin,
-    macro_simulation,
-    continuous_planning,
-    enterprise_os,
     self_evolution,
-    governance_refinement,
-    long_horizon,
-    lessons,
-    collaboration,
-    workspaces,
-    edge,
-    global_ops,
-    notifications,
     sovereign,
     team,
     tenancy,
+    trading,
     voice,
     workers,
+    workspaces,
 )
 from app.api.routes import incidents
-
 from app.core.config import get_settings
 from app.core.events import event_bus
 from app.core.logging import configure_logging

@@ -352,6 +352,7 @@ class TestHighRiskActionPolicyDependency:
         )
 
         import pytest
+
         from app.auth.models import AuthSession
 
         user = AuthSession(username="viewer-user", role="viewer")
@@ -375,6 +376,7 @@ class TestHighRiskActionPolicyDependency:
         )
 
         import asyncio
+
         from app.auth.models import AuthSession
 
         user = AuthSession(username="admin-user", role="admin")

@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
+
 from .models import (
-    IncidentPrediction,
     ForecastHorizon,
+    IncidentPrediction,
     PredictionSeverity,
     PredictionStatus,
 )

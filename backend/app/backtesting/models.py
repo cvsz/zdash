@@ -29,7 +29,7 @@ class Candle(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def _validate_ranges(self) -> "Candle":
+    def _validate_ranges(self) -> Candle:
         if self.high < max(self.open, self.close, self.low):
             raise ValueError("high must be >= open/close/low")
         if self.low > min(self.open, self.close, self.high):
@@ -64,7 +64,7 @@ class StrategySignal(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def _validate_directional_levels(self) -> "StrategySignal":
+    def _validate_directional_levels(self) -> StrategySignal:
         if self.direction == "buy":
             if not (self.stop_loss < self.entry < self.take_profit):
                 raise ValueError("buy signals require stop_loss < entry < take_profit")

@@ -1,12 +1,13 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from app.marketplace.models import (
-    PluginManifest,
-    PluginInstallation,
-    PluginStatus,
-    PluginInstallStatus,
     PluginActionResult,
-    manifest_to_dict,
+    PluginInstallation,
+    PluginInstallStatus,
+    PluginManifest,
+    PluginStatus,
     installation_to_dict,
+    manifest_to_dict,
 )
 
 
@@ -41,7 +42,7 @@ def test_plugin_installation_model():
         config_json={"key": "value"},
         enabled=True,
         installed_by="user-1",
-        installed_at=datetime.now(timezone.utc),
+        installed_at=datetime.now(UTC),
     )
     assert inst.id == "inst-1"
     assert inst.organization_id == "org-1"
@@ -62,7 +63,7 @@ def test_plugin_action_result_schema():
         message="Success",
         output={"data": "test"},
         dry_run=True,
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
     )
     assert res.plugin_id == "plugin-1"
     assert res.action == "test_action"

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-
 from app.billing.subscription_service import (
     apply_mock_plan,
     cancel_subscription,

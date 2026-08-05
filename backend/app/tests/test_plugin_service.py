@@ -1,21 +1,22 @@
-import pytest
-from app.marketplace.plugin_service import (
-    install_plugin,
-    enable_plugin,
-    disable_plugin,
-    uninstall_plugin,
-    run_plugin_action,
-    list_installations,
-)
-from app.marketplace.builtins import BUILTINS
-
 from unittest.mock import patch
+
+import pytest
+
+from app.marketplace.builtins import BUILTINS
+from app.marketplace.plugin_service import (
+    disable_plugin,
+    enable_plugin,
+    install_plugin,
+    list_installations,
+    run_plugin_action,
+    uninstall_plugin,
+)
 
 
 @pytest.fixture(autouse=True)
 def setup_teardown():
-    from app.marketplace.models import PluginActionRun, PluginInstallation
     from app.db.session import SessionLocal
+    from app.marketplace.models import PluginActionRun, PluginInstallation
 
     with SessionLocal() as db:
         db.query(PluginActionRun).delete()

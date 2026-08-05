@@ -1,18 +1,20 @@
-from typing import Dict, Any, Optional
+from datetime import UTC, datetime
+from typing import Any
+
 from sqlalchemy import select
+
+from app.core.config import settings
 from app.db.session import SessionLocal
 from app.enterprise.models import BrandingSettings
-from app.core.config import settings
-from datetime import datetime, timezone
 
 
 def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def get_branding(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(BrandingSettings).where(
             BrandingSettings.organization_id == organization_id
@@ -35,8 +37,8 @@ def get_branding(
 
 
 def update_branding(
-    organization_id: str, workspace_id: Optional[str], patch: Dict[str, Any]
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None, patch: dict[str, Any]
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(BrandingSettings).where(
             BrandingSettings.organization_id == organization_id
@@ -85,8 +87,8 @@ def update_branding(
 
 
 def reset_branding(
-    organization_id: str, workspace_id: Optional[str] = None
-) -> Dict[str, Any]:
+    organization_id: str, workspace_id: str | None = None
+) -> dict[str, Any]:
     with SessionLocal() as db:
         query = select(BrandingSettings).where(
             BrandingSettings.organization_id == organization_id
