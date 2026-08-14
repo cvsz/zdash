@@ -1,162 +1,51 @@
-# ============================================================
-# zDash ignore rules
-# Keep source/config examples tracked, block local secrets/tooling/runtime.
-# ============================================================
-
-# Environment and local secrets
-.env
-.env.*
-!.env.example
-!frontend/.env.example
-*.env.local
-*.local.env
-*.secret
-*.secrets
-secrets/
-.secrets/
-backups.env
-
-# Keys, certificates, signing artifacts, and credentials
-*.pem
-*.key
-*.crt
-*.csr
-*.p12
-*.pfx
-*.asc
-*.gpg
-*.kbx
-id_rsa
-id_rsa.*
-id_ed25519
-id_ed25519.*
-known_hosts
-.gnupg/
-.ssh/
-.netrc
-
-# Local GPG/git helper scripts; keep these outside repo
-/gpg-loopback.sh
-/fix-gpg-signing.sh
-/commit-zdash-safe.sh
-/fix-install-restore-pathspec.sh
-/fix-ruff-e402-conftest.sh
-/fix-*.sh
-/repair-*.sh
-/install-zdash-fullstack.sh
-/run-backend.sh
-/run-frontend.sh
-/healthcheck-zdash.sh
-
-# ECC / local agent caches and external agent tooling
-.agent/
-.agents/
-agents/
-agents/agents/
-.gemini/
-.claude/
-.mcp/
-.mcp.json
-.mcp.local.json
-skill.sh
-
-# Codex runtime artifacts; keep .codex/cloud tracked
-.codex/logs/
-.codex/reports/
-.codex/runs/
-.codex/tmp/
-.codex/cache/
-.codex/healthcheck.sh
-.codex/run-phase.sh
-.codex/maintenance.sh
-
-# Optional local prompt/run history
-# Keep committed phase prompts under docs/prompts/*.prompt.
-docs/prompts/codex-runs/
-
+```
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-.venv/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
 venv/
-.envrc
-pip-wheel-metadata/
-*.egg-info/
+.venv/
+.ENV
+.ENV.local
+.env
+.env.local
+.env.*
 
-# Node / frontend
-node_modules/
+# Testing
+.coverage
+coverage/
+htmlcov/
+.pytest_cache/
+.hypothesis/
+
+# Build and distribution artifacts
 dist/
 build/
-coverage/
-.npm/
-.pnpm-store/
-.yarn/
-frontend/dist/
-frontend/node_modules/
-frontend/coverage/
+*.egg-info/
+.svn/
+ CVS/
 
-# Logs and runtime output
-*.log
-logs/
-log.txt
-*.pid
-*.sock
-*.tmp
-*.temp
-*.bak
-*.backup
-*.orig
-*.rej
-Makefile.bak.*
-backend.log
-frontend.log
-.runtime/
-.installer-backups/
-release-artifacts/
-
-# Databases, dumps, and generated local data
-*.db
-*.sqlite
-*.sqlite3
-zdash.db
-*.dump
-*.sql
-*.sql.gz
-*.tar.gz
-*.zip
-backups/
-backup/
-backend/data/content/images/
-backend/data/exports/
-backend/data/tmp/
-
-# Docker/local compose overrides
-.docker/
-docker-compose.override.yml
-compose.override.yml
-
-# OS / editor
-.DS_Store
-Thumbs.db
-.idea/
+# IDE and editor files
 .vscode/
+.idea/
 *.swp
 *.swo
+*~
+.DS_Store
+Thumbs.db
 
-# Uploaded/pasted scratch files
-Pasted*.txt
-Pasted*.md
-pasted*.txt
-pasted*.md
-.env.production.example
-.env.test
-frontend/.env.test
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+```
