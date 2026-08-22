@@ -1,4 +1,5 @@
 """Tests for tenant isolation ensuring data separation between organizations."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -41,16 +42,14 @@ def test_organization_data_isolation(
     org2_context: TenantContext,
 ) -> None:
     """Test that organizations cannot access each other's data."""
-    # Create resources for org1
     with patch.object(tenant_service, "_get_db_session"):
-        pass  # Service uses in-memory storage for tests
+        pass
 
 
 def test_workspace_belongs_to_correct_organization(
     tenant_service: TenantService,
 ) -> None:
     """Test that workspaces are properly scoped to their organization."""
-    # Verify tenant context is properly validated
     ctx = TenantContext(
         organization_id="test_org",
         workspace_id="test_ws",
@@ -75,7 +74,6 @@ def test_cross_tenant_access_prevented() -> None:
         user_id="user_b",
     )
 
-    # Contexts should be completely separate
     assert context1.organization_id != context2.organization_id
     assert context1.workspace_id != context2.workspace_id
     assert context1.user_id != context2.user_id
@@ -83,7 +81,6 @@ def test_cross_tenant_access_prevented() -> None:
 
 def test_tenant_context_validation() -> None:
     """Test that tenant context validates required fields."""
-    # Valid context should work
     context = TenantContext(
         organization_id="valid_org",
         workspace_id="valid_ws",
@@ -103,6 +100,5 @@ def test_user_scoped_to_workspace() -> None:
         user_role="analyst",
     )
 
-    # User should only have access within this workspace context
     assert context.user_role == "analyst"
     assert context.workspace_id == "ws_dev"
