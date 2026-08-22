@@ -50,7 +50,9 @@ class SocialAgent(BaseAgent):
                 ctx.get("request", ctx)
             )
             post_results = self.publish_content(publish_request)
-            result = {"results": [entry.model_dump(mode="json") for entry in post_results]}
+            result = {
+                "results": [entry.model_dump(mode="json") for entry in post_results]
+            }
         else:
             raise ValueError(f"Unsupported social task: {task}")
         return {"task": task, "ok": True, **result}
