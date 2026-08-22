@@ -1,6 +1,6 @@
 """Tests for tenant isolation ensuring data separation between organizations."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
