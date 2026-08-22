@@ -2,7 +2,7 @@
 
 import pytest
 
-from app.auth.rbac import Permission, RoleName, has_permission, normalize_role
+from app.auth.rbac import Permission, has_permission, normalize_role
 from app.tenancy.tenant_context import TenantContext
 
 
