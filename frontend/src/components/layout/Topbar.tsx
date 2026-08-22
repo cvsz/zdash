@@ -30,11 +30,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   const systemLabel =
     loading || !data?.health?.status
-      ? t('common.loading')
+      ? t("common.loading")
       : String(data.health.status).toUpperCase();
   const riskLabel =
     loading || !data?.risk?.risk_level
-      ? t('topbar.risk_loading')
+      ? t("topbar.risk_loading")
       : `RISK ${String(data.risk.risk_level).toUpperCase()}`;
 
   return (
@@ -48,7 +48,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             type="button"
             onClick={onMenuClick}
             className="rounded-xl border border-border bg-panel/70 p-2 text-text-secondary transition hover:bg-panel-hover md:hidden"
-            aria-label={t('topbar.toggle_navigation')}
+            aria-label={t("topbar.toggle_navigation")}
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -59,16 +59,11 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-text-primary">
-              {branding?.brand_name || t('topbar.operational_dashboard')}
+              {branding?.brand_name || t("topbar.operational_dashboard")}
             </p>
             <p className="truncate text-[10px] uppercase tracking-[0.14em] text-text-dim">
-              {t('topbar.dry_run_safe_active')}
+              {t("topbar.dry_run_safe_active")}
             </p>
-          </div>
-
-          <div className="ml-4 hidden items-center gap-4 border-l border-border pl-4 lg:flex">
-            <OrganizationSwitcher />
-            <WorkspaceSwitcher />
           </div>
         </div>
 
@@ -97,12 +92,12 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             }}
             className="rounded-xl border border-border bg-panel/60 px-3 py-2 text-xs font-medium text-text-secondary transition hover:border-state-danger/30 hover:bg-state-danger/10 hover:text-state-danger"
           >
-            {t('topbar.logout')}
+            {t("topbar.logout")}
           </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 overflow-x-auto border-t border-border/70 px-4 py-2 lg:hidden md:px-6">
+      <div className="flex items-center gap-4 overflow-x-auto border-t border-border/70 px-4 py-2 md:px-6">
         <OrganizationSwitcher />
         <WorkspaceSwitcher />
       </div>
