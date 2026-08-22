@@ -1,4 +1,5 @@
 """Tests for worker task execution."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
