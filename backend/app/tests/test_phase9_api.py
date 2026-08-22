@@ -1,4 +1,5 @@
 """Tests for Phase 9/10 tenancy and enterprise API endpoints."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -41,10 +42,9 @@ def test_get_tenancy_context(
     mock_tenant_context: MagicMock,
 ) -> None:
     """Test getting tenant context from API."""
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.get_tenant_context", return_value=mock_tenant_context
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch("app.api.tenancy.get_tenant_context", return_value=mock_tenant_context),
     ):
         response = client.get("/api/tenancy/context")
 
@@ -63,11 +63,12 @@ def test_list_organizations(
     mock_org.name = "Test Organization"
     mock_org.model_dump.return_value = {"id": "org_123", "name": "Test Organization"}
 
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.tenant_service.list_accessible_organizations",
-        return_value=[mock_org],
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch(
+            "app.api.tenancy.tenant_service.list_accessible_organizations",
+            return_value=[mock_org],
+        ),
     ):
         response = client.get("/api/tenancy/organizations")
 
@@ -87,11 +88,13 @@ def test_create_organization(
     mock_org.name = "New Organization"
     mock_org.model_dump.return_value = {"id": "org_456", "name": "New Organization"}
 
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.tenant_service.create_organization", return_value=mock_org
-    ), patch("app.api.tenancy._audit"):
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch(
+            "app.api.tenancy.tenant_service.create_organization", return_value=mock_org
+        ),
+        patch("app.api.tenancy._audit"),
+    ):
         response = client.post(
             "/api/tenancy/organizations",
             json={"name": "New Organization"},
@@ -108,10 +111,9 @@ def test_get_organization_not_found(
     mock_auth_session: MagicMock,
 ) -> None:
     """Test getting a non-existent organization."""
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.tenant_service.get_organization", return_value=None
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch("app.api.tenancy.tenant_service.get_organization", return_value=None),
     ):
         response = client.get("/api/tenancy/organizations/nonexistent")
 
@@ -126,16 +128,17 @@ def test_get_organization_access_denied(
     mock_org = MagicMock()
     mock_org.id = "org_789"
 
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.tenant_service.get_organization", return_value=mock_org
-    ), patch(
-        "app.api.tenancy.tenant_service.is_organization_admin", return_value=False
-    ), patch(
-        "app.api.tenancy.tenant_service.list_accessible_organizations", return_value=[]
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch("app.api.tenancy.tenant_service.get_organization", return_value=mock_org),
+        patch(
+            "app.api.tenancy.tenant_service.is_organization_admin", return_value=False
+        ),
+        patch(
+            "app.api.tenancy.tenant_service.list_accessible_organizations",
+            return_value=[],
+        ),
     ):
-        # Set user role to non-admin to trigger access check
         mock_auth_session.role = "viewer"
 
         response = client.get("/api/tenancy/organizations/org_789")
@@ -156,11 +159,14 @@ def test_create_workspace(
         "name": "Test Workspace",
     }
 
-    with patch(
-        "app.api.tenancy.get_current_user", return_value=mock_auth_session
-    ), patch(
-        "app.api.tenancy.tenant_service.create_workspace", return_value=mock_workspace
-    ), patch("app.api.tenancy._audit"):
+    with (
+        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
+        patch(
+            "app.api.tenancy.tenant_service.create_workspace",
+            return_value=mock_workspace,
+        ),
+        patch("app.api.tenancy._audit"),
+    ):
         response = client.post(
             "/api/tenancy/organizations/org_123/workspaces",
             json={"name": "Test Workspace"},
