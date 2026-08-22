@@ -7,7 +7,6 @@ from app.tenancy.models import (
     Organization,
     OrganizationCreateRequest,
     Workspace,
-    WorkspaceCreateRequest,
 )
 
 
