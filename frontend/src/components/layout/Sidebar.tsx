@@ -46,7 +46,8 @@ type NavItem = {
 };
 
 type NavGroup = {
-  label: string;
+  labelKey: string;
+  fallbackLabel: string;
   items: NavItem[];
 };
 
@@ -54,7 +55,8 @@ const allRoles = ["admin", "operator", "analyst", "viewer"];
 
 const navGroups: NavGroup[] = [
   {
-    label: "Command",
+    labelKey: "sidebar.group_command",
+    fallbackLabel: "Command",
     items: [
       { to: "/", labelKey: "nav.dashboard", fallbackLabel: "Overview", roles: allRoles, icon: Home },
       { to: "/team", labelKey: "nav.team", fallbackLabel: "Agent Team", roles: allRoles, icon: Users },
@@ -63,7 +65,8 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Operations",
+    labelKey: "sidebar.group_operations",
+    fallbackLabel: "Operations",
     items: [
       { to: "/xau", labelKey: "nav.xau", fallbackLabel: "XAU Trading", roles: allRoles, icon: ChartNoAxesCombined },
       { to: "/risk", labelKey: "nav.risk", fallbackLabel: "Risk Control", roles: allRoles, icon: ShieldAlert },
@@ -75,7 +78,8 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Growth",
+    labelKey: "sidebar.group_growth",
+    fallbackLabel: "Growth",
     items: [
       { to: "/content", labelKey: "nav.content", fallbackLabel: "Content Pipeline", roles: allRoles, icon: Workflow },
       { to: "/marketing", labelKey: "nav.marketing", fallbackLabel: "Marketing Intelligence", roles: allRoles, icon: Megaphone },
@@ -84,7 +88,8 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Organization",
+    labelKey: "sidebar.group_organization",
+    fallbackLabel: "Organization",
     items: [
       { to: "/organizations", labelKey: "nav.organizations", fallbackLabel: "Organizations", roles: allRoles, icon: BriefcaseBusiness },
       { to: "/workers", labelKey: "nav.workers", fallbackLabel: "Workers", roles: allRoles, icon: Wrench },
@@ -95,7 +100,8 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Platform",
+    labelKey: "sidebar.group_platform",
+    fallbackLabel: "Platform",
     items: [
       { to: "/system/health", labelKey: "nav.system", fallbackLabel: "System Health", roles: allRoles, icon: HeartPulse },
       { to: "/logs", labelKey: "nav.logs", fallbackLabel: "Session Logs", roles: allRoles, icon: FileClock },
@@ -124,22 +130,25 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-state-success ring-2 ring-canvas" />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-base font-bold tracking-tight text-text-primary">{t('sidebar.title')}</h1>
-            <p className="truncate text-[10px] uppercase tracking-[0.16em] text-text-dim">Safety-first operations</p>
+            <h1 className="truncate text-base font-bold tracking-tight text-text-primary">{t("sidebar.title")}</h1>
+            <p className="truncate text-[10px] uppercase tracking-[0.16em] text-text-dim">
+              {t("sidebar.safety_first_operations", { defaultValue: "Safety-first operations" })}
+            </p>
           </div>
         </div>
       </div>
 
-      <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4" aria-label={t('sidebar.navigation')}>
+      <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4" aria-label={t("sidebar.navigation")}>
         <div className="space-y-5">
           {navGroups.map((group) => {
             const items = group.items.filter((item) => item.roles.includes(activeRole));
             if (items.length === 0) return null;
 
+            const groupLabel = t(group.labelKey, { defaultValue: group.fallbackLabel });
             return (
-              <section key={group.label} aria-label={group.label}>
+              <section key={group.labelKey} aria-label={groupLabel}>
                 <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-dim">
-                  {group.label}
+                  {groupLabel}
                 </p>
                 <div className="space-y-1">
                   {items.map((item) => {
@@ -193,10 +202,12 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-state-success opacity-50" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-state-success" />
               </span>
-              <span className="truncate text-xs font-semibold text-text-primary">Runtime guarded</span>
+              <span className="truncate text-xs font-semibold text-text-primary">
+                {t("sidebar.runtime_guarded", { defaultValue: "Runtime guarded" })}
+              </span>
             </div>
             <span className="rounded-pill border border-state-warning/30 bg-state-warning/10 px-2 py-0.5 text-[9px] font-bold tracking-wide text-state-warning">
-              DRY RUN
+              {t("sidebar.dry_run", { defaultValue: "DRY RUN" })}
             </span>
           </div>
           <div className="mt-2">
@@ -222,7 +233,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             type="button"
             onClick={onClose}
             className="absolute inset-0 bg-canvas/85 backdrop-blur-sm"
-            aria-label={t('sidebar.collapse')}
+            aria-label={t("sidebar.collapse")}
           />
           <aside className="relative z-50 h-full w-[min(20rem,88vw)] border-r border-border bg-canvas shadow-glass-lg">
             <SidebarContent onNavigate={onClose} />
