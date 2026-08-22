@@ -1,4 +1,5 @@
 """Tests for tenant-level RBAC functionality."""
+
 import pytest
 
 from app.auth.rbac import Permission, RoleName, has_permission, normalize_role
@@ -88,9 +89,7 @@ def test_analyst_can_read_but_not_manage(analyst_context: TenantContext) -> None
         has_permission(analyst_context.user_role, Permission.MANAGE_CONTENT_APPROVAL)
         is False
     )
-    assert (
-        has_permission(analyst_context.user_role, Permission.MANAGE_WORKERS) is False
-    )
+    assert has_permission(analyst_context.user_role, Permission.MANAGE_WORKERS) is False
 
 
 def test_viewer_limited_access(viewer_context: TenantContext) -> None:
