@@ -1,252 +1,552 @@
 # zDash Package and Make Scripts
 
 ## Makefile targets
-27:.PHONY: help
-28:help: ## Show available targets
-32:.PHONY: info
-33:info: ## Print local project/runtime info
-45:.PHONY: pull
-46:pull: ## Pull latest main with fast-forward only
-49:.PHONY: sync-main
-50:sync-main: ## Sync local main from origin/main; set GO_LIVE_RESET=yes to hard reset and clean
-60:.PHONY: status
-61:status: ## Show normal git status
-64:.PHONY: ignored
-65:ignored: ## Show ignored files summary
-68:.PHONY: tracked-forbidden
-69:tracked-forbidden: ## Fail if local-only/secret/tooling files are tracked
-78:.PHONY: env-check
-79:env-check: ## Validate .env key syntax without printing values
-101:.PHONY: gh-env-dry
-102:gh-env-dry: ## Dry-run sync local env files into GitHub Environment variables/secrets
-105:.PHONY: gh-env-sync
-106:gh-env-sync: ## Live sync local env file into GitHub Environment variables/secrets; requires GH_ENV/GH_ENV_FILE and gh auth
-109:.PHONY: gh-env-clean-dry
-110:gh-env-clean-dry: ## Dry-run stale cleanup for managed GitHub Environment keys
-113:.PHONY: gh-env-clean
-114:gh-env-clean: ## Delete stale managed GitHub Environment keys not present in local env file; requires confirmation
-117:.PHONY: port-scan
-118:port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
-139:.PHONY: secret-scan
-140:secret-scan: ## Scan tracked runtime/source files for actual secret-looking values
-163:.PHONY: safety-scan
-164:safety-scan: tracked-forbidden env-check port-scan secret-scan ## Run local safety scans
-166:.PHONY: backend-venv
-167:backend-venv: ## Create backend virtualenv if missing
-171:.PHONY: backend-install
-172:backend-install: backend-venv ## Install backend package and dev tools
-176:.PHONY: backend-lint
-177:backend-lint: ## Run backend ruff lint
-180:.PHONY: backend-lint-fix
-181:backend-lint-fix: ## Run backend ruff auto-fix
-184:.PHONY: backend-test
-185:backend-test: ## Run backend pytest
-188:.PHONY: backend-check
-189:backend-check: backend-lint backend-test ## Run backend lint + tests
-191:.PHONY: backend-deps
-192:backend-deps: ## Run Codex backend dependency repair helper
-195:.PHONY: frontend-install
-196:frontend-install: ## Install frontend dependencies using Node 20 when nvm is available
-199:.PHONY: frontend-test
-200:frontend-test: ## Run frontend tests
-203:.PHONY: frontend-build
-204:frontend-build: ## Build frontend production bundle
-207:.PHONY: frontend-check
-208:frontend-check: frontend-test frontend-build ## Run frontend tests + build
-210:.PHONY: docker-build-backend
-211:docker-build-backend: ## Build backend Docker image
-214:.PHONY: docker-build-frontend
-215:docker-build-frontend: ## Build frontend Docker image
-218:.PHONY: docker-build-nginx
-219:docker-build-nginx: ## Build nginx Docker image
-222:.PHONY: docker-build
-223:docker-build: docker-build-backend docker-build-frontend docker-build-nginx ## Build all Docker images
-225:.PHONY: compose-config
-226:compose-config: ## Validate default docker compose config
-229:.PHONY: compose-prod-config
-230:compose-prod-config: ## Validate production docker compose config
-233:.PHONY: compose-check
-234:compose-check: compose-config compose-prod-config ## Validate all compose configs
-236:.PHONY: compose-up
-237:compose-up: ## Start local compose stack
-240:.PHONY: compose-up-detached
-241:compose-up-detached: ## Start local compose stack detached
-244:.PHONY: compose-prod-up
-245:compose-prod-up: ## Start production compose stack detached
-248:.PHONY: compose-down
-249:compose-down: ## Stop local compose stack
-252:.PHONY: compose-prod-down
-253:compose-prod-down: ## Stop production compose stack
-256:.PHONY: compose-ps
-257:compose-ps: ## Show compose services
-260:.PHONY: compose-logs
-261:compose-logs: ## Tail compose logs
-264:.PHONY: maintenance
-265:maintenance: ## Run Codex Cloud maintenance validation
-268:.PHONY: validate-fast
-269:validate-fast: safety-scan backend-check frontend-check ## Run safety scans + backend/frontend validation
-271:.PHONY: validate
-272:validate: validate-fast docker-build compose-check maintenance ## Run full validation including Docker and maintenance
-274:.PHONY: golive
-275:golive: backend-install frontend-install validate-fast ## Go-live gate: install deps, safety scans, tests, and frontend build
-278:.PHONY: golive-sync
-279:golive-sync: sync-main golive ## Sync from origin/main, then run go-live gate
-281:.PHONY: release-notes
-282:release-notes: ## Generate docs/releases/$(RELEASE_TAG).md
-306:.PHONY: release-artifact
-307:release-artifact: frontend-build ## Package frontend dist artifact under release-artifacts/
-312:.PHONY: release-local
-313:release-local: golive release-notes release-artifact ## Run go-live validation and create local release notes/artifact
-315:.PHONY: release-push
-316:release-push: release-tag ## Push main and release tag; set CONFIRM_RELEASE=yes
-321:.PHONY: gh-release
-322:gh-release: ## Create GitHub release with artifact; requires gh auth and CONFIRM_RELEASE=yes
-334:.PHONY: release-status
-335:release-status: ## Show release tag status
-352:.PHONY: release-tag
-353:release-tag: release-local ## Create local annotated release tag; set CONFIRM_RELEASE=yes
-368:.PHONY: prod-env-generate
-369:prod-env-generate: ## Generate .env.production with random secrets (chmod 600)
-372:.PHONY: prod-up
-373:prod-up: ## Start production compose stack using .env.production
-376:.PHONY: prod-down
-377:prod-down: ## Stop production compose stack
-380:.PHONY: prod-ps
-381:prod-ps: ## Show production compose service status
-384:.PHONY: prod-logs
-385:prod-logs: ## Tail production compose logs
-388:.PHONY: prod-health
-389:prod-health: ## Check production health endpoint
-392:.PHONY: prod-deploy-final
-393:prod-deploy-final: prod-env-generate ## Generate env, validate compose config, build, deploy, health check
-402:.PHONY: phase10-final
-403:phase10-final: validate ## Final Phase 10 validation alias
-405:.PHONY: ci-local
-406:ci-local: validate ## Local CI alias
-408:.PHONY: run-backend
-409:run-backend: ## Run backend dev server on port 8005
-412:.PHONY: run-frontend
-413:run-frontend: ## Run frontend dev server on port 5173
-416:.PHONY: health
-417:health: ## Check backend health endpoint
-420:.PHONY: api-docs
-421:api-docs: ## Show local API docs URL
-425:.PHONY: clean-python
-426:clean-python: ## Remove Python caches
-430:.PHONY: clean-frontend
-431:clean-frontend: ## Remove frontend build output only
-434:.PHONY: clean-codex
-435:clean-codex: ## Remove local Codex runtime reports/logs
-438:.PHONY: clean
-439:clean: clean-python clean-frontend ## Remove generated caches/build outputs, but keep venv and node_modules
-441:.PHONY: clean-all
-442:clean-all: clean clean-codex ## Remove generated caches/build outputs and Codex runtime artifacts
-444:.PHONY: phase10-summary
-445:phase10-summary: ## Print Phase 10 documentation map
+36:.PHONY: help
+37:help: ## Show available targets
+41:.PHONY: info
+42:info: ## Print local project/runtime info
+54:.PHONY: pull
+55:pull: ## Pull latest main with fast-forward only
+58:.PHONY: sync-main
+59:sync-main: ## Sync local main from origin/main; set GO_LIVE_RESET=yes to hard reset and clean
+69:.PHONY: status
+70:status: ## Show normal git status
+73:.PHONY: ignored
+74:ignored: ## Show ignored files summary
+77:.PHONY: tracked-forbidden
+78:tracked-forbidden: ## Fail if local-only/secret/tooling files are tracked
+87:.PHONY: env-check
+88:env-check: ## Validate .env key syntax without printing values
+110:.PHONY: gh-env-dry
+111:gh-env-dry: ## Dry-run sync local env files into GitHub Environment variables/secrets
+114:.PHONY: gh-env-sync
+115:gh-env-sync: ## Live sync local env file into GitHub Environment variables/secrets; requires GH_ENV/GH_ENV_FILE and gh auth
+118:.PHONY: gh-env-clean-dry
+119:gh-env-clean-dry: ## Dry-run stale cleanup for managed GitHub Environment keys
+122:.PHONY: gh-env-clean
+123:gh-env-clean: ## Delete stale managed GitHub Environment keys not present in local env file; requires confirmation
+126:.PHONY: port-scan
+127:port-scan: ## Fail if tracked runtime/source files still reference backend port 8000
+150:.PHONY: secret-scan
+151:secret-scan: ## Scan tracked runtime/source files for actual secret-looking values
+174:.PHONY: safety-scan
+175:safety-scan: tracked-forbidden env-check port-scan secret-scan ## Run local safety scans
+177:.PHONY: backend-venv
+178:backend-venv: ## Create backend virtualenv if missing
+182:.PHONY: backend-install
+183:backend-install: backend-venv ## Install backend package and dev tools
+187:.PHONY: backend-lint
+188:backend-lint: ## Run backend ruff lint
+191:.PHONY: backend-lint-fix
+192:backend-lint-fix: ## Run backend ruff auto-fix
+195:.PHONY: backend-test
+196:backend-test: ## Run backend pytest
+199:.PHONY: backend-check
+200:backend-check: backend-lint backend-test ## Run backend lint + tests
+202:.PHONY: backend-deps
+203:backend-deps: ## Run Codex backend dependency repair helper
+206:.PHONY: frontend-install
+207:frontend-install: ## Install frontend dependencies using Node 20 when nvm is available
+210:.PHONY: frontend-test
+211:frontend-test: ## Run frontend tests
+214:.PHONY: test-frontend-isolated
+215:test-frontend-isolated: ## Run frontend tests without requiring a running backend
+218:.PHONY: frontend-build
+219:frontend-build: ## Build frontend production bundle
+222:.PHONY: frontend-check
+223:frontend-check: frontend-test frontend-build ## Run frontend tests + build
+225:.PHONY: docker-build-backend
+226:docker-build-backend: ## Build backend Docker image
+229:.PHONY: docker-build-frontend
+230:docker-build-frontend: ## Build frontend Docker image
+233:.PHONY: docker-build-nginx
+234:docker-build-nginx: ## Build nginx Docker image
+237:.PHONY: docker-build
+238:docker-build: docker-build-backend docker-build-frontend docker-build-nginx ## Build all Docker images
+240:.PHONY: compose-config
+241:compose-config: ## Validate default docker compose config
+244:.PHONY: compose-prod-config
+245:compose-prod-config: ## Validate production docker compose config
+248:.PHONY: compose-check
+249:compose-check: compose-config compose-prod-config ## Validate all compose configs
+251:.PHONY: compose-up
+252:compose-up: ## Start local compose stack
+255:.PHONY: compose-up-detached
+256:compose-up-detached: ## Start local compose stack detached
+259:.PHONY: compose-prod-up
+260:compose-prod-up: ## Start production compose stack detached
+263:.PHONY: compose-down
+264:compose-down: ## Stop local compose stack
+267:.PHONY: compose-prod-down
+268:compose-prod-down: ## Stop production compose stack
+271:.PHONY: compose-ps
+272:compose-ps: ## Show compose services
+275:.PHONY: compose-logs
+276:compose-logs: ## Follow compose logs
+279:.PHONY: scripts-list
+280:scripts-list: ## List executable script files known to the repo/worktree
+287:.PHONY: scripts-chmod
+288:scripts-chmod: ## chmod +x tracked shell scripts and root installers
+294:.PHONY: install-local
+295:install-local: scripts-chmod ## Run local/VM full-stack installer
+298:.PHONY: install-local-start
+299:install-local-start: scripts-chmod ## Run local installer and start backend/frontend via nohup
+302:.PHONY: install-local-pull
+303:install-local-pull: scripts-chmod ## Pull when clean, then run local installer
+306:.PHONY: install-local-fast
+307:install-local-fast: scripts-chmod ## Run local installer without tests/build for quick repair
+310:.PHONY: install-local-docker
+311:install-local-docker: scripts-chmod ## Run local installer plus Docker validation builds
+314:.PHONY: install-repair
+315:install-repair: scripts-chmod ## Run generated repair helper if present, else force backend reinstall through installer
+318:.PHONY: install-validate
+319:install-validate: scripts-chmod ## Run generated validate helper if present, else run make validate-fast
+322:.PHONY: install-health
+323:install-health: ## Run generated local healthcheck if present
+326:.PHONY: install-prod
+327:install-prod: scripts-chmod ## Run production installer with sudo; set ZDASH_DOMAIN=domain
+330:.PHONY: install-prod-tests
+331:install-prod-tests: scripts-chmod ## Run production installer with backend/frontend host tests enabled
+334:.PHONY: install-prod-no-firewall
+335:install-prod-no-firewall: scripts-chmod ## Run production installer without changing UFW
+338:.PHONY: prod-ps
+339:prod-ps: ## Show production Docker Compose services
+342:.PHONY: prod-health
+343:prod-health: ## Run production health helper
+346:.PHONY: prod-logs
+347:prod-logs: ## Follow production logs; set SERVICE=backend/nginx/frontend/postgres/redis
+350:.PHONY: prod-backend-logs
+351:prod-backend-logs: ## Follow production backend logs
+354:.PHONY: prod-nginx-logs
+355:prod-nginx-logs: ## Follow production nginx logs
+358:.PHONY: prod-backup
+359:prod-backup: ## Run production backup helper
+362:.PHONY: prod-update
+363:prod-update: ## Run production update/rebuild helper
+366:.PHONY: prod-start
+367:prod-start: ## Start production systemd service
+370:.PHONY: prod-stop
+371:prod-stop: ## Stop production systemd service
+374:.PHONY: prod-restart
+375:prod-restart: ## Restart production stack through systemd
+378:.PHONY: prod-status
+379:prod-status: ## Show production systemd service status
+382:.PHONY: prod-down
+383:prod-down: ## Stop production Docker Compose stack directly
+386:.PHONY: prod-up
+387:prod-up: ## Start production Docker Compose stack directly
+390:.PHONY: prod-verify
+391:prod-verify: prod-verify-runtime prod-verify-health prod-verify-rollback prod-verify-observability ## Run full production deployment dry-run verification
+393:.PHONY: prod-verify-runtime
+394:prod-verify-runtime: ## Verify production runtime prerequisites
+397:.PHONY: prod-verify-health
+398:prod-verify-health: ## Verify production health endpoints
+401:.PHONY: prod-verify-rollback
+402:prod-verify-rollback: ## Verify production rollback readiness
+405:.PHONY: prod-verify-observability
+406:prod-verify-observability: ## Verify production observability
+409:.PHONY: phase39-validate
+410:phase39-validate: ## Validate Phase 39 production dry-run deliverables
+434:.PHONY: go-live-rehearsal
+435:go-live-rehearsal: ## Run full go-live rehearsal (runtime + health + safety + rollback + observability + evidence)
+438:.PHONY: go-live-evidence
+439:go-live-evidence: ## Capture go-live evidence to docs/reports/generated/
+442:.PHONY: go-live-safety-locks
+443:go-live-safety-locks: ## Verify go-live safety locks in production env
+446:.PHONY: phase40-validate
+447:phase40-validate: ## Validate Phase 40 go-live rehearsal deliverables
+471:.PHONY: codex-setup
+472:codex-setup: ## Run Codex Cloud setup script
+475:.PHONY: codex-maintenance
+476:codex-maintenance: ## Run Codex Cloud maintenance script
+479:.PHONY: codex-repair-backend
+480:codex-repair-backend: ## Run Codex backend dependency repair script
+483:.PHONY: codex-healthcheck
+484:codex-healthcheck: ## Run Codex healthcheck if present
+487:.PHONY: maintenance
+488:maintenance: codex-maintenance ## Run Codex Cloud maintenance validation
+490:.PHONY: script-run-phases
+491:script-run-phases: ## Run prompt phase runner; set PHASE_ARGS='...'
+494:.PHONY: script-export-json-prompt
+495:script-export-json-prompt: ## Run JSON-to-prompt export helper; set EXPORT_ARGS='...'
+498:.PHONY: script-integrate-ecc
+499:script-integrate-ecc: ## Run ECC integration script
+502:.PHONY: script-sync-ecc-codex
+503:script-sync-ecc-codex: ## Run ECC-to-Codex sync script
+506:.PHONY: script-setup-dev
+507:script-setup-dev: ## Run repository dev setup script
+510:.PHONY: script-enable-agents
+511:script-enable-agents: ## Run agent enabling helper
+514:.PHONY: infra-deploy-dev
+515:infra-deploy-dev: ## Run infra development deploy script
+518:.PHONY: infra-deploy-prod
+519:infra-deploy-prod: ## Run infra production deploy script
+522:.PHONY: infra-rollback
+523:infra-rollback: ## Run infra rollback script
+526:.PHONY: windows-nssm-command
+527:windows-nssm-command: ## Print Windows NSSM install command for PowerShell
+531:.PHONY: all-scripts-check
+532:all-scripts-check: scripts-list scripts-chmod safety-scan ## List scripts, refresh executable bits, and run safety scan
+534:.PHONY: validate-fast
+535:validate-fast: safety-scan backend-check frontend-check ## Run safety scans + backend/frontend validation
+537:.PHONY: validate
+538:validate: validate-fast docker-build compose-check maintenance ## Run full validation including Docker and maintenance
+540:.PHONY: final-release-check
+541:final-release-check: ## Run final public release verification
+544:.PHONY: version-show
+545:version-show: ## Show current VERSION
+548:.PHONY: phase42-validate
+549:phase42-validate: validate-fast ## Run full Phase 42 validation chain (validate-fast + phase39-41 + final-release-check)
+557:.PHONY: release-candidate
+558:release-candidate: ## Create release candidate (verify readiness + collect evidence + generate notes)
+561:.PHONY: release-evidence
+562:release-evidence: ## Collect release evidence to docs/reports/generated/
+565:.PHONY: release-readiness
+566:release-readiness: ## Verify release readiness prerequisites
+569:.PHONY: sbom
+570:sbom: ## Generate SBOM for frontend and backend
+573:.PHONY: backup-restore-proof
+574:backup-restore-proof: ## Run backup/restore proof script
+577:.PHONY: release-attestation
+578:release-attestation: ## Create release attestation
+581:.PHONY: phase48-validate
+582:phase48-validate: ## Validate P0-P2 completion
+585:.PHONY: phase41-validate
+586:phase41-validate: ## Validate Phase 41 release automation deliverables
+610:.PHONY: golive
+611:golive: backend-install frontend-install validate-fast ## Go-live gate: install deps, safety scans, tests, and frontend build
+614:.PHONY: golive-sync
+615:golive-sync: sync-main golive ## Sync from origin/main, then run go-live gate
+617:.PHONY: release-notes
+618:release-notes: ## Generate docs/releases/$(RELEASE_TAG).md
+642:.PHONY: release-artifact
+643:release-artifact: frontend-build ## Package frontend dist artifact under release-artifacts/
+648:.PHONY: release-local
+649:release-local: golive release-notes release-artifact ## Run go-live validation and create local release notes/artifact
+651:.PHONY: release-push
+652:release-push: release-tag ## Push main and release tag; set CONFIRM_RELEASE=yes
+657:.PHONY: gh-release
+658:gh-release: ## Create GitHub release with artifact; requires gh auth and CONFIRM_RELEASE=yes
+670:.PHONY: release-status
+671:release-status: ## Show release tag status
+688:.PHONY: release-tag
+689:release-tag: release-local ## Create local annotated release tag; set CONFIRM_RELEASE=yes
+704:.PHONY: prod-env-generate
+705:prod-env-generate: ## Generate .env.production with random secrets (chmod 600)
+708:.PHONY: prod-deploy-final
+709:prod-deploy-final: prod-env-generate ## Generate env, validate compose config, build, deploy, health check
+718:.PHONY: phase10-final
+719:phase10-final: validate ## Final Phase 10 validation alias
+721:.PHONY: ci-local
+722:ci-local: validate ## Local CI alias
+724:.PHONY: run-backend
+725:run-backend: ## Run backend dev server on port 8005
+728:.PHONY: run-frontend
+729:run-frontend: ## Run frontend dev server on port 5173
+736:.PHONY: server-start
+737:server-start: ## Start local backend and frontend servers
+740:.PHONY: server-stop
+741:server-stop: ## Stop local backend and frontend servers
+744:.PHONY: server-status
+745:server-status: ## Show local server status
+748:.PHONY: server-logs
+749:server-logs: ## Follow local server logs (SERVICE=backend|frontend)
+752:.PHONY: server-open
+753:server-open: ## Print or open local server URLs
+756:.PHONY: server-restart
+757:server-restart: server-stop server-start ## Restart local servers
+763:.PHONY: git-clean-local
+764:git-clean-local: ## Remove local artifacts (baks, logs, tmp)
+767:.PHONY: git-safe-status
+768:git-safe-status: ## Show git status with risky file detection
+771:.PHONY: git-safe-add
+772:git-safe-add: ## Stage files safely (ARGS="path1 path2" or default)
+775:.PHONY: git-safe-commit
+776:git-safe-commit: ## Commit with pre-commit safety scan (MESSAGE="...")
+779:.PHONY: git-safe-push safe-push
+783:.PHONY: safe-commit
+784:safe-commit: git-safe-commit ## Alias to git-safe-commit
+786:.PHONY: health
+787:health: ## Check backend health endpoint
+790:.PHONY: api-docs
+791:api-docs: ## Show local API docs URL
+795:.PHONY: clean-python
+796:clean-python: ## Remove Python caches
+800:.PHONY: clean-frontend
+801:clean-frontend: ## Remove frontend build output only
+804:.PHONY: clean-codex
+805:clean-codex: ## Remove local Codex runtime reports/logs
+808:.PHONY: clean
+809:clean: clean-python clean-frontend ## Remove generated caches/build outputs, but keep venv and node_modules
+811:.PHONY: clean-all
+812:clean-all: clean clean-codex ## Remove generated caches/build outputs and Codex runtime artifacts
+814:.PHONY: phase10-summary
+815:phase10-summary: ## Print Phase 10 documentation map
 
 ## package.json scripts
-### ./backend/node_modules/emitify/package.json
+### ./frontend/package.json
 {
-  "test": "tape test/*.js",
-  "lint": "eslint lib test",
-  "coverage": "nyc npm test",
-  "report": "nyc report --reporter=text-lcov | coveralls",
-  "watcher": "nodemon -w test -w lib --exec",
-  "watch:test": "npm run watcher -- npm test",
-  "watch:lint": "npm run watcher -- npm run lint",
-  "watch:coverage": "npm run watcher -- npm run coverage",
-  "6to5:server": "babel lib -d legacy/lib",
-  "build:server": "redrun 6to5:server legacy:*",
-  "legacy:index": "echo \"module.exports = require('./lib/emitify');\" > legacy/index.js",
-  "build": "redrun build:*",
-  "build:client:dev": "NODE_ENV=development redrun build:client",
-  "build:client": "webpack --progress",
-  "watch:client": "npm run build -- --watch",
-  "wisdom": "npm run build"
+  "dev": "vite",
+  "build": "tsc -p tsconfig.build.json && vite build",
+  "preview": "vite preview",
+  "test": "vitest --run --passWithNoTests",
+  "lint": "eslint src --max-warnings=0"
 }
-### ./backend/node_modules/ruff/package.json
+### ./frontend/node_modules/cross-spawn/package.json
 {
-  "test": "tape test/*.js",
-  "bundle:base": "browserify -s ruff --ng false",
-  "bundle": "npm run bundle:base -- -r ./lib/ruff.js:ruff ./lib/ruff.js -o dist/ruff.js",
-  "minify": "minify dist/ruff.js > dist/ruff.min.js",
-  "build": "npm-run-all bundle minify",
-  "jshint": "jshint lib",
-  "jscs": "jscs --esnext lib test",
-  "codestyle": "npm-run-all jshint jscs",
-  "wisdom": "npm run build"
+  "lint": "eslint .",
+  "test": "jest --env node --coverage",
+  "prerelease": "npm t && npm run lint",
+  "release": "standard-version",
+  "postrelease": "git push --follow-tags origin HEAD && npm publish"
 }
-### ./node_modules/emitify/package.json
+### ./frontend/node_modules/ts-api-utils/package.json
 {
-  "test": "tape test/*.js",
-  "lint": "eslint lib test",
-  "coverage": "nyc npm test",
-  "report": "nyc report --reporter=text-lcov | coveralls",
-  "watcher": "nodemon -w test -w lib --exec",
-  "watch:test": "npm run watcher -- npm test",
-  "watch:lint": "npm run watcher -- npm run lint",
-  "watch:coverage": "npm run watcher -- npm run coverage",
-  "6to5:server": "babel lib -d legacy/lib",
-  "build:server": "redrun 6to5:server legacy:*",
-  "legacy:index": "echo \"module.exports = require('./lib/emitify');\" > legacy/index.js",
-  "build": "redrun build:*",
-  "build:client:dev": "NODE_ENV=development redrun build:client",
-  "build:client": "webpack --progress",
-  "watch:client": "npm run build -- --watch",
-  "wisdom": "npm run build"
+  "build": "tsup src/index.ts && cp lib/index.d.ts lib/index.d.cts",
+  "docs": "typedoc",
+  "docs:serve": "npx --yes http-server docs/generated",
+  "format": "prettier \"**/*\" --ignore-unknown",
+  "lint": "eslint . --max-warnings 0",
+  "lint:docs": "typedoc --validation --treatValidationWarningsAsErrors",
+  "lint:knip": "knip",
+  "lint:md": "markdownlint \"**/*.md\" \".github/**/*.md\" --rules sentences-per-line",
+  "lint:package": "publint --strict",
+  "lint:packages": "pnpm dedupe --check",
+  "lint:spelling": "cspell \"**\" \".github/**/*\"",
+  "prepare": "husky",
+  "should-semantic-release": "should-semantic-release --verbose",
+  "test": "vitest",
+  "tsc": "tsc"
 }
-### ./node_modules/ruff/package.json
+### ./frontend/node_modules/eslint-visitor-keys/package.json
 {
-  "test": "tape test/*.js",
-  "bundle:base": "browserify -s ruff --ng false",
-  "bundle": "npm run bundle:base -- -r ./lib/ruff.js:ruff ./lib/ruff.js -o dist/ruff.js",
-  "minify": "minify dist/ruff.js > dist/ruff.min.js",
-  "build": "npm-run-all bundle minify",
-  "jshint": "jshint lib",
-  "jscs": "jscs --esnext lib test",
-  "codestyle": "npm-run-all jshint jscs",
-  "wisdom": "npm run build"
+  "build": "npm run build:cjs && npm run build:types",
+  "build:cjs": "rollup -c",
+  "build:debug": "npm run build:cjs -- -m && npm run build:types",
+  "build:types": "tsc -v && tsc",
+  "test": "mocha \"tests/**/*.test.cjs\" && mocha \"tests/**/*.test.js\" && npm run test:types",
+  "test:coverage": "c8 npm test",
+  "test:types": "tsd"
 }
-### ./frontend/node_modules/asynckit/package.json
+### ./frontend/node_modules/d3-time/package.json
 {
-  "clean": "rimraf coverage",
-  "lint": "eslint *.js lib/*.js test/*.js",
-  "test": "istanbul cover --reporter=json tape -- 'test/test-*.js' | tap-spec",
-  "win-test": "tape test/test-*.js",
-  "browser": "browserify -t browserify-istanbul test/lib/browserify_adjustment.js test/test-*.js | obake --coverage | tap-spec",
-  "report": "istanbul report",
-  "size": "browserify index.js | size-table asynckit",
-  "debug": "tape test/test-*.js"
+  "test": "TZ=America/Los_Angeles mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
 }
-### ./frontend/node_modules/safer-buffer/package.json
+### ./frontend/node_modules/js-tokens/package.json
 {
-  "browserify-test": "browserify --external tape tests.js > browserify-tests.js && tape browserify-tests.js",
-  "test": "standard && tape tests.js"
+  "test": "mocha --ui tdd",
+  "esprima-compare": "node esprima-compare ./index.js everything.js/es5.js",
+  "build": "node generate-index.js",
+  "dev": "npm run build && npm test"
 }
+### ./frontend/node_modules/d3-color/package.json
+{
+  "test": "mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/picomatch/package.json
+{
+  "lint": "eslint --cache --cache-location node_modules/.cache/.eslintcache --report-unused-disable-directives --ignore-path .gitignore .",
+  "mocha": "mocha --reporter dot",
+  "test": "npm run lint && npm run mocha",
+  "test:ci": "npm run test:cover",
+  "test:cover": "nyc npm run mocha"
+}
+### ./frontend/node_modules/minimatch/package.json
+{
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "prepublishOnly": "git push origin --follow-tags",
+  "prepare": "tshy",
+  "pretest": "npm run prepare",
+  "presnap": "npm run prepare",
+  "test": "tap",
+  "snap": "tap",
+  "format": "prettier --write .",
+  "benchmark": "node benchmark/index.js",
+  "typedoc": "typedoc --tsconfig .tshy/esm.json ./src/*.ts",
+  "lint": "oxlint --fix src test",
+  "postsnap": "npm run lint",
+  "postlint": "npm run format"
+}
+### ./frontend/node_modules/vitest/package.json
+{
+  "build": "premove dist && rollup -c",
+  "dev": "NODE_OPTIONS=\"--max-old-space-size=8192\" rollup -c --watch -m inline"
+}
+### ./frontend/node_modules/immer/package.json
+{
+  "test": "vitest run && yarn test:build && yarn test:flow",
+  "test:perf": "cd __performance_tests__ && node add-data.mjs && node todo.mjs && node incremental.mjs && node large-obj.mjs",
+  "test:flow": "yarn flow check __tests__/flow",
+  "test:build": "yarn build && vitest run --config vitest.config.build.ts",
+  "test:src": "vitest run",
+  "watch": "vitest",
+  "coverage": "vitest run --coverage",
+  "coveralls": "vitest run --coverage && cat ./coverage/lcov.info | ./node_modules/.bin/coveralls && rm -rf ./coverage",
+  "build": "tsup",
+  "publish-docs": "cd website && GIT_USER=mweststrate USE_SSH=true yarn docusaurus deploy",
+  "start": "cd website && yarn start",
+  "test:size": "yarn build && yarn import-size --report . produce enableMapSet enablePatches enableArrayMethods",
+  "test:sizequick": "yarn build && yarn import-size . produce",
+  "release": "semantic-release --branches main"
+}
+### ./frontend/node_modules/html-encoding-sniffer/package.json
+{
+  "test": "node --test",
+  "lint": "eslint"
+}
+### ./frontend/node_modules/decimal.js/package.json
+{
+  "test": "node ./test/test.js"
+}
+### ./frontend/node_modules/json5/package.json
+{
+  "build": "rollup -c",
+  "build-package": "node build/package.js",
+  "build-unicode": "node build/unicode.js",
+  "coverage": "tap --coverage-report html test",
+  "lint": "eslint --fix .",
+  "lint-report": "eslint .",
+  "prepublishOnly": "npm run production",
+  "preversion": "npm run production",
+  "production": "run-s test build",
+  "tap": "tap -Rspec --100 test",
+  "test": "run-s lint-report tap",
+  "version": "npm run build-package && git add package.json5"
+}
+### ./frontend/node_modules/hermes-estree/package.json
+{}
+### ./frontend/node_modules/eslint-plugin-react-hooks/package.json
+{
+  "build:compiler": "cd ../../compiler && yarn workspace babel-plugin-react-compiler build",
+  "test": "yarn build:compiler && jest",
+  "typecheck": "tsc --noEmit"
+}
+### ./frontend/node_modules/path-key/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/victory-vendor/package.json
+{
+  "build": "wireit",
+  "build:lib": "wireit",
+  "build:lib:esm": "wireit",
+  "build:lib:cjs": "wireit",
+  "build:dist": "wireit",
+  "build:dist:dev": "wireit",
+  "build:dist:min": "wireit",
+  "check": "wireit",
+  "types:check": "wireit",
+  "types:create": "wireit",
+  "lint": "wireit",
+  "lint:fix": "wireit",
+  "jest": "wireit"
+}
+### ./frontend/node_modules/convert-source-map/package.json
+{
+  "test": "tap test/*.js --color"
+}
+### ./frontend/node_modules/lightningcss-linux-x64-musl/package.json
+{}
+### ./frontend/node_modules/eslint-scope/package.json
+{
+  "build": "rollup -c",
+  "lint:types": "attw --pack",
+  "pretest": "npm run build",
+  "test": "node Makefile.js test && npm run test:types",
+  "test:types": "tsc -p tsconfig.json && tsc -p tests/types/tsconfig.json"
+}
+### ./frontend/node_modules/scheduler/package.json
+{}
 ### ./frontend/node_modules/escalade/package.json
 {
   "build": "bundt",
   "pretest": "npm run build",
   "test": "uvu -r esm test -i fixtures"
 }
-### ./frontend/node_modules/es-set-tostringtag/package.json
+### ./frontend/node_modules/min-indent/package.json
 {
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc -p . && attw -P",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@\">= 10.2\" audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+  "test": "xo && ava"
 }
-### ./frontend/node_modules/any-promise/package.json
+### ./frontend/node_modules/esutils/package.json
 {
-  "test": "ava"
+  "test": "npm run-script lint && npm run-script unit-test",
+  "lint": "jshint lib/*.js",
+  "unit-test": "mocha --compilers coffee:coffee-script -R spec",
+  "generate-regex": "node tools/generate-identifier-regex.js"
+}
+### ./frontend/node_modules/assertion-error/package.json
+{
+  "build": "deno bundle mod.ts > index.js",
+  "pretest": "rm -rf coverage/",
+  "test": "deno test --coverage=coverage",
+  "posttest": "deno coverage coverage --lcov > coverage/lcov.info && lcov --summary coverage/lcov.info"
+}
+### ./frontend/node_modules/nanoid/package.json
+{}
+### ./frontend/node_modules/reselect/package.json
+{
+  "build": "yarn clean && tsup",
+  "clean": "rimraf dist",
+  "format": "prettier --write \"{src,test}/**/*.{js,ts}\" \"docs/**/*.md\"",
+  "lint": "eslint src test",
+  "prepack": "yarn build",
+  "bench": "vitest --run bench --mode production",
+  "test": "node --expose-gc ./node_modules/vitest/dist/cli-wrapper.js --run && vitest --run --typecheck.only",
+  "test:watch": "node --expose-gc ./node_modules/vitest/dist/cli-wrapper.js --watch",
+  "test:cov": "vitest run --coverage",
+  "type-check": "vitest --run --typecheck.only",
+  "type-check:trace": "vitest --run --typecheck.only && tsc --noEmit -p typescript_test/tsconfig.json --generateTrace trace && npx @typescript/analyze-trace trace && rimraf trace",
+  "test:typescript": "tsc --noEmit -p typescript_test/tsconfig.json",
+  "docs:start": "yarn --cwd website start",
+  "docs:build": "yarn --cwd website build",
+  "docs:clear": "yarn --cwd website clear",
+  "docs:serve": "yarn --cwd website serve"
+}
+### ./frontend/node_modules/balanced-match/package.json
+{
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "prepublishOnly": "git push origin --follow-tags",
+  "prepare": "tshy",
+  "pretest": "npm run prepare",
+  "presnap": "npm run prepare",
+  "test": "tap",
+  "snap": "tap",
+  "format": "prettier --write .",
+  "benchmark": "node benchmark/index.js",
+  "typedoc": "typedoc --tsconfig .tshy/esm.json ./src/*.ts"
+}
+### ./frontend/node_modules/clsx/package.json
+{
+  "build": "node bin",
+  "test": "uvu -r esm test"
+}
+### ./frontend/node_modules/pretty-format/package.json
+{}
+### ./frontend/node_modules/fdir/package.json
+{
+  "prepublishOnly": "npm run test && npm run build",
+  "build": "tsdown",
+  "format": "prettier --write src __tests__ benchmarks",
+  "test": "vitest run __tests__/",
+  "test:coverage": "vitest run --coverage __tests__/",
+  "test:watch": "vitest __tests__/",
+  "bench": "ts-node benchmarks/benchmark.js",
+  "bench:glob": "ts-node benchmarks/glob-benchmark.ts",
+  "bench:fdir": "ts-node benchmarks/fdir-benchmark.ts",
+  "release": "./scripts/release.sh"
+}
+### ./frontend/node_modules/set-cookie-parser/package.json
+{
+  "lint": "eslint . --ignore-pattern '!.eslintrc.js'",
+  "test": "npm run lint && mocha",
+  "autofix": "npm run lint -- --fix",
+  "precommit": "npm test"
 }
 ### ./frontend/node_modules/aria-query/package.json
 {
@@ -261,41 +561,163 @@
   "jest": "jest --coverage __tests__/**/*",
   "output_as_hack": "babel-node ./scripts/output_as_hack.js"
 }
-### ./frontend/node_modules/chokidar/package.json
-{
-  "dtslint": "dtslint types",
-  "lint": "eslint --report-unused-disable-directives --ignore-path .gitignore .",
-  "build": "npm ls",
-  "mocha": "mocha --exit --timeout 90000",
-  "test": "npm run lint && npm run mocha"
-}
-### ./frontend/node_modules/iconv-lite/package.json
-{
-  "coverage": "c8 _mocha --grep .",
-  "test": "mocha --reporter spec --grep ."
-}
-### ./frontend/node_modules/queue-microtask/package.json
-{
-  "test": "standard && tape test/*.js"
-}
-### ./frontend/node_modules/strip-indent/package.json
+### ./frontend/node_modules/shebang-regex/package.json
 {
   "test": "xo && ava && tsd"
 }
-### ./frontend/node_modules/es-define-property/package.json
+### ./frontend/node_modules/saxes/package.json
 {
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc -p .",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>= 10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+  "tsc": "tsc",
+  "copy": "cp -p README.md build/dist && sed -e'/\"private\": true/d' package.json > build/dist/package.json",
+  "build": "npm run tsc && npm run copy",
+  "test": "npm run build && mocha --delay",
+  "lint": "eslint --ignore-path .gitignore '**/*.ts' '**/*.js'",
+  "lint-fix": "npm run lint -- --fix",
+  "posttest": "npm run lint",
+  "typedoc": "typedoc --tsconfig tsconfig.json --name saxes --out build/docs/ --listInvalidSymbolLinks --excludePrivate --excludeNotExported",
+  "build-docs": "npm run typedoc",
+  "gh-pages": "npm run build-docs && mkdir -p build && (cd build; rm -rf gh-pages; git clone .. --branch gh-pages gh-pages) && mkdir -p build/gh-pages/latest && find build/gh-pages/latest -type f -delete && cp -rp build/docs/* build/gh-pages/latest && find build/gh-pages -type d -empty -delete",
+  "self:publish": "cd build/dist && npm_config_tag=`simple-dist-tag` npm publish",
+  "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
+  "postversion": "npm run test && npm run self:publish",
+  "postpublish": "git push origin --follow-tags"
+}
+### ./frontend/node_modules/caniuse-lite/package.json
+{}
+### ./frontend/node_modules/json-schema-traverse/package.json
+{
+  "eslint": "eslint index.js spec",
+  "test-spec": "mocha spec -R spec",
+  "test": "npm run eslint && nyc npm run test-spec"
+}
+### ./frontend/node_modules/type-check/package.json
+{
+  "test": "make test"
+}
+### ./frontend/node_modules/source-map-js/package.json
+{
+  "test": "npm run build && node test/run-tests.js",
+  "build": "webpack --color",
+  "toc": "doctoc --title '## Table of Contents' README.md && doctoc --title '## Table of Contents' CONTRIBUTING.md"
+}
+### ./frontend/node_modules/tinyrainbow/package.json
+{}
+### ./frontend/node_modules/update-browserslist-db/package.json
+{}
+### ./frontend/node_modules/eslint/package.json
+{
+  "build:docs:update-links": "node tools/fetch-docs-links.js",
+  "build:site": "node Makefile.js gensite",
+  "build:webpack": "node Makefile.js webpack",
+  "build:readme": "node tools/update-readme.js",
+  "build:rules-index": "node Makefile.js generateRuleIndexPage",
+  "fmt": "prettier --write .",
+  "fmt:check": "prettier --check .",
+  "lint": "node Makefile.js lint",
+  "lint:docs:js": "node Makefile.js lintDocsJS",
+  "lint:docs:rule-examples": "node Makefile.js checkRuleExamples",
+  "lint:unused": "knip",
+  "lint:fix": "node Makefile.js lint -- fix",
+  "lint:fix:docs:js": "node Makefile.js lintDocsJS -- fix",
+  "lint:rule-types": "node tools/update-rule-type-headers.js --check",
+  "lint:types": "attw --pack",
+  "release:generate:alpha": "node Makefile.js generatePrerelease -- alpha",
+  "release:generate:beta": "node Makefile.js generatePrerelease -- beta",
+  "release:generate:latest": "node Makefile.js generateRelease -- latest",
+  "release:generate:maintenance": "node Makefile.js generateRelease -- maintenance",
+  "release:generate:rc": "node Makefile.js generatePrerelease -- rc",
+  "release:publish": "node Makefile.js publishRelease",
+  "test": "node Makefile.js test",
+  "test:browser": "node Makefile.js cypress",
+  "test:cli": "mocha",
+  "test:ecosystem": "node tools/test-ecosystem/index.mjs",
+  "test:ecosystem:update": "node tools/test-ecosystem/update.mjs",
+  "test:emfile": "node tools/check-emfile-handling.js",
+  "test:fuzz": "node Makefile.js fuzz",
+  "test:performance": "node Makefile.js perf",
+  "test:pnpm": "cd tests/pnpm && node check.js && pnpm install && pnpm exec tsc",
+  "test:types": "tsc -p tests/lib/types/tsconfig.json && npm run test:types --workspaces --if-present",
+  "test:types:5.3": "npx -p typescript@5.3 -y -- tsc -p tsconfig.types-legacy.json",
+  "test:types:5.x": "npx -p typescript@5.x -y -- tsc -p tsconfig.types.json",
+  "test:types:7.x": "npx -p @typescript/native-preview@latest -y -- tsgo -p tsconfig.types.json",
+  "test:types:all": "npm run test:types && npm run test:types:5.3 && npm run test:types:5.x && npm run test:types:7.x"
+}
+### ./frontend/node_modules/which/package.json
+{
+  "test": "tap",
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "prepublish": "npm run changelog",
+  "prechangelog": "bash gen-changelog.sh",
+  "changelog": "git add CHANGELOG.md",
+  "postchangelog": "git commit -m 'update changelog - '${npm_package_version}",
+  "postpublish": "git push origin --follow-tags"
+}
+### ./frontend/node_modules/electron-to-chromium/package.json
+{
+  "build": "node build.mjs",
+  "update": "node automated-update.js",
+  "test": "nyc ava --verbose",
+  "report": "nyc report --reporter=text-lcov > coverage.lcov"
+}
+### ./frontend/node_modules/lightningcss-linux-x64-gnu/package.json
+{}
+### ./frontend/node_modules/rolldown/package.json
+{
+  "# Scrips for binding #": "_",
+  "artifacts": "napi artifacts --cwd ./src --package-json-path ../package.json -o=../artifacts --npm-dir ../npm",
+  "build-binding": "oxnode ./build-binding.ts",
+  "build-binding:release": "pnpm build-binding --release",
+  "build-binding:profile": "pnpm build-binding --profile profile --features chrome-tracing",
+  "build-binding:wasi": "pnpm build-binding --target wasm32-wasip1-threads",
+  "build-binding:wasi:release": "pnpm build-binding --profile release-wasi --target wasm32-wasip1-threads",
+  "# Scrips for node #": "_",
+  "build-node": "node --enable-source-maps --import @oxc-node/core/register -C dev ./build.ts",
+  "build-types-check": "tsc -p ./tsconfig.check.json",
+  "build-js-glue": "pnpm run --sequential '/^build-(node|types-check)$/'",
+  "build-native:debug": "pnpm run --sequential '/^build-(binding|js-glue)$/'",
+  "build-native:release": "pnpm run --sequential '/^build-(binding:release|js-glue)$/'",
+  "build-native:profile": "pnpm run build-binding:profile && pnpm run build-js-glue",
+  "build-native:memory-profile": "pnpm run build-binding:profile --features default_global_allocator && pnpm run build-js-glue",
+  "build-wasi:debug": "TARGET='rolldown-wasi' pnpm run --sequential '/^build-(binding|binding:wasi|node)$/'",
+  "build-wasi:release": "TARGET='rolldown-wasi' pnpm run --sequential '/^build-(binding|binding:wasi:release|node)$/'",
+  "build-browser-pkg:debug": "TARGET='browser' pnpm run --sequential '/^build-(binding:wasi|node)$/'",
+  "build-browser-pkg:release": "TARGET='browser' pnpm run --sequential '/^build-(binding:wasi:release|node)$/'",
+  "# Scrips for docs #": "_",
+  "publint": "publint ."
+}
+### ./frontend/node_modules/esrecurse/package.json
+{
+  "test": "gulp travis",
+  "unit-test": "gulp test",
+  "lint": "gulp lint"
+}
+### ./frontend/node_modules/fast-levenshtein/package.json
+{
+  "build": "grunt build",
+  "prepublish": "npm run build",
+  "benchmark": "grunt benchmark",
+  "test": "mocha"
+}
+### ./frontend/node_modules/eslint-plugin-react-refresh/package.json
+{}
+### ./frontend/node_modules/p-locate/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/parse5/package.json
+{}
+### ./frontend/node_modules/is-glob/package.json
+{
+  "test": "mocha && node benchmark.js"
+}
+### ./frontend/node_modules/keyv/package.json
+{
+  "build": "echo 'No build step required.'",
+  "prepare": "yarn build",
+  "test": "xo && c8 ava --serial",
+  "test:ci": "xo && ava --serial",
+  "clean": "rm -rf node_modules && rm -rf ./coverage && rm -rf ./test/testdb.sqlite"
 }
 ### ./frontend/node_modules/dom-accessibility-api/package.json
 {
@@ -320,303 +742,15 @@
   "wpt:reset": "rimraf ./tests/wpt && yarn wpt:init",
   "wpt:update": "git submodule update --recursive --remote && cd tests/wpt && python wpt.py manifest --path ../wpt-jsdom/wpt-manifest.json"
 }
-### ./frontend/node_modules/saxes/package.json
-{
-  "tsc": "tsc",
-  "copy": "cp -p README.md build/dist && sed -e'/\"private\": true/d' package.json > build/dist/package.json",
-  "build": "npm run tsc && npm run copy",
-  "test": "npm run build && mocha --delay",
-  "lint": "eslint --ignore-path .gitignore '**/*.ts' '**/*.js'",
-  "lint-fix": "npm run lint -- --fix",
-  "posttest": "npm run lint",
-  "typedoc": "typedoc --tsconfig tsconfig.json --name saxes --out build/docs/ --listInvalidSymbolLinks --excludePrivate --excludeNotExported",
-  "build-docs": "npm run typedoc",
-  "gh-pages": "npm run build-docs && mkdir -p build && (cd build; rm -rf gh-pages; git clone .. --branch gh-pages gh-pages) && mkdir -p build/gh-pages/latest && find build/gh-pages/latest -type f -delete && cp -rp build/docs/* build/gh-pages/latest && find build/gh-pages -type d -empty -delete",
-  "self:publish": "cd build/dist && npm_config_tag=`simple-dist-tag` npm publish",
-  "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md",
-  "postversion": "npm run test && npm run self:publish",
-  "postpublish": "git push origin --follow-tags"
-}
-### ./frontend/node_modules/rollup/package.json
-{
-  "build": "concurrently -c green,blue \"npm run build:wasm\" \"npm:build:ast-converters\" && concurrently -c green,blue \"npm run build:napi -- --release\" \"npm:build:js\" && npm run build:copy-native",
-  "build:quick": "concurrently -c green,blue 'npm:build:napi' 'npm:build:cjs' && npm run build:copy-native",
-  "build:napi": "napi build --cwd rust/bindings_napi --platform --dts ../../native.d.ts --no-js --output-dir ../.. --package-json-path ../../package.json",
-  "build:wasm": "wasm-pack build rust/bindings_wasm --out-dir ../../wasm --target web --no-pack && shx rm wasm/.gitignore",
-  "build:wasm:node": "wasm-pack build rust/bindings_wasm --out-dir ../../wasm-node --target nodejs --no-pack && shx rm wasm-node/.gitignore",
-  "update:napi": "npm run build:napi && npm run build:copy-native",
-  "build:js": "rollup --config rollup.config.ts --configPlugin typescript --forceExit",
-  "build:js:node": "rollup --config rollup.config.ts --configPlugin typescript --configIsBuildNode --forceExit",
-  "build:prepare": "concurrently -c green,blue \"npm run build:napi -- --release\" \"npm:build:js:node\" && npm run build:copy-native",
-  "update:js": "npm run build:js && npm run build:copy-native",
-  "build:copy-native": "shx mkdir -p dist && shx cp rollup.*.node dist/",
-  "dev": "concurrently -kc green,blue 'nodemon --watch rust -e rs --exec \"npm run build:wasm\"' 'vitepress dev docs'",
-  "build:cjs": "rollup --config rollup.config.ts --configPlugin typescript --configTest --forceExit",
-  "build:bootstrap": "shx mv dist dist-build && node dist-build/bin/rollup --config rollup.config.ts --configPlugin typescript --forceExit && shx rm -rf dist-build",
-  "build:bootstrap:cjs": "shx mv dist dist-build && node dist-build/bin/rollup --config rollup.config.ts --configPlugin typescript --configTest --forceExit && shx rm -rf dist-build",
-  "build:docs": "vitepress build docs",
-  "build:ast-converters": "node scripts/generate-ast-converters.js",
-  "preview:docs": "vitepress preview docs",
-  "ci:artifacts": "napi artifacts",
-  "ci:lint": "concurrently -c red,yellow,green,blue 'npm:lint:js:nofix' 'npm:lint:native-js' 'npm:lint:markdown:nofix' 'npm:lint:rust:nofix'",
-  "ci:test:all": "concurrently --kill-others-on-fail -c green,blue,magenta,cyan 'npm:test:only' 'npm:test:typescript' 'npm:test:leak' 'npm:test:browser'",
-  "ci:coverage": "NODE_OPTIONS=--no-experimental-require-module nyc --reporter lcovonly mocha",
-  "lint": "concurrently -c red,yellow,green,blue 'npm:lint:js' 'npm:lint:native-js' 'npm:lint:markdown' 'npm:lint:rust'",
-  "lint:js": "eslint . --fix --cache --concurrency auto",
-  "lint:js:nofix": "eslint . --cache --concurrency auto",
-  "lint:native-js": "node scripts/lint-native-js.js",
-  "lint:markdown": "prettier --write \"**/*.md\"",
-  "lint:markdown:nofix": "prettier --check \"**/*.md\"",
-  "lint:rust": "cd rust && cargo fmt && cargo clippy --fix --allow-dirty",
-  "lint:rust:nofix": "cd rust && cargo fmt --check && cargo clippy",
-  "perf": "npm run build:bootstrap:cjs && node --expose-gc scripts/perf-report/index.js",
-  "prepare": "husky && npm run prepare:patch && node scripts/check-release.js || npm run build:prepare",
-  "prepare:patch": "patch-package",
-  "prepublishOnly": "node scripts/check-release.js && node scripts/prepublish.js",
-  "postpublish": "node scripts/postpublish.js",
-  "prepublish:napi": "napi prepublish --no-gh-release",
-  "release": "node scripts/prepare-release.js",
-  "release:docs": "git fetch --update-head-ok origin master:master && git branch --force documentation-published master && git push origin documentation-published",
-  "check-audit": "check-audit",
-  "resolve-audit": "resolve-audit",
-  "test": "npm run build && npm run test:all",
-  "test:update-snapshots": "node scripts/update-snapshots.js",
-  "test:cjs": "npm run build:cjs && npm run test:only",
-  "test:quick": "mocha -b test/test.js",
-  "test:all": "concurrently --kill-others-on-fail -c green,blue,magenta,cyan,red 'npm:test:only' 'npm:test:browser' 'npm:test:typescript' 'npm:test:package' 'npm:test:options'",
-  "test:coverage": "npm run build:cjs && shx rm -rf coverage/* && nyc --reporter html mocha test/test.js",
-  "test:coverage:browser": "npm run build && shx rm -rf coverage/* && nyc mocha test/browser/index.js",
-  "test:leak": "npm install --no-save weak-napi && node --expose-gc test/leak/index.js",
-  "test:package": "node scripts/test-package.js",
-  "test:options": "node scripts/test-options.js",
-  "test:only": "mocha test/test.js",
-  "test:typescript": "shx rm -rf test/typescript/dist && shx cp -r dist test/typescript/ && tsc --noEmit -p test/typescript && tsc --noEmit -p . && tsc --noEmit -p scripts && vue-tsc --noEmit -p docs",
-  "test:browser": "mocha test/browser/index.js",
-  "watch": "rollup --config rollup.config.ts --configPlugin typescript --watch"
-}
-### ./frontend/node_modules/loose-envify/package.json
-{
-  "test": "tap test/*.js"
-}
-### ./frontend/node_modules/normalize-path/package.json
-{
-  "test": "mocha"
-}
-### ./frontend/node_modules/csstype/package.json
-{
-  "prepublish": "npm install --no-save --prefix __tests__ && npm install --no-save --prefix __tests__/__fixtures__",
-  "release": "release-it",
-  "update": "tsx update.ts",
-  "build": "tsx --inspect build.ts --start",
-  "watch": "tsx build.ts --watch",
-  "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-  "pretty": "prettier --write build.ts **/*.{ts,js,json,md}",
-  "lazy": "tsc && npm run lint",
-  "test": "jest --runInBand",
-  "test:src": "jest src.*.ts",
-  "test:dist": "jest dist.*.ts --runInBand"
-}
-### ./frontend/node_modules/postcss-selector-parser/package.json
-{
-  "typecheck": "tsc --noEmit --strict postcss-selector-parser.d.ts postcss-selector-parser.test.ts",
-  "pretest": "eslint src && npm run typecheck",
-  "prepare": "del-cli dist && BABEL_ENV=publish babel src --out-dir dist --ignore /__tests__/",
-  "lintfix": "eslint --fix src",
-  "report": "nyc report --reporter=html",
-  "test": "nyc ava src/__tests__/*.mjs",
-  "testone": "ava"
-}
-### ./frontend/node_modules/decimal.js-light/package.json
-{
-  "test": "node ./test/test.js",
-  "build": "uglifyjs decimal.js --source-map doc/decimal.js.map -c -m -o decimal.min.js --preamble \"/* decimal.js-light v2.5.1 https://github.com/MikeMcl/decimal.js-light/LICENCE */\""
-}
-### ./frontend/node_modules/recharts/package.json
-{
-  "prepare": "husky install",
-  "build": "npm run build-types && npm run build-cjs && npm run build-es6 && npm run build-umd",
-  "build-cjs": "rimraf lib && cross-env NODE_ENV=commonjs babel ./src -d lib --extensions '.js,.ts,.tsx'",
-  "build-es6": "rimraf es6 && cross-env NODE_ENV=es6 babel ./src -d es6 --extensions '.js,.ts,.tsx'",
-  "build-umd": "rimraf umd && cross-env NODE_ENV=production webpack --entry ./src/index.ts -o umd",
-  "build-types": "rimraf types && npm run tsc",
-  "demo": "webpack serve --config demo/webpack.config.js --port 3000 --host 127.0.0.1 --progress --profile --static demo/",
-  "test": "vitest run --config vitest.config.ts",
-  "test-coverage": "vitest run --config vitest.config.ts --coverage",
-  "test-watch": "vitest --config vitest.config.ts",
-  "lint": "eslint \"./src/**/*.{ts,tsx}\"",
-  "lint-test": "eslint \"./test/**/*.{ts,tsx}\"",
-  "lint-storybook": "eslint \"./storybook/**/*.{ts,tsx}\"",
-  "autofix": "eslint \"./src/**/*.{ts,tsx}\" --fix",
-  "analyse": "cross-env NODE_ENV=analyse webpack ./src/index.ts -o umd/Recharts.js",
-  "tsc": "tsc",
-  "storybook": "npx storybook dev -p 6006 -c storybook",
-  "build-storybook": "npx storybook build -o storybook/public -c storybook",
-  "chromatic": "npx chromatic",
-  "test-storybook": "test-storybook --config-dir storybook",
-  "test-storybook:url": "test-storybook --url http://127.0.0.1:9009 --config-dir storybook",
-  "test-storybook:ci": "concurrently -k -s first -n \"SB,TEST\" -c \"magenta,blue\" \"npm run build-storybook --quiet && npx http-server storybook/public --port 9009 --silent\" \"wait-on tcp:127.0.0.1:9009 && npm run test-storybook:url --maxWorkers=2\""
-}
-### ./frontend/node_modules/merge2/package.json
-{
-  "test": "standard && tman"
-}
-### ./frontend/node_modules/mime-types/package.json
-{
-  "lint": "eslint .",
-  "test": "mocha --reporter spec test/test.js",
-  "test-ci": "nyc --reporter=lcov --reporter=text npm test",
-  "test-cov": "nyc --reporter=html --reporter=text npm test"
-}
-### ./frontend/node_modules/std-env/package.json
-{
-  "build": "obuild",
-  "dev": "vitest",
-  "lint": "oxlint . && oxfmt",
-  "lint:fix": "oxlint --fix . && oxfmt",
-  "prepack": "obuild",
-  "release": "pnpm test && pnpm build && changelogen --release --publish && git push --follow-tags",
-  "test": "pnpm lint && pnpm typecheck && vitest run --coverage",
-  "typecheck": "tsgo --noEmit"
-}
-### ./frontend/node_modules/reusify/package.json
-{
-  "lint": "eslint",
-  "test": "tape test.js",
-  "test:coverage": "c8 --100 tape test.js",
-  "test:typescript": "tsc"
-}
-### ./frontend/node_modules/vitest/package.json
-{
-  "build": "premove dist && rollup -c",
-  "dev": "NODE_OPTIONS=\"--max-old-space-size=8192\" rollup -c --watch -m inline"
-}
-### ./frontend/node_modules/min-indent/package.json
-{
-  "test": "xo && ava"
-}
-### ./frontend/node_modules/tr46/package.json
-{
-  "test": "node --test",
-  "lint": "eslint",
-  "pretest": "node scripts/getLatestTests.js",
-  "prepublish": "node scripts/generateMappingTable.js && node scripts/generateRegexes.js"
-}
-### ./frontend/node_modules/d3-interpolate/package.json
-{
-  "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
-}
-### ./frontend/node_modules/agent-base/package.json
-{
-  "build": "tsc",
-  "test": "jest --env node --verbose --bail",
-  "lint": "eslint . --ext .ts",
-  "pack": "node ../../scripts/pack.mjs"
-}
-### ./frontend/node_modules/decimal.js/package.json
-{
-  "test": "node ./test/test.js"
-}
-### ./frontend/node_modules/webidl-conversions/package.json
-{
-  "lint": "eslint .",
-  "test": "mocha test/*.js",
-  "test-no-sab": "mocha --parallel --jobs 2 --require test/helpers/delete-sab.js test/*.js",
-  "coverage": "nyc mocha test/*.js"
-}
-### ./frontend/node_modules/jsdom/package.json
-{
-  "prepare": "npm run convert-idl && npm run generate-js-globals",
-  "pretest": "npm run prepare && npm run init-wpt",
-  "test-wpt": "mocha test/web-platform-tests/run-wpts.js",
-  "test-tuwpt": "mocha test/web-platform-tests/run-tuwpts.js",
-  "test-mocha": "mocha",
-  "test-api": "mocha test/api",
-  "test": "mocha test/index.js",
-  "lint": "eslint --cache",
-  "init-wpt": "git submodule update --init --recursive",
-  "reset-wpt": "rm -rf ./test/web-platform-tests/tests && npm run init-wpt",
-  "update-wpt": "git submodule update --init --recursive --remote && cd test/web-platform-tests/tests && python wpt.py manifest --path ../wpt-manifest.json",
-  "update-authors": "git log --format=\"%aN <%aE>\" | sort -f | uniq > AUTHORS.txt",
-  "benchmark": "node ./benchmark/runner",
-  "convert-idl": "node ./scripts/webidl/convert.js",
-  "generate-js-globals": "node ./scripts/generate-js-globals.js"
-}
-### ./frontend/node_modules/postcss-js/package.json
-{}
-### ./frontend/node_modules/delayed-stream/package.json
+### ./frontend/node_modules/optionator/package.json
 {
   "test": "make test"
 }
-### ./frontend/node_modules/lz-string/package.json
-{}
-### ./frontend/node_modules/tinyexec/package.json
+### ./frontend/node_modules/ms/package.json
 {
-  "build": "tsdown",
-  "dev": "tsdown --watch",
-  "format": "prettier --write src",
-  "format:check": "prettier --check src",
-  "lint": "tsc --noEmit && eslint src && publint",
-  "prepare": "npm run build",
-  "test": "npm run build && npm run test:unit",
-  "test:unit": "vitest run"
-}
-### ./frontend/node_modules/baseline-browser-mapping/package.json
-{
-  "fix-cli-permissions": "output=$(npx baseline-browser-mapping 2>&1); path=$(printf '%s\n' \"$output\" | sed -n 's/^.*: \\(.*\\): Permission denied$/\\1/p; t; s/^\\(.*\\): Permission denied$/\\1/p'); if [ -n \"$path\" ]; then echo \"Permission denied for: $path\"; echo \"Removing $path ...\"; rm -rf \"$path\"; else echo \"$output\"; fi",
-  "test:format": "npx prettier --check .",
-  "test:lint": "npx eslint .",
-  "test:legacy-test": "node spec/legacy-tests/legacy-test.cjs; node dist/cli.cjs",
-  "test:jasmine": "npx jasmine",
-  "test:jasmine-browser": "npx jasmine-browser-runner runSpecs --config ./spec/support/jasmine-browser.js",
-  "test": "npm run build && npm run fix-cli-permissions && npm run test:format && npm run test:lint && npm run test:jasmine && npm run test:jasmine-browser",
-  "build": "rm -rf dist; npx prettier . --write; rollup -c; rm -rf ./dist/scripts/expose-data.d.ts ./dist/cli.d.ts",
-  "refresh-downstream": "npx tsx scripts/refresh-downstream.ts",
-  "refresh-static": "npx tsx scripts/refresh-static.ts",
-  "update-data-file": "npx tsx scripts/update-data-file.ts; npx prettier ./src/data/data.js --write",
-  "update-data-dependencies": "npm i @mdn/browser-compat-data@latest web-features@latest -D",
-  "check-data-changes": "git diff --name-only | grep -q '^src/data/data.js$' && echo 'changes-available=TRUE' || echo 'changes-available=FALSE'"
-}
-### ./frontend/node_modules/es-module-lexer/package.json
-{
-  "build": "npm install -g chomp ; chomp build",
-  "test": "npm install -g chomp ; chomp test"
-}
-### ./frontend/node_modules/eventemitter3/package.json
-{
-  "browserify": "rm -rf umd && mkdir umd && browserify index.js -s EventEmitter3 -o umd/eventemitter3.js",
-  "minify": "uglifyjs umd/eventemitter3.js --source-map -cm -o umd/eventemitter3.min.js",
-  "benchmark": "find benchmarks/run -name '*.js' -exec benchmarks/start.sh {} \\;",
-  "test": "nyc --reporter=html --reporter=text mocha test/test.js",
-  "prepublishOnly": "npm run browserify && npm run minify",
-  "test-browser": "node test/browser.js"
-}
-### ./frontend/node_modules/nwsapi/package.json
-{
-  "lint": "eslint ./src/nwsapi.js"
-}
-### ./frontend/node_modules/https-proxy-agent/package.json
-{
-  "build": "tsc",
-  "test": "jest --env node --verbose --bail test/test.ts",
-  "test-e2e": "jest --env node --verbose --bail test/e2e.test.ts",
-  "lint": "eslint --ext .ts",
-  "pack": "node ../../scripts/pack.mjs"
-}
-### ./frontend/node_modules/dlv/package.json
-{
-  "dev": "microbundle watch",
-  "build": "microbundle",
-  "prepublish": "npm run build",
-  "test": "node test",
-  "release": "npm run build && npm test && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
-}
-### ./frontend/node_modules/d3-scale/package.json
-{
-  "test": "TZ=America/Los_Angeles mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+  "precommit": "lint-staged",
+  "lint": "eslint lib/* bin/*",
+  "test": "mocha tests.js"
 }
 ### ./frontend/node_modules/magic-string/package.json
 {
@@ -632,11 +766,63 @@
   "bench": "pnpm run build && node benchmark/index.mjs",
   "watch": "rollup -cw"
 }
-### ./frontend/node_modules/d3-color/package.json
+### ./frontend/node_modules/detect-libc/package.json
+{
+  "test": "semistandard && nyc --reporter=text --check-coverage --branches=100 ava test/unit.js",
+  "changelog": "conventional-changelog -i CHANGELOG.md -s",
+  "bench": "node benchmark/detect-libc",
+  "bench:calls": "node benchmark/call-familySync.js && sleep 1 && node benchmark/call-isNonGlibcLinuxSync.js && sleep 1 && node benchmark/call-versionSync.js"
+}
+### ./frontend/node_modules/redux-thunk/package.json
+{
+  "clean": "rimraf lib dist es",
+  "prepublishOnly": "yarn clean && yarn lint && yarn test && yarn build",
+  "format": "prettier --write \"{src,test,typescript_test}/**/*.{js,ts}\"",
+  "format:check": "prettier --check \"{src,test,typescript_test}/**/*.{js,ts}\"",
+  "lint": "eslint \"{src,test,typescript_test}/**/*.{js,ts}\"",
+  "test": "vitest run",
+  "test:cov": "vitest run --coverage",
+  "test:typescript": "tsc --noEmit -p typescript_test/tsconfig.json",
+  "build": "tsup",
+  "prepack": "yarn build"
+}
+### ./frontend/node_modules/d3-array/package.json
 {
   "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "prepublishOnly": "rm -rf dist && rollup -c",
   "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/i18next/package.json
+{
+  "lint": "eslint src typescript test \"./*.{ts,mts,mjs}\"",
+  "format": "prettier \"{,**/}*.{ts,tsx,mts,js,mjs,json,md}\" --check",
+  "format:fix": "prettier \"{,**/}*.{ts,tsx,mts,js,mjs,json,md}\" --write",
+  "test": "vitest --run",
+  "test:coverage": "vitest --coverage --run",
+  "test:runtime": "vitest --project runtime",
+  "test:compatibility": "vitest --project compatibility",
+  "test:typescript": "vitest --config vitest.workspace.typescript.mts",
+  "test:local": "vitest --config vitest.workspace.local.mts",
+  "build": "rimraf dist && rollup -c && echo '{\"type\":\"module\"}' > dist/esm/package.json && cpy \"./dist/umd/*.js\" ./",
+  "fix_dist_package": "node -e 'console.log(`{\"type\":\"module\",\"version\":\"${process.env.npm_package_version}\"}`)' > dist/esm/package.json",
+  "preversion": "npm run test && npm run build && git push",
+  "postversion": "npm run fix_dist_package && git push && git push --tags && npm run release",
+  "prepare": "husky",
+  "release": "gh-release"
+}
+### ./frontend/node_modules/tldts/package.json
+{
+  "clean": "rimraf dist coverage",
+  "build": "tsc --build ./tsconfig.json",
+  "bundle": "tsc --build ./tsconfig.bundle.json && rollup --config ./rollup.config.mjs",
+  "prepack": "yarn run bundle",
+  "test": "nyc ../../node_modules/.bin/mocha --config ../../.mocharc.cjs"
+}
+### ./frontend/node_modules/xml-name-validator/package.json
+{
+  "test": "node --test",
+  "benchmark": "node scripts/benchmark.js",
+  "lint": "eslint ."
 }
 ### ./frontend/node_modules/d3-time-format/package.json
 {
@@ -644,349 +830,16 @@
   "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
   "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
 }
-### ./frontend/node_modules/autoprefixer/package.json
-{}
-### ./frontend/node_modules/ms/package.json
-{
-  "precommit": "lint-staged",
-  "lint": "eslint lib/* bin/*",
-  "test": "mocha tests.js"
-}
-### ./frontend/node_modules/lilconfig/package.json
-{
-  "test": "NODE_OPTIONS=--experimental-vm-modules ./node_modules/.bin/jest --coverage",
-  "lint": "biome ci ./src",
-  "types": "tsc"
-}
-### ./frontend/node_modules/expect-type/package.json
-{
-  "eslint": "eslint --max-warnings 0",
-  "lint": "tsc && pnpm eslint .",
-  "type-check": "tsc",
-  "build": "tsc -p tsconfig.lib.json",
-  "arethetypeswrong": "attw --pack",
-  "test": "vitest run"
-}
-### ./frontend/node_modules/glob-parent/package.json
-{
-  "lint": "eslint .",
-  "pretest": "npm run lint",
-  "test": "nyc mocha --async-only"
-}
-### ./frontend/node_modules/symbol-tree/package.json
-{
-  "lint": "eslint lib test",
-  "test": "istanbul cover test/SymbolTree.js",
-  "posttest": "npm run lint",
-  "ci": "istanbul cover test/SymbolTree.js --report lcovonly && cat ./coverage/lcov.info | coveralls",
-  "postci": "npm run posttest",
-  "predocumentation": "cp readme-header.md README.md",
-  "documentation": "jsdoc2md --files lib/SymbolTree.js >> README.md"
-}
-### ./frontend/node_modules/is-binary-path/package.json
-{
-  "test": "xo && ava && tsd"
-}
-### ./frontend/node_modules/fastq/package.json
-{
-  "lint": "eslint .",
-  "unit": "nyc --lines 100 --branches 100 --functions 100 --check-coverage --reporter=text tape test/test.js test/promise.js",
-  "coverage": "nyc --reporter=html --reporter=cobertura --reporter=text tape test/test.js test/promise.js",
-  "test:report": "npm run lint && npm run unit:report",
-  "test": "npm run lint && npm run unit",
-  "typescript": "tsc --project ./test/tsconfig.json",
-  "legacy": "tape test/test.js"
-}
-### ./frontend/node_modules/anymatch/package.json
-{
-  "test": "nyc mocha",
-  "mocha": "mocha"
-}
-### ./frontend/node_modules/es-errors/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "pretest": "npm run lint",
-  "test": "npm run tests-only",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "posttest": "aud --production",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc -p . && eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/redent/package.json
-{
-  "test": "xo && ava && tsd"
-}
 ### ./frontend/node_modules/d3-shape/package.json
 {
   "test": "mocha 'test/**/*-test.js' && eslint src test",
   "prepublishOnly": "rm -rf dist && rollup -c",
   "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
 }
-### ./frontend/node_modules/math-intrinsics/package.json
+### ./frontend/node_modules/punycode/package.json
 {
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "pretest": "npm run lint",
-  "test": "npm run tests-only",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "posttest": "npx npm@'>= 10.2' audit --production",
-  "prelint": "evalmd README.md && eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc && attw -P",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/react-router/package.json
-{}
-### ./frontend/node_modules/pretty-format/package.json
-{}
-### ./frontend/node_modules/yallist/package.json
-{
-  "test": "tap test/*.js --100",
-  "preversion": "npm test",
-  "postversion": "npm publish",
-  "postpublish": "git push origin --all; git push origin --tags"
-}
-### ./frontend/node_modules/node-releases/package.json
-{
-  "build": "node scripts/build.js"
-}
-### ./frontend/node_modules/tinyrainbow/package.json
-{}
-### ./frontend/node_modules/fast-equals/package.json
-{
-  "benchmark": "npm run build && node benchmark/index.js",
-  "build": "npm run clean && npm run build:dist && npm run build:types",
-  "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
-  "build:types": "pti fix-types -l dist",
-  "clean": "rm -rf dist",
-  "clean:cjs": "rm -rf dist/cjs",
-  "clean:es": "rm -rf dist/es",
-  "clean:umd": "rm -rf dist/umd",
-  "dev": "vite --config=config/vite.config.ts",
-  "format": "prettier . --log-level=warn --write",
-  "format:check": "prettier . --log-level=warn --check",
-  "lint": "eslint --max-warnings=0",
-  "lint:fix": "npm run lint -- --fix",
-  "release:alpha": "release-it --config=config/release-it/alpha.json",
-  "release:beta": "release-it --config=config/release-it/beta.json",
-  "release:rc": "release-it --config=config/release-it/rc.json",
-  "release:scripts": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
-  "release:stable": "release-it --config=config/release-it/stable.json",
-  "start": "npm run dev",
-  "test": "vitest run --config=config/vitest.config.ts",
-  "typecheck": "tsc --noEmit"
-}
-### ./frontend/node_modules/react-transition-group/package.json
-{}
-### ./frontend/node_modules/fdir/package.json
-{
-  "prepublishOnly": "npm run test && npm run build",
-  "build": "tsdown",
-  "format": "prettier --write src __tests__ benchmarks",
-  "test": "vitest run __tests__/",
-  "test:coverage": "vitest run --coverage __tests__/",
-  "test:watch": "vitest __tests__/",
-  "bench": "ts-node benchmarks/benchmark.js",
-  "bench:glob": "ts-node benchmarks/glob-benchmark.ts",
-  "bench:fdir": "ts-node benchmarks/fdir-benchmark.ts",
-  "release": "./scripts/release.sh"
-}
-### ./frontend/node_modules/tiny-invariant/package.json
-{
-  "test": "yarn jest",
-  "test:size": "yarn build && yarn size-limit",
-  "prettier:write": "yarn prettier --debug-check src/** test/**",
-  "prettier:check": "yarn prettier --write src/** test/**",
-  "typescript:check": "tsc --noEmit",
-  "validate": "yarn prettier:check && yarn typescript:check",
-  "build:clean": "rimraf dist",
-  "build:flow": "cp src/tiny-invariant.js.flow dist/tiny-invariant.cjs.js.flow",
-  "build:typescript": "tsc ./src/tiny-invariant.ts --emitDeclarationOnly --declaration --outDir ./dist",
-  "build:typescript:esm": "tsc ./src/tiny-invariant.ts --emitDeclarationOnly --declaration --outDir ./dist/esm",
-  "build:dist": "yarn rollup --config rollup.config.mjs",
-  "build": "yarn build:clean && yarn build:dist && yarn build:typescript && yarn build:typescript:esm",
-  "prepublishOnly": "yarn build"
-}
-### ./frontend/node_modules/parse5/package.json
-{
-  "build:cjs": "tsc --noCheck --moduleResolution node10 --module CommonJS --target ES6 --outDir dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json"
-}
-### ./frontend/node_modules/w3c-xmlserializer/package.json
-{
-  "test": "node --test",
-  "lint": "eslint ."
-}
-### ./frontend/node_modules/jiti/package.json
-{
-  "build": "pnpm clean && NODE_ENV=production pnpm webpack",
-  "clean": "rm -rf dist",
-  "dev": "pnpm clean && pnpm webpack --watch",
-  "jiti": "JITI_DEBUG=1 JITI_CACHE=false JITI_REQUIRE_CACHE=false ./bin/jiti.js",
-  "jiti:legacy": "JITI_DEBUG=1 npx node@12 ./bin/jiti.js",
-  "lint": "eslint . && prettier -c src lib test stubs",
-  "lint:fix": "eslint --fix . && prettier -w src lib test stubs",
-  "release": "pnpm build && pnpm test && changelogen --release --push && npm publish --tag 1x",
-  "test": "pnpm lint && vitest run --coverage && pnpm test:bun",
-  "test:bun": "bun --bun test test/bun"
-}
-### ./frontend/node_modules/pify/package.json
-{
-  "test": "xo && ava && npm run optimization-test",
-  "optimization-test": "node --allow-natives-syntax optimization-test.js"
-}
-### ./frontend/node_modules/read-cache/package.json
-{
-  "test": "ava"
-}
-### ./frontend/node_modules/entities/package.json
-{
-  "build:docs": "typedoc --hideGenerator src/index.ts",
-  "build:encode-trie": "node --import=tsx scripts/write-encode-map.ts",
-  "build:trie": "node --import=tsx scripts/write-decode-map.ts",
-  "format": "npm run format:es && npm run format:prettier",
-  "format:es": "npm run lint:es -- --fix",
-  "format:prettier": "npm run prettier -- --write",
-  "lint": "npm run lint:es && npm run lint:ts && npm run lint:prettier",
-  "lint:es": "eslint . --ignore-path .gitignore",
-  "lint:prettier": "npm run prettier -- --check",
-  "lint:ts": "tsc --noEmit",
-  "prepublishOnly": "tshy",
-  "prettier": "prettier '**/*.{ts,md,json,yml}'",
-  "test": "npm run test:vi && npm run lint",
-  "test:vi": "vitest run"
-}
-### ./frontend/node_modules/pirates/package.json
-{
-  "test": "ava"
-}
-### ./frontend/node_modules/pathe/package.json
-{
-  "build": "unbuild",
-  "dev": "vitest",
-  "lint": "eslint . && prettier -c src test",
-  "lint:fix": "eslint . --fix && prettier -w src test",
-  "release": "pnpm test && pnpm build && changelogen --release && pnpm publish && git push --follow-tags",
-  "test": "pnpm lint && vitest run --coverage",
-  "test:types": "tsc --noEmit"
-}
-### ./frontend/node_modules/readdirp/package.json
-{
-  "dtslint": "dtslint",
-  "nyc": "nyc",
-  "mocha": "mocha --exit",
-  "lint": "eslint --report-unused-disable-directives --ignore-path .gitignore .",
-  "test": "npm run lint && nyc npm run mocha"
-}
-### ./frontend/node_modules/json5/package.json
-{
-  "build": "rollup -c",
-  "build-package": "node build/package.js",
-  "build-unicode": "node build/unicode.js",
-  "coverage": "tap --coverage-report html test",
-  "lint": "eslint --fix .",
-  "lint-report": "eslint .",
-  "prepublishOnly": "npm run production",
-  "preversion": "npm run production",
-  "production": "run-s test build",
-  "tap": "tap -Rspec --100 test",
-  "test": "run-s lint-report tap",
-  "version": "npm run build-package && git add package.json5"
-}
-### ./frontend/node_modules/is-extglob/package.json
-{
-  "test": "mocha"
-}
-### ./frontend/node_modules/d3-format/package.json
-{
-  "test": "vitest",
-  "lint": "eslint src test",
-  "prepublishOnly": "rm -rf dist && rollup -c"
-}
-### ./frontend/node_modules/source-map-js/package.json
-{
-  "test": "npm run build && node test/run-tests.js",
-  "build": "webpack --color",
-  "toc": "doctoc --title '## Table of Contents' README.md && doctoc --title '## Table of Contents' CONTRIBUTING.md"
-}
-### ./frontend/node_modules/thenify/package.json
-{
-  "test": "mocha --reporter spec",
-  "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
-  "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot"
-}
-### ./frontend/node_modules/function-bind/package.json
-{
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "pretest": "npm run lint",
-  "test": "npm run tests-only",
-  "posttest": "aud --production",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "lint": "eslint --ext=js,mjs .",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/http-proxy-agent/package.json
-{
-  "build": "tsc",
-  "test": "jest --env node --verbose --bail",
-  "lint": "eslint . --ext .ts",
-  "pack": "node ../../scripts/pack.mjs"
-}
-### ./frontend/node_modules/stackback/package.json
-{
-  "test": "mocha --ui qunit"
-}
-### ./frontend/node_modules/obug/package.json
-{
-  "lint": "eslint --cache .",
-  "lint:fix": "pnpm run lint --fix",
-  "build": "tsdown",
-  "dev": "tsdown --watch",
-  "test": "vitest",
-  "test:coverage": "vitest --project node --coverage",
-  "play": "vite playground",
-  "typecheck": "tsc --noEmit",
-  "format": "prettier --cache --write .",
-  "release": "bumpp"
-}
-### ./frontend/node_modules/combined-stream/package.json
-{
-  "test": "node test/run.js"
-}
-### ./frontend/node_modules/d3-timer/package.json
-{
-  "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
-}
-### ./frontend/node_modules/css.escape/package.json
-{
-  "test": "node tests/tests.js",
-  "cover": "istanbul cover --report html --verbose --dir coverage tests/tests.js",
-  "coveralls": "istanbul cover --verbose --dir coverage tests/tests.js && coveralls < coverage/lcov.info; rm -rf coverage/lcov*"
-}
-### ./frontend/node_modules/tinybench/package.json
-{
-  "publish": "npm run build && clean-publish"
-}
-### ./frontend/node_modules/camelcase-css/package.json
-{
-  "pretest": "babel index.js --out-file=index-es5.js --presets=env --plugins=optimize-starts-with",
-  "test": "mocha test.js --check-leaks --bail"
-}
-### ./frontend/node_modules/estree-walker/package.json
-{
-  "prepublishOnly": "tsc && npm test",
-  "test": "uvu test"
+  "test": "mocha tests",
+  "build": "node scripts/prepublish.js"
 }
 ### ./frontend/node_modules/xmlchars/package.json
 {
@@ -1006,87 +859,23 @@
   "postpublish": "git push origin --follow-tags",
   "clean": "rm -rf build"
 }
-### ./frontend/node_modules/arg/package.json
+### ./frontend/node_modules/isexe/package.json
 {
-  "test": "WARN_EXIT=1 jest --coverage -w 2"
+  "test": "tap test/*.js --100",
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "postpublish": "git push origin --all; git push origin --tags"
 }
-### ./frontend/node_modules/tough-cookie/package.json
+### ./frontend/node_modules/html-parse-stringify/package.json
 {
-  "build": "npm run _build:clean && npm run _build:compile",
-  "lint": "npm run _lint:check",
-  "prepack": "npm run build",
-  "prepare-pr": "npm test && npm run _api:update && npm run _docs:generate && npm run _format:fix && npm run _lint:fix",
-  "test": "npm run build && npm run _test:ts && npm run _test:legacy",
-  "version": "npm run _version:generate && npm run prepare-pr && git add --renormalize .",
-  "_api:check": "api-extractor run --verbose",
-  "_api:update": "api-extractor run --verbose --local",
-  "_build:clean": "rm -rf dist",
-  "_build:compile": "tsc",
-  "_docs:generate": "api-documenter markdown --input-folder ./tmp --output-folder ./api/docs",
-  "_docs:fix": "prettier ./api/docs --write",
-  "_format:check": "prettier . --check",
-  "_format:fix": "prettier . --write",
-  "_lint:check": "eslint .",
-  "_lint:fix": "eslint . --fix",
-  "_test:legacy": "./test/scripts/vows.js test/*_test.js",
-  "_test:ts": "jest",
-  "_version:generate": "genversion --template version-template.ejs --force lib/version.ts"
-}
-### ./frontend/node_modules/lines-and-columns/package.json
-{
-  "build:watch": "tsc --build tsconfig.build.json --watch",
-  "lint": "eslint .",
-  "lint:fix": "eslint . --fix",
-  "test": "is-ci test:coverage test:watch",
-  "test:coverage": "jest --coverage",
-  "test:watch": "jest --watch"
-}
-### ./frontend/node_modules/dunder-proto/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=.js,.mjs .",
-  "postlint": "tsc -p . && attw -P",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>= 10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/postcss-value-parser/package.json
-{
-  "lint:prettier": "prettier \"**/*.js\" \"**/*.ts\" --list-different",
-  "lint:js": "eslint . --cache",
-  "lint": "yarn lint:js && yarn lint:prettier",
-  "pretest": "yarn lint",
-  "test": "tape test/*.js | tap-spec"
-}
-### ./frontend/node_modules/braces/package.json
-{
-  "test": "mocha",
-  "benchmark": "node benchmark"
-}
-### ./frontend/node_modules/dequal/package.json
-{
-  "build": "bundt",
-  "pretest": "npm run build",
-  "postbuild": "echo \"lite\" | xargs -n1 cp -v index.d.ts",
-  "test": "uvu -r esm test"
-}
-### ./frontend/node_modules/supports-preserve-symlinks-flag/package.json
-{
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "lint": "eslint --ext=js,mjs .",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "aud --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+  "lint": "eslint src test",
+  "format": "prettier \"{src,test}/**/*.js\" \"*.{json,md,mjs}\" --check",
+  "format:fix": "prettier \"{src,test}/**/*.js\" \"*.{json,md,mjs}\" --write",
+  "test": "vitest --run",
+  "build": "rimraf dist && rollup -c && node -e \"require('fs').writeFileSync('dist/esm/package.json', JSON.stringify({ type: 'module' }))\"",
+  "prepublishOnly": "npm run lint && npm run test && npm run build",
+  "preversion": "npm run lint && npm run test && npm run build && git push",
+  "postversion": "git push && git push --tags"
 }
 ### ./frontend/node_modules/semver/package.json
 {
@@ -1098,316 +887,126 @@
   "snap": "tap test/ --100 --timeout=30",
   "posttest": "npm run lint"
 }
-### ./frontend/node_modules/is-number/package.json
+### ./frontend/node_modules/estraverse/package.json
 {
-  "test": "mocha"
-}
-### ./frontend/node_modules/postcss-load-config/package.json
-{}
-### ./frontend/node_modules/html-encoding-sniffer/package.json
-{
-  "test": "node --test",
-  "lint": "eslint ."
-}
-### ./frontend/node_modules/react-is/package.json
-{}
-### ./frontend/node_modules/react/package.json
-{}
-### ./frontend/node_modules/react-router-dom/package.json
-{}
-### ./frontend/node_modules/recharts-scale/package.json
-{
-  "build": "npm run build-cjs && npm run build-es6 && rimraf umd && npm run build-umd && npm run build-min",
-  "build-cjs": "rimraf lib && cross-env BABEL_ENV=commonjs babel ./src -d lib",
-  "build-es6": "rimraf es6 && cross-env babel ./src -d es6",
-  "build-umd": "cross-env NODE_ENV=development BABEL_ENV=commonjs webpack --entry ./src/index.js -o umd",
-  "build-min": "cross-env NODE_ENV=production BABEL_ENV=commonjs webpack --entry ./src/index.js -o umd",
-  "test": "nyc ava --verbose",
-  "autofix": "eslint src test --fix",
-  "lint": "eslint src test"
-}
-### ./frontend/node_modules/cssstyle/package.json
-{
-  "download": "node ./scripts/downloadLatestProperties.mjs",
-  "generate": "run-p generate:*",
-  "generate:implemented_properties": "node ./scripts/generateImplementedProperties.mjs",
-  "generate:properties": "node ./scripts/generateProperties.js",
-  "lint": "npm run generate && eslint --max-warnings 0",
-  "lint:fix": "eslint --fix --max-warnings 0",
-  "prepublishOnly": "npm run lint && npm run test",
-  "test": "npm run generate && node --test",
-  "test-ci": "npm run lint && npm run test"
-}
-### ./frontend/node_modules/path-parse/package.json
-{
-  "test": "node test.js"
-}
-### ./frontend/node_modules/object-hash/package.json
-{
-  "test": "node ./node_modules/.bin/mocha test",
-  "prepublish": "gulp dist"
-}
-### ./frontend/node_modules/victory-vendor/package.json
-{
-  "build": "wireit",
-  "build:lib": "wireit",
-  "build:lib:esm": "wireit",
-  "build:lib:cjs": "wireit",
-  "build:dist": "wireit",
-  "build:dist:dev": "wireit",
-  "build:dist:min": "wireit",
-  "check": "wireit",
-  "types:check": "wireit",
-  "types:create": "wireit",
-  "format": "wireit",
-  "format:fix": "wireit",
-  "lint": "wireit",
-  "lint:fix": "wireit",
-  "jest": "wireit"
-}
-### ./frontend/node_modules/ansi-styles/package.json
-{
-  "test": "xo && ava && tsd",
-  "screenshot": "svg-term --command='node screenshot' --out=screenshot.svg --padding=3 --width=55 --height=3 --at=1000 --no-cursor"
-}
-### ./frontend/node_modules/whatwg-mimetype/package.json
-{
-  "test": "node --test",
-  "coverage": "c8 node --test --experimental-test-coverage",
-  "lint": "eslint .",
-  "pretest": "node scripts/get-latest-platform-tests.js"
-}
-### ./frontend/node_modules/d3-array/package.json
-{
-  "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
-}
-### ./frontend/node_modules/resolve/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated && cp node_modules/is-core-module/core.json ./lib/ ||:",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prelint": "eclint check $(git ls-files | grep -Ev test\\/list-exports$ | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git')",
-  "lint": "eslint .",
-  "pretests-only": "cd ./test/resolver/nested_symlinks && node mylib/sync && node mylib/async",
-  "tests-only": "tape test/*.js",
-  "pretest": "npm run lint",
-  "test": "npm run --silent tests-only",
-  "posttest": "npm run test:multirepo && npx npm@'>= 10.2' audit --production",
-  "test:multirepo": "cd ./test/resolver/multirepo && npm install && npm test"
-}
-### ./frontend/node_modules/ansi-regex/package.json
-{
-  "test": "xo && ava && tsd",
-  "view-supported": "node fixtures/view-codes.js"
-}
-### ./frontend/node_modules/has-tostringtag/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "pretest": "npm run --silent lint",
-  "test": "npm run tests-only",
-  "posttest": "aud --production",
-  "tests-only": "npm run test:stock && npm run test:shams",
-  "test:stock": "nyc node test",
-  "test:staging": "nyc node --harmony --es-staging test",
-  "test:shams": "npm run --silent test:shams:getownpropertysymbols && npm run --silent test:shams:corejs",
-  "test:shams:corejs": "nyc node test/shams/core-js.js",
-  "test:shams:getownpropertysymbols": "nyc node test/shams/get-own-property-symbols.js",
-  "lint": "eslint --ext=js,mjs .",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/assertion-error/package.json
-{
-  "build": "deno bundle mod.ts > index.js",
-  "pretest": "rm -rf coverage/",
-  "test": "deno test --coverage=coverage",
-  "posttest": "deno coverage coverage --lcov > coverage/lcov.info && lcov --summary coverage/lcov.info"
-}
-### ./frontend/node_modules/convert-source-map/package.json
-{
-  "test": "tap test/*.js --color"
-}
-### ./frontend/node_modules/mz/package.json
-{
-  "test": "mocha --reporter spec",
-  "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot",
-  "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter dot"
-}
-### ./frontend/node_modules/didyoumean/package.json
-{}
-### ./frontend/node_modules/gensync/package.json
-{
-  "test": "jest"
-}
-### ./frontend/node_modules/d3-time/package.json
-{
-  "test": "TZ=America/Los_Angeles mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
-}
-### ./frontend/node_modules/is-potential-custom-element-name/package.json
-{
-  "build": "node build.js",
-  "test": "mocha"
-}
-### ./frontend/node_modules/electron-to-chromium/package.json
-{
-  "build": "node build.mjs",
-  "update": "node automated-update.js",
-  "test": "nyc ava --verbose",
-  "report": "nyc report --reporter=text-lcov > coverage.lcov"
-}
-### ./frontend/node_modules/postcss-nested/package.json
-{}
-### ./frontend/node_modules/call-bind-apply-helpers/package.json
-{
-  "prepack": "npmignore --auto --commentLines=auto",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=.js,.mjs .",
-  "postlint": "tsc -p . && attw -P",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>=10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/cssesc/package.json
-{
-  "build": "grunt template && babel cssesc.js -o cssesc.js",
-  "test": "mocha tests",
-  "cover": "istanbul cover --report html node_modules/.bin/_mocha tests -- -u exports -R spec"
-}
-### ./frontend/node_modules/d3-ease/package.json
-{
-  "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
-}
-### ./frontend/node_modules/tldts-core/package.json
-{
-  "clean": "rimraf dist",
-  "build": "tsc --build ./tsconfig.json",
-  "bundle": "tsc --build ./tsconfig.bundle.json && rollup --config ./rollup.config.ts --configPlugin typescript",
-  "prepack": "yarn run bundle",
-  "test": "nyc mocha --config ../../.mocharc.cjs"
-}
-### ./frontend/node_modules/internmap/package.json
-{
-  "test": "mocha 'test/**/*-test.js' && eslint src test",
-  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
-  "postpublish": "git push && git push --tags"
-}
-### ./frontend/node_modules/picocolors/package.json
-{}
-### ./frontend/node_modules/commander/package.json
-{
-  "lint": "eslint index.js \"tests/**/*.js\"",
-  "test": "jest && npm run test-typings",
-  "test-typings": "tsc -p tsconfig.json"
-}
-### ./frontend/node_modules/tldts/package.json
-{
-  "clean": "rimraf dist coverage",
-  "build": "tsc --build ./tsconfig.json",
-  "bundle": "tsc --build ./tsconfig.bundle.json && rollup --config ./rollup.config.mjs",
-  "prepack": "yarn run bundle",
-  "test": "nyc mocha --config ../../.mocharc.cjs"
-}
-### ./frontend/node_modules/is-glob/package.json
-{
-  "test": "mocha && node benchmark.js"
-}
-### ./frontend/node_modules/update-browserslist-db/package.json
-{}
-### ./frontend/node_modules/run-parallel/package.json
-{
-  "test": "standard && npm run test-node && npm run test-browser",
-  "test-browser": "airtap -- test/*.js",
-  "test-browser-local": "airtap --local -- test/*.js",
-  "test-node": "tape test/*.js"
+  "test": "npm run-script lint && npm run-script unit-test",
+  "lint": "jshint estraverse.js",
+  "unit-test": "mocha --compilers js:babel-register"
 }
 ### ./frontend/node_modules/tailwindcss/package.json
 {
-  "prebuild": "npm run generate && rimraf lib",
-  "build": "swc src --out-dir lib --copy-files",
-  "postbuild": "esbuild lib/cli-peer-dependencies.js --bundle --platform=node --outfile=peers/index.js --define:process.env.CSS_TRANSFORMER_WASM=false",
-  "rebuild-fixtures": "npm run build && node -r @swc/register scripts/rebuildFixtures.js",
-  "style": "eslint .",
-  "pretest": "npm run generate",
-  "test": "jest",
-  "test:integrations": "npm run test --prefix ./integrations",
-  "install:integrations": "node scripts/install-integrations.js",
-  "generate:plugin-list": "node -r @swc/register scripts/create-plugin-list.js",
-  "generate:types": "node -r @swc/register scripts/generate-types.js",
-  "generate": "npm run generate:plugin-list && npm run generate:types",
-  "release-channel": "node ./scripts/release-channel.js",
-  "release-notes": "node ./scripts/release-notes.js",
-  "prepublishOnly": "npm install --force && npm run build"
+  "lint": "tsc --noEmit",
+  "build": "tsup-node --env.NODE_ENV production",
+  "dev": "tsup-node --env.NODE_ENV development --watch",
+  "test:ui": "playwright test"
 }
-### ./frontend/node_modules/lucide-react/package.json
+### ./frontend/node_modules/es-toolkit/package.json
 {
-  "build": "pnpm clean && pnpm copy:license && pnpm build:icons && pnpm typecheck && pnpm build:bundles",
-  "copy:license": "cp ../../LICENSE ./LICENSE",
-  "clean": "rm -rf dist && rm -rf stats && rm -rf ./src/icons/*.ts && rm -f dynamicIconImports.*",
-  "build:icons": "build-icons --output=./src --templateSrc=./scripts/exportTemplate.mjs --renderUniqueKey --withAliases --withDynamicImports --separateAliasesFile --aliasesFileExtension=.ts --iconFileExtension=.ts --exportFileName=index.ts",
-  "build:bundles": "rollup -c ./rollup.config.mjs",
-  "typecheck": "tsc",
-  "typecheck:watch": "tsc -w",
-  "test": "pnpm build:icons && vitest run",
-  "test:watch": "vitest watch",
-  "version": "pnpm version --git-tag-version=false"
+  "bench": "yarn workspace benchmarks bench",
+  "build": "tsdown && ./.scripts/postbuild.sh",
+  "format": "prettier --write .",
+  "gen:benchmark": "node ./.scripts/generate-benchmark.mjs",
+  "gen:bundle-size": "node ./.scripts/generate-bundle-size.mjs",
+  "lint": "eslint --config eslint.config.mjs --concurrency=auto",
+  "packlint": "packlint sort -R",
+  "prepack": "yarn build",
+  "test": "vitest --coverage",
+  "transform": "jscodeshift -t ./.scripts/tests/transform-lodash-test.ts $0 && prettier --write $0",
+  "typecheck": "tsc --noEmit"
 }
-### ./frontend/node_modules/lodash/package.json
+### ./frontend/node_modules/tr46/package.json
 {
-  "test": "echo \"See https://travis-ci.org/lodash-archive/lodash-cli for testing details.\""
+  "test": "node --test",
+  "lint": "eslint",
+  "pretest": "node scripts/getLatestTests.js",
+  "prepublish": "node scripts/generateMappingTable.js && node scripts/generateRegexes.js"
 }
-### ./frontend/node_modules/siginfo/package.json
-{
-  "test": "standard"
-}
-### ./frontend/node_modules/gopd/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prelint": "tsc -p . && attw -P",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "evalmd README.md",
-  "pretest": "npm run lint",
-  "tests-only": "tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>=10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/fill-range/package.json
-{
-  "lint": "eslint --cache --cache-location node_modules/.cache/.eslintcache --report-unused-disable-directives --ignore-path .gitignore .",
-  "mocha": "mocha --reporter dot",
-  "test": "npm run lint && npm run mocha",
-  "test:ci": "npm run test:cover",
-  "test:cover": "nyc npm run mocha"
-}
-### ./frontend/node_modules/prop-types/package.json
-{
-  "pretest": "npm run lint",
-  "lint": "eslint .",
-  "test": "npm run tests-only",
-  "tests-only": "jest",
-  "umd": "NODE_ENV=development browserify index.js -t loose-envify --standalone PropTypes -o prop-types.js",
-  "umd-min": "NODE_ENV=production browserify index.js -t loose-envify -t uglifyify --standalone PropTypes  -p bundle-collapser/plugin -o | uglifyjs --compress unused,dead_code -o prop-types.min.js",
-  "build": "yarn umd && yarn umd-min",
-  "prepublish": "not-in-publish || yarn build"
-}
-### ./frontend/node_modules/scheduler/package.json
+### ./frontend/node_modules/browserslist/package.json
 {}
+### ./frontend/node_modules/std-env/package.json
+{
+  "build": "obuild",
+  "dev": "vitest",
+  "lint": "oxlint . && oxfmt",
+  "lint:fix": "oxlint --fix . && oxfmt",
+  "prepack": "obuild",
+  "release": "pnpm test && pnpm build && changelogen --release --publish && git push --follow-tags",
+  "test": "pnpm lint && pnpm typecheck && vitest run --coverage",
+  "typecheck": "tsgo --noEmit"
+}
+### ./frontend/node_modules/tough-cookie/package.json
+{
+  "build": "tsup lib/cookie/index.ts --format cjs,esm --dts --clean --sourcemap",
+  "lint": "npm run _lint:check",
+  "prepack": "npm run build",
+  "prepare-pr": "npm run build && npm test -- run && npm run _api:update && npm run _docs:generate && npm run _format:fix && npm run _lint:fix && npm run _lint:types",
+  "test": "vitest",
+  "version": "npm run _version:generate && npm run prepare-pr && git add --renormalize .",
+  "_api:check": "api-extractor run --verbose",
+  "_api:update": "api-extractor run --verbose --local",
+  "_docs:generate": "api-documenter generate --input-folder ./tmp --output-folder ./api/docs",
+  "_format:check": "prettier . --check",
+  "_format:fix": "prettier . --write",
+  "_lint:check": "eslint .",
+  "_lint:fix": "eslint . --fix",
+  "_lint:types": "attw --pack .",
+  "_version:generate": "genversion --template version-template.ejs --force lib/version.ts"
+}
+### ./frontend/node_modules/webidl-conversions/package.json
+{
+  "lint": "eslint .",
+  "test": "node --test",
+  "coverage": "c8 node --test --experimental-test-coverage test/*.js"
+}
+### ./frontend/node_modules/entities/package.json
+{
+  "benchmark": "node --import=tsx scripts/benchmark.ts",
+  "build": "tsc",
+  "build:docs": "typedoc --hideGenerator src/index.ts",
+  "build:encode-trie": "node --import=tsx scripts/write-encode-map.ts",
+  "build:trie": "node --import=tsx scripts/write-decode-map.ts",
+  "format": "npm run format:es && npm run format:biome",
+  "format:biome": "biome check --fix .",
+  "format:es": "npm run lint:es -- --fix",
+  "lint": "npm run lint:es && npm run lint:ts && npm run lint:biome",
+  "lint:biome": "biome check .",
+  "lint:es": "eslint .",
+  "lint:ts": "tsc --noEmit",
+  "prepublishOnly": "npm run build",
+  "test": "npm run test:vi && npm run lint",
+  "test:vi": "vitest run"
+}
+### ./frontend/node_modules/zod-validation-error/package.json
+{
+  "typecheck": "tsc --noEmit",
+  "build": "tsup --config ./tsup.config.ts",
+  "lint": "eslint lib --ext .ts",
+  "format": "prettier --config ./.prettierrc --ignore-path .gitignore -w .",
+  "test": "vitest run",
+  "changeset": "changeset",
+  "prerelease": "npm run build && npm run test",
+  "release": "changeset publish",
+  "prepare": "husky"
+}
+### ./frontend/node_modules/react-redux/package.json
+{
+  "build": "yarn clean && tsup",
+  "clean": "rimraf lib dist es coverage",
+  "api-types": "api-extractor run --local",
+  "format": "prettier --write \"{src,test}/**/*.{js,ts,tsx}\" \"docs/**/*.md\"",
+  "lint": "eslint src test",
+  "lint:fix": "eslint src test --fix",
+  "prepack": "yarn build",
+  "pretest": "yarn lint",
+  "test": "vitest --run --typecheck",
+  "test:watch": "vitest --watch",
+  "type-tests": "tsc --noEmit -p tsconfig.test.json",
+  "coverage": "codecov"
+}
+### ./frontend/node_modules/stackback/package.json
+{
+  "test": "mocha --ui qunit"
+}
 ### ./frontend/node_modules/tinyglobby/package.json
 {
   "bench": "node benchmark/bench.ts",
@@ -1422,61 +1021,349 @@
   "test:only": "node --test --test-only \"test/**/*.ts\"",
   "typecheck": "tsc --noEmit"
 }
-### ./frontend/node_modules/vite/package.json
+### ./frontend/node_modules/redux/package.json
 {
-  "dev": "premove dist && pnpm build-bundle -w",
-  "build": "premove dist && pnpm build-bundle && pnpm build-types",
-  "build-bundle": "rolldown --config rolldown.config.ts",
-  "build-types": "pnpm build-types-roll && pnpm build-types-check",
-  "build-types-roll": "rolldown --config rolldown.dts.config.ts",
-  "build-types-check": "tsc --project tsconfig.check.json",
-  "typecheck": "tsc && tsc -p src/node && tsc -p src/module-runner && tsc -p src/shared && tsc -p src/node/__tests_dts__",
-  "lint": "eslint --cache --ext .ts src/**",
-  "format": "prettier --write --cache --parser typescript \"src/**/*.ts\"",
-  "generate-target": "tsx scripts/generateTarget.ts"
+  "clean": "rimraf dist",
+  "format": "prettier --write \"{src,test}/**/*.{js,ts}\" \"**/*.md\"",
+  "format:check": "prettier --list-different \"{src,test}/**/*.{js,ts}\" \"**/*.md\"",
+  "lint": "eslint --ext js,ts src test",
+  "check-types": "tsc --noEmit && echo \"Types compiled\"",
+  "test": "vitest --run",
+  "test:types": "tsc -p test/typescript && echo \"Typetests passed\"",
+  "test:watch": "vitest",
+  "test:cov": "vitest --coverage",
+  "test:typecheck": "tsc -p test && echo \"Types passed\"",
+  "build": "tsup",
+  "prepublishOnly": "yarn clean && yarn check-types && yarn format:check && yarn lint && yarn test",
+  "prepack": "yarn build",
+  "examples:lint": "eslint --ext js,ts examples",
+  "examples:test": "cross-env CI=true babel-node examples/testAll.js",
+  "tsc": "tsc"
 }
-### ./frontend/node_modules/picomatch/package.json
+### ./frontend/node_modules/lz-string/package.json
+{}
+### ./frontend/node_modules/fast-deep-equal/package.json
 {
-  "lint": "eslint --cache --cache-location node_modules/.cache/.eslintcache --report-unused-disable-directives --ignore-path .gitignore .",
-  "mocha": "mocha --reporter dot",
-  "test": "npm run lint && npm run mocha",
-  "test:ci": "npm run test:cover",
-  "test:cover": "nyc npm run mocha"
+  "eslint": "eslint *.js benchmark/*.js spec/*.js",
+  "build": "node build",
+  "benchmark": "npm i && npm run build && cd ./benchmark && npm i && node ./",
+  "test-spec": "mocha spec/*.spec.js -R spec",
+  "test-cov": "nyc npm run test-spec",
+  "test-ts": "tsc --target ES5 --noImplicitAny index.d.ts",
+  "test": "npm run build && npm run eslint && npm run test-ts && npm run test-cov",
+  "prepublish": "npm run build"
 }
-### ./frontend/node_modules/rrweb-cssom/package.json
+### ./frontend/node_modules/lucide-react/package.json
 {
-  "build": "node build.js",
-  "release": "npm run build && changeset publish"
+  "build": "pnpm clean && pnpm copy:license && pnpm build:icons && pnpm typecheck && pnpm build:bundles",
+  "copy:license": "cp ../../LICENSE ./LICENSE",
+  "clean": "rm -rf dist && rm -rf stats && rm -rf ./src/icons/*.ts && rm -f dynamic.{d.ts,d.mts,mts,mjs,mjs.map} && rm -f dynamicIconImports.d.ts",
+  "build:icons": "build-icons --output=./src --templateSrc=./scripts/exportTemplate.mts --renderUniqueKey --withAliases --withDynamicImports --separateAliasesFile --separateAliasesFileIgnore=fingerprint --aliasesFileExtension=.ts --iconFileExtension=.ts --exportFileName=index.ts",
+  "build:bundles": "rollup -c ./rollup.config.mjs",
+  "typecheck": "tsc",
+  "typecheck:watch": "tsc -w",
+  "test": "pnpm build:icons && vitest run",
+  "test:watch": "vitest watch"
 }
-### ./frontend/node_modules/to-regex-range/package.json
+### ./frontend/node_modules/redent/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/flatted/package.json
+{
+  "build": "npm run cjs && npm run rollup:esm && npm run rollup:es && npm run rollup:babel && npm run min && npm run test && npm run size",
+  "cjs": "ascjs esm cjs",
+  "rollup:es": "rollup --config rollup/es.config.js && sed -i.bck 's/^var /self./' es.js && rm -rf es.js.bck",
+  "rollup:esm": "rollup --config rollup/esm.config.js",
+  "rollup:babel": "rollup --config rollup/babel.config.js && sed -i.bck 's/^var /self./' index.js && rm -rf index.js.bck",
+  "min": "terser index.js -c -m -o min.js",
+  "size": "cat index.js | wc -c;cat min.js | wc -c;gzip -c9 min.js | wc -c;cat min.js | brotli | wc -c; cat es.js | brotli | wc -c; cat esm.js | brotli | wc -c",
+  "test": "c8 node test/index.js",
+  "test:php": "php php/test.php",
+  "test:py": "python python/test.py",
+  "ts": "tsc -p .",
+  "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
+}
+### ./frontend/node_modules/require-from-string/package.json
 {
   "test": "mocha"
 }
-### ./frontend/node_modules/ws/package.json
-{
-  "test": "nyc --reporter=lcov --reporter=text mocha --throw-deprecation test/*.test.js",
-  "integration": "mocha --throw-deprecation test/*.integration.js",
-  "lint": "eslint . && prettier --check --ignore-path .gitignore \"**/*.{json,md,yaml,yml}\""
-}
-### ./frontend/node_modules/mime-db/package.json
-{
-  "build": "node scripts/build",
-  "fetch": "node scripts/fetch-apache && gnode scripts/fetch-iana && node scripts/fetch-nginx",
-  "lint": "eslint .",
-  "test": "mocha --reporter spec --bail --check-leaks test/",
-  "test-ci": "nyc --reporter=lcov --reporter=text npm test",
-  "test-cov": "nyc --reporter=html --reporter=text npm test",
-  "update": "npm run fetch && npm run build",
-  "version": "node scripts/version-history.js && git add HISTORY.md"
-}
-### ./frontend/node_modules/react-dom/package.json
+### ./frontend/node_modules/use-sync-external-store/package.json
 {}
-### ./frontend/node_modules/data-urls/package.json
+### ./frontend/node_modules/zod/package.json
+{
+  "clean": "git clean -xdf . -e node_modules",
+  "build": "zshy --project tsconfig.build.json",
+  "postbuild": "tsx ../../scripts/write-stub-package-jsons.ts && pnpm biome check --write .",
+  "test:watch": "pnpm vitest",
+  "test": "pnpm vitest run",
+  "prepublishOnly": "tsx ../../scripts/check-versions.ts"
+}
+### ./frontend/node_modules/tiny-invariant/package.json
+{
+  "test": "yarn jest",
+  "test:size": "yarn build && yarn size-limit",
+  "prettier:write": "yarn prettier --debug-check src/** test/**",
+  "prettier:check": "yarn prettier --write src/** test/**",
+  "typescript:check": "tsc --noEmit",
+  "validate": "yarn prettier:check && yarn typescript:check",
+  "build:clean": "rimraf dist",
+  "build:flow": "cp src/tiny-invariant.js.flow dist/tiny-invariant.cjs.js.flow",
+  "build:typescript": "tsc ./src/tiny-invariant.ts --emitDeclarationOnly --declaration --outDir ./dist",
+  "build:typescript:esm": "tsc ./src/tiny-invariant.ts --emitDeclarationOnly --declaration --outDir ./dist/esm",
+  "build:dist": "yarn rollup --config rollup.config.mjs",
+  "build": "yarn build:clean && yarn build:dist && yarn build:typescript && yarn build:typescript:esm",
+  "prepublishOnly": "yarn build"
+}
+### ./frontend/node_modules/espree/package.json
+{
+  "build": "rollup -c rollup.config.js && npm run build:types && node -e \"fs.rmSync('dist/lib', { recursive: true })\"",
+  "build:debug": "npm run build -- -m",
+  "build:docs": "node tools/sync-docs.js",
+  "build:types": "tsc && tsc -p tsconfig-cjs.json",
+  "lint:types": "attw --pack",
+  "pretest": "npm run build",
+  "test": "npm run test:types && npm run test:cjs && npm run test:esm",
+  "test:cjs": "mocha --color --reporter progress --timeout 30000 \"tests/**/*.test.cjs\"",
+  "test:esm": "c8 mocha --color --reporter progress --timeout 30000 \"tests/**/*.test.js\"",
+  "test:types": "tsd --typings dist/espree.d.ts"
+}
+### ./frontend/node_modules/css-tree/package.json
+{
+  "watch": "npm run build -- --watch",
+  "build": "npm run bundle && npm run esm-to-cjs --",
+  "build-and-test": "npm run build && npm run test:dist && npm run test:cjs",
+  "bundle": "node scripts/bundle",
+  "bundle-and-test": "npm run bundle && npm run test:dist",
+  "esm-to-cjs": "node scripts/esm-to-cjs.cjs",
+  "esm-to-cjs-and-test": "npm run esm-to-cjs && npm run test:cjs",
+  "lint": "eslint lib scripts && node scripts/review-syntax-patch --lint && node scripts/update-docs --lint",
+  "lint-and-test": "npm run lint && npm test",
+  "update:docs": "node scripts/update-docs",
+  "review:syntax-patch": "node scripts/review-syntax-patch",
+  "test": "mocha lib/__tests --require lib/__tests/helpers/setup.js --reporter progress",
+  "test:cjs": "mocha cjs/__tests --require lib/__tests/helpers/setup.js --reporter progress",
+  "test:dist": "mocha dist/__tests --reporter progress",
+  "coverage": "c8 --exclude lib/__tests --reporter=lcovonly npm test",
+  "prepublishOnly": "npm run lint-and-test && npm run build-and-test"
+}
+### ./frontend/node_modules/symbol-tree/package.json
+{
+  "lint": "eslint lib test",
+  "test": "istanbul cover test/SymbolTree.js",
+  "posttest": "npm run lint",
+  "ci": "istanbul cover test/SymbolTree.js --report lcovonly && cat ./coverage/lcov.info | coveralls",
+  "postci": "npm run posttest",
+  "predocumentation": "cp readme-header.md README.md",
+  "documentation": "jsdoc2md --files lib/SymbolTree.js >> README.md"
+}
+### ./frontend/node_modules/find-up/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/p-limit/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/es-module-lexer/package.json
+{
+  "build": "npm install -g chomp ; chomp build",
+  "test": "npm install -g chomp ; chomp test"
+}
+### ./frontend/node_modules/d3-scale/package.json
+{
+  "test": "TZ=America/Los_Angeles mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/prelude-ls/package.json
+{
+  "test": "make test"
+}
+### ./frontend/node_modules/dequal/package.json
+{
+  "build": "bundt",
+  "pretest": "npm run build",
+  "postbuild": "echo \"lite\" | xargs -n1 cp -v index.d.ts",
+  "test": "uvu -r esm test"
+}
+### ./frontend/node_modules/natural-compare/package.json
+{
+  "build": "node node_modules/buildman/index.js --all",
+  "test": "node tests/index.js"
+}
+### ./frontend/node_modules/d3-ease/package.json
+{
+  "test": "mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/css.escape/package.json
+{
+  "test": "node tests/tests.js",
+  "cover": "istanbul cover --report html --verbose --dir coverage tests/tests.js",
+  "coveralls": "istanbul cover --verbose --dir coverage tests/tests.js && coveralls < coverage/lcov.info; rm -rf coverage/lcov*"
+}
+### ./frontend/node_modules/d3-format/package.json
+{
+  "test": "vitest",
+  "lint": "eslint src test",
+  "prepublishOnly": "rm -rf dist && rollup -c"
+}
+### ./frontend/node_modules/lightningcss/package.json
+{
+  "prepare": "patch-package",
+  "build": "node scripts/build.js && node scripts/build-flow.js",
+  "build-release": "node scripts/build.js --release && node scripts/build-flow.js",
+  "prepublishOnly": "node scripts/build-flow.js",
+  "wasm:build": "cargo build --target wasm32-unknown-unknown -p lightningcss_node && wasm-opt target/wasm32-unknown-unknown/debug/lightningcss_node.wasm --asyncify --pass-arg=asyncify-imports@env.await_promise_sync -Oz -o wasm/lightningcss_node.wasm && node scripts/build-wasm.js",
+  "wasm:build-release": "cargo build --target wasm32-unknown-unknown -p lightningcss_node --release && wasm-opt target/wasm32-unknown-unknown/release/lightningcss_node.wasm --asyncify --pass-arg=asyncify-imports@env.await_promise_sync -Oz -o wasm/lightningcss_node.wasm && node scripts/build-wasm.js",
+  "website:start": "parcel 'website/*.html' website/playground/index.html",
+  "website:build": "yarn wasm:build-release && parcel build 'website/*.html' website/playground/index.html",
+  "build-ast": "cargo run --example schema --features jsonschema && node scripts/build-ast.js",
+  "tsc": "tsc -p node/tsconfig.json",
+  "test": "uvu node/test"
+}
+### ./frontend/node_modules/yocto-queue/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/jiti/package.json
+{
+  "bench": "node test/bench.mjs && deno -A test/bench.mjs && bun --bun test/bench.mjs",
+  "build": "pnpm clean && pnpm rspack",
+  "build:rolldown": "pnpm clean && pnpm rolldown -c rolldown.config.mjs",
+  "clean": "rm -rf dist",
+  "dev": "pnpm clean && pnpm rspack --watch",
+  "jiti": "JITI_DEBUG=1 JITI_JSX=1 lib/jiti-cli.mjs",
+  "lint": "eslint . && prettier -c src lib test stubs",
+  "lint:fix": "eslint --fix . && prettier -w src lib test stubs",
+  "prepack": "pnpm build",
+  "release": "pnpm build && pnpm test && changelogen --release --push && npm publish",
+  "test": "pnpm lint && pnpm test:types && vitest run --coverage && pnpm test:node-register && pnpm test:bun && pnpm test:native",
+  "test:bun": "bun --bun test test/bun",
+  "test:native": "pnpm test:native:bun && pnpm test:native:node && pnpm test:native:deno",
+  "test:native:bun": "bun --bun test test/native/bun.test.ts",
+  "test:native:deno": "deno test -A --no-check test/native/deno.test.ts",
+  "test:native:node": "node --test --experimental-strip-types test/native/node.test.ts",
+  "test:node-register": "JITI_JSX=1 node --test test/node-register.test.mjs",
+  "test:types": "tsgo --noEmit"
+}
+### ./frontend/node_modules/eventemitter3/package.json
+{
+  "rollup": "rm -rf dist && rollup -c",
+  "benchmark": "find benchmarks/run -name '*.js' -exec benchmarks/start.sh {} \\;",
+  "test": "c8 --reporter=lcov --reporter=text mocha test/test.js",
+  "test-esm": "mocha test/test.mjs",
+  "prepublishOnly": "npm run rollup"
+}
+### ./frontend/node_modules/acorn/package.json
+{
+  "prepare": "cd ..; npm run build:main"
+}
+### ./frontend/node_modules/tldts-core/package.json
+{
+  "clean": "rimraf dist",
+  "build": "tsc --build ./tsconfig.json",
+  "bundle": "tsc --build ./tsconfig.bundle.json && rollup --config ./rollup.config.mjs",
+  "prepack": "yarn run bundle",
+  "test": "nyc ../../node_modules/.bin/mocha --config ../../.mocharc.cjs"
+}
+### ./frontend/node_modules/lru-cache/package.json
+{
+  "build": "npm run prepare",
+  "prepare": "tshy && bash scripts/build.sh",
+  "pretest": "npm run prepare",
+  "presnap": "npm run prepare",
+  "test": "tap",
+  "snap": "tap",
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "prepublishOnly": "git push origin --follow-tags",
+  "format": "prettier --write .",
+  "typedoc": "typedoc --tsconfig ./.tshy/esm.json ./src/*.ts",
+  "benchmark-results-typedoc": "bash scripts/benchmark-results-typedoc.sh",
+  "prebenchmark": "npm run prepare",
+  "benchmark": "make -C benchmark",
+  "preprofile": "npm run prepare",
+  "profile": "make -C benchmark profile",
+  "lint": "oxlint --fix src test",
+  "postsnap": "npm run lint",
+  "postlint": "npm run format"
+}
+### ./frontend/node_modules/internmap/package.json
+{
+  "test": "mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags"
+}
+### ./frontend/node_modules/whatwg-mimetype/package.json
 {
   "test": "node --test",
   "coverage": "c8 node --test --experimental-test-coverage",
-  "lint": "eslint .",
-  "pretest": "node scripts/get-latest-platform-tests.js"
+  "lint": "eslint",
+  "pretest": "node scripts/get-latest-platform-tests.mjs"
+}
+### ./frontend/node_modules/word-wrap/package.json
+{
+  "test": "mocha"
+}
+### ./frontend/node_modules/shebang-command/package.json
+{
+  "test": "xo && ava"
+}
+### ./frontend/node_modules/tapable/package.json
+{
+  "lint": "npm run lint:code && npm run fmt:check",
+  "lint:code": "eslint --cache .",
+  "fmt": "npm run fmt:base -- --log-level warn --write",
+  "fmt:check": "npm run fmt:base -- --check",
+  "fmt:base": "node ./node_modules/prettier/bin/prettier.cjs --cache --ignore-unknown .",
+  "fix": "npm run fix:code && npm run fmt",
+  "fix:code": "npm run lint:code -- --fix",
+  "test": "jest",
+  "benchmark": "node --max-old-space-size=4096 --hash-seed=1 --random-seed=1 --no-opt --predictable --predictable-gc-schedule --interpreted-frames-native-stack --allow-natives-syntax --expose-gc --no-concurrent-sweeping ./benchmark/run.mjs",
+  "version": "changeset version",
+  "release": "changeset publish"
+}
+### ./frontend/node_modules/ignore/package.json
+{
+  "prepublishOnly": "npm run build",
+  "build": "babel -o legacy.js index.js",
+  "test:lint": "eslint .",
+  "test:tsc": "tsc ./test/ts/simple.ts --lib ES6",
+  "test:ts": "node ./test/ts/simple.js",
+  "tap": "tap --reporter classic",
+  "test:git": "npm run tap test/git-check-ignore.js",
+  "test:ignore": "npm run tap test/ignore.js",
+  "test:ignore:only": "IGNORE_ONLY_IGNORES=1 npm run tap test/ignore.js",
+  "test:others": "npm run tap test/others.js",
+  "test:cases": "npm run tap test/*.js -- --coverage",
+  "test:no-coverage": "npm run tap test/*.js -- --no-check-coverage",
+  "test:only": "npm run test:lint && npm run test:tsc && npm run test:ts && npm run test:cases",
+  "test": "npm run test:only",
+  "test:win32": "IGNORE_TEST_WIN32=1 npm run test",
+  "report": "tap --coverage-report=html",
+  "posttest": "npm run report && codecov"
+}
+### ./frontend/node_modules/debug/package.json
+{
+  "lint": "xo",
+  "test": "npm run test:node && npm run test:browser && npm run lint",
+  "test:node": "mocha test.js test.node.js",
+  "test:browser": "karma start --single-run",
+  "test:coverage": "cat ./coverage/lcov.info | coveralls"
+}
+### ./frontend/node_modules/tinyexec/package.json
+{
+  "build": "tsdown",
+  "dev": "tsdown --watch",
+  "format": "prettier --write src",
+  "format:check": "prettier --check src",
+  "lint": "tsc --noEmit && eslint src && publint",
+  "prepare": "npm run build",
+  "test": "npm run build && npm run test:unit",
+  "test:unit": "vitest run"
 }
 ### ./frontend/node_modules/whatwg-url/package.json
 {
@@ -1488,176 +1375,117 @@
   "test": "node --test test/*.js",
   "bench": "node scripts/benchmark.js"
 }
-### ./frontend/node_modules/xml-name-validator/package.json
+### ./frontend/node_modules/react-router/package.json
 {
-  "test": "node --test",
-  "benchmark": "node scripts/benchmark.js",
-  "lint": "eslint ."
+  "build": "wireit",
+  "watch": "tsup --watch & tsup --config tsup.config.rsc.ts --watch",
+  "typecheck": "tsc"
 }
-### ./frontend/node_modules/dom-helpers/package.json
+### ./frontend/node_modules/why-is-node-running/package.json
 {}
-### ./frontend/node_modules/nanoid/package.json
-{}
-### ./frontend/node_modules/fraction.js/package.json
+### ./frontend/node_modules/csstype/package.json
 {
-  "build": "crude-build Fraction",
-  "test": "mocha tests/*.js"
+  "prepublish": "npm install --no-save --prefix __tests__ && npm install --no-save --prefix __tests__/__fixtures__",
+  "release": "release-it",
+  "update": "tsx update.ts",
+  "build": "tsx --inspect build.ts --start",
+  "watch": "tsx build.ts --watch",
+  "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+  "pretty": "prettier --write build.ts **/*.{ts,js,json,md}",
+  "lazy": "tsc && npm run lint",
+  "test": "jest --runInBand",
+  "test:src": "jest src.*.ts",
+  "test:dist": "jest dist.*.ts --runInBand"
 }
-### ./frontend/node_modules/js-tokens/package.json
+### ./frontend/node_modules/react-i18next/package.json
 {
-  "test": "mocha --ui tdd",
-  "esprima-compare": "node esprima-compare ./index.js everything.js/es5.js",
-  "build": "node generate-index.js",
-  "dev": "npm run build && npm test"
+  "clean": "rimraf dist && mkdirp dist",
+  "lint": "eslint --cache .",
+  "lint:fix": "eslint --cache --fix .",
+  "format": "prettier . --check",
+  "format:fix": "prettier . --write --list-different",
+  "copy": "cpy ./dist/umd/react-i18next.min.js ./dist/umd/react-i18next.js . --flat && echo '{\"type\":\"module\"}' > dist/es/package.json",
+  "build:es": "cross-env BABEL_ENV=ESNext babel src --out-dir dist/es",
+  "build:cjs": "babel src --out-dir dist/commonjs",
+  "build:umd": "rollup -c rollup.config.mjs --format umd && rollup -c rollup.config.mjs --format umd --uglify",
+  "build:amd": "rollup -c rollup.config.mjs --format amd && rollup -c rollup.config.mjs --format amd --uglify",
+  "build:iife": "rollup -c rollup.config.mjs --format iife && rollup -c rollup.config.mjs --format iife --uglify",
+  "build": "npm run clean && npm run build:cjs && npm run build:es && npm run build:umd && npm run build:amd && npm run copy",
+  "fix_dist_package": "node -e 'console.log(`{\"type\":\"module\",\"version\":\"${process.env.npm_package_version}\"}`)' > dist/es/package.json",
+  "preversion": "npm run build && git push",
+  "postversion": "npm run fix_dist_package && git push && git push --tags",
+  "test": "vitest",
+  "test:coverage": "npm run test -- --coverage --run",
+  "test:typescript": "npm run test:typescript:issue-1899 && vitest --config vitest.workspace.typescript.mts",
+  "test:typescript:issue-1899": "bash test/typescript/issue-1899/check-types.sh",
+  "contributors:add": "npx all-contributors-cli add",
+  "contributors:generate": "npx all-contributors-cli generate",
+  "prepare": "husky"
+}
+### ./frontend/node_modules/react-is/package.json
+{}
+### ./frontend/node_modules/levn/package.json
+{
+  "test": "make test"
+}
+### ./frontend/node_modules/uri-js/package.json
+{
+  "build:esnext": "tsc",
+  "build:es5": "rollup -c && cp dist/esnext/uri.d.ts dist/es5/uri.all.d.ts && npm run build:es5:fix-sourcemap",
+  "build:es5:fix-sourcemap": "sorcery -i dist/es5/uri.all.js",
+  "build:es5:min": "uglifyjs dist/es5/uri.all.js --support-ie8 --output dist/es5/uri.all.min.js --in-source-map dist/es5/uri.all.js.map --source-map uri.all.min.js.map --comments --compress --mangle --pure-funcs merge subexp && mv uri.all.min.js.map dist/es5/ && cp dist/es5/uri.all.d.ts dist/es5/uri.all.min.d.ts",
+  "build": "npm run build:esnext && npm run build:es5 && npm run build:es5:min",
+  "clean": "rm -rf dist",
+  "test": "mocha -u mocha-qunit-ui dist/es5/uri.all.js tests/tests.js"
+}
+### ./frontend/node_modules/estree-walker/package.json
+{
+  "prepublishOnly": "tsc && npm test",
+  "test": "uvu test"
+}
+### ./frontend/node_modules/deep-is/package.json
+{
+  "test": "tape test/*.js"
+}
+### ./frontend/node_modules/yallist/package.json
+{
+  "test": "tap test/*.js --100",
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "postpublish": "git push origin --all; git push origin --tags"
 }
 ### ./frontend/node_modules/indent-string/package.json
 {
   "test": "xo && ava && tsd"
 }
-### ./frontend/node_modules/fast-glob/package.json
+### ./frontend/node_modules/tinybench/package.json
 {
-  "clean": "rimraf out",
-  "lint": "eslint \"src/**/*.ts\" --cache",
-  "compile": "tsc",
-  "test": "mocha \"out/**/*.spec.js\" -s 0",
-  "test:e2e": "mocha \"out/**/*.e2e.js\" -s 0",
-  "test:e2e:sync": "mocha \"out/**/*.e2e.js\" -s 0 --grep \"\\(sync\\)\"",
-  "test:e2e:async": "mocha \"out/**/*.e2e.js\" -s 0 --grep \"\\(async\\)\"",
-  "test:e2e:stream": "mocha \"out/**/*.e2e.js\" -s 0 --grep \"\\(stream\\)\"",
-  "build": "npm run clean && npm run compile && npm run lint && npm test",
-  "watch": "npm run clean && npm run compile -- -- --sourceMap --watch",
-  "bench:async": "npm run bench:product:async && npm run bench:regression:async",
-  "bench:stream": "npm run bench:product:stream && npm run bench:regression:stream",
-  "bench:sync": "npm run bench:product:sync && npm run bench:regression:sync",
-  "bench:product": "npm run bench:product:async && npm run bench:product:sync && npm run bench:product:stream",
-  "bench:product:async": "hereby bench:product:async",
-  "bench:product:sync": "hereby bench:product:sync",
-  "bench:product:stream": "hereby bench:product:stream",
-  "bench:regression": "npm run bench:regression:async && npm run bench:regression:sync && npm run bench:regression:stream",
-  "bench:regression:async": "hereby bench:regression:async",
-  "bench:regression:sync": "hereby bench:regression:sync",
-  "bench:regression:stream": "hereby bench:regression:stream"
+  "publish": "npm run build && clean-publish"
 }
-### ./frontend/node_modules/get-intrinsic/package.json
+### ./frontend/node_modules/file-entry-cache/package.json
 {
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=.js,.mjs .",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>= 10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+  "eslint": "eslint --cache --cache-location=node_modules/.cache/ 'cache.js' 'test/**/*.js' 'perf.js'",
+  "autofix": "npm run eslint -- --fix",
+  "clean": "rimraf ./node_modules ./package-lock.json ./yarn.lock",
+  "test": "npm run eslint --silent && c8 mocha -R spec test/specs",
+  "test:ci": "npm run eslint --silent && c8 --reporter=lcov mocha -R spec test/specs",
+  "perf": "node perf.js"
 }
-### ./frontend/node_modules/es-object-atoms/package.json
+### ./frontend/node_modules/expect-type/package.json
 {
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "pretest": "npm run lint",
-  "test": "npm run tests-only",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "posttest": "npx npm@\">= 10.2\" audit --production",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc -p . && eclint check $(git ls-files | xargs find 2> /dev/null | grep -vE 'node_modules|\\.git' | grep -v dist/)",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
+  "eslint": "eslint --max-warnings 0",
+  "lint": "tsc && pnpm eslint .",
+  "type-check": "tsc",
+  "build": "tsc -p tsconfig.lib.json",
+  "arethetypeswrong": "attw --pack",
+  "test": "vitest run"
 }
-### ./frontend/node_modules/jsesc/package.json
-{
-  "build": "grunt template",
-  "coveralls": "istanbul cover --verbose --dir 'coverage' 'tests/tests.js' && coveralls < coverage/lcov.info'",
-  "cover": "istanbul cover --report 'html' --verbose --dir 'coverage' 'tests/tests.js'",
-  "test": "mocha tests"
-}
-### ./frontend/node_modules/caniuse-lite/package.json
+### ./frontend/node_modules/postcss/package.json
 {}
-### ./frontend/node_modules/react-refresh/package.json
-{}
-### ./frontend/node_modules/form-data/package.json
+### ./frontend/node_modules/ansi-styles/package.json
 {
-  "pretest": "npm run lint",
-  "pretests-only": "rimraf coverage test/tmp",
-  "tests-only": "istanbul cover test/run.js",
-  "posttests-only": "istanbul report lcov text",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>=10.2' audit --production",
-  "lint": "eslint --ext=js,mjs .",
-  "report": "istanbul report lcov text",
-  "ci-lint": "is-node-modern 8 && npm run lint || is-node-not-modern 8",
-  "ci-test": "npm run tests-only && npm run browser && npm run report",
-  "predebug": "rimraf coverage test/tmp",
-  "debug": "verbose=1 ./test/run.js",
-  "browser": "browserify -t browserify-istanbul test/run-browser.js | obake --coverage",
-  "check": "istanbul check-coverage coverage/coverage*.json",
-  "files": "pkgfiles --sort=name",
-  "get-version": "node -e \"console.log(require('./package.json').version)\"",
-  "update-readme": "sed -i.bak 's/\\/master\\.svg/\\/v'$(npm --silent run get-version)'.svg/g' README.md",
-  "postupdate-readme": "mv README.md.bak READ.ME.md.bak",
-  "restore-readme": "mv READ.ME.md.bak README.md",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepack": "npm run update-readme",
-  "postpack": "npm run restore-readme",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/is-core-module/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "lint": "eslint .",
-  "pretest": "npm run lint",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>=10.2' audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/punycode/package.json
-{
-  "test": "mocha tests",
-  "build": "node scripts/prepublish.js"
-}
-### ./frontend/node_modules/ts-interface-checker/package.json
-{
-  "build": "tsc",
-  "watch": "tsc -w",
-  "test": "tsc && nyc mocha -R list test/",
-  "bench": "tsc && node test/bench/bench.js",
-  "preversion": "npm test",
-  "version": "npm run build"
-}
-### ./frontend/node_modules/hasown/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "prelint": "evalmd README.md",
-  "lint": "eslint .",
-  "postlint": "npm run tsc",
-  "pretest": "npm run lint",
-  "tsc": "tsc -p .",
-  "posttsc": "attw -P",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@\">= 10.2\" audit --production",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/micromatch/package.json
-{
-  "test": "mocha"
-}
-### ./frontend/node_modules/thenify-all/package.json
-{
-  "test": "mocha --reporter spec",
-  "test-cov": "istanbul cover node_modules/.bin/_mocha -- --reporter dot",
-  "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- --reporter dot"
+  "test": "xo && ava && tsd",
+  "screenshot": "svg-term --command='node screenshot' --out=screenshot.svg --padding=3 --width=55 --height=3 --at=1000 --no-cursor"
 }
 ### ./frontend/node_modules/d3-path/package.json
 {
@@ -1665,60 +1493,24 @@
   "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
   "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
 }
-### ./frontend/node_modules/typescript/package.json
+### ./frontend/node_modules/pathe/package.json
 {
-  "test": "hereby runtests-parallel --light=false",
-  "test:eslint-rules": "hereby run-eslint-rules-tests",
-  "build": "npm run build:compiler && npm run build:tests",
-  "build:compiler": "hereby local",
-  "build:tests": "hereby tests",
-  "build:tests:notypecheck": "hereby tests --no-typecheck",
-  "clean": "hereby clean",
-  "gulp": "hereby",
-  "lint": "hereby lint",
-  "knip": "hereby knip",
-  "format": "dprint fmt",
-  "setup-hooks": "node scripts/link-hooks.mjs"
+  "build": "unbuild",
+  "dev": "vitest",
+  "lint": "eslint . && prettier -c src test",
+  "lint:fix": "eslint . --fix && prettier -w src test",
+  "release": "pnpm test && pnpm build && changelogen --release && pnpm publish && git push --follow-tags",
+  "test": "pnpm lint && vitest run --coverage",
+  "test:types": "tsc --noEmit"
 }
-### ./frontend/node_modules/why-is-node-running/package.json
-{}
-### ./frontend/node_modules/sucrase/package.json
+### ./frontend/node_modules/mdn-data/package.json
 {
-  "build": "sucrase-node script/build.ts",
-  "fast-build": "sucrase-node script/build.ts --fast",
-  "clean": "rm -rf ./build ./dist ./dist-self-build ./dist-types ./example-runner/example-repos ./spec-compliance-tests/test262/test262-checkout ./spec-compliance-tests/babel-tests/babel-tests-checkout",
-  "generate": "sucrase-node generator/generate.ts",
-  "benchmark": "cd benchmark && yarn && sucrase-node ./benchmark.ts",
-  "benchmark-compare": "sucrase-node ./benchmark/compare-performance.ts",
-  "microbenchmark": "sucrase-node benchmark/microbenchmark.ts",
-  "lint": "sucrase-node script/lint.ts",
-  "lint-fix": "sucrase-node script/lint.ts --fix",
-  "profile": "node --inspect-brk ./node_modules/.bin/sucrase-node ./benchmark/profile",
-  "profile-project": "node --inspect-brk ./node_modules/.bin/sucrase-node ./benchmark/benchmark-project.ts --profile",
-  "prepublishOnly": "yarn clean && yarn build",
-  "release": "sucrase-node script/release.ts",
-  "run-examples": "sucrase-node example-runner/example-runner.ts",
-  "test": "yarn lint && yarn test-only",
-  "test-only": "mocha './test/**/*.ts'",
-  "integration-test": "cd integration-test && yarn && yarn link @sucrase/jest-plugin && mocha --timeout 10000 ./integration-tests.ts",
-  "test262": "sucrase-node spec-compliance-tests/test262/run-test262.ts",
-  "check-babel-tests": "sucrase-node spec-compliance-tests/babel-tests/check-babel-tests.ts",
-  "test-with-coverage": "nyc mocha './test/**/*.ts'",
-  "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+  "lint": "node test/lint",
+  "test": "npm run lint"
 }
-### ./frontend/node_modules/object-assign/package.json
+### ./frontend/node_modules/escape-string-regexp/package.json
 {
-  "test": "xo && ava",
-  "bench": "matcha bench.js"
-}
-### ./frontend/node_modules/clsx/package.json
-{
-  "build": "node bin",
-  "test": "uvu -r esm test"
-}
-### ./frontend/node_modules/util-deprecate/package.json
-{
-  "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "xo && ava && tsd"
 }
 ### ./frontend/node_modules/chai/package.json
 {
@@ -1735,99 +1527,408 @@
   "lint:types": "tsc",
   "clean": "rm -rf index.js coverage/"
 }
-### ./frontend/node_modules/react-smooth/package.json
+### ./frontend/node_modules/gensync/package.json
 {
-  "build": "npm run build-cjs && npm run build-es6 && rimraf umd && npm run build-umd && npm run build-min",
-  "build-cjs": "rimraf lib && cross-env BABEL_ENV=commonjs babel ./src -d lib",
-  "build-es6": "rimraf es6 && babel ./src -d es6",
-  "build-umd": "cross-env NODE_ENV=development BABEL_ENV=commonjs webpack --entry ./src/index.js -o umd",
-  "build-min": "cross-env NODE_ENV=production BABEL_ENV=commonjs webpack --entry ./src/index.js -o umd",
-  "test": "cross-env BABEL_ENV=test jest",
-  "demo": "webpack serve --config demo/webpack.config.js --port 4000 --host 127.0.0.1 --progress --profile --content-base demo/",
-  "autofix": "eslint src --fix",
-  "lint": "eslint src"
+  "test": "jest"
 }
-### ./frontend/node_modules/debug/package.json
+### ./frontend/node_modules/jsdom/package.json
 {
-  "lint": "xo",
-  "test": "npm run test:node && npm run test:browser && npm run lint",
-  "test:node": "mocha test.js test.node.js",
-  "test:browser": "karma start --single-run",
-  "test:coverage": "cat ./coverage/lcov.info | coveralls"
+  "prepare": "wireit",
+  "prepare:convert-idl": "wireit",
+  "prepare:generate-event-sets": "wireit",
+  "prepare:generate-css-style-properties": "wireit",
+  "prepare:generate-js-globals": "wireit",
+  "pretest": "npm run prepare && npm run wpt:init",
+  "test": "npm-run-all --continue-on-error test:*",
+  "test:api": "mocha test/api/",
+  "test:to-port-to-wpts": "mocha test/to-port-to-wpts/ && mocha test/to-port-to-wpts/level1/ && mocha test/to-port-to-wpts/level2/ && mocha test/to-port-to-wpts/level3/",
+  "test:tuwpt": "mocha test/web-platform-tests/run-tuwpts.js",
+  "test:tuwpt:browser": "node scripts/verify-tuwpts-in-browser.js",
+  "test:wpt": "mocha test/web-platform-tests/run-wpts.js",
+  "lint": "eslint --cache",
+  "wpt:init": "git submodule update --init --recursive",
+  "wpt:reset": "rm -rf ./test/web-platform-tests/tests && npm run wpt:init",
+  "wpt:update": "git submodule update --init --recursive --remote && cd test/web-platform-tests/tests && python wpt.py manifest --path ../wpt-manifest.json",
+  "benchmark": "node ./benchmark/runner",
+  "benchmark:compare": "node ./benchmark/compare"
 }
-### ./frontend/node_modules/postcss/package.json
+### ./frontend/node_modules/d3-interpolate/package.json
+{
+  "test": "mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/vite/package.json
+{
+  "dev": "premove dist && pnpm build-bundle -w",
+  "build": "premove dist && pnpm build-bundle && pnpm build-types",
+  "build-bundle": "rolldown --config rolldown.config.ts",
+  "build-types": "pnpm build-types-roll && pnpm build-types-check",
+  "build-types-roll": "rolldown --config rolldown.dts.config.ts",
+  "build-types-check": "tsc --project tsconfig.check.json",
+  "typecheck": "tsc && tsc -p src/node && tsc -p src/client && tsc -p src/module-runner && tsc -p src/shared && tsc -p src/node/__tests_dts__ && tsc -p src/module-runner/__tests_dts__",
+  "lint": "eslint --cache --ext .ts src/**",
+  "format": "oxfmt",
+  "generate-target": "tsx scripts/generateTarget.ts"
+}
+### ./frontend/node_modules/json-stable-stringify-without-jsonify/package.json
+{
+  "test": "tape test/*.js"
+}
+### ./frontend/node_modules/picocolors/package.json
 {}
-### ./frontend/node_modules/postcss-import/package.json
+### ./frontend/node_modules/flat-cache/package.json
 {
-  "ci": "eslint . && ava",
-  "lint": "eslint . --fix",
+  "eslint": "eslint --cache --cache-location=node_modules/.cache/ ./src/**/*.js ./test/**/*.js",
+  "clean": "rimraf ./node_modules ./package-lock.json ./yarn.lock ./coverage",
+  "eslint-fix": "npm run eslint -- --fix",
+  "autofix": "npm run eslint-fix",
+  "check": "npm run eslint",
+  "verify": "npm run eslint && npm run test:cache",
+  "test:cache": "c8 mocha -R spec test/specs",
+  "test:ci:cache": "c8 --reporter=lcov mocha -R spec test/specs",
+  "test": "npm run verify --silent",
+  "format": "prettier --write ."
+}
+### ./frontend/node_modules/bidi-js/package.json
+{
+  "build": "rollup -c rollup.config.js",
+  "test": "npx babel-node --plugins @babel/plugin-transform-modules-commonjs test/runTestsOnSrc.js",
+  "test-build": "node test/runTestsOnBuild.js"
+}
+### ./frontend/node_modules/json-buffer/package.json
+{
+  "test": "set -e; for t in test/*.js; do node $t; done"
+}
+### ./frontend/node_modules/data-urls/package.json
+{
+  "test": "node --test",
+  "coverage": "c8 node --test --experimental-test-coverage",
+  "lint": "eslint",
+  "pretest": "node scripts/get-latest-platform-tests.mjs"
+}
+### ./frontend/node_modules/enhanced-resolve/package.json
+{
+  "prepare": "husky",
+  "lint": "npm run lint:code && npm run lint:types && npm run lint:types-test && npm run lint:special && npm run fmt:check && npm run lint:spellcheck",
+  "lint:code": "eslint --cache .",
+  "lint:special": "node node_modules/tooling/inherit-types && node node_modules/tooling/generate-types",
+  "lint:types": "tsc",
+  "lint:types-test": "tsc -p tsconfig.types.test.json",
+  "lint:spellcheck": "cspell --cache --no-must-find-files --quiet \"**/*.*\"",
+  "fmt": "npm run fmt:base -- --log-level warn --write",
+  "fmt:check": "npm run fmt:base -- --check",
+  "fmt:base": "node_modules/prettier/bin/prettier.cjs --cache --ignore-unknown .",
+  "fix": "npm run fix:code && npm run fix:special",
+  "fix:code": "npm run lint:code -- --fix",
+  "fix:special": "node node_modules/tooling/inherit-types --write && node node_modules/tooling/generate-types --write",
+  "type-report": "rimraf coverage && npm run cover:types && npm run cover:report && open-cli coverage/lcov-report/index.html",
   "pretest": "npm run lint",
-  "test": "ava"
+  "test": "npm run test:only",
+  "test:only": "node scripts/test.js",
+  "test:watch": "node scripts/test.js --watch",
+  "test:coverage": "node scripts/test.js --experimental-test-coverage --test-coverage-include=\"lib/**\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info",
+  "test:browser": "node --experimental-vm-modules test/smoke/browser-run.cjs",
+  "version": "changeset version",
+  "release": "changeset publish",
+  "benchmark": "node --max-old-space-size=4096 --hash-seed=1 --random-seed=1 --no-opt --predictable --predictable-gc-schedule --interpreted-frames-native-stack --allow-natives-syntax --expose-gc --no-concurrent-sweeping ./benchmark/run.mjs"
 }
-### ./frontend/node_modules/esbuild/package.json
-{
-  "postinstall": "node install.js"
-}
-### ./frontend/node_modules/get-proto/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "prepublishOnly": "safe-publish-latest",
-  "pretest": "npm run --silent lint",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@\">=10.2\" audit --production",
-  "tests-only": "nyc tape 'test/**/*.js'",
-  "prelint": "evalmd README.md",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc && attw -P",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/has-symbols/package.json
-{
-  "prepack": "npmignore --auto --commentLines=autogenerated",
-  "prepublishOnly": "safe-publish-latest",
-  "prepublish": "not-in-publish || npm run prepublishOnly",
-  "pretest": "npm run --silent lint",
-  "test": "npm run tests-only",
-  "posttest": "npx npm@'>=10.2' audit --production",
-  "tests-only": "npm run test:stock && npm run test:shams",
-  "test:stock": "nyc node test",
-  "test:staging": "nyc node --harmony --es-staging test",
-  "test:shams": "npm run --silent test:shams:getownpropertysymbols && npm run --silent test:shams:corejs",
-  "test:shams:corejs": "nyc node test/shams/core-js.js",
-  "test:shams:getownpropertysymbols": "nyc node test/shams/get-own-property-symbols.js",
-  "lint": "eslint --ext=js,mjs .",
-  "postlint": "tsc -p . && attw -P",
-  "version": "auto-changelog && git add CHANGELOG.md",
-  "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\""
-}
-### ./frontend/node_modules/browserslist/package.json
+### ./frontend/node_modules/react-dom/package.json
 {}
-### ./frontend/node_modules/lru-cache/package.json
+### ./frontend/node_modules/baseline-browser-mapping/package.json
 {
-  "test": "tap test/*.js --100 -J",
-  "snap": "TAP_SNAPSHOT=1 tap test/*.js -J",
-  "coveragerport": "tap --coverage-report=html",
-  "preversion": "npm test",
-  "postversion": "npm publish",
-  "postpublish": "git push origin --all; git push origin --tags"
+  "fix-cli-permissions": "output=$(npx baseline-browser-mapping 2>&1); path=$(printf '%s\n' \"$output\" | sed -n 's/^.*: \\(.*\\): Permission denied$/\\1/p; t; s/^\\(.*\\): Permission denied$/\\1/p'); if [ -n \"$path\" ]; then echo \"Permission denied for: $path\"; echo \"Removing $path ...\"; rm -rf \"$path\"; else echo \"$output\"; fi",
+  "test:format": "npx prettier --check .",
+  "test:lint": "npx eslint .",
+  "test:legacy-test": "node spec/legacy-tests/legacy-test.cjs; node dist/cli.cjs",
+  "test:jasmine": "npx jasmine",
+  "test:jasmine-browser": "npx jasmine-browser-runner runSpecs --config ./spec/support/jasmine-browser.js",
+  "test": "npm run build && npm run fix-cli-permissions && npm run test:format && npm run test:lint && npm run test:jasmine && npm run test:jasmine-browser",
+  "build": "rm -rf dist; npx prettier . --write; rollup -c; rm -rf ./dist/scripts/expose-data.d.ts ./dist/cli.d.ts",
+  "refresh-downstream": "npx tsx scripts/refresh-downstream.ts",
+  "refresh-static": "npx tsx scripts/refresh-static.ts",
+  "update-timeline": "npx tsx scripts/create-timeline.ts; npx prettier ./src/data/timeline.js --write",
+  "update-data-dependencies": "npm i @mdn/browser-compat-data@latest web-features@latest -D",
+  "check-timeline-changes": "git diff --name-only | grep -q '^src/data/timeline.js$' && echo 'changes-available=TRUE' || echo 'changes-available=FALSE'"
 }
-### ./frontend/node_modules/binary-extensions/package.json
+### ./frontend/node_modules/ansi-regex/package.json
+{
+  "test": "xo && ava && tsd",
+  "view-supported": "node fixtures/view-codes.js"
+}
+### ./frontend/node_modules/cookie/package.json
+{
+  "bench": "vitest bench",
+  "build": "ts-scripts build",
+  "format": "ts-scripts format",
+  "prepare": "ts-scripts install",
+  "prepublishOnly": "npm run build",
+  "specs": "ts-scripts specs",
+  "test": "ts-scripts test"
+}
+### ./frontend/node_modules/decimal.js-light/package.json
+{
+  "test": "node ./test/test.js",
+  "build": "uglifyjs decimal.js --source-map doc/decimal.js.map -c -m -o decimal.min.js --preamble \"/* decimal.js-light v2.5.1 https://github.com/MikeMcl/decimal.js-light/LICENCE */\""
+}
+### ./frontend/node_modules/acorn-jsx/package.json
+{
+  "test": "node test/run.js"
+}
+### ./frontend/node_modules/obug/package.json
+{
+  "lint": "eslint --cache .",
+  "lint:fix": "pnpm run lint --fix",
+  "build": "tsdown",
+  "dev": "tsdown --watch",
+  "test": "vitest",
+  "test:coverage": "vitest --project node --coverage",
+  "play": "vite playground",
+  "typecheck": "tsc --noEmit",
+  "format": "prettier --cache --write .",
+  "release": "bumpp"
+}
+### ./frontend/node_modules/esquery/package.json
+{
+  "prepublishOnly": "npm run build && npm test",
+  "build:parser": "rm parser.js && pegjs --cache --format umd -o \"parser.js\" \"grammar.pegjs\"",
+  "build:browser": "rollup -c",
+  "build": "npm run build:parser && npm run build:browser",
+  "mocha": "mocha --require chai/register-assert --require @babel/register tests",
+  "test": "nyc npm run mocha && npm run lint",
+  "test:ci": "npm run mocha",
+  "lint": "eslint ."
+}
+### ./frontend/node_modules/path-exists/package.json
 {
   "test": "xo && ava && tsd"
 }
-### ./frontend/node_modules/whatwg-encoding/package.json
+### ./frontend/node_modules/d3-timer/package.json
 {
+  "test": "mocha 'test/**/*-test.js' && eslint src test",
+  "prepublishOnly": "rm -rf dist && yarn test && rollup -c",
+  "postpublish": "git push && git push --tags && cd ../d3.github.com && git pull && cp ../${npm_package_name}/dist/${npm_package_name}.js ${npm_package_name}.v${npm_package_version%%.*}.js && cp ../${npm_package_name}/dist/${npm_package_name}.min.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git add ${npm_package_name}.v${npm_package_version%%.*}.js ${npm_package_name}.v${npm_package_version%%.*}.min.js && git commit -m \"${npm_package_name} ${npm_package_version}\" && git push && cd -"
+}
+### ./frontend/node_modules/react-router-dom/package.json
+{
+  "build": "wireit",
+  "typecheck": "tsc"
+}
+### ./frontend/node_modules/undici/package.json
+{
+  "build:node": "esbuild index-fetch.js --bundle --platform=node --outfile=undici-fetch.js --define:esbuildDetection=1 --keep-names && node scripts/strip-comments.js",
+  "build:wasm": "node build/wasm.js --docker",
+  "generate-pem": "node scripts/generate-pem.js",
+  "lint": "eslint --cache",
+  "lint:fix": "eslint --fix --cache",
+  "test": "npm run test:javascript && cross-env NODE_V8_COVERAGE= npm run test:typescript",
+  "test:javascript": "npm run test:javascript:no-jest && npm run test:jest",
+  "test:javascript:no-jest": "npm run generate-pem && npm run test:unit && npm run test:fetch && npm run test:node-fetch && npm run test:infra && npm run test:cache && npm run test:cache-interceptor && npm run test:interceptors && npm run test:cookies && npm run test:eventsource && npm run test:subresource-integrity && npm run test:wpt && npm run test:websocket && npm run test:node-test && npm run test:cache-tests",
+  "test:javascript:without-intl": "npm run test:javascript:no-jest",
+  "test:busboy": "borp --timeout 180000 -p \"test/busboy/*.js\"",
+  "test:cache": "borp --timeout 180000 -p \"test/cache/*.js\"",
+  "test:cache-interceptor": "borp --timeout 180000 -p \"test/cache-interceptor/*.js\"",
+  "test:cache-interceptor:sqlite": "cross-env NODE_OPTIONS=--experimental-sqlite npm run test:cache-interceptor",
+  "test:cookies": "borp --timeout 180000 -p \"test/cookie/*.js\"",
+  "test:eventsource": "npm run build:node && borp --timeout 180000 --expose-gc -p \"test/eventsource/*.js\"",
+  "test:fuzzing": "node test/fuzzing/fuzzing.test.js",
+  "test:fetch": "npm run build:node && borp --timeout 180000 --expose-gc --concurrency 1 -p \"test/fetch/*.js\" && npm run test:webidl && npm run test:busboy",
+  "test:subresource-integrity": "borp --timeout 180000 -p \"test/subresource-integrity/*.js\"",
+  "test:h2": "npm run test:h2:core && npm run test:h2:fetch",
+  "test:h2:core": "borp --timeout 180000 -p \"test/+(http2|h2)*.js\"",
+  "test:h2:fetch": "npm run build:node && borp --timeout 180000 -p \"test/fetch/http2*.js\"",
+  "test:infra": "borp --timeout 180000 -p \"test/infra/*.js\"",
+  "test:interceptors": "borp --timeout 180000 -p \"test/interceptors/*.js\"",
+  "test:jest": "cross-env NODE_V8_COVERAGE= jest",
+  "test:unit": "borp --timeout 180000 --expose-gc -p \"test/*.js\"",
+  "test:node-fetch": "borp --timeout 180000 -p \"test/node-fetch/**/*.js\"",
+  "test:node-test": "borp --timeout 180000 -p \"test/node-test/**/*.js\"",
+  "test:tdd": "borp --timeout 180000 --expose-gc -p \"test/*.js\"",
+  "test:tdd:node-test": "borp --timeout 180000 -p \"test/node-test/**/*.js\" -w",
+  "test:typescript": "tsd && tsc test/imports/undici-import.ts --typeRoots ./types --noEmit && tsc ./types/*.d.ts --noEmit --typeRoots ./types",
+  "test:webidl": "borp --timeout 180000 -p \"test/webidl/*.js\"",
+  "test:websocket": "borp --timeout 180000 -p \"test/websocket/**/*.js\"",
+  "test:websocket:autobahn": "node test/autobahn/client.js",
+  "test:websocket:autobahn:report": "node test/autobahn/report.js",
+  "test:wpt:setup": "node test/web-platform-tests/wpt-runner.mjs setup",
+  "test:wpt": "npm run test:wpt:setup && node test/web-platform-tests/wpt-runner.mjs run /fetch /mimesniff /websockets /serviceWorkers /eventsource",
+  "test:cache-tests": "node test/cache-interceptor/cache-tests.mjs --ci",
+  "coverage": "npm run coverage:clean && cross-env NODE_V8_COVERAGE=./coverage/tmp npm run test:javascript && npm run coverage:report",
+  "coverage:ci": "npm run coverage:clean && cross-env NODE_V8_COVERAGE=./coverage/tmp npm run test:javascript && npm run coverage:report:ci",
+  "coverage:clean": "node ./scripts/clean-coverage.js",
+  "coverage:report": "cross-env NODE_V8_COVERAGE= c8 report",
+  "coverage:report:ci": "c8 report",
+  "bench": "echo \"Error: Benchmarks have been moved to '/benchmarks'\" && exit 1",
+  "serve:website": "echo \"Error: Documentation has been moved to '/docs'\" && exit 1",
+  "prepare": "husky && node ./scripts/platform-shell.js"
+}
+### ./frontend/node_modules/node-releases/package.json
+{
+  "build": "node scripts/build.js"
+}
+### ./frontend/node_modules/ajv/package.json
+{
+  "eslint": "eslint lib/{compile/,}*.js spec/{**/,}*.js scripts --ignore-pattern spec/JSON-Schema-Test-Suite",
+  "jshint": "jshint lib/{compile/,}*.js",
+  "lint": "npm run jshint && npm run eslint",
+  "test-spec": "mocha spec/{**/,}*.spec.js -R spec",
+  "test-fast": "AJV_FAST_TEST=true npm run test-spec",
+  "test-debug": "npm run test-spec -- --inspect-brk",
+  "test-cov": "nyc npm run test-spec",
+  "test-ts": "tsc --target ES5 --noImplicitAny --noEmit spec/typescript/index.ts",
+  "bundle": "del-cli dist && node ./scripts/bundle.js . Ajv pure_getters",
+  "bundle-beautify": "node ./scripts/bundle.js js-beautify",
+  "build": "del-cli lib/dotjs/*.js \"!lib/dotjs/index.js\" && node scripts/compile-dots.js",
+  "test-karma": "karma start",
+  "test-browser": "del-cli .browser && npm run bundle && scripts/prepare-tests && npm run test-karma",
+  "test-all": "npm run test-cov && if-node-version 10 npm run test-browser",
+  "test": "npm run lint && npm run build && npm run test-all",
+  "prepublish": "npm run build && npm run bundle",
+  "watch": "watch \"npm run build\" ./lib/dot"
+}
+### ./frontend/node_modules/is-extglob/package.json
+{
+  "test": "mocha"
+}
+### ./frontend/node_modules/brace-expansion/package.json
+{
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "prepublishOnly": "git push origin --follow-tags",
+  "prepare": "tshy",
   "pretest": "npm run prepare",
-  "test": "node --test",
-  "lint": "eslint .",
-  "prepare": "node scripts/update.js"
+  "presnap": "npm run prepare",
+  "test": "tap",
+  "snap": "tap",
+  "format": "prettier --write .",
+  "benchmark": "node benchmark/index.js",
+  "typedoc": "typedoc --tsconfig .tshy/esm.json ./src/*.ts"
 }
-### ./frontend/package.json
+### ./frontend/node_modules/graceful-fs/package.json
 {
-  "dev": "vite",
-  "build": "tsc -p tsconfig.build.json && vite build",
-  "preview": "vite preview",
-  "test": "vitest --run --passWithNoTests"
+  "preversion": "npm test",
+  "postversion": "npm publish",
+  "postpublish": "git push origin --follow-tags",
+  "test": "nyc --silent node test.js | tap -c -",
+  "posttest": "nyc report"
 }
+### ./frontend/node_modules/w3c-xmlserializer/package.json
+{
+  "test": "node --test",
+  "lint": "eslint ."
+}
+### ./frontend/node_modules/recharts/package.json
+{
+  "prepare": "husky || true",
+  "prebuild": "npm run omnidoc",
+  "build": "npm run build-types && npm run build-cjs && npm run build-es6 && npm run build-umd && npm run test-build-output",
+  "build-cjs": "rimraf lib && cross-env NODE_ENV=commonjs babel ./src -d lib --extensions '.js,.ts,.tsx'",
+  "build-es6": "rimraf es6 && cross-env NODE_ENV=es6 babel ./src -d es6 --extensions '.js,.ts,.tsx'",
+  "build-umd": "rimraf umd && cross-env NODE_ENV=production webpack -o umd",
+  "build-types": "rimraf types && npm run tsc",
+  "check-types": "npm run check-types-lib && npm run check-types-test && npm run check-types-storybook && npm run check-types-test-vr && npm run check-types-website",
+  "check-types-lib": "tsc --noEmit",
+  "check-types-test": "tsc --project test/tsconfig.json",
+  "check-types-storybook": "tsc --project storybook/tsconfig.json",
+  "check-types-test-vr": "tsc --project test-vr/tsconfig.json",
+  "check-types-website": "tsc --project www/tsconfig.json",
+  "check-playwright-versions": "node scripts/check-playwright-versions.mjs",
+  "test": "vitest run --config vitest.config.mts --project unit:*",
+  "test-lib": "vitest run --config vitest.config.mts --project unit:lib",
+  "test-website": "vitest run --config vitest.config.mts --project unit:website",
+  "test-coverage": "vitest run --config vitest.config.mts --coverage --project unit:*",
+  "test-omnidoc": "vitest run --project unit:omnidoc --config vitest.config.mts",
+  "test-exports": "vitest run scripts/verify-exports.test.ts",
+  "test-treeshaking": "vitest run scripts/treeshaking.test.ts scripts/generate-bundle-data.test.ts",
+  "omnidoc": "npm exec --prefix ./www -- tsx ./omnidoc/generateApiDoc.ts && npm exec --prefix ./www -- tsx ./omnidoc/generateStorybookArgs.ts",
+  "test-mutation": "stryker run",
+  "test-watch": "vitest --config vitest.config.mts --project unit:*",
+  "lint": "eslint .",
+  "autofix": "eslint . --fix",
+  "analyse": "cross-env NODE_ENV=analyse webpack -o umd/Recharts.js",
+  "trace-bundle": "node scripts/trace-bundle.ts",
+  "generate-bundle-data": "npm exec --prefix ./www -- tsx ./scripts/generate-bundle-data.ts",
+  "prettier": "prettier . --write",
+  "tsc": "tsc",
+  "storybook-doctor": "npx storybook doctor --config-dir storybook",
+  "storybook": "npx storybook dev -p 6006 -c storybook",
+  "build-storybook": "npx storybook build -o storybook/public -c storybook",
+  "chromatic": "npx chromatic",
+  "test-build-output": "vitest run --project build-output --config vitest.config.mts",
+  "test-storybook": "vitest --config vitest.config.mts --project storybook",
+  "test-vr:prepare": "npm run build && docker compose up -d --build",
+  "test-vr": "docker compose run --rm test-vr playwright-test",
+  "test-vr:update": "docker compose run --rm test-vr playwright-test --update-snapshots",
+  "test-vr:ui": "docker compose run -p 8080:8080 --rm test-vr playwright-test --ui --ui-host=0.0.0.0 --ui-port=8080",
+  "test-vr:report": "npx playwright show-report test-vr/playwright-report",
+  "bundlewatch": "bundlewatch --config .bundlewatch.config.json",
+  "lgtm": "npm run lint && npm run build && npm run test && npm run check-types"
+}
+### ./frontend/node_modules/is-potential-custom-element-name/package.json
+{
+  "build": "node build.js",
+  "test": "mocha"
+}
+### ./frontend/node_modules/fast-json-stable-stringify/package.json
+{
+  "eslint": "eslint index.js test",
+  "test-spec": "tape test/*.js",
+  "test": "npm run eslint && nyc npm run test-spec"
+}
+### ./frontend/node_modules/jsesc/package.json
+{
+  "build": "grunt template",
+  "coveralls": "istanbul cover --verbose --dir 'coverage' 'tests/tests.js' && coveralls < coverage/lcov.info'",
+  "cover": "istanbul cover --report 'html' --verbose --dir 'coverage' 'tests/tests.js'",
+  "test": "mocha tests"
+}
+### ./frontend/node_modules/siginfo/package.json
+{
+  "test": "standard"
+}
+### ./frontend/node_modules/typescript-eslint/package.json
+{
+  "build": "pnpm exec nx build",
+  "clean": "rimraf dist/ coverage/",
+  "format": "pnpm -w run format",
+  "lint": "pnpm -w exec nx lint",
+  "test": "pnpm -w exec nx test",
+  "typecheck": "pnpm -w exec nx typecheck",
+  "typecheck:tsgo": "pnpm -w exec nx typecheck:tsgo",
+  "attw-check": "pnpm -w exec nx attw-check"
+}
+### ./frontend/node_modules/hermes-parser/package.json
+{}
+### ./frontend/node_modules/glob-parent/package.json
+{
+  "lint": "eslint .",
+  "pretest": "npm run lint",
+  "test": "nyc mocha --async-only"
+}
+### ./frontend/node_modules/typescript/package.json
+{
+  "test": "hereby runtests-parallel --light=false",
+  "test:eslint-rules": "hereby run-eslint-rules-tests",
+  "build": "npm run build:compiler && npm run build:tests",
+  "build:compiler": "hereby local",
+  "build:tests": "hereby tests",
+  "build:tests:notypecheck": "hereby tests --no-typecheck",
+  "clean": "hereby clean",
+  "gulp": "hereby",
+  "lint": "hereby lint",
+  "knip": "hereby knip",
+  "format": "dprint fmt",
+  "setup-hooks": "node scripts/link-hooks.mjs"
+}
+### ./frontend/node_modules/react/package.json
+{}
+### ./frontend/node_modules/locate-path/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/strip-indent/package.json
+{
+  "test": "xo && ava && tsd"
+}
+### ./frontend/node_modules/imurmurhash/package.json
+{}

@@ -1,16 +1,24 @@
 # Docker and CI Inventory
 
 ## GitHub Actions
-.github/workflows/ci.yml
-.github/workflows/frontend-ci.yml
-.github/workflows/security-ci.yml
-.github/workflows/backend-ci.yml
-.github/workflows/release-check.yml
-.github/workflows/pages-deploy.yml
+.github/workflows/lint.yml
 .github/workflows/docker-ci.yml
+.github/workflows/codeql.yml
+.github/workflows/release-validate.yml
+.github/workflows/e2e.yml
+.github/workflows/ci.yml
+.github/workflows/release.yml
+.github/workflows/dependency-review.yml
+.github/workflows/backend-ci.yml
+.github/workflows/frontend-ci.yml
+.github/workflows/release-evidence.yml
+.github/workflows/pages-deploy.yml
+.github/workflows/release-check.yml
+.github/workflows/security-ci.yml
 
 ## Docker
 backend/Dockerfile
+docker-compose.prod.secrets.yml
 docker-compose.prod.yml
 docker-compose.yml
 frontend/Dockerfile

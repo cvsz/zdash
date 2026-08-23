@@ -71,8 +71,8 @@
 .codex/cloud/setup.sh:70:TARGET="${1:-}"
 .codex/cloud/setup.sh:80:  PROMPT="$TARGET"
 .codex/cloud/setup.sh:82:  PHASE_PADDED=$(printf "%02d" "$TARGET")
-.codex/cloud/setup.sh:83:  PROMPT="docs/prompt/phase${PHASE_PADDED}.prompt"
-.codex/cloud/setup.sh:85:  PROMPT="docs/prompt/${TARGET}"
+.codex/cloud/setup.sh:83:  PROMPT="docs/prompts/phase${PHASE_PADDED}.prompt"
+.codex/cloud/setup.sh:85:  PROMPT="docs/prompts/${TARGET}"
 .codex/cloud/setup.sh:101:ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 .codex/cloud/setup.sh:110:if grep -RIn "localhost:8000\|BACKEND_PORT=8000" \
 .codex/cloud/setup.sh:168:ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -82,8 +82,8 @@
 .codex/run-phase.sh:3:TARGET="${1:-}"
 .codex/run-phase.sh:13:  PROMPT="$TARGET"
 .codex/run-phase.sh:15:  PHASE_PADDED=$(printf "%02d" "$TARGET")
-.codex/run-phase.sh:16:  PROMPT="docs/prompt/phase${PHASE_PADDED}.prompt"
-.codex/run-phase.sh:18:  PROMPT="docs/prompt/${TARGET}"
+.codex/run-phase.sh:16:  PROMPT="docs/prompts/phase${PHASE_PADDED}.prompt"
+.codex/run-phase.sh:18:  PROMPT="docs/prompts/${TARGET}"
 .env.example:1:APP_NAME=zDash
 .env.example:2:APP_ENV=development
 .env.example:3:LOG_LEVEL=INFO
@@ -340,6 +340,14 @@
 .env.example:291:DEFAULT_BRAND_ACCENT_COLOR=#22c55e
 .env.example:293:ONBOARDING_ENABLED=true
 .env.example:294:CUSTOMER_SUCCESS_ENABLED=true
+.env.example:298:ZPLATFORM_VOICE_ENABLED=false
+.env.example:299:ZPLATFORM_VOICE_GATEWAY_URL=http://127.0.0.1:8450
+.env.example:300:ZPLATFORM_VOICE_SERVICE_TOKEN=
+.env.example:301:ZPLATFORM_VOICE_MODEL=qwen3:8b
+.env.example:302:ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS=5
+.github/workflows/e2e.yml:210:          PLUGIN_ID="$(curl -fsS http://127.0.0.1:8005/api/marketplace/plugins \
+.github/workflows/release.yml:68:          VERSION="${{ github.ref_name }}"
+.github/workflows/release.yml:69:          NOTES="docs/releases/${VERSION}.md"
 AGENTS.md:31:FROM=1 TO=1 ./scripts/run-prompt-phases.sh
 AGENTS.md:32:FROM=1 TO=5 ./scripts/run-prompt-phases.sh   # small batch
 AGENTS.md:33:FROM=1 TO=32 ./scripts/run-prompt-phases.sh   # full run
@@ -356,83 +364,87 @@ AGENTS.md:175:SOCIAL_AUTO_POST_ENABLED=false
 AGENTS.md:176:IOT_DRY_RUN=true
 AGENTS.md:177:ALLOW_STRATEGY_PROMOTION=false
 AGENTS.md:178:UPDATE_DRY_RUN=true
+CHANGELOG.md:41:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+CHANGELOG.md:42:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+CHANGELOG.md:97:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+CHANGELOG.md:98:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
 CONTRIBUTING.md:143:FROM=1 TO=1 ./scripts/run-prompt-phases.sh
 CONTRIBUTING.md:144:FROM=2 TO=2 ./scripts/run-prompt-phases.sh
 CONTRIBUTING.md:145:FROM=1 TO=32 ./scripts/run-prompt-phases.sh
-README.md:190:RUN_FRONTEND_TESTS=false bash install-zdash-fullstack.sh
-README.md:196:RECOVER_CORRUPT_FILES=true bash install-zdash-fullstack.sh
-README.md:202:RECOVER_CORRUPT_FILES=false bash install-zdash-fullstack.sh
-README.md:343:VITE_APP_NAME=zDash
-README.md:344:VITE_API_BASE_URL=http://localhost:8005
-README.md:345:VITE_WS_BASE_URL=
-README.md:346:VITE_ENABLE_MOCK_FALLBACK=true
-README.md:347:VITE_POLL_INTERVAL_MS=5000
-README.md:348:VITE_DEFAULT_THEME=dark
-README.md:349:VITE_SHOW_SAFETY_BANNERS=true
-README.md:475:FROM=1 TO=1 ./scripts/run-prompt-phases.sh
-README.md:476:FROM=2 TO=2 ./scripts/run-prompt-phases.sh
-README.md:477:FROM=1 TO=35 ./scripts/run-prompt-phases.sh
-README.md:483:FROM=1 TO=5 ./scripts/run-prompt-phases.sh
-README.md:484:FROM=6 TO=10 ./scripts/run-prompt-phases.sh
-README.md:485:FROM=11 TO=15 ./scripts/run-prompt-phases.sh
-README.md:486:FROM=16 TO=20 ./scripts/run-prompt-phases.sh
-README.md:487:FROM=21 TO=25 ./scripts/run-prompt-phases.sh
-README.md:488:FROM=26 TO=35 ./scripts/run-prompt-phases.sh
-README.md:543:- `DRY_RUN=true` remains default
-README.md:544:- Strategy promotion remains disabled by default (`ALLOW_STRATEGY_PROMOTION=false`)
-README.md:614:- `SOCIAL_DRY_RUN=true` by default
-README.md:615:- `SOCIAL_APPROVAL_REQUIRED=true` by default
-README.md:616:- `SOCIAL_AUTO_POST_ENABLED=false` by default
-README.md:775:POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash POSTGRES_DB=zdash \
-README.md:776:POSTGRES_PASSWORD=change-me RETENTION_DAYS=7 ./infra/scripts/backup-postgres.sh
-README.md:782:RESTORE_CONFIRM=yes POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash \
-README.md:783:POSTGRES_DB=zdash POSTGRES_PASSWORD=change-me ./infra/scripts/restore-postgres.sh ./backups/FILE.sql.gz
-README.md:796:- keep `DRY_RUN=true` unless all production gates are explicitly approved
-README.md:797:- keep `LIVE_TRADING_ACK=false` unless formal go-live authorization exists
-README.md:798:- keep `PRODUCTION_SAFETY_LOCK=true` for fail-closed behavior
-README.md:799:- keep `RISK_GUARDIAN_ENABLED=true`, `MT5_ENABLED=false` by default
-README.md:807:- set `AUTH_ENABLED=true` in production and keep `AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION=false` after initial secure bootstrap
-README.md:853:export GPG_TTY=$(tty)
-README.md:901:BACKEND_PORT=8005
-README.md:902:CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
-README.md:903:CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
-README.md:904:DRY_RUN=true
-README.md:905:LIVE_TRADING_ACK=false
-README.md:906:RISK_GUARDIAN_ENABLED=true
-README.md:907:MT5_ENABLED=false
-README.md:908:SOCIAL_DRY_RUN=true
-README.md:909:SOCIAL_APPROVAL_REQUIRED=true
-README.md:910:SOCIAL_AUTO_POST_ENABLED=false
-README.md:911:CONTENT_PIPELINE_ENABLED=true
-README.md:912:IMAGE_GENERATION_PROVIDER=mock
-README.md:913:IOT_DRY_RUN=true
-README.md:914:IOT_REQUIRE_CONFIRMATION=true
-README.md:915:ALLOW_STRATEGY_PROMOTION=false
-README.md:916:UPDATE_DRY_RUN=true
-README.md:917:SUPPORT_BUNDLE_INCLUDE_SECRETS=false
-README.md:918:DEPLOYMENT_PACK_INCLUDE_SECRETS=false
-README.md:949:- `DRY_RUN=true`
-README.md:976:- `PRODUCTION_SAFETY_LOCK=true` remains the default and enterprise licensing must not disable it.
-README.md:977:- `DRY_RUN=true` and `LIVE_TRADING_ACK=false` are the safe local validation defaults.
-README.md:989:APP_ENV=development \
-README.md:990:DATABASE_URL=sqlite:///./zdash_test.db \
-README.md:991:PRODUCTION_SAFETY_LOCK=true \
-README.md:992:DRY_RUN=true \
-README.md:993:LIVE_TRADING_ACK=false \
-README.md:1001:APP_ENV=development \
-README.md:1002:DATABASE_URL=sqlite:///./zdash_test.db \
-README.md:1003:PRODUCTION_SAFETY_LOCK=true \
-README.md:1004:DRY_RUN=true \
-README.md:1005:LIVE_TRADING_ACK=false \
-README.md:1044:- Mock stream can be enabled via `ENABLE_MOCK_REALTIME=true` and is automatically suppressed during pytest unless explicitly enabled.
+README.md:297:RUN_FRONTEND_TESTS=false bash install-zdash-fullstack.sh
+README.md:303:RECOVER_CORRUPT_FILES=true bash install-zdash-fullstack.sh
+README.md:309:RECOVER_CORRUPT_FILES=false bash install-zdash-fullstack.sh
+README.md:450:VITE_APP_NAME=zDash
+README.md:451:VITE_API_BASE_URL=http://localhost:8005
+README.md:452:VITE_WS_BASE_URL=
+README.md:453:VITE_ENABLE_MOCK_FALLBACK=true
+README.md:454:VITE_POLL_INTERVAL_MS=5000
+README.md:455:VITE_DEFAULT_THEME=dark
+README.md:456:VITE_SHOW_SAFETY_BANNERS=true
+README.md:582:FROM=1 TO=1 ./scripts/run-prompt-phases.sh
+README.md:583:FROM=2 TO=2 ./scripts/run-prompt-phases.sh
+README.md:584:FROM=1 TO=35 ./scripts/run-prompt-phases.sh
+README.md:590:FROM=1 TO=5 ./scripts/run-prompt-phases.sh
+README.md:591:FROM=6 TO=10 ./scripts/run-prompt-phases.sh
+README.md:592:FROM=11 TO=15 ./scripts/run-prompt-phases.sh
+README.md:593:FROM=16 TO=20 ./scripts/run-prompt-phases.sh
+README.md:594:FROM=21 TO=25 ./scripts/run-prompt-phases.sh
+README.md:595:FROM=26 TO=35 ./scripts/run-prompt-phases.sh
+README.md:650:- `DRY_RUN=true` remains default
+README.md:651:- Strategy promotion remains disabled by default (`ALLOW_STRATEGY_PROMOTION=false`)
+README.md:721:- `SOCIAL_DRY_RUN=true` by default
+README.md:722:- `SOCIAL_APPROVAL_REQUIRED=true` by default
+README.md:723:- `SOCIAL_AUTO_POST_ENABLED=false` by default
+README.md:882:POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash POSTGRES_DB=zdash \
+README.md:883:POSTGRES_PASSWORD=change-me RETENTION_DAYS=7 ./infra/scripts/backup-postgres.sh
+README.md:889:RESTORE_CONFIRM=yes POSTGRES_HOST=localhost POSTGRES_PORT=5432 POSTGRES_USER=zdash \
+README.md:890:POSTGRES_DB=zdash POSTGRES_PASSWORD=change-me ./infra/scripts/restore-postgres.sh ./backups/FILE.sql.gz
+README.md:903:- keep `DRY_RUN=true` unless all production gates are explicitly approved
+README.md:904:- keep `LIVE_TRADING_ACK=false` unless formal go-live authorization exists
+README.md:905:- keep `PRODUCTION_SAFETY_LOCK=true` for fail-closed behavior
+README.md:906:- keep `RISK_GUARDIAN_ENABLED=true`, `MT5_ENABLED=false` by default
+README.md:914:- set `AUTH_ENABLED=true` in production and keep `AUTH_ALLOW_BOOTSTRAP_IN_PRODUCTION=false` after initial secure bootstrap
+README.md:960:export GPG_TTY=$(tty)
+README.md:1008:BACKEND_PORT=8005
+README.md:1009:CLOUDFLARE_HOSTNAME=zdash.zeaz.dev
+README.md:1010:CLOUDFLARE_OPERATOR_REPO=CVSz/zeaz-platform
+README.md:1011:DRY_RUN=true
+README.md:1012:LIVE_TRADING_ACK=false
+README.md:1013:RISK_GUARDIAN_ENABLED=true
+README.md:1014:MT5_ENABLED=false
+README.md:1015:SOCIAL_DRY_RUN=true
+README.md:1016:SOCIAL_APPROVAL_REQUIRED=true
+README.md:1017:SOCIAL_AUTO_POST_ENABLED=false
+README.md:1018:CONTENT_PIPELINE_ENABLED=true
+README.md:1019:IMAGE_GENERATION_PROVIDER=mock
+README.md:1020:IOT_DRY_RUN=true
+README.md:1021:IOT_REQUIRE_CONFIRMATION=true
+README.md:1022:ALLOW_STRATEGY_PROMOTION=false
+README.md:1023:UPDATE_DRY_RUN=true
+README.md:1024:SUPPORT_BUNDLE_INCLUDE_SECRETS=false
+README.md:1025:DEPLOYMENT_PACK_INCLUDE_SECRETS=false
+README.md:1056:- `DRY_RUN=true`
+README.md:1083:- `PRODUCTION_SAFETY_LOCK=true` remains the default and enterprise licensing must not disable it.
+README.md:1084:- `DRY_RUN=true` and `LIVE_TRADING_ACK=false` are the safe local validation defaults.
+README.md:1096:APP_ENV=development \
+README.md:1097:DATABASE_URL=sqlite:///./zdash_test.db \
+README.md:1098:PRODUCTION_SAFETY_LOCK=true \
+README.md:1099:DRY_RUN=true \
+README.md:1100:LIVE_TRADING_ACK=false \
+README.md:1108:APP_ENV=development \
+README.md:1109:DATABASE_URL=sqlite:///./zdash_test.db \
+README.md:1110:PRODUCTION_SAFETY_LOCK=true \
+README.md:1111:DRY_RUN=true \
+README.md:1112:LIVE_TRADING_ACK=false \
+README.md:1223:- Mock stream can be enabled via `ENABLE_MOCK_REALTIME=true` and is automatically suppressed during pytest unless explicitly enabled.
 backend/app/api/admin.py:73:                    "Live mode requires PRODUCTION_ALLOW_LIVE_ACTIONS=true when DRY_RUN=false."
-backend/app/api/admin.py:83:                    "LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true."
-backend/app/api/admin.py:91:                    "MT5_ENABLED=true with DRY_RUN=false requires explicit gate."
-backend/app/api/admin.py:99:                "Real social posting requires approval-required mode and SOCIAL_REAL_POSTING_APPROVED=true."
-backend/app/api/admin.py:104:                "SOCIAL_AUTO_POST_ENABLED=true requires SOCIAL_APPROVAL_REQUIRED=true."
-backend/app/api/admin.py:112:                "Real IoT actions require confirmation and IOT_REAL_ACTIONS_APPROVED=true."
-backend/app/api/admin.py:142:            warnings.append("AUTH_ENABLED=false in non-production mode.")
-backend/app/api/admin.py:144:            warnings.append("METRICS_AUTH_REQUIRED=false in non-production mode.")
+backend/app/api/admin.py:82:                blockers.append("LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true.")
+backend/app/api/admin.py:89:                    "MT5_ENABLED=true with DRY_RUN=false requires explicit gate."
+backend/app/api/admin.py:97:                "Real social posting requires approval-required mode and SOCIAL_REAL_POSTING_APPROVED=true."
+backend/app/api/admin.py:102:                "SOCIAL_AUTO_POST_ENABLED=true requires SOCIAL_APPROVAL_REQUIRED=true."
+backend/app/api/admin.py:110:                "Real IoT actions require confirmation and IOT_REAL_ACTIONS_APPROVED=true."
+backend/app/api/admin.py:140:            warnings.append("AUTH_ENABLED=false in non-production mode.")
+backend/app/api/admin.py:142:            warnings.append("METRICS_AUTH_REQUIRED=false in non-production mode.")
 backend/app/billing/stripe_adapter.py:15:    - STRIPE_ENABLED=true
 backend/app/billing/stripe_adapter.py:61:                "Stripe is disabled. Set STRIPE_ENABLED=true."
 backend/app/core/config.py:570:                    "PRODUCTION_SAFETY_LOCK can be disabled only with explicit PRODUCTION_ALLOW_LIVE_ACTIONS=true."
@@ -449,40 +461,83 @@ backend/app/tests/test_production_safety.py:41:        IOT_REQUIRE_CONFIRMATION=
 backend/app/tests/test_production_safety.py:42:        IOT_REAL_ACTIONS_APPROVED="false",
 backend/app/tests/test_production_safety.py:61:    _set_prod_env(monkeypatch, AUTH_ENABLED="false")
 backend/app/tests/test_production_safety.py:73:    _set_prod_env(monkeypatch, METRICS_AUTH_REQUIRED="false")
-backend/app/tests/test_production_safety.py:84:    """LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true."""
-backend/app/tests/test_production_safety.py:87:        LIVE_TRADING_ACK="true",
-backend/app/tests/test_production_safety.py:88:        RISK_GUARDIAN_ENABLED="false",
-backend/app/tests/test_production_safety.py:102:    """MT5_ENABLED=true with DRY_RUN=false must be blocked."""
-backend/app/tests/test_production_safety.py:105:        MT5_ENABLED="true",
-backend/app/tests/test_production_safety.py:106:        DRY_RUN="false",
-backend/app/tests/test_production_safety.py:118:    """MT5_ENABLED=true with DRY_RUN=true should be a warning, not blocker."""
-backend/app/tests/test_production_safety.py:119:    _set_prod_env(monkeypatch, MT5_ENABLED="true", DRY_RUN="true")
-backend/app/tests/test_production_safety.py:131:    """SOCIAL_AUTO_POST_ENABLED requires SOCIAL_APPROVAL_REQUIRED=true."""
-backend/app/tests/test_production_safety.py:134:        SOCIAL_AUTO_POST_ENABLED="true",
-backend/app/tests/test_production_safety.py:135:        SOCIAL_APPROVAL_REQUIRED="false",
-backend/app/tests/test_production_safety.py:150:    _set_prod_env(monkeypatch, SUPPORT_BUNDLE_INCLUDE_SECRETS="true")
-backend/app/tests/test_production_safety.py:165:    _set_prod_env(monkeypatch, DEPLOYMENT_PACK_INCLUDE_SECRETS="true")
-backend/app/tests/test_production_safety.py:182:        AUTH_ENABLED="true",
-backend/app/tests/test_production_safety.py:183:        METRICS_AUTH_REQUIRED="true",
-backend/app/tests/test_production_safety.py:184:        CORS_ALLOW_ORIGINS="https://app.zdash.local",
-backend/app/tests/test_production_safety.py:185:        CORS_ALLOW_CREDENTIALS="true",
-backend/app/tests/test_production_safety.py:186:        DRY_RUN="true",
-backend/app/tests/test_production_safety.py:187:        PRODUCTION_SAFETY_LOCK="true",
-backend/app/tests/test_production_safety.py:188:        LIVE_TRADING_ACK="false",
-backend/app/tests/test_production_safety.py:189:        MT5_ENABLED="false",
-backend/app/tests/test_production_safety.py:190:        SOCIAL_DRY_RUN="true",
-backend/app/tests/test_production_safety.py:191:        SOCIAL_AUTO_POST_ENABLED="false",
-backend/app/tests/test_production_safety.py:192:        IOT_DRY_RUN="true",
-backend/app/tests/test_production_safety.py:193:        SUPPORT_BUNDLE_INCLUDE_SECRETS="false",
-backend/app/tests/test_production_safety.py:194:        DEPLOYMENT_PACK_INCLUDE_SECRETS="false",
-backend/app/tests/test_production_safety.py:209:        APP_ENV="development",
-backend/app/tests/test_production_safety.py:210:        AUTH_ENABLED="false",
-backend/app/tests/test_production_safety.py:211:        DRY_RUN="false",
+backend/app/tests/test_production_safety.py:86:    """LIVE_TRADING_ACK requires RISK_GUARDIAN_ENABLED=true."""
+backend/app/tests/test_production_safety.py:89:        LIVE_TRADING_ACK="true",
+backend/app/tests/test_production_safety.py:90:        RISK_GUARDIAN_ENABLED="false",
+backend/app/tests/test_production_safety.py:104:    """MT5_ENABLED=true with DRY_RUN=false must be blocked."""
+backend/app/tests/test_production_safety.py:107:        MT5_ENABLED="true",
+backend/app/tests/test_production_safety.py:108:        DRY_RUN="false",
+backend/app/tests/test_production_safety.py:120:    """MT5_ENABLED=true with DRY_RUN=true should be a warning, not blocker."""
+backend/app/tests/test_production_safety.py:121:    _set_prod_env(monkeypatch, MT5_ENABLED="true", DRY_RUN="true")
+backend/app/tests/test_production_safety.py:133:    """SOCIAL_AUTO_POST_ENABLED requires SOCIAL_APPROVAL_REQUIRED=true."""
+backend/app/tests/test_production_safety.py:136:        SOCIAL_AUTO_POST_ENABLED="true",
+backend/app/tests/test_production_safety.py:137:        SOCIAL_APPROVAL_REQUIRED="false",
+backend/app/tests/test_production_safety.py:152:    _set_prod_env(monkeypatch, SUPPORT_BUNDLE_INCLUDE_SECRETS="true")
+backend/app/tests/test_production_safety.py:167:    _set_prod_env(monkeypatch, DEPLOYMENT_PACK_INCLUDE_SECRETS="true")
+backend/app/tests/test_production_safety.py:184:        AUTH_ENABLED="true",
+backend/app/tests/test_production_safety.py:185:        METRICS_AUTH_REQUIRED="true",
+backend/app/tests/test_production_safety.py:186:        CORS_ALLOW_ORIGINS="https://app.zdash.local",
+backend/app/tests/test_production_safety.py:187:        CORS_ALLOW_CREDENTIALS="true",
+backend/app/tests/test_production_safety.py:188:        DRY_RUN="true",
+backend/app/tests/test_production_safety.py:189:        PRODUCTION_SAFETY_LOCK="true",
+backend/app/tests/test_production_safety.py:190:        LIVE_TRADING_ACK="false",
+backend/app/tests/test_production_safety.py:191:        MT5_ENABLED="false",
+backend/app/tests/test_production_safety.py:192:        SOCIAL_DRY_RUN="true",
+backend/app/tests/test_production_safety.py:193:        SOCIAL_AUTO_POST_ENABLED="false",
+backend/app/tests/test_production_safety.py:194:        IOT_DRY_RUN="true",
+backend/app/tests/test_production_safety.py:195:        SUPPORT_BUNDLE_INCLUDE_SECRETS="false",
+backend/app/tests/test_production_safety.py:196:        DEPLOYMENT_PACK_INCLUDE_SECRETS="false",
+backend/app/tests/test_production_safety.py:211:        JWT_SECRET_KEY="dev-only-change-before-production",
+backend/app/tests/test_production_safety.py:224:    """IOT_REAL_ACTIONS_APPROVED=true requires IOT_REQUIRE_CONFIRMATION=true."""
+backend/app/tests/test_production_safety.py:227:        IOT_DRY_RUN="false",
+backend/app/tests/test_production_safety.py:228:        IOT_REAL_ACTIONS_APPROVED="true",
+backend/app/tests/test_production_safety.py:229:        IOT_REQUIRE_CONFIRMATION="false",
+backend/app/tests/test_production_safety.py:241:    """SOCIAL_REAL_POSTING_APPROVED=true requires SOCIAL_APPROVAL_REQUIRED=true."""
+backend/app/tests/test_production_safety.py:244:        SOCIAL_DRY_RUN="false",
+backend/app/tests/test_production_safety.py:245:        SOCIAL_REAL_POSTING_APPROVED="true",
+backend/app/tests/test_production_safety.py:246:        SOCIAL_APPROVAL_REQUIRED="false",
+backend/app/tests/test_production_safety.py:261:        APP_ENV="development",
+backend/app/tests/test_production_safety.py:262:        AUTH_ENABLED="false",
+backend/app/tests/test_production_safety.py:263:        DRY_RUN="false",
+backend/app/tests/test_production_safety.py:296:    _set_prod_env(monkeypatch, AUTH_ENABLED="false")
+backend/app/tests/test_production_safety.py:311:    _set_prod_env(monkeypatch, APP_ENV="development", AUTH_ENABLED="false")
+backend/app/tests/test_production_safety.py:322:    _set_prod_env(monkeypatch, AUTH_ENABLED="false")
+backend/app/tests/test_production_safety.py:335:    _set_prod_env(monkeypatch, METRICS_AUTH_REQUIRED="false")
+backend/app/tests/test_production_safety.py:350:        CORS_ALLOW_ORIGINS="*",
+backend/app/tests/test_production_safety.py:351:        CORS_ALLOW_CREDENTIALS="true",
+backend/app/tests/test_production_safety.py:367:        DRY_RUN="false",
+backend/app/tests/test_production_safety.py:383:        DEFAULT_ADMIN_PASSWORD="dev-only-change-before-production",
+backend/app/tests/test_provider_contract_skeletons.py:12:# - dry_run_true: No side effects when DRY_RUN=true
+backend/app/tests/test_provider_contract_skeletons.py:40:        _settings(monkeypatch, CLAUDE_API_KEY="sk-real-key")
+backend/app/tests/test_provider_contract_skeletons.py:50:        _settings(monkeypatch, CLAUDE_API_KEY="")
+backend/app/tests/test_provider_contract_skeletons.py:59:        _settings(monkeypatch, AI_PROVIDER="mock")
+backend/app/tests/test_provider_contract_skeletons.py:67:        _settings(monkeypatch, DRY_RUN="true")
+backend/app/tests/test_provider_contract_skeletons.py:75:        _settings(monkeypatch, CLAUDE_API_KEY="sk-real-key")
+backend/app/tests/test_provider_contract_skeletons.py:110:        _settings(monkeypatch, MT5_ENABLED="true")
+backend/app/tests/test_provider_contract_skeletons.py:123:            MT5_ENABLED="true",
+backend/app/tests/test_provider_contract_skeletons.py:124:            MT5_LOGIN="",
+backend/app/tests/test_provider_contract_skeletons.py:125:            MT5_PASSWORD="",
+backend/app/tests/test_provider_contract_skeletons.py:126:            MT5_SERVER="",
+backend/app/tests/test_provider_contract_skeletons.py:136:        _settings(monkeypatch, MT5_ENABLED="false")
+backend/app/tests/test_provider_contract_skeletons.py:162:        _settings(monkeypatch, DRY_RUN="true")
+backend/app/tests/test_provider_contract_skeletons.py:172:        _settings(monkeypatch, DRY_RUN="false", LIVE_TRADING_ACK="false")
+backend/app/tests/test_provider_contract_skeletons.py:219:        _settings(monkeypatch, IOT_DRY_RUN="true")
+backend/app/tests/test_provider_contract_skeletons.py:228:        _settings(monkeypatch, IOT_DRY_RUN="false", TAPO_USERNAME="", TAPO_PASSWORD="")
+backend/app/tests/test_provider_contract_skeletons.py:236:        _settings(monkeypatch, IOT_ENABLED="false")
+backend/app/tests/test_provider_contract_skeletons.py:244:        _settings(monkeypatch, IOT_DRY_RUN="true")
+backend/app/tests/test_provider_contract_skeletons.py:255:            IOT_DRY_RUN="false",
+backend/app/tests/test_provider_contract_skeletons.py:256:            IOT_REQUIRE_CONFIRMATION="true",
+backend/app/tests/test_provider_contract_skeletons.py:257:            TAPO_USERNAME="u",
+backend/app/tests/test_provider_contract_skeletons.py:258:            TAPO_PASSWORD="p",
+backend/app/tests/test_provider_contract_skeletons.py:259:            TAPO_DEVICE_IP="1.2.3.4",
+backend/app/tests/test_provider_contract_skeletons.py:317:        _settings(monkeypatch, SOCIAL_DRY_RUN="true")
+backend/app/tests/test_provider_contract_skeletons.py:369:        _settings(monkeypatch, IMAGE_GENERATION_PROVIDER="mock")
+backend/app/tests/test_provider_contract_skeletons.py:377:        _settings(monkeypatch, IMAGE_GENERATION_PROVIDER="none")
 backend/app/trading/execution_engine.py:255:            message = "LIVE_TRADING_ACK=false blocks non-dry-run execution."
 backend/app/trading/mt5_adapter.py:53:                "reason": "MT5_ENABLED=false",
 backend/app/trading/mt5_adapter.py:129:                message="LIVE_TRADING_ACK=false blocks non-dry-run execution.",
-docker-compose.prod.yml:150:# REDIS_COLLAB_ENABLED=false
-docker-compose.yml:88:# REDIS_COLLAB_ENABLED=false
+backend/tests/test_local_stack_contract.py:49:    assert "ARG VITE_API_BASE_URL=/" in dockerfile
+docker-compose.prod.yml:162:# REDIS_COLLAB_ENABLED=false
 docs/architecture/BILLING_MODEL.md:51:If billing is disabled in development, feature checks may allow access but must report mock/dev mode. If provider state is unavailable and `BILLING_FAIL_CLOSED=true`, paid features must fail closed.
 docs/architecture/BILLING_MODEL.md:116:BILLING_ENABLED=true
 docs/architecture/BILLING_MODEL.md:117:BILLING_PROVIDER=mock
@@ -499,41 +554,173 @@ docs/architecture/PHASE_10_SAAS_MONETIZATION.md:25:- `LIVE_TRADING_ACK=false` re
 docs/architecture/PHASE_10_SAAS_MONETIZATION.md:26:- `SOCIAL_DRY_RUN=true` and `SOCIAL_APPROVAL_REQUIRED=true` remain the safe defaults.
 docs/architecture/PHASE_10_SAAS_MONETIZATION.md:27:- `IOT_DRY_RUN=true` and `IOT_REQUIRE_CONFIRMATION=true` remain the safe defaults.
 docs/architecture/PHASE_10_SAAS_MONETIZATION.md:28:- `PRODUCTION_SAFETY_LOCK=true` remains the safe default.
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:45:APP_ENV=development \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:46:DATABASE_URL=sqlite:///./zdash_test.db \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:47:PRODUCTION_SAFETY_LOCK=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:48:DRY_RUN=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:49:LIVE_TRADING_ACK=false \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:61:APP_ENV=development \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:62:DATABASE_URL=sqlite:///./zdash_test.db \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:63:PRODUCTION_SAFETY_LOCK=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:64:DRY_RUN=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:65:LIVE_TRADING_ACK=false \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:114:APP_ENV=development \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:115:DATABASE_URL=sqlite:///./zdash_test.db \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:116:PRODUCTION_SAFETY_LOCK=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:117:DRY_RUN=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:118:LIVE_TRADING_ACK=false \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:125:APP_ENV=development \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:126:DATABASE_URL=sqlite:///./zdash_test.db \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:127:PRODUCTION_SAFETY_LOCK=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:128:DRY_RUN=true \
-docs/prompt/AI_CODING_PROMPTS_INDEX.md:129:LIVE_TRADING_ACK=false \
+docs/audits/README.md:17:REPO=/path/to/zdash ./scripts/deep-scan-zdash.sh
+docs/integrations/ZPLATFORM_VOICE.md:44:ZPLATFORM_VOICE_ENABLED=true
+docs/integrations/ZPLATFORM_VOICE.md:45:ZPLATFORM_VOICE_GATEWAY_URL=http://127.0.0.1:8450
+docs/integrations/ZPLATFORM_VOICE.md:46:ZPLATFORM_VOICE_SERVICE_TOKEN=<same value as z-platform Z_PLATFORM_SERVICE_TOKEN>
+docs/integrations/ZPLATFORM_VOICE.md:47:ZPLATFORM_VOICE_MODEL=qwen3:8b
+docs/integrations/ZPLATFORM_VOICE.md:48:ZPLATFORM_VOICE_REQUEST_TIMEOUT_SECONDS=5
+docs/integrations/ZPLATFORM_VOICE.md:58:make env-sync ENV_FILE=.env.production GH_ENV=production REPO=cvsz/zdash
+docs/integrations/ZPLATFORM_VOICE.md:59:make env-check GH_ENV=production REPO=cvsz/zdash
+docs/integrations/ZPLATFORM_VOICE.md:71:VOICE_PUBLIC_WS_URL=ws://127.0.0.1:8450/v1/realtime
+docs/integrations/ZPLATFORM_VOICE.md:77:VOICE_PUBLIC_WS_URL=wss://voice.zeaz.dev/v1/realtime
+docs/integrations/ZPLATFORM_VOICE.md:78:VOICE_ALLOW_ANONYMOUS=false
+docs/integrations/ZPLATFORM_VOICE.md:88:ZPLATFORM_VOICE_GATEWAY_URL=http://127.0.0.1:8450
+docs/integrations/ZPLATFORM_VOICE.md:94:ZPLATFORM_VOICE_GATEWAY_URL=http://host.docker.internal:8450
+docs/integrations/ZPLATFORM_VOICE.md:187:- `VOICE_ALLOW_ANONYMOUS=false` on z-platform;
+docs/operations/postgresql-major-upgrade-plan.md:48:   - `DRY_RUN=true`
+docs/operations/postgresql-major-upgrade-plan.md:49:   - `LIVE_TRADING_ACK=false`
+docs/operations/postgresql-major-upgrade-plan.md:50:   - `MT5_ENABLED=false`
+docs/operations/postgresql-major-upgrade-plan.md:51:   - `PRODUCTION_ALLOW_LIVE_ACTIONS=false`
+docs/operations/postgresql-major-upgrade-plan.md:52:   - `RISK_GUARDIAN_ENABLED=true`
+docs/production-backend-recovery.md:34:make install-prod ZDASH_DOMAIN=zdash.zeaz.dev
+docs/production-backend-recovery.md:40:sudo ZDASH_DOMAIN=zdash.zeaz.dev ./install-zdash-prod.sh --repair-only
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:11:- Backend port is `8005`; do not introduce `localhost:8000` or `BACKEND_PORT=8000` in tracked runtime/source files.
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:76:APP_ENV=development \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:77:DATABASE_URL=sqlite:///./zdash_test.db \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:78:PRODUCTION_SAFETY_LOCK=true \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:79:DRY_RUN=true \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:80:LIVE_TRADING_ACK=false \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:87:APP_ENV=development \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:88:DATABASE_URL=sqlite:///./zdash_test.db \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:89:PRODUCTION_SAFETY_LOCK=true \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:90:DRY_RUN=true \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:91:LIVE_TRADING_ACK=false \
+docs/prompts/AI_CODING_PROMPTS_INDEX.md:116:- runtime/source references to `localhost:8000` or `BACKEND_PORT=8000`
+docs/prompts/deepseek-meta-master-final-release-prompt.md:48:- DRY_RUN=true
+docs/prompts/deepseek-meta-master-final-release-prompt.md:168:- DRY_RUN=false requires explicit environment confirmation.
+docs/prompts/deepseek-meta-master-final-release-prompt.md:169:- LIVE_TRADING_ACK=true must require all Guardian/RBAC/audit/kill-switch gates.
+docs/prompts/deepseek-meta-master-final-release-prompt.md:170:- MT5_ENABLED=true must require dry-run or explicit formal gate.
+docs/prompts/deepseek-meta-master-final-release-prompt.md:171:- SOCIAL_AUTO_POST_ENABLED=true must require approval policy.
+docs/prompts/deepseek-meta-master-final-release-prompt.md:172:- IOT_DRY_RUN=false must require explicit device safety policy.
+docs/prompts/deepseek-meta-master-final-release-prompt.md:243:DRY_RUN=true
+docs/prompts/deepseek-meta-master-final-release-prompt.md:447:git grep -n "OPENAI_API_KEY=\|CLOUDFLARE_API_TOKEN=\|GITHUB_TOKEN=\|JWT_SECRET\|PRIVATE KEY\|DATABASE_URL=.*:" -- ':!*.md' || true
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:49:- DRY_RUN=true defaults
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:203:- LIVE_TRADING_ACK=false
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:204:- RISK_GUARDIAN_ENABLED=true
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:205:- SOCIAL_AUTO_POST_ENABLED=false
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:206:- IOT_DRY_RUN=true
+docs/prompts/zdash-dashboard-figma-community-final-prompt-pack.md:207:- MT5_ENABLED=false
+docs/releases/FINAL_RELEASE_NOTES.md:45:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+docs/releases/FINAL_RELEASE_NOTES.md:46:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+docs/releases/PHASE37_RELEASE_READINESS.md:37:- `DRY_RUN=true` (default)
+docs/releases/PHASE37_RELEASE_READINESS.md:38:- `LIVE_TRADING_ACK=false`
+docs/releases/PHASE37_RELEASE_READINESS.md:39:- `MT5_ENABLED=false`
+docs/releases/PHASE37_RELEASE_READINESS.md:40:- `PRODUCTION_ALLOW_LIVE_ACTIONS=false`
+docs/releases/PHASE37_RELEASE_READINESS.md:41:- `RISK_GUARDIAN_ENABLED=true`
+docs/releases/PHASE37_RELEASE_READINESS.md:42:- `SOCIAL_DRY_RUN=true`
+docs/releases/PHASE37_RELEASE_READINESS.md:43:- `IOT_DRY_RUN=true`
+docs/releases/PHASE37_RELEASE_READINESS.md:82:- Frontend bundle: `make release-artifact RELEASE_TAG=v2.0.1`
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:6:**Status:** RELEASE CANDIDATE (requires CONFIRM_RELEASE=yes to publish)
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:17:- DRY_RUN=true — no real broker execution
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:18:- LIVE_TRADING_ACK=false — no trade confirmation
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:19:- MT5_ENABLED=false — no MT5 connection
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:20:- PRODUCTION_ALLOW_LIVE_ACTIONS=false — no live mutations
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:21:- RISK_GUARDIAN_ENABLED=true — risk checks enforced
+docs/releases/PHASE41_RELEASE_CANDIDATE.md:45:CONFIRM_RELEASE=yes make release-push
+docs/releases/PHASE42_FINAL_PUBLIC_RELEASE.md:49:- All safety defaults preserved: DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false, PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+docs/releases/VERSION_FREEZE.md:23:| DRY_RUN=true | LOCKED |
+docs/releases/VERSION_FREEZE.md:24:| LIVE_TRADING_ACK=false | LOCKED |
+docs/releases/VERSION_FREEZE.md:25:| MT5_ENABLED=false | LOCKED |
+docs/releases/VERSION_FREEZE.md:26:| PRODUCTION_ALLOW_LIVE_ACTIONS=false | LOCKED |
+docs/releases/VERSION_FREEZE.md:27:| RISK_GUARDIAN_ENABLED=true | LOCKED |
+docs/releases/VERSION_FREEZE.md:53:CONFIRM_RELEASE=yes make release-push
+docs/releases/VERSION_FREEZE.md:54:CONFIRM_RELEASE=yes make gh-release
+docs/releases/final-release-checklist.md:26:- [ ] Tag release (`make release-tag RELEASE_TAG=vX.Y.Z`)
+docs/releases/final-release-notes-template.md:48:- `make release-tag RELEASE_TAG=vX.Y.Z` to tag
+docs/releases/v0.42.0-rc1.md:33:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+docs/releases/v0.42.0-rc1.md:34:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+docs/releases/v0.42.0-rc3.md:52:- `DRY_RUN=true`
+docs/releases/v0.42.0-rc3.md:53:- `LIVE_TRADING_ACK=false`
+docs/releases/v0.42.0-rc3.md:54:- `MT5_ENABLED=false`
+docs/releases/v0.42.0-rc3.md:55:- `PRODUCTION_ALLOW_LIVE_ACTIONS=false`
+docs/releases/v0.42.0-rc3.md:56:- `RISK_GUARDIAN_ENABLED=true`
 docs/releases/v2.0.0.md:18:Generated by: make release-notes RELEASE_TAG=v2.0.0
-docs/releases/v2.0.1.md:18:Generated by: make release-notes RELEASE_TAG=v2.0.1
+docs/releases/v2.0.1.md:33:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+docs/releases/v2.0.1.md:34:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+docs/releases/v2.0.2.md:33:- DRY_RUN=true, LIVE_TRADING_ACK=false, MT5_ENABLED=false
+docs/releases/v2.0.2.md:34:- PRODUCTION_ALLOW_LIVE_ACTIONS=false, RISK_GUARDIAN_ENABLED=true
+docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md:35:- [x] `DRY_RUN=true` enforced as a runtime invariant
+docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md:36:- [x] `LIVE_TRADING_ACK=false` verified in `.env.production`
+docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md:37:- [x] `MT5_ENABLED=false` verified in `.env.production`
+docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md:38:- [x] `PRODUCTION_ALLOW_LIVE_ACTIONS=false` verified in `.env.production`
+docs/reports/PHASE39_PRODUCTION_DRY_RUN_REPORT.md:39:- [x] `RISK_GUARDIAN_ENABLED=true` verified in `.env.production`
+docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md:33:- [x] `DRY_RUN=true` verified as runtime invariant
+docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md:34:- [x] `LIVE_TRADING_ACK=false` verified
+docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md:35:- [x] `MT5_ENABLED=false` verified
+docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md:36:- [x] `PRODUCTION_ALLOW_LIVE_ACTIONS=false` verified
+docs/reports/PHASE40_GO_LIVE_REHEARSAL_REPORT.md:37:- [x] `RISK_GUARDIAN_ENABLED=true` verified
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:272:VITE_APP_NAME=zDash
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:273:VITE_API_BASE_URL=http://localhost:8005
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:274:VITE_ENABLE_MOCK_FALLBACK=true
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:275:VITE_POLL_INTERVAL_MS=5000
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:276:VITE_DEFAULT_THEME=dark
+docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:277:VITE_SHOW_SAFETY_BANNERS=true
 docs/runbooks/BACKUP_RESTORE.md:27:- Config backup excludes secrets unless `ALLOW_SECRETS=true`.
 docs/runbooks/BILLING_INCIDENT_RUNBOOK.md:25:BILLING_PROVIDER=mock
 docs/runbooks/BILLING_INCIDENT_RUNBOOK.md:26:BILLING_FAIL_CLOSED=true
 docs/runbooks/BILLING_INCIDENT_RUNBOOK.md:27:STRIPE_ENABLED=false
 docs/runbooks/BILLING_INCIDENT_RUNBOOK.md:28:STRIPE_SECRET_KEY=
 docs/runbooks/BILLING_INCIDENT_RUNBOOK.md:29:STRIPE_WEBHOOK_SECRET=
+docs/runbooks/GIT_SAFE_PUSH.md:8:make git-safe-add ARGS="file1 file2" # Stage specific files (rejects unsafe paths)
+docs/runbooks/GIT_SAFE_PUSH.md:9:make git-safe-commit MESSAGE="..."   # Commit with pre-commit safety scan
+docs/runbooks/GIT_SAFE_PUSH.md:34:make git-safe-add ARGS="Makefile backend/app/risk/high_risk_policy.py"
+docs/runbooks/GIT_SAFE_PUSH.md:40:make git-safe-commit MESSAGE="Fix validation scan"
+docs/runbooks/GO_LIVE_CHECKLIST.md:21:- [ ] `DRY_RUN=true`
+docs/runbooks/GO_LIVE_CHECKLIST.md:22:- [ ] `LIVE_TRADING_ACK=false`
+docs/runbooks/GO_LIVE_CHECKLIST.md:23:- [ ] `MT5_ENABLED=false`
+docs/runbooks/GO_LIVE_CHECKLIST.md:24:- [ ] `PRODUCTION_ALLOW_LIVE_ACTIONS=false`
+docs/runbooks/GO_LIVE_CHECKLIST.md:25:- [ ] `RISK_GUARDIAN_ENABLED=true`
+docs/runbooks/GO_LIVE_CHECKLIST.md:26:- [ ] `SOCIAL_DRY_RUN=true`
+docs/runbooks/GO_LIVE_CHECKLIST.md:27:- [ ] `IOT_DRY_RUN=true`
+docs/runbooks/GO_LIVE_CHECKLIST.md:102:- Keep `DRY_RUN=true` for the first 24 hours of production operation.
+docs/runbooks/GO_LIVE_REHEARSAL.md:61:ZDASH_EVIDENCE_DIR=.runtime/evidence bash scripts/prod/capture-go-live-evidence.sh
+docs/runbooks/GO_LIVE_REHEARSAL.md:89:- `.runtime/evidence/go-live-evidence-YYYYMMDD-HHMMSS.md` (when `ZDASH_EVIDENCE_DIR=.runtime/evidence`)
+docs/runbooks/INCIDENT_RESPONSE.md:101:SUPPORT_BUNDLE_INCLUDE_SECRETS=false make support-bundle
+docs/runbooks/INCIDENT_RESPONSE.md:144:- Support bundle generation excludes secrets by default (`SUPPORT_BUNDLE_INCLUDE_SECRETS=false`)
 docs/runbooks/LOCAL_DEV.md:30:- Keep `DRY_RUN=true`.
+docs/runbooks/LOCAL_DOCKER_STACK.md:53:ZDASH_HTTP_PORT=18081 bash scripts/local/stack.sh up
+docs/runbooks/LOCAL_DOCKER_STACK.md:59:CONFIRM_RESET=yes bash scripts/local/stack.sh reset
+docs/runbooks/OPERATOR_HANDOFF.md:101:SERVICE=nginx make prod-logs
+docs/runbooks/OPERATOR_HANDOFF.md:102:SERVICE=frontend make prod-logs
+docs/runbooks/OPERATOR_HANDOFF.md:103:SERVICE=postgres make prod-logs
+docs/runbooks/OPERATOR_HANDOFF.md:212:CONFIRM_RELEASE=yes make release-push
+docs/runbooks/OPERATOR_HANDOFF.md:213:CONFIRM_RELEASE=yes make gh-release
+docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:11:│   ├── logs-local.sh     # Follow logs (SERVICE=backend|frontend)
+docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:32:| `server-logs SERVICE=backend` | Follow logs |
+docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:37:| `git-safe-add ARGS="..."` | Stage files safely |
+docs/runbooks/PHASE36_SERVER_COMMAND_CENTER.md:38:| `git-safe-commit MESSAGE="..."` | Commit with safety scan |
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:14:- `DRY_RUN=true` is verified as a runtime invariant.
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:73:- `DRY_RUN=true`
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:74:- `LIVE_TRADING_ACK=false`
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:75:- `MT5_ENABLED=false`
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:76:- `PRODUCTION_ALLOW_LIVE_ACTIONS=false`
+docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md:77:- `RISK_GUARDIAN_ENABLED=true`
+docs/runbooks/REALTIME_GATEWAY.md:32:- `frontend/.env.test` sets `VITE_ENABLE_MOCK_FALLBACK=true` and `VITE_REALTIME_ENABLED=false`.
+docs/runbooks/REALTIME_GATEWAY.md:45:| Feature entitlement | `VITE_REALTIME_ENABLED=true` and backend billing check may block |
+docs/runbooks/REALTIME_GATEWAY.md:47:| Auth required | If `AUTH_ENABLED=true`, WebSocket may need bearer token subprotocol |
+docs/runbooks/REALTIME_GATEWAY.md:52:VITE_REALTIME_ENABLED=false npm run dev
+docs/runbooks/REALTIME_GATEWAY.md:58:VITE_REALTIME_ENABLED=false
+docs/runbooks/START_SERVER.md:9:make server-logs SERVICE=backend   # Backend only
+docs/runbooks/START_SERVER.md:10:make server-logs SERVICE=frontend  # Frontend only
+docs/runbooks/START_SERVER.md:51:make prod-logs SERVICE=backend       # Follow backend logs
+docs/runbooks/final-release-runbook.md:75:make release-tag RELEASE_TAG=v2.0.1
 docs/security/LIVE_TRADING_SAFETY.md:5:- `DRY_RUN=true` is the default baseline.
 docs/security/LIVE_TRADING_SAFETY.md:9:1. `DRY_RUN=false`
 docs/security/LIVE_TRADING_SAFETY.md:10:2. `LIVE_TRADING_ACK=true`
 docs/security/LIVE_TRADING_SAFETY.md:11:3. `RISK_GUARDIAN_ENABLED=true`
 docs/security/LIVE_TRADING_SAFETY.md:12:4. `ADMIN_APPROVED_LIVE_MODE=true`
 docs/security/LIVE_TRADING_SAFETY.md:21:- Keep `DRY_RUN=true` in dev/staging.
+docs/security/production-fail-closed-policy.md:24:The following configurations are blocked when `APP_ENV=production`:
+docs/security/production-fail-closed-policy.md:28:3. **Wildcard CORS with credentials** — `CORS_ALLOW_ORIGINS=*` + `CORS_ALLOW_CREDENTIALS=true` blocked.
+docs/security/production-fail-closed-policy.md:29:4. **DRY_RUN=false with PRODUCTION_SAFETY_LOCK=true** — blocked.
+docs/security/production-fail-closed-policy.md:31:6. **Real social posting without approval** — requires `SOCIAL_APPROVAL_REQUIRED=true` and `SOCIAL_REAL_POSTING_APPROVED=true`.
+docs/security/production-fail-closed-policy.md:32:7. **Real IoT actions without confirmation** — requires `IOT_REQUIRE_CONFIRMATION=true` and `IOT_REAL_ACTIONS_APPROVED=true`.
+docs/security/production-fail-closed-policy.md:38:| DRY_RUN=false | Explicit env + PRODUCTION_SAFETY_LOCK=false + PRODUCTION_ALLOW_LIVE_ACTIONS=true |
+docs/security/production-fail-closed-policy.md:39:| Live trading | LIVE_TRADING_ACK=true + JWT_SECRET_KEY non-default + all Guardian gates |
+docs/security/production-fail-closed-policy.md:40:| Social auto-post | SOCIAL_APPROVAL_REQUIRED=true + SOCIAL_REAL_POSTING_APPROVED=true |
+docs/security/production-fail-closed-policy.md:41:| IoT real actions | IOT_REQUIRE_CONFIRMATION=true + IOT_REAL_ACTIONS_APPROVED=true |
+docs/security/production-fail-closed-policy.md:70:- Any action that sets DRY_RUN=false
 frontend/.env.example:1:VITE_API_BASE_URL=http://localhost:8005
 frontend/.env.example:2:VITE_WS_BASE_URL=
 frontend/.env.example:3:VITE_ENABLE_MOCK_FALLBACK=true
@@ -545,6 +732,7 @@ frontend/.env.example:8:VITE_REALTIME_ENABLED=true
 frontend/.env.example:9:VITE_APP_VERSION=0.1.0
 frontend/.env.example:10:VITE_BUILD_SHA=
 frontend/.env.example:11:VITE_BUILD_TIME=
+frontend/src/tests/RealtimeClient.test.ts:78:  it("returns disabled state when VITE_REALTIME_ENABLED=false", () => {
 gh-set-env.sh:19:readonly GH_OWNER="cvsz"
 gh-set-env.sh:20:readonly GH_REPO="zdash"
 gh-set-env.sh:21:readonly GH_ENV="prod"
@@ -558,9 +746,6 @@ infra/scripts/backup-postgres.sh:19:POSTGRES_DB="${POSTGRES_DB:-zdash}"
 infra/scripts/backup-postgres.sh:23:TIMESTAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 infra/scripts/backup-postgres.sh:24:OUT_FILE="${BACKUP_DIR}/zdash-postgres-${TIMESTAMP}.sql.gz"
 infra/scripts/backup-postgres.sh:27:  export PGPASSWORD="${POSTGRES_PASSWORD}"
-infra/scripts/cloudflare-dry-run.sh:15:MISSING=()
-infra/scripts/cloudflare-dry-run.sh:25:TUNNEL=${CLOUDFLARE_TUNNEL_NAME:-zdash}
-infra/scripts/cloudflare-dry-run.sh:26:HOSTNAME=${CLOUDFLARE_HOSTNAME:-zdash.zeaz.dev}
 infra/scripts/deploy-prod.sh:7:  echo "ERROR: DEPLOY_CONFIRM=yes is required"
 infra/scripts/deploy-prod.sh:12:  echo "ERROR: APP_ENV=production is required"
 infra/scripts/production-smoke-test.sh:4:BASE_URL="${BASE_URL:-http://localhost}"
@@ -583,6 +768,70 @@ infra/scripts/wait-for-service.sh:6:TIMEOUT_SECONDS="${3:-60}"
 infra/scripts/wait-for-service.sh:13:START="$(date +%s)"
 infra/scripts/wait-for-service.sh:21:  NOW="$(date +%s)"
 infra/scripts/wait-for-service.sh:22:  ELAPSED="$((NOW - START))"
+install-zdash-fullstack.sh:22:ROOT="${ROOT:-$HOME/zdash}"
+install-zdash-fullstack.sh:23:REPO_URL="${REPO_URL:-https://github.com/cvsz/zdash.git}"
+install-zdash-fullstack.sh:24:REPO_BRANCH="${REPO_BRANCH:-main}"
+install-zdash-fullstack.sh:26:BACKEND_PORT="${BACKEND_PORT:-8005}"
+install-zdash-fullstack.sh:27:FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+install-zdash-fullstack.sh:28:PYTHON_BIN="${PYTHON_BIN:-python3}"
+install-zdash-fullstack.sh:29:NODE_MAJOR="${NODE_MAJOR:-20}"
+install-zdash-fullstack.sh:31:DO_PULL="${DO_PULL:-false}"
+install-zdash-fullstack.sh:32:RUN_BACKEND_TESTS="${RUN_BACKEND_TESTS:-true}"
+install-zdash-fullstack.sh:33:RUN_FRONTEND_TESTS="${RUN_FRONTEND_TESTS:-true}"
+install-zdash-fullstack.sh:34:RUN_FRONTEND_BUILD="${RUN_FRONTEND_BUILD:-true}"
+install-zdash-fullstack.sh:35:RUN_DOCKER_BUILDS="${RUN_DOCKER_BUILDS:-false}"
+install-zdash-fullstack.sh:36:INSTALL_DOCKER="${INSTALL_DOCKER:-false}"
+install-zdash-fullstack.sh:37:START_SERVICES="${START_SERVICES:-false}"
+install-zdash-fullstack.sh:38:FORCE_BACKEND_REINSTALL="${FORCE_BACKEND_REINSTALL:-false}"
+install-zdash-fullstack.sh:40:NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+install-zdash-fullstack.sh:41:BACKUP_DIR="${BACKUP_DIR:-$ROOT/.installer-backups}"
+install-zdash-fullstack.sh:72:  run_sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
+install-zdash-fullstack.sh:205:      warn "Commit or stash first, then run: DO_PULL=true bash install-zdash-fullstack.sh"
+install-zdash-fullstack.sh:246:  if ! grep -qE '^DATABASE_URL=' .env; then
+install-zdash-fullstack.sh:258:  if ! grep -qE '^JWT_SECRET_KEY=' .env; then
+install-zdash-fullstack.sh:348:    warn "Skipping backend tests because RUN_BACKEND_TESTS=false"
+install-zdash-fullstack.sh:374:    warn "Skipping frontend tests because RUN_FRONTEND_TESTS=false"
+install-zdash-fullstack.sh:381:    warn "Skipping frontend build because RUN_FRONTEND_BUILD=false"
+install-zdash-fullstack.sh:414:export NVM_DIR="$NVM_DIR"
+install-zdash-fullstack.sh:450:export NVM_DIR="$NVM_DIR"
+install-zdash-fullstack.sh:470:FORCE_BACKEND_REINSTALL=true RUN_BACKEND_TESTS=true RUN_FRONTEND_TESTS=true RUN_FRONTEND_BUILD=true bash install-zdash-fullstack.sh
+install-zdash-fullstack.sh:537:  START_SERVICES=true bash install-zdash-fullstack.sh
+install-zdash-fullstack.sh:540:  DO_PULL=true bash install-zdash-fullstack.sh
+install-zdash-fullstack.sh:543:  RUN_DOCKER_BUILDS=true INSTALL_DOCKER=true bash install-zdash-fullstack.sh
+install-zdash-fullstack.sh:546:  DRY_RUN=true
+install-zdash-fullstack.sh:547:  LIVE_TRADING_ACK=false
+install-zdash-fullstack.sh:548:  MT5_ENABLED=false
+install-zdash-fullstack.sh:549:  PRODUCTION_ALLOW_LIVE_ACTIONS=false
+install-zdash-fullstack.sh:550:  RISK_GUARDIAN_ENABLED=true
+install-zdash-fullstack.sh:551:  SOCIAL_DRY_RUN=true
+install-zdash-fullstack.sh:552:  IOT_DRY_RUN=true
+install-zdash-fullstack.sh:553:  CLOUDFLARE_DRY_RUN=true
+install-zdash-prod.sh:15:#   sudo ZDASH_DOMAIN=zdash.zeaz.dev ./install-zdash-prod.sh
+install-zdash-prod.sh:19:#   ZDASH_REPO=/home/cvsz/zdash
+install-zdash-prod.sh:20:#   INSTALL_ROOT=/opt/zdash
+install-zdash-prod.sh:21:#   RUNTIME_DIR=/opt/zdash/runtime
+install-zdash-prod.sh:22:#   BACKEND_HEALTH_TIMEOUT=180
+install-zdash-prod.sh:24:APP_NAME="${APP_NAME:-zdash}"
+install-zdash-prod.sh:25:INSTALL_ROOT="${INSTALL_ROOT:-/opt/zdash}"
+install-zdash-prod.sh:26:RUNTIME_DIR="${RUNTIME_DIR:-$INSTALL_ROOT/runtime}"
+install-zdash-prod.sh:27:ENV_FILE="${ENV_FILE:-$RUNTIME_DIR/.env.production}"
+install-zdash-prod.sh:28:COMPOSE_FILE="${COMPOSE_FILE:-$RUNTIME_DIR/docker-compose.yml}"
+install-zdash-prod.sh:29:DIAG_DIR="${DIAG_DIR:-$INSTALL_ROOT/logs/recovery}"
+install-zdash-prod.sh:30:BACKEND_HEALTH_TIMEOUT="${BACKEND_HEALTH_TIMEOUT:-180}"
+install-zdash-prod.sh:31:BASE_INSTALLER_REF="${BASE_INSTALLER_REF:-b015e7980edd1677649aa56f6bc59f032ee47a38}"
+install-zdash-prod.sh:32:REPAIR_ONLY=false
+install-zdash-prod.sh:50:  sudo ZDASH_DOMAIN=zdash.zeaz.dev ./install-zdash-prod.sh
+install-zdash-prod.sh:70:      REPAIR_ONLY=true
+install-zdash-prod.sh:116:  die "Cannot locate zDash checkout. Set ZDASH_REPO=/path/to/zdash."
+install-zdash-prod.sh:119:ZDASH_REPO="$(resolve_repo)"
+install-zdash-prod.sh:120:INSTALLER="${LEGACY_INSTALLER:-$ZDASH_REPO/install-zdash-prod-legacy.sh}"
+install-zdash-prod.sh:135:  INSTALLER="$ZDASH_REPO/install-zdash-prod-legacy.sh"
+install-zdash-prod.sh:189:  POSTGRES_DB="${POSTGRES_DB:-zdash}"
+install-zdash-prod.sh:190:  POSTGRES_USER="${POSTGRES_USER:-zdash}"
+install-zdash-prod.sh:191:  BOOTSTRAP_ADMIN_USERNAME="${BOOTSTRAP_ADMIN_USERNAME:-admin}"
+install-zdash-prod.sh:192:  ZDASH_DOMAIN="${ZDASH_DOMAIN:-zdash.zeaz.dev}"
+install-zdash-prod.sh:193:  ZDASH_PUBLIC_URL="${ZDASH_PUBLIC_URL:-https://$ZDASH_DOMAIN}"
+install-zdash-prod.sh:262:      --set ON_ERROR_STOP=1 \
 scripts/backup-config.sh:4:OUT_DIR="${BACKUP_DIR:-./backups/config}"
 scripts/backup-config.sh:6:ALLOW_SECRETS="${ALLOW_SECRETS:-false}"
 scripts/backup-config.sh:9:FILE="$OUT_DIR/config-$TS.tar.gz"
@@ -593,8 +842,43 @@ scripts/backup-db.sh:9:DB_URL="${DATABASE_URL:-sqlite:///./backend/zdash.db}"
 scripts/backup-db.sh:12:  FILE="$OUT_DIR/zdash-postgres-$TS.sql.gz"
 scripts/backup-db.sh:16:  SQLITE_PATH="${SQLITE_PATH:-${DB_URL#sqlite:///}}"
 scripts/backup-db.sh:21:  FILE="$OUT_DIR/zdash-sqlite-$TS.db"
+scripts/deep-scan-zdash.sh:4:REPO="${REPO:-$PWD}"
+scripts/deep-scan-zdash.sh:5:OUT="${OUT:-$REPO/docs/reports/zdash-deep-scan}"
 scripts/export-json-to-prompt.sh:17:INPUT_DIR="${1:-./respond}"
 scripts/export-json-to-prompt.sh:18:OUTPUT_DIR="${2:-./prompts}"
+scripts/git/clean-local-artifacts.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/git/clean-local-artifacts.sh:5:REMOVED=0
+scripts/git/clean-local-artifacts.sh:11:  while IFS= read -r f; do
+scripts/git/clean-local-artifacts.sh:16:      REMOVED=1
+scripts/git/clean-local-artifacts.sh:28:while IFS= read -r f; do
+scripts/git/clean-local-artifacts.sh:32:    REMOVED=1
+scripts/git/clean-local-artifacts.sh:41:    REMOVED=1
+scripts/git/clean-local-artifacts.sh:49:  REMOVED=1
+scripts/git/gpg-loopback.sh:17:ACTION="${1:-help}"
+scripts/git/gpg-loopback.sh:20:ENV_FILE="${GPG_ENV_FILE:-.env}"
+scripts/git/gpg-loopback.sh:142:  GPG_TTY="$(tty)"
+scripts/git/gpg-loopback.sh:158:  IFS= read -rs passphrase
+scripts/git/gpg-loopback.sh:170:  GPG_TTY="$(tty)"
+scripts/git/gpg-loopback.sh:286:  GPG_ENV_FILE=.env
+scripts/git/safe-add.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/git/safe-add.sh:10:UNSAFE_PATTERNS=(
+scripts/git/safe-commit.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/git/safe-commit.sh:7:MESSAGE="${MESSAGE:-}"
+scripts/git/safe-commit.sh:9:  MESSAGE="$*"
+scripts/git/safe-commit.sh:14:  echo "Usage: MESSAGE=\"Fix validation scan\" $0"
+scripts/git/safe-commit.sh:33:SECRET_PATTERNS=(
+scripts/git/safe-commit.sh:44:STAGED_DIFF=$(git -C "$ROOT_DIR" diff --cached 2>/dev/null || true)
+scripts/git/safe-commit.sh:45:SECRET_FOUND=false
+scripts/git/safe-commit.sh:50:    MATCHES=$(echo "$STAGED_DIFF" | grep -E "$pattern" || true)
+scripts/git/safe-commit.sh:51:    while IFS= read -r match; do
+scripts/git/safe-commit.sh:57:      SECRET_FOUND=true
+scripts/git/safe-push.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/git/safe-push.sh:24:  PUSH_EXIT=$?
+scripts/git/safe-status.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/git/safe-status.sh:18:RISKY_PATTERNS=(
+scripts/git/safe-status.sh:29:RISKY_FOUND=false
+scripts/git/safe-status.sh:30:while IFS= read -r line; do
+scripts/git/safe-status.sh:36:        RISKY_FOUND=true
 scripts/github/bootstrap-env-from-env.sh:3:IFS=$'\n\t'
 scripts/github/bootstrap-env-from-env.sh:31:REPO="cvsz/zdash"
 scripts/github/bootstrap-env-from-env.sh:32:GH_ENV="dev"
@@ -606,7 +890,7 @@ scripts/github/bootstrap-env-from-env.sh:37:DECLARE_ONLY=false
 scripts/github/bootstrap-env-from-env.sh:38:FILES=()
 scripts/github/bootstrap-env-from-env.sh:39:FORCE_SECRET_KEYS=()
 scripts/github/bootstrap-env-from-env.sh:40:FORCE_VARIABLE_KEYS=(
-scripts/github/bootstrap-env-from-env.sh:44:MANAGED_PREFIXES="APP_,BACKEND_,FRONTEND_,CORS_,DATABASE_,DB_,PRODUCTION_,AUTH_,METRICS_,JWT_,BOOTSTRAP_,DEFAULT_,TRADING_,DRY_,LIVE_,MT5_,RISK_,MAX_,EMERGENCY_,SOFT_,ALLOW_,REQUIRE_,HARD_,SCHEDULER_,FRIDAY_,IOT_,TAPO_,NSSM_,BACKTEST_,PRIMARY_,MIN_,OPTIMIZER_,CONTENT_,EDITOR_,GRAPHIC_,SOCIAL_,MULTI_,TENANT_,WORKSPACE_,WORKER_,REALTIME_,NOTIFICATION_,ALERT_,EMAIL_,SMTP_,WEBHOOK_,CLOUDFLARE_,K8S_,RELEASE_,AIOPS_,GOVERNANCE_,COMPLIANCE_,DESKTOP_,PUBLIC_,WAITLIST_,INVITE_,TELEMETRY_,SOVEREIGN_,DEFAULT_DATA_,ALLOWED_,DISALLOWED_,DATA_,CROSS_,CUSTOMER_,KMS_,EDGE_,ONPREM_,GLOBAL_,DIGITAL_,IMPACT_,BLAST_,TWIN_"
+scripts/github/bootstrap-env-from-env.sh:44:MANAGED_PREFIXES="APP_,BACKEND_,FRONTEND_,CORS_,DATABASE_,DB_,PRODUCTION_,AUTH_,METRICS_,JWT_,BOOTSTRAP_,DEFAULT_,TRADING_,DRY_,LIVE_,MT5_,RISK_,MAX_,EMERGENCY_,SOFT_,ALLOW_,REQUIRE_,HARD_,SCHEDULER_,FRIDAY_,IOT_,TAPO_,NSSM_,BACKTEST_,PRIMARY_,MIN_,OPTIMIZER_,CONTENT_,EDITOR_,GRAPHIC_,SOCIAL_,MULTI_,TENANT_,WORKSPACE_,WORKER_,REALTIME_,NOTIFICATION_,ALERT_,EMAIL_,SMTP_,WEBHOOK_,CLOUDFLARE_,K8S_,RELEASE_,AIOPS_,GOVERNANCE_,COMPLIANCE_,DESKTOP_,PUBLIC_,WAITLIST_,INVITE_,TELEMETRY_,SOVEREIGN_,DEFAULT_DATA_,ALLOWED_,DISALLOWED_,DATA_,CROSS_,CUSTOMER_,KMS_,EDGE_,ONPREM_,GLOBAL_,DIGITAL_,IMPACT_,BLAST_,TWIN_,ZPLATFORM_"
 scripts/github/bootstrap-env-from-env.sh:45:SECRET_KEY_REGEX='(TOKEN|SECRET|PASSWORD|PASS|PRIVATE_KEY|API_KEY|ACCESS_KEY|CLIENT_SECRET|WEBHOOK_SECRET|DATABASE_URL|REDIS_URL|BROKER_URL|DSN|SOPS_AGE_KEY|TUNNEL_SECRET)$|(^|_)KEY$'
 scripts/github/bootstrap-env-from-env.sh:81:    --repo) REPO="${2:-}"; shift 2 ;;
 scripts/github/bootstrap-env-from-env.sh:82:    --env) GH_ENV="${2:-}"; shift 2 ;;
@@ -628,6 +912,303 @@ scripts/integrate-ecc.sh:17:    --apply-global) APPLY_GLOBAL=true ;;
 scripts/integrate-ecc.sh:18:    --update-mcp) UPDATE_MCP=true ;;
 scripts/integrate-ecc.sh:26:ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 scripts/integrate-ecc.sh:27:DEST="$ROOT_DIR/config/ecc/codex"
+scripts/local/stack.sh:4:ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+scripts/local/stack.sh:5:COMPOSE_FILE="${ZDASH_COMPOSE_FILE:-$ROOT/docker-compose.yml}"
+scripts/local/stack.sh:6:COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-zdash-local}"
+scripts/local/stack.sh:7:ZDASH_BIND_ADDRESS="${ZDASH_BIND_ADDRESS:-127.0.0.1}"
+scripts/local/stack.sh:8:ZDASH_HTTP_PORT="${ZDASH_HTTP_PORT:-18080}"
+scripts/local/stack.sh:9:WAIT_TIMEOUT="${ZDASH_WAIT_TIMEOUT:-240}"
+scripts/local/stack.sh:22:    DOCKER=(docker)
+scripts/local/stack.sh:27:    DOCKER=(sudo docker)
+scripts/local/stack.sh:37:  COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME" \
+scripts/local/stack.sh:38:  ZDASH_BIND_ADDRESS="$ZDASH_BIND_ADDRESS" \
+scripts/local/stack.sh:39:  ZDASH_HTTP_PORT="$ZDASH_HTTP_PORT" \
+scripts/local/stack.sh:138:      die "Set CONFIRM_RESET=yes to remove containers and local data volumes."
+scripts/local/stack.sh:149:  COMPOSE_PROJECT_NAME=zdash-local
+scripts/local/stack.sh:150:  ZDASH_BIND_ADDRESS=127.0.0.1
+scripts/local/stack.sh:151:  ZDASH_HTTP_PORT=18080
+scripts/local/stack.sh:155:  ZDASH_HTTP_PORT=18081 bash scripts/local/stack.sh up
+scripts/local/stack.sh:157:  CONFIRM_RESET=yes bash scripts/local/stack.sh reset
+scripts/prod/capture-go-live-evidence.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/capture-go-live-evidence.sh:5:EVIDENCE_DIR="${ZDASH_EVIDENCE_DIR:-docs/reports/generated}"
+scripts/prod/capture-go-live-evidence.sh:6:TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/prod/capture-go-live-evidence.sh:7:PASS=0
+scripts/prod/capture-go-live-evidence.sh:8:FAIL=0
+scripts/prod/capture-go-live-evidence.sh:10:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/capture-go-live-evidence.sh:11:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/capture-go-live-evidence.sh:26:EVIDENCE_FILE="$EVIDENCE_DIR/go-live-evidence-$(date -u +%Y%m%d-%H%M%S).md"
+scripts/prod/capture-go-live-evidence.sh:51:  COMPOSE_FILE="${ZDASH_PROD_COMPOSE:-$ZDASH_RUNTIME/docker-compose.yml}"
+scripts/prod/capture-go-live-evidence.sh:87:  ENV_FILE="${ZDASH_PROD_ENV:-$ZDASH_RUNTIME/.env.production}"
+scripts/prod/capture-go-live-evidence.sh:89:    echo "DRY_RUN=$(grep -s '^DRY_RUN=' "$ENV_FILE" | cut -d= -f2)" || echo "DRY_RUN=(unset)"
+scripts/prod/capture-go-live-evidence.sh:90:    echo "LIVE_TRADING_ACK=$(grep -s '^LIVE_TRADING_ACK=' "$ENV_FILE" | cut -d= -f2)" || echo "LIVE_TRADING_ACK=(unset)"
+scripts/prod/capture-go-live-evidence.sh:91:    echo "MT5_ENABLED=$(grep -s '^MT5_ENABLED=' "$ENV_FILE" | cut -d= -f2)" || echo "MT5_ENABLED=(unset)"
+scripts/prod/capture-go-live-evidence.sh:92:    echo "PRODUCTION_ALLOW_LIVE_ACTIONS=$(grep -s '^PRODUCTION_ALLOW_LIVE_ACTIONS=' "$ENV_FILE" | cut -d= -f2)" || echo "PRODUCTION_ALLOW_LIVE_ACTIONS=(unset)"
+scripts/prod/capture-go-live-evidence.sh:93:    echo "RISK_GUARDIAN_ENABLED=$(grep -s '^RISK_GUARDIAN_ENABLED=' "$ENV_FILE" | cut -d= -f2)" || echo "RISK_GUARDIAN_ENABLED=(unset)"
+scripts/prod/capture-go-live-evidence.sh:94:    echo "BACKEND_PORT=$(grep -s '^BACKEND_PORT=' "$ENV_FILE" | cut -d= -f2)" || echo "BACKEND_PORT=8005"
+scripts/prod/run-go-live-rehearsal.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/run-go-live-rehearsal.sh:5:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/prod/run-go-live-rehearsal.sh:6:PASS=0
+scripts/prod/run-go-live-rehearsal.sh:7:FAIL=0
+scripts/prod/run-go-live-rehearsal.sh:8:START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/prod/run-go-live-rehearsal.sh:10:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/run-go-live-rehearsal.sh:11:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/run-go-live-rehearsal.sh:85:END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/prod/verify-go-live-safety-locks.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/verify-go-live-safety-locks.sh:5:PASS=0
+scripts/prod/verify-go-live-safety-locks.sh:6:FAIL=0
+scripts/prod/verify-go-live-safety-locks.sh:8:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/verify-go-live-safety-locks.sh:9:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/verify-go-live-safety-locks.sh:20:ENV_FILE="${ZDASH_PROD_ENV:-$ZDASH_RUNTIME/.env.production}"
+scripts/prod/verify-go-live-safety-locks.sh:49:echo "  DRY_RUN=true       stops broker execution"
+scripts/prod/verify-go-live-safety-locks.sh:50:echo "  LIVE_TRADING_ACK=false  blocks trade confirmation"
+scripts/prod/verify-go-live-safety-locks.sh:51:echo "  MT5_ENABLED=false   prevents MT5 connection"
+scripts/prod/verify-go-live-safety-locks.sh:52:echo "  PRODUCTION_ALLOW_LIVE_ACTIONS=false  blocks all live mutations"
+scripts/prod/verify-go-live-safety-locks.sh:53:echo "  RISK_GUARDIAN_ENABLED=true  guardian enforces risk checks"
+scripts/prod/verify-go-live-safety-locks.sh:57:SERVICE_FILE="/etc/systemd/system/zdash.service"
+scripts/prod/verify-go-live-safety-locks.sh:59:  STATUS=$(systemctl is-active zdash 2>/dev/null || echo "unknown")
+scripts/prod/verify-go-live-safety-locks.sh:69:COMPOSE_FILE="${ZDASH_PROD_COMPOSE:-$ZDASH_RUNTIME/docker-compose.yml}"
+scripts/prod/verify-prod-health.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/verify-prod-health.sh:5:PASS=0
+scripts/prod/verify-prod-health.sh:6:FAIL=0
+scripts/prod/verify-prod-health.sh:8:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/verify-prod-health.sh:9:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/verify-prod-health.sh:20:BACKEND_PORT="${BACKEND_PORT:-8005}"
+scripts/prod/verify-prod-health.sh:21:FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+scripts/prod/verify-prod-health.sh:24:HEALTH_URL="http://localhost:${BACKEND_PORT}/health"
+scripts/prod/verify-prod-health.sh:25:if HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$HEALTH_URL" 2>/dev/null); then
+scripts/prod/verify-prod-health.sh:37:SAFETY_URL="http://localhost:${BACKEND_PORT}/api/admin/safety-check"
+scripts/prod/verify-prod-health.sh:38:if HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$SAFETY_URL" 2>/dev/null); then
+scripts/prod/verify-prod-health.sh:50:FRONTEND_URL="http://localhost:${FRONTEND_PORT}"
+scripts/prod/verify-prod-health.sh:51:if HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$FRONTEND_URL" 2>/dev/null); then
+scripts/prod/verify-prod-health.sh:63:RISK_URL="http://localhost:${BACKEND_PORT}/api/risk/status"
+scripts/prod/verify-prod-health.sh:64:if BODY=$(curl -s --max-time 5 "$RISK_URL" 2>/dev/null); then
+scripts/prod/verify-prod-observability.sh:4:PASS=0
+scripts/prod/verify-prod-observability.sh:5:FAIL=0
+scripts/prod/verify-prod-observability.sh:7:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/verify-prod-observability.sh:8:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/verify-prod-observability.sh:13:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/verify-prod-observability.sh:21:REALTIME_DOC="docs/runbooks/REALTIME_GATEWAY.md"
+scripts/prod/verify-prod-observability.sh:34:declare -A OBS_DOCS=(
+scripts/prod/verify-prod-observability.sh:55:COMPOSE_FILE="${ZDASH_PROD_COMPOSE:-$ZDASH_RUNTIME/docker-compose.yml}"
+scripts/prod/verify-prod-observability.sh:80:LOGS_SCRIPT="${ZDASH_PROD_LOGS:-$ZDASH_RUNTIME/scripts/zdash-logs.sh}"
+scripts/prod/verify-prod-rollback-readiness.sh:4:PASS=0
+scripts/prod/verify-prod-rollback-readiness.sh:5:FAIL=0
+scripts/prod/verify-prod-rollback-readiness.sh:7:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/verify-prod-rollback-readiness.sh:8:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/verify-prod-rollback-readiness.sh:13:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/verify-prod-rollback-readiness.sh:21:ENV_FILE="${ZDASH_PROD_ENV:-$ZDASH_RUNTIME/.env.production}"
+scripts/prod/verify-prod-rollback-readiness.sh:44:ENV_BACKEND_PORT="$(grep -s '^BACKEND_PORT=' "$ENV_FILE" 2>/dev/null | head -1 | cut -d= -f2 | tr -d '[:space:]')"
+scripts/prod/verify-prod-rollback-readiness.sh:47:  ENV_BACKEND_PORT="8005"
+scripts/prod/verify-prod-rollback-readiness.sh:57:ROLLBACK_DOCS=(
+scripts/prod/verify-prod-rollback-readiness.sh:71:RELEASE_DOC="docs/releases/PHASE37_RELEASE_READINESS.md"
+scripts/prod/verify-prod-rollback-readiness.sh:84:GO_LIVE_DOC="docs/runbooks/GO_LIVE_CHECKLIST.md"
+scripts/prod/verify-prod-rollback-readiness.sh:93:DRY_RUN_DOC="docs/runbooks/PRODUCTION_DRY_RUN_VERIFICATION.md"
+scripts/prod/verify-prod-runtime.sh:4:ZDASH_RUNTIME="${ZDASH_PROD_RUNTIME:-/opt/zdash/runtime}"
+scripts/prod/verify-prod-runtime.sh:5:PASS=0
+scripts/prod/verify-prod-runtime.sh:6:FAIL=0
+scripts/prod/verify-prod-runtime.sh:8:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/prod/verify-prod-runtime.sh:9:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/prod/verify-prod-runtime.sh:22:SERVICE_FILE="/etc/systemd/system/zdash.service"
+scripts/prod/verify-prod-runtime.sh:29:COMPOSE_FILE="${ZDASH_PROD_COMPOSE:-$ZDASH_RUNTIME/docker-compose.yml}"
+scripts/prod/verify-prod-runtime.sh:36:ENV_FILE="${ZDASH_PROD_ENV:-$ZDASH_RUNTIME/.env.production}"
+scripts/prod/verify-prod-runtime.sh:43:HEALTH_SCRIPT="${ZDASH_PROD_HEALTH:-$ZDASH_RUNTIME/scripts/zdash-health.sh}"
+scripts/prod/verify-prod-runtime.sh:50:LOGS_SCRIPT="${ZDASH_PROD_LOGS:-$ZDASH_RUNTIME/scripts/zdash-logs.sh}"
+scripts/prod/verify-prod-runtime.sh:57:BACKUP_SCRIPT="${ZDASH_PROD_BACKUP:-$ZDASH_RUNTIME/scripts/zdash-backup.sh}"
+scripts/prod/verify-prod-runtime.sh:64:UPDATE_SCRIPT="${ZDASH_PROD_UPDATE:-$ZDASH_RUNTIME/scripts/zdash-update.sh}"
+scripts/production/generate-prod-env.sh:4:OUTPUT_FILE="${1:-.env.production}"
+scripts/production/generate-prod-env.sh:11:JWT_SECRET=$(python3 -c "import secrets; print(secrets.token_urlsafe(48))")
+scripts/production/generate-prod-env.sh:12:BOOTSTRAP_PASSWORD=$(python3 -c "import secrets; print(secrets.token_urlsafe(24))")
+scripts/production/generate-prod-env.sh:13:DEFAULT_PASSWORD=$(python3 -c "import secrets; print(secrets.token_urlsafe(24))")
+scripts/production/generate-prod-env.sh:14:POSTGRES_PASSWORD=$(python3 -c "import secrets; print(secrets.token_urlsafe(24))")
+scripts/production/generate-prod-env.sh:15:API_PEPPER=$(python3 -c "import secrets; print(secrets.token_urlsafe(16))")
+scripts/production/generate-prod-env.sh:18:APP_ENV=production
+scripts/production/generate-prod-env.sh:19:BACKEND_PORT=8005
+scripts/production/generate-prod-env.sh:21:POSTGRES_USER=zdash
+scripts/production/generate-prod-env.sh:22:POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+scripts/production/generate-prod-env.sh:23:POSTGRES_DB=zdash
+scripts/production/generate-prod-env.sh:24:DATABASE_URL=postgresql+psycopg://zdash:${POSTGRES_PASSWORD}@postgres:5432/zdash
+scripts/production/generate-prod-env.sh:26:REDIS_URL=redis://redis:6379/0
+scripts/production/generate-prod-env.sh:28:JWT_SECRET_KEY=${JWT_SECRET}
+scripts/production/generate-prod-env.sh:29:JWT_ALGORITHM=HS256
+scripts/production/generate-prod-env.sh:30:JWT_ACCESS_TOKEN_EXPIRE_MINUTES=60
+scripts/production/generate-prod-env.sh:32:BOOTSTRAP_ADMIN_USERNAME=admin
+scripts/production/generate-prod-env.sh:33:BOOTSTRAP_ADMIN_PASSWORD=${BOOTSTRAP_PASSWORD}
+scripts/production/generate-prod-env.sh:34:DEFAULT_ADMIN_PASSWORD=${DEFAULT_PASSWORD}
+scripts/production/generate-prod-env.sh:35:API_KEY_HASH_PEPPER=${API_PEPPER}
+scripts/production/generate-prod-env.sh:37:AUTH_ENABLED=true
+scripts/production/generate-prod-env.sh:38:PRODUCTION_SAFETY_LOCK=true
+scripts/production/generate-prod-env.sh:39:PRODUCTION_ALLOW_LIVE_ACTIONS=false
+scripts/production/generate-prod-env.sh:40:DRY_RUN=true
+scripts/production/generate-prod-env.sh:41:LIVE_TRADING_ACK=false
+scripts/production/generate-prod-env.sh:43:RISK_GUARDIAN_ENABLED=true
+scripts/production/generate-prod-env.sh:44:MT5_ENABLED=false
+scripts/production/generate-prod-env.sh:46:SOCIAL_DRY_RUN=true
+scripts/production/generate-prod-env.sh:47:SOCIAL_APPROVAL_REQUIRED=true
+scripts/production/generate-prod-env.sh:48:SOCIAL_AUTO_POST_ENABLED=false
+scripts/production/generate-prod-env.sh:50:IOT_DRY_RUN=true
+scripts/production/generate-prod-env.sh:51:IOT_REQUIRE_CONFIRMATION=true
+scripts/production/generate-prod-env.sh:53:ALLOW_STRATEGY_PROMOTION=false
+scripts/production/generate-prod-env.sh:54:UPDATE_DRY_RUN=true
+scripts/production/generate-prod-env.sh:56:METRICS_AUTH_REQUIRED=true
+scripts/production/generate-prod-env.sh:57:METRICS_ALLOW_UNAUTHENTICATED_DEV=false
+scripts/production/generate-prod-env.sh:59:CLAUDE_API_KEY=
+scripts/production/generate-prod-env.sh:60:CLAUDE_MODEL=claude-sonnet-4-5
+scripts/production/generate-prod-env.sh:61:OPENAI_API_KEY=
+scripts/prompts/normalize-phase-prompt-names.sh:4:ROOT="$(pwd)"
+scripts/prompts/normalize-phase-prompt-names.sh:5:DIR="docs/prompt"
+scripts/prompts/rename-phase-prompts.sh:4:MODE="${1:---dry-run}"
+scripts/prompts/rename-phase-prompts.sh:5:ROOT="${ROOT:-$(pwd)}"
+scripts/prompts/rename-phase-prompts.sh:6:PROMPT_DIR="${PROMPT_DIR:-$ROOT/docs/prompt}"
+scripts/prompts/rename-phase-prompts.sh:7:MANIFEST="$PROMPT_DIR/phase-rename-manifest.tsv"
+scripts/release/backup-restore-proof.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/backup-restore-proof.sh:5:REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+scripts/release/backup-restore-proof.sh:6:OUTDIR="$REPO_ROOT/docs/reports/generated"
+scripts/release/backup-restore-proof.sh:7:TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/release/backup-restore-proof.sh:9:PASS=0
+scripts/release/backup-restore-proof.sh:10:FAIL=0
+scripts/release/backup-restore-proof.sh:12:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/backup-restore-proof.sh:13:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/backup-restore-proof.sh:19:DB_DIR="$REPO_ROOT/backend"
+scripts/release/backup-restore-proof.sh:20:DB_PATH=""
+scripts/release/backup-restore-proof.sh:23:    DB_PATH="$candidate"
+scripts/release/backup-restore-proof.sh:30:  DB_PATH="$DB_DIR/test.db"
+scripts/release/backup-restore-proof.sh:51:BACKUP_DIR=$(mktemp -d /tmp/zdash-backup-proof-XXXXXX)
+scripts/release/backup-restore-proof.sh:52:BACKUP_FILE="$BACKUP_DIR/zdash-backup-$(date -u +%Y%m%d-%H%M%S).db"
+scripts/release/backup-restore-proof.sh:74:RESTORE_DIR=$(mktemp -d /tmp/zdash-restore-proof-XXXXXX)
+scripts/release/backup-restore-proof.sh:75:RESTORE_FILE="$RESTORE_DIR/zdash-restored.db"
+scripts/release/backup-restore-proof.sh:90:VERIFY_OUTPUT=$(python3 -c "
+scripts/release/backup-restore-proof.sh:112:TABLE_COUNT=$(echo "$VERIFY_OUTPUT" | python3 -c "import sys,json; data=json.load(sys.stdin); print(len(data))" 2>/dev/null || echo "0")
+scripts/release/backup-restore-proof.sh:122:EVIDENCE_FILE="$OUTDIR/backup-restore-proof.md"
+scripts/release/collect-release-evidence.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/collect-release-evidence.sh:5:EVIDENCE_DIR="docs/reports/generated"
+scripts/release/collect-release-evidence.sh:6:TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/release/collect-release-evidence.sh:7:RELEASE_TAG="${RELEASE_TAG:-v2.1.0-rc1}"
+scripts/release/collect-release-evidence.sh:8:PASS=0
+scripts/release/collect-release-evidence.sh:9:FAIL=0
+scripts/release/collect-release-evidence.sh:11:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/collect-release-evidence.sh:12:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/collect-release-evidence.sh:21:EVIDENCE_FILE="$EVIDENCE_DIR/release-evidence-$RELEASE_TAG-$(date -u +%Y%m%d-%H%M%S).md"
+scripts/release/collect-release-evidence.sh:126:  ENV_FILE=".env.example"
+scripts/release/collect-release-evidence.sh:128:    echo "DRY_RUN: $(grep -s '^DRY_RUN=' "$ENV_FILE" | cut -d= -f2 || echo 'not found')"
+scripts/release/collect-release-evidence.sh:129:    echo "LIVE_TRADING_ACK: $(grep -s '^LIVE_TRADING_ACK=' "$ENV_FILE" | cut -d= -f2 || echo 'not found')"
+scripts/release/collect-release-evidence.sh:130:    echo "MT5_ENABLED: $(grep -s '^MT5_ENABLED=' "$ENV_FILE" | cut -d= -f2 || echo 'not found')"
+scripts/release/collect-release-evidence.sh:131:    echo "PRODUCTION_ALLOW_LIVE_ACTIONS: $(grep -s '^PRODUCTION_ALLOW_LIVE_ACTIONS=' "$ENV_FILE" | cut -d= -f2 || echo 'not found')"
+scripts/release/collect-release-evidence.sh:132:    echo "RISK_GUARDIAN_ENABLED: $(grep -s '^RISK_GUARDIAN_ENABLED=' "$ENV_FILE" | cut -d= -f2 || echo 'not found')"
+scripts/release/create-release-attestation.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/create-release-attestation.sh:5:REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+scripts/release/create-release-attestation.sh:6:OUTDIR="$REPO_ROOT/docs/reports/generated"
+scripts/release/create-release-attestation.sh:7:TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/release/create-release-attestation.sh:9:PASS=0
+scripts/release/create-release-attestation.sh:10:FAIL=0
+scripts/release/create-release-attestation.sh:12:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/create-release-attestation.sh:13:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/create-release-attestation.sh:20:  VERSION=$(cat "$REPO_ROOT/VERSION" | tr -d '[:space:]')
+scripts/release/create-release-attestation.sh:22:  VERSION="0.0.0-snapshot-$(date -u +%Y%m%d%H%M%S)"
+scripts/release/create-release-attestation.sh:29:  GIT_COMMIT=$(git -C "$REPO_ROOT" log -1 --format=%H 2>/dev/null || echo "unknown")
+scripts/release/create-release-attestation.sh:30:  GIT_BRANCH=$(git -C "$REPO_ROOT" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+scripts/release/create-release-attestation.sh:31:  GIT_DIRTY=$(git -C "$REPO_ROOT" diff --quiet 2>/dev/null || echo "dirty")
+scripts/release/create-release-attestation.sh:34:  GIT_COMMIT="unknown"
+scripts/release/create-release-attestation.sh:35:  GIT_BRANCH="unknown"
+scripts/release/create-release-attestation.sh:36:  GIT_DIRTY="unknown"
+scripts/release/create-release-attestation.sh:43:VALIDATION_RESULTS=""
+scripts/release/create-release-attestation.sh:46:  PYTHON_OK="true"
+scripts/release/create-release-attestation.sh:47:  VALIDATION_RESULTS="${VALIDATION_RESULTS}  - python3: available"$'\n'
+scripts/release/create-release-attestation.sh:49:  PYTHON_OK="false"
+scripts/release/create-release-attestation.sh:50:  VALIDATION_RESULTS="${VALIDATION_RESULTS}  - python3: not available"$'\n'
+scripts/release/create-release-attestation.sh:54:  NODE_OK="true"
+scripts/release/create-release-attestation.sh:55:  NODE_VER=$(node --version 2>/dev/null || echo "unknown")
+scripts/release/create-release-attestation.sh:56:  VALIDATION_RESULTS="${VALIDATION_RESULTS}  - node: ${NODE_VER}"$'\n'
+scripts/release/create-release-attestation.sh:58:  NODE_OK="false"
+scripts/release/create-release-attestation.sh:59:  VALIDATION_RESULTS="${VALIDATION_RESULTS}  - node: not available"$'\n'
+scripts/release/create-release-attestation.sh:63:  MAKE_VER=$(make --version 2>/dev/null | head -1)
+scripts/release/create-release-attestation.sh:64:  VALIDATION_RESULTS="${VALIDATION_RESULTS}  - make: ${MAKE_VER}"$'\n'
+scripts/release/create-release-attestation.sh:70:    VALIDATION_RESULTS="${VALIDATION_RESULTS}  - make ${t}: target exists"$'\n'
+scripts/release/create-release-attestation.sh:102:SIGNATURE_STATUS="unavailable"
+scripts/release/create-release-attestation.sh:103:SIGNING_KEY=""
+scripts/release/create-release-attestation.sh:106:    SIGNING_KEY=$(gpg --list-secret-keys --keyid-format LONG 2>/dev/null | grep "^sec" | head -1 | awk '{print $2}' | cut -d'/' -f2)
+scripts/release/create-release-attestation.sh:107:    SIGNATURE_STATUS="key_available"
+scripts/release/create-release-attestation.sh:120:ATTESTATION_FILE="$OUTDIR/release-attestation.json"
+scripts/release/create-release-attestation.sh:121:ATTESTATION_MD="$OUTDIR/release-attestation.md"
+scripts/release/create-release-attestation.sh:177:export ATTEST_VERSION="$VERSION"
+scripts/release/create-release-attestation.sh:178:export ATTEST_COMMIT="$GIT_COMMIT"
+scripts/release/create-release-attestation.sh:179:export ATTEST_BRANCH="$GIT_BRANCH"
+scripts/release/create-release-attestation.sh:180:export ATTEST_DIRTY="$GIT_DIRTY"
+scripts/release/create-release-attestation.sh:181:export ATTEST_TS="$TIMESTAMP"
+scripts/release/create-release-attestation.sh:182:export ATTEST_SIG_STATUS="$SIGNATURE_STATUS"
+scripts/release/create-release-attestation.sh:183:export ATTEST_SIG_KEY="$SIGNING_KEY"
+scripts/release/create-release-attestation.sh:184:export ATTEST_JSON_FILE="$ATTESTATION_FILE"
+scripts/release/create-release-attestation.sh:185:export ATTEST_MD_FILE="$ATTESTATION_MD"
+scripts/release/create-release-candidate.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/create-release-candidate.sh:5:RELEASE_TAG="${RELEASE_TAG:-v2.1.0-rc1}"
+scripts/release/create-release-candidate.sh:6:PASS=0
+scripts/release/create-release-candidate.sh:7:FAIL=0
+scripts/release/create-release-candidate.sh:9:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/create-release-candidate.sh:10:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/create-release-candidate.sh:54:CANDIDATE_FILE="docs/releases/PHASE41_RELEASE_CANDIDATE.md"
+scripts/release/create-release-candidate.sh:55:GIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+scripts/release/create-release-candidate.sh:56:GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+scripts/release/create-release-candidate.sh:64:**Status:** RELEASE CANDIDATE (requires CONFIRM_RELEASE=yes to publish)
+scripts/release/create-release-candidate.sh:75:- DRY_RUN=true — no real broker execution
+scripts/release/create-release-candidate.sh:76:- LIVE_TRADING_ACK=false — no trade confirmation
+scripts/release/create-release-candidate.sh:77:- MT5_ENABLED=false — no MT5 connection
+scripts/release/create-release-candidate.sh:78:- PRODUCTION_ALLOW_LIVE_ACTIONS=false — no live mutations
+scripts/release/create-release-candidate.sh:79:- RISK_GUARDIAN_ENABLED=true — risk checks enforced
+scripts/release/create-release-candidate.sh:103:CONFIRM_RELEASE=yes make release-push
+scripts/release/create-release-candidate.sh:122:echo "  CONFIRM_RELEASE=yes make release-push"
+scripts/release/create-release-candidate.sh:125:echo "  CONFIRM_RELEASE=yes make gh-release"
+scripts/release/generate-sbom.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/generate-sbom.sh:5:REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+scripts/release/generate-sbom.sh:6:OUTDIR="$REPO_ROOT/docs/reports/generated"
+scripts/release/generate-sbom.sh:7:TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+scripts/release/generate-sbom.sh:9:PASS=0
+scripts/release/generate-sbom.sh:10:FAIL=0
+scripts/release/generate-sbom.sh:12:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/generate-sbom.sh:13:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/generate-sbom.sh:20:FRONTEND_SBOM="$OUTDIR/sbom-frontend.json"
+scripts/release/generate-sbom.sh:21:LOCKFILE="$REPO_ROOT/frontend/package-lock.json"
+scripts/release/generate-sbom.sh:72:BACKEND_SBOM="$OUTDIR/sbom-backend.txt"
+scripts/release/verify-final-public-release.sh:4:PASS=0
+scripts/release/verify-final-public-release.sh:5:FAIL=0
+scripts/release/verify-final-public-release.sh:7:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/verify-final-public-release.sh:8:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/verify-final-public-release.sh:33:VERSION=$(cat VERSION 2>/dev/null || echo "")
+scripts/release/verify-final-public-release.sh:42:RELEASE_DOC="docs/releases/PHASE37_RELEASE_READINESS.md"
+scripts/release/verify-final-public-release.sh:55:ENV_FILE=".env.example"
+scripts/release/verify-final-public-release.sh:57:  LOCKS_PASS=0
+scripts/release/verify-final-public-release.sh:58:  LOCKS_FAIL=0
+scripts/release/verify-final-public-release.sh:59:  for pair in "DRY_RUN=true" "LIVE_TRADING_ACK=false" "MT5_ENABLED=false" "PRODUCTION_ALLOW_LIVE_ACTIONS=false" "RISK_GUARDIAN_ENABLED=true"; do
+scripts/release/verify-final-public-release.sh:63:      LOCKS_PASS=$((LOCKS_PASS + 1))
+scripts/release/verify-final-public-release.sh:65:      LOCKS_FAIL=$((LOCKS_FAIL + 1))
+scripts/release/verify-final-public-release.sh:78:TRACKED_ENV=$(git ls-files '*.env*' 2>/dev/null | grep -v '.env.example' | grep -v '.gitignore' || true)
+scripts/release/verify-final-public-release.sh:95:README_OK=true
+scripts/release/verify-final-public-release.sh:101:    README_OK=false
+scripts/release/verify-p0-p2-completion.sh:4:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/verify-p0-p2-completion.sh:5:REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+scripts/release/verify-p0-p2-completion.sh:6:PASS=0
+scripts/release/verify-p0-p2-completion.sh:7:FAIL=0
+scripts/release/verify-p0-p2-completion.sh:8:ERRORS=""
+scripts/release/verify-p0-p2-completion.sh:10:pass() { echo "  PASS: $1"; PASS=$((PASS + 1)); }
+scripts/release/verify-p0-p2-completion.sh:11:fail() { echo "  FAIL: $1"; FAIL=$((FAIL + 1)); ERRORS="$ERRORS  - $1\n"; }
+scripts/release/verify-p0-p2-completion.sh:18:MODELS_FILE="$REPO_ROOT/backend/app/backtesting/models.py"
+scripts/release/verify-p0-p2-completion.sh:33:ENDPOINTS_FILE="$REPO_ROOT/frontend/src/api/endpoints.ts"
+scripts/release/verify-p0-p2-completion.sh:47:README_FILE="$REPO_ROOT/README.md"
+scripts/release/verify-p0-p2-completion.sh:63:PHASE47_REPORT="$REPO_ROOT/docs/reports/PHASE47_REAL_TEAM_WORKSPACE_REPORT.md"
+scripts/release/verify-p0-p2-completion.sh:77:SBOM_SCRIPT="$REPO_ROOT/scripts/release/generate-sbom.sh"
+scripts/release/verify-p0-p2-completion.sh:105:BACKUP_SCRIPT="$REPO_ROOT/scripts/release/backup-restore-proof.sh"
+scripts/release/verify-p0-p2-completion.sh:133:ATTEST_SCRIPT="$REPO_ROOT/scripts/release/create-release-attestation.sh"
+scripts/release/verify-p0-p2-completion.sh:143:ENV_TRACKED=$(git -C "$REPO_ROOT" ls-files '.env' 2>/dev/null || true)
+scripts/release/verify-p0-p2-completion.sh:153:SECRET_FOUND=false
+scripts/release/verify-p0-p2-completion.sh:158:    SECRET_FOUND=true
+scripts/release/verify-release-readiness.sh:4:PASS=0
+scripts/release/verify-release-readiness.sh:5:FAIL=0
+scripts/release/verify-release-readiness.sh:6:SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+scripts/release/verify-release-readiness.sh:8:pass() { echo "PASSED: $1"; PASS=$((PASS + 1)); }
+scripts/release/verify-release-readiness.sh:9:fail() { echo "FAILED: $1"; FAIL=$((FAIL + 1)); }
+scripts/release/verify-release-readiness.sh:80:RELEASE_DOC="docs/releases/PHASE37_RELEASE_READINESS.md"
+scripts/release/verify-release-readiness.sh:93:ENV_EXAMPLE=".env.example"
+scripts/release/verify-release-readiness.sh:108:ROLLBACK_DOC="docs/runbooks/ROLLBACK_RUNBOOK.md"
+scripts/release/verify-release-readiness.sh:117:REHEARSAL_DOC="docs/runbooks/GO_LIVE_REHEARSAL.md"
+scripts/release/verify-release-readiness.sh:126:TRACKED_ENV=$(git ls-files '*.env*' 2>/dev/null | grep -v '.env.example' | grep -v '.gitignore' || true)
 scripts/restore-db.sh:4:BACKUP_FILE="${1:-}"
 scripts/restore-db.sh:16:DB_URL="${DATABASE_URL:-sqlite:///./backend/zdash.db}"
 scripts/restore-db.sh:26:  SQLITE_PATH="${SQLITE_PATH:-${DB_URL#sqlite:///}}"
@@ -636,7 +1217,7 @@ scripts/run-prompt-phases.sh:12:#   FROM=2 TO=32 ./scripts/run-prompt-phases.sh
 scripts/run-prompt-phases.sh:13:#   FROM=10 TO=10 ./scripts/run-prompt-phases.sh
 scripts/run-prompt-phases.sh:14:#   AUTOCOMMIT=1 ./scripts/run-prompt-phases.sh
 scripts/run-prompt-phases.sh:15:#   VALIDATE_CMD="npm test" ./scripts/run-prompt-phases.sh
-scripts/run-prompt-phases.sh:18:PROMPT_DIR="${PROMPT_DIR:-docs/prompt}"
+scripts/run-prompt-phases.sh:18:PROMPT_DIR="${PROMPT_DIR:-docs/prompts}"
 scripts/run-prompt-phases.sh:19:FROM="${FROM:-1}"
 scripts/run-prompt-phases.sh:21:AUTOCOMMIT="${AUTOCOMMIT:-0}"
 scripts/run-prompt-phases.sh:22:CONTINUE_ON_ERROR="${CONTINUE_ON_ERROR:-0}"
@@ -647,6 +1228,48 @@ scripts/run-prompt-phases.sh:27:ROOT="$(git rev-parse --show-toplevel 2>/dev/nul
 scripts/run-prompt-phases.sh:30:RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 scripts/run-prompt-phases.sh:31:LOG_DIR=".codex/runs/$RUN_ID"
 scripts/run-scheduler-smoke-test.sh:4:BASE_URL="${BASE_URL:-http://127.0.0.1:8005}"
+scripts/server/logs-local.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/server/logs-local.sh:5:LOGS_DIR="$ROOT_DIR/.runtime/logs"
+scripts/server/logs-local.sh:6:SERVICE="${SERVICE:-}"
+scripts/server/logs-local.sh:28:    BG_PID=$!
+scripts/server/logs-local.sh:33:    FG_PID=$!
+scripts/server/logs-local.sh:42:  echo "Usage: SERVICE=backend|frontend $0"
+scripts/server/logs-prod.sh:10:SERVICE="${SERVICE:-backend}"
+scripts/server/open-local.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/server/open-local.sh:5:BACKEND_PORT="${BACKEND_PORT:-8005}"
+scripts/server/open-local.sh:6:FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+scripts/server/open-local.sh:8:LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+scripts/server/start-local.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/server/start-local.sh:5:RUNTIME_DIR="$ROOT_DIR/.runtime"
+scripts/server/start-local.sh:6:LOGS_DIR="$RUNTIME_DIR/logs"
+scripts/server/start-local.sh:7:PIDS_DIR="$RUNTIME_DIR/pids"
+scripts/server/start-local.sh:8:BACKEND_PORT="${BACKEND_PORT:-8005}"
+scripts/server/start-local.sh:9:FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+scripts/server/start-local.sh:10:NODE_VERSION="${NODE_VERSION:-20}"
+scripts/server/start-local.sh:44:  BACKEND_ALREADY=true
+scripts/server/start-local.sh:46:  BACKEND_ALREADY=false
+scripts/server/start-local.sh:50:  FRONTEND_ALREADY=true
+scripts/server/start-local.sh:52:  FRONTEND_ALREADY=false
+scripts/server/start-local.sh:93:LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+scripts/server/start-prod.sh:4:RUNTIME_DIR="/opt/zdash/runtime"
+scripts/server/status-local.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/server/status-local.sh:5:PIDS_DIR="$ROOT_DIR/.runtime/pids"
+scripts/server/status-local.sh:6:BACKEND_PORT="${BACKEND_PORT:-8005}"
+scripts/server/status-local.sh:7:FRONTEND_PORT="${FRONTEND_PORT:-5173}"
+scripts/server/status-local.sh:49:FRONTEND_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" "http://localhost:$FRONTEND_PORT" 2>/dev/null || echo "000")
+scripts/server/status-local.sh:57:LAN_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+scripts/server/status-prod.sh:16:COMPOSE_DIR="/opt/zdash"
+scripts/server/stop-local.sh:4:ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+scripts/server/stop-local.sh:5:PIDS_DIR="$ROOT_DIR/.runtime/pids"
 scripts/smoke-test.sh:4:BASE_URL="${1:-http://localhost:8005}"
 scripts/sync-ecc-to-codex.sh:8:ECC_SOURCE="${1:-/home/zeazdev/ECC}"
 scripts/verify-backup.sh:4:BACKUP_FILE="${1:-}"
+tools/zdash-audit/zdash-audit/README.md:17:REPO=/path/to/zdash ./scripts/deep-scan-zdash.sh
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:272:VITE_APP_NAME=zDash
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:273:VITE_API_BASE_URL=http://localhost:8005
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:274:VITE_ENABLE_MOCK_FALLBACK=true
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:275:VITE_POLL_INTERVAL_MS=5000
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:276:VITE_DEFAULT_THEME=dark
+tools/zdash-audit/zdash-audit/docs/reports/zdash-deep-dive-review-audit-2026-05-30.md:277:VITE_SHOW_SAFETY_BANNERS=true
+tools/zdash-audit/zdash-audit/scripts/deep-scan-zdash.sh:4:REPO="${REPO:-$PWD}"
+tools/zdash-audit/zdash-audit/scripts/deep-scan-zdash.sh:5:OUT="${OUT:-$REPO/docs/reports/zdash-deep-scan}"
