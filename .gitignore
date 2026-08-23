@@ -1,32 +1,41 @@
-```
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 .Python
 env/
 venv/
 .venv/
-.ENV
-.ENV.local
-.env
-.env.local
-.env.*
-
-# Testing
+*.egg-info/
+.pytest_cache/
+.hypothesis/
 .coverage
 coverage/
 htmlcov/
-.pytest_cache/
-.hypothesis/
+
+# Environment and secrets
+.env
+.env.local
+.env.*
+!.env.example
+!.env.production.example
+!env.safe.example
+.ENV
+.ENV.local
+
+# Frontend dependencies and generated state
+node_modules/
+frontend/node_modules/
+*.tsbuildinfo
+frontend/dist/
 
 # Build and distribution artifacts
 dist/
 build/
-*.egg-info/
-.svn/
- CVS/
+
+# Tool caches
+.cache/
+.vite/
+.eslintcache
 
 # IDE and editor files
 .vscode/
@@ -34,8 +43,6 @@ build/
 *.swp
 *.swo
 *~
-.DS_Store
-Thumbs.db
 
 # Logs
 *.log
@@ -48,4 +55,7 @@ Thumbs.db
 .Trashes
 ehthumbs.db
 Thumbs.db
-```
+
+# Legacy VCS metadata
+.svn/
+CVS/
