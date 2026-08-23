@@ -105,7 +105,7 @@ def test_run_unsupported_task_type() -> None:
     task = WorkerTask(
         organization_id="test_org",
         workspace_id="test_workspace",
-        task_type="unknown_task",
+        task_type="unknown_task",  # type: ignore[arg-type] - intentional invalid runtime payload
         payload={},
     )
 
