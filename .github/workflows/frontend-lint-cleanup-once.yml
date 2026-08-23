@@ -1,0 +1,134 @@
+name: frontend-lint-cleanup-once
+
+on:
+  push:
+    branches:
+      - chore/post-upgrade-hardening
+    paths:
+      - .github/workflows/frontend-lint-cleanup-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: chore/post-upgrade-hardening
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Remove verified dead frontend symbols
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              'frontend/src/api/endpoints.ts': [
+                  ('  mockHealth,\n', ''),
+              ],
+              'frontend/src/components/common/EmptyState.tsx': [
+                  ('import { useT } from "../../hooks/useT";\n\n', ''),
+                  ('  const { t } = useT();\n', ''),
+              ],
+              'frontend/src/components/layout/PageHeader.tsx': [
+                  ('import { useT } from "../../hooks/useT";\n', ''),
+                  ('  const { t } = useT();\n', ''),
+              ],
+              'frontend/src/components/ui/EventTimeline.tsx': [
+                  ("import StatusBadge from './StatusBadge'\n", ''),
+              ],
+              'frontend/src/components/enterprise/BrandingEditor.tsx': [
+                  ('    } catch (err: any) {\n      // Ignored for presentation\n', '    } catch {\n      // Ignored for presentation\n'),
+              ],
+              'frontend/src/components/enterprise/OnboardingChecklist.tsx': [
+                  ('    } catch (err) {\n      // Ignored for presentation\n', '    } catch {\n      // Ignored for presentation\n'),
+              ],
+              'frontend/src/hooks/useEnterprise.ts': [
+                  ('  getBrandingSettings,\n', ''),
+              ],
+              'frontend/src/pages/Billing.tsx': [
+                  ('    } catch (err) {\n      // Handled inside hook\n', '    } catch {\n      // Handled inside hook\n'),
+              ],
+              'frontend/src/pages/Scheduler.tsx': [
+                  ('import { AGENT_NAME_BY_ID } from "../constants/agents";\n', ''),
+              ],
+              'frontend/src/pages/TeamRoster.tsx': [
+                  ('import type { TeamMember } from "../api/types";\n', ''),
+              ],
+              'frontend/src/pages/ZFinance.tsx': [
+                  ('  type ZFinanceOverview,\n', ''),
+              ],
+              'frontend/src/tests/MarketplaceActions.test.tsx': [
+                  ('import { render, screen, fireEvent, waitFor } from "@testing-library/react";\n', 'import { render, screen, fireEvent } from "@testing-library/react";\n'),
+              ],
+              'frontend/src/tests/RealtimeClient.test.ts': [
+                  ('    const originalSetInterval = globalThis.setInterval;\n', ''),
+                  ('...args: unknown[]) => {', '..._args: unknown[]) => {'),
+              ],
+              'frontend/src/tests/SafetyState.test.tsx': [
+                  ('beforeEach, ', ''),
+                  (', beforeEach', ''),
+              ],
+              'frontend/src/tests/setup.ts': [
+                  ('const now = Date.now();\n', ''),
+                  ('  const now = Date.now();\n', ''),
+              ],
+          }
+
+          changed = []
+          for filename, edits in replacements.items():
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              original = text
+              for old, new in edits:
+                  if old in text:
+                      text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(filename)
+
+          if not changed:
+              raise SystemExit('No lint cleanup replacements applied')
+          print('Changed:', *changed, sep='\n- ')
+          PY
+
+      - name: Verify frontend
+        run: |
+          cd frontend
+          npm ci --no-audit --fund=false
+          npm run lint
+          npm test
+          npm run build
+
+      - name: Commit verified cleanup
+        run: |
+          rm .github/workflows/frontend-lint-cleanup-once.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            .github/workflows/frontend-lint-cleanup-once.yml \
+            frontend/src/api/endpoints.ts \
+            frontend/src/components/common/EmptyState.tsx \
+            frontend/src/components/layout/PageHeader.tsx \
+            frontend/src/components/ui/EventTimeline.tsx \
+            frontend/src/components/enterprise/BrandingEditor.tsx \
+            frontend/src/components/enterprise/OnboardingChecklist.tsx \
+            frontend/src/hooks/useEnterprise.ts \
+            frontend/src/pages/Billing.tsx \
+            frontend/src/pages/Scheduler.tsx \
+            frontend/src/pages/TeamRoster.tsx \
+            frontend/src/pages/ZFinance.tsx \
+            frontend/src/tests/MarketplaceActions.test.tsx \
+            frontend/src/tests/RealtimeClient.test.ts \
+            frontend/src/tests/SafetyState.test.tsx \
+            frontend/src/tests/setup.ts
+          git commit -m 'fix(frontend): resolve strict lint findings'
+          git push origin HEAD:chore/post-upgrade-hardening
