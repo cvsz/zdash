@@ -20,7 +20,6 @@ import LiveIndicator from "../components/realtime/LiveIndicator";
 import RealtimeConnectionBanner from "../components/realtime/RealtimeConnectionBanner";
 import RealtimeEventFeed from "../components/realtime/RealtimeEventFeed";
 import RealtimeStatusBadge from "../components/realtime/RealtimeStatusBadge";
-import { AGENT_NAME_BY_ID } from "../constants/agents";
 import { useApi } from "../hooks/useApi";
 import { useSchedulerRealtime } from "../realtime/useRealtime";
 import { useT } from "../hooks/useT";
@@ -244,31 +243,13 @@ export default function Scheduler() {
             rowKey={(row) => row.id}
             emptyMessage={t('scheduler.no_jobs_found')}
             columns={[
-              {
-                key: "name",
-                header: t('scheduler.job'),
-                render: (row) => row.name,
-              },
-              {
-                key: "type",
-                header: t('scheduler.type'),
-                render: (row) => row.job_type,
-              },
+              { key: "name", header: t('scheduler.job'), render: (row) => row.name },
+              { key: "type", header: t('scheduler.type'), render: (row) => row.job_type },
               {
                 key: "status",
                 header: t('scheduler.status'),
                 render: (row) => (
-                  <Badge
-                    variant={
-                      row.status === "completed"
-                        ? "success"
-                        : row.status === "failed"
-                          ? "danger"
-                          : row.status === "paused"
-                            ? "warning"
-                            : "muted"
-                    }
-                  >
+                  <Badge variant={row.status === "completed" ? "success" : row.status === "failed" ? "danger" : row.status === "paused" ? "warning" : "muted"}>
                     {row.status.toUpperCase()}
                   </Badge>
                 ),
@@ -277,15 +258,9 @@ export default function Scheduler() {
                 key: "safety",
                 header: t('scheduler.safety'),
                 render: (row) => {
-                  if (row.job_type === "trading_scan") {
-                    return <Badge variant="warning">{t('scheduler.risk_guarded')}</Badge>;
-                  }
-                  if (row.job_type === "content_pipeline") {
-                    return <Badge variant="warning">{t('scheduler.approval_no_auto_publish')}</Badge>;
-                  }
-                  if (row.job_type === "iot_power_cycle") {
-                    return <Badge variant="danger">{t('scheduler.confirmation_required')}</Badge>;
-                  }
+                  if (row.job_type === "trading_scan") return <Badge variant="warning">{t('scheduler.risk_guarded')}</Badge>;
+                  if (row.job_type === "content_pipeline") return <Badge variant="warning">{t('scheduler.approval_no_auto_publish')}</Badge>;
+                  if (row.job_type === "iot_power_cycle") return <Badge variant="danger">{t('scheduler.confirmation_required')}</Badge>;
                   return <Badge variant="muted">{t('scheduler.standard')}</Badge>;
                 },
               },
@@ -296,54 +271,10 @@ export default function Scheduler() {
                   const busy = busyJobId === row.id;
                   return (
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        className="px-2 py-1 text-xs"
-                        disabled={busy}
-                        onClick={() =>
-                          void withJobAction(row.id, async () => {
-                            const result = await runJob(row.id);
-                            setRuns((previous) => [result, ...previous]);
-                          })
-                        }
-                      >
-                        {t('common.run')}
-                      </Button>
-                      <Button
-                        className="px-2 py-1 text-xs"
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() =>
-                          void withJobAction(row.id, async () => {
-                            await pauseJob(row.id);
-                          })
-                        }
-                      >
-                        {t('common.pause')}
-                      </Button>
-                      <Button
-                        className="px-2 py-1 text-xs"
-                        variant="secondary"
-                        disabled={busy}
-                        onClick={() =>
-                          void withJobAction(row.id, async () => {
-                            await resumeJob(row.id);
-                          })
-                        }
-                      >
-                        {t('common.resume')}
-                      </Button>
-                      <Button
-                        className="px-2 py-1 text-xs"
-                        variant="danger"
-                        disabled={busy}
-                        onClick={() =>
-                          void withJobAction(row.id, async () => {
-                            await deleteJob(row.id);
-                          })
-                        }
-                      >
-                        {t('common.delete')}
-                      </Button>
+                      <Button className="px-2 py-1 text-xs" disabled={busy} onClick={() => void withJobAction(row.id, async () => { const result = await runJob(row.id); setRuns((previous) => [result, ...previous]); })}>{t('common.run')}</Button>
+                      <Button className="px-2 py-1 text-xs" variant="secondary" disabled={busy} onClick={() => void withJobAction(row.id, async () => { await pauseJob(row.id); })}>{t('common.pause')}</Button>
+                      <Button className="px-2 py-1 text-xs" variant="secondary" disabled={busy} onClick={() => void withJobAction(row.id, async () => { await resumeJob(row.id); })}>{t('common.resume')}</Button>
+                      <Button className="px-2 py-1 text-xs" variant="danger" disabled={busy} onClick={() => void withJobAction(row.id, async () => { await deleteJob(row.id); })}>{t('common.delete')}</Button>
                     </div>
                   );
                 },
@@ -363,42 +294,17 @@ export default function Scheduler() {
             rowKey={(row, index) => `${row.job_id}-${row.started_at}-${index}`}
             emptyMessage={t('scheduler.no_scheduler_runs')}
             columns={[
-              {
-                key: "job",
-                header: t('scheduler.job'),
-                render: (row) => row.job_id,
-              },
-              {
-                key: "type",
-                header: t('scheduler.type'),
-                render: (row) => row.job_type,
-              },
-              {
-                key: "status",
-                header: t('scheduler.status'),
-                render: (row) => row.status,
-              },
-              {
-                key: "started",
-                header: t('scheduler.started'),
-                render: (row) => formatDateTime(row.started_at),
-              },
-              {
-                key: "duration",
-                header: t('scheduler.duration'),
-                render: (row) => formatDurationMs(row.duration_ms),
-              },
+              { key: "job", header: t('scheduler.job'), render: (row) => row.job_id },
+              { key: "type", header: t('scheduler.type'), render: (row) => row.job_type },
+              { key: "status", header: t('scheduler.status'), render: (row) => row.status },
+              { key: "started", header: t('scheduler.started'), render: (row) => formatDateTime(row.started_at) },
+              { key: "duration", header: t('scheduler.duration'), render: (row) => formatDurationMs(row.duration_ms) },
             ]}
           />
         </div>
       </section>
 
-      <RealtimeEventFeed
-        title={t('scheduler.live_scheduler_stream')}
-        events={realtime.events}
-        maxItems={10}
-        emptyMessage={t('scheduler.no_scheduler_websocket_events')}
-      />
+      <RealtimeEventFeed title={t('scheduler.live_scheduler_stream')} events={realtime.events} maxItems={10} emptyMessage={t('scheduler.no_scheduler_websocket_events')} />
     </div>
   );
 }
