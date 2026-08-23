@@ -14,9 +14,13 @@ from app.backtesting.models import (
     StrategySignal,
 )
 from app.backtesting.strategies import (
+    BreakoutStrategy,
+    MeanReversionStrategy,
     OBAggressiveStrategy,
     OBConservativeStrategy,
+    RSICrossStrategy,
     TrendFollowStrategy,
+    VWAPStrategy,
 )
 from app.core.events import event_bus
 
@@ -27,6 +31,10 @@ class StrategyLab:
             "ob_aggressive": OBAggressiveStrategy(),
             "ob_conservative": OBConservativeStrategy(),
             "trend_follow": TrendFollowStrategy(),
+            "rsi_cross": RSICrossStrategy(),
+            "breakout": BreakoutStrategy(),
+            "mean_reversion": MeanReversionStrategy(),
+            "vwap": VWAPStrategy(),
         }
         self._datasets = DatasetProvider()
         self._metrics = BacktestMetricsCalculator()

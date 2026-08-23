@@ -1,8 +1,24 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
+from typing import Protocol
 
-from app.trading.models import Candle
+
+class OHLCV(Protocol):
+    """Structural candle type accepted by indicator functions."""
+
+    @property
+    def high(self) -> float: ...
+
+    @property
+    def low(self) -> float: ...
+
+    @property
+    def close(self) -> float: ...
+
+    @property
+    def volume(self) -> float: ...
 
 
 def sma(values: list[float], period: int) -> float | None:
@@ -100,7 +116,7 @@ def lowest(values: list[float], period: int) -> float | None:
     return min(values[-period:])
 
 
-def atr(candles: list[Candle], period: int = 14) -> float | None:
+def atr(candles: Sequence[OHLCV], period: int = 14) -> float | None:
     if period <= 0 or len(candles) <= period:
         return None
     ranges: list[float] = []
@@ -131,7 +147,7 @@ def bollinger_bands(
     return middle - deviation, middle, middle + deviation
 
 
-def vwap(candles: list[Candle], period: int | None = None) -> float | None:
+def vwap(candles: Sequence[OHLCV], period: int | None = None) -> float | None:
     window = candles[-period:] if period else candles
     total_volume = sum(item.volume for item in window)
     if not window or total_volume <= 0:
@@ -142,7 +158,7 @@ def vwap(candles: list[Candle], period: int | None = None) -> float | None:
     return weighted / total_volume
 
 
-def adx(candles: list[Candle], period: int = 14) -> float | None:
+def adx(candles: Sequence[OHLCV], period: int = 14) -> float | None:
     if period <= 1 or len(candles) < (period * 2 + 1):
         return None
     trs: list[float] = []
@@ -187,7 +203,7 @@ def adx(candles: list[Candle], period: int = 14) -> float | None:
 
 
 def ichimoku(
-    candles: list[Candle],
+    candles: Sequence[OHLCV],
     tenkan_period: int = 9,
     kijun_period: int = 26,
     senkou_b_period: int = 52,
@@ -195,7 +211,7 @@ def ichimoku(
     if len(candles) < senkou_b_period:
         return None
 
-    def _highest_lowest(window: list[Candle]) -> float:
+    def _highest_lowest(window: Sequence[OHLCV]) -> float:
         return (
             max(item.high for item in window) + min(item.low for item in window)
         ) / 2
