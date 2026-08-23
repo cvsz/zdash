@@ -132,7 +132,9 @@ def test_get_organization_access_denied(
 
     try:
         with (
-            patch("app.api.tenancy.tenant_service.get_organization", return_value=mock_org),
+            patch(
+                "app.api.tenancy.tenant_service.get_organization", return_value=mock_org
+            ),
             patch(
                 "app.api.tenancy.tenant_service.list_accessible_organizations",
                 return_value=[],
