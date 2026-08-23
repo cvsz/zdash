@@ -22,7 +22,7 @@ class MockImageGenerationAdapter(ImageGenerationAdapter):
         self, prompt: str, options: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         normalized_prompt = (prompt or "").strip()
-        digest = hashlib.sha1(normalized_prompt.encode()).hexdigest()[:12]
+        digest = hashlib.sha256(normalized_prompt.encode()).hexdigest()[:12]
         return {
             "ok": True,
             "dry_run": True,
