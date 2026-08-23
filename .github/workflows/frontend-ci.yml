@@ -27,32 +27,35 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Generate hardening lock on maintenance branch
-        if: github.event_name == 'push' && github.ref == 'refs/heads/chore/post-upgrade-hardening'
+      - name: Generate strict frontend lock on maintenance branch
+        if: github.event_name == 'pull_request' && github.head_ref == 'chore/post-upgrade-hardening'
         run: |
-          if grep -q '"eslint"' frontend/package.json; then
-            echo 'Frontend hardening lock already generated.'
-            exit 0
+          git fetch origin chore/post-upgrade-hardening
+          git checkout chore/post-upgrade-hardening
+
+          if ! grep -q '"eslint"' frontend/package.json; then
+            cd frontend
+            npm install --save-dev \
+              eslint@latest \
+              @eslint/js@latest \
+              typescript-eslint@latest \
+              eslint-plugin-react-hooks@latest \
+              eslint-plugin-react-refresh@latest \
+              --no-audit --fund=false
+            npm pkg set scripts.lint="eslint src --max-warnings=0"
+            npm pkg set overrides.nanoid="3.3.18"
+            npm install --package-lock-only --no-audit --fund=false
+            npm audit --audit-level=high
+            cd ..
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add frontend/package.json frontend/package-lock.json
+            git diff --cached --check
+            git commit -m 'chore(frontend): lock strict lint and audit dependencies'
+            git push origin HEAD:chore/post-upgrade-hardening
+          else
+            echo 'Frontend hardening dependencies are already locked.'
           fi
-          cd frontend
-          npm install --save-dev \
-            eslint@latest \
-            @eslint/js@latest \
-            typescript-eslint@latest \
-            eslint-plugin-react-hooks@latest \
-            eslint-plugin-react-refresh@latest \
-            --no-audit --fund=false
-          npm pkg set scripts.lint="eslint src --max-warnings=0"
-          npm pkg set overrides.nanoid="3.3.18"
-          npm install --package-lock-only --no-audit --fund=false
-          npm audit --audit-level=high
-          cd ..
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add frontend/package.json frontend/package-lock.json
-          git diff --cached --check
-          git commit -m 'chore(frontend): lock strict lint and audit dependencies'
-          git push origin HEAD:chore/post-upgrade-hardening
 
       - name: Install dependencies
         run: |
