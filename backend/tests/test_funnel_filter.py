@@ -23,7 +23,7 @@ def _build_candles(start: float, step: float, count: int = 60) -> list[Candle]:
 
 
 def test_sma_calculation() -> None:
-    values = [1, 2, 3, 4, 5]
+    values = [1.0, 2.0, 3.0, 4.0, 5.0]
     sma = FunnelFilter.calculate_sma(values, period=3)
 
     assert len(sma) == len(values)

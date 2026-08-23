@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from app.ai_trader.service import AITraderService
 from app.api import ai_trader as ai_trader_api
 from app.risk.models import AccountSnapshot
-from app.trading.models import Candle
+from app.trading.models import Candle, ExecutionResult, TradingSignal
 
 
 def _candles(direction: str = "up", count: int = 34) -> list[Candle]:
@@ -122,10 +122,13 @@ def test_paper_trade_always_returns_dry_run_and_never_live_execution() -> None:
         snapshot=_snapshot(),
     )
     execution = result["execution"]
+    assert isinstance(execution, ExecutionResult)
     assert result["dry_run"] is True
     assert result["live_execution_allowed"] is False
     assert execution.dry_run is True
-    assert result["signal"].metadata["risk_policy"]["live_execution_allowed"] is False
+    signal = result["signal"]
+    assert isinstance(signal, TradingSignal)
+    assert signal.metadata["risk_policy"]["live_execution_allowed"] is False
 
 
 def test_malformed_candles_do_not_crash_service() -> None:

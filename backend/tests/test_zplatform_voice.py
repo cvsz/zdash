@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from typing import Any
 
 import httpx
 import pytest
@@ -13,8 +14,8 @@ from app.integrations.zplatform_voice import (
 )
 
 
-def _config(**overrides) -> VoiceIntegrationConfig:
-    values = {
+def _config(**overrides: Any) -> VoiceIntegrationConfig:
+    values: dict[str, Any] = {
         "enabled": True,
         "gateway_url": "http://voice-gateway:8450",
         "service_token": "service-token",

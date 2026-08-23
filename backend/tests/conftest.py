@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 import pytest
 
 from app.backtesting.backtest_service import reset_backtest_service
@@ -12,7 +14,7 @@ run_migrations()
 
 
 @pytest.fixture(autouse=True)
-def reset_risk_runtime_state() -> None:
+def reset_risk_runtime_state() -> Iterator[None]:
     get_settings.cache_clear()
     reset_backtest_service()
     reset_guardian_service()

@@ -44,7 +44,7 @@ class StripeAdapter(BillingProviderAdapter):
     def _stripe_client(self) -> Any:
         """Return the stripe module, or raise ImportError with a helpful message."""
         try:
-            import stripe  # type: ignore[import-untyped]
+            import stripe  # type: ignore[import-not-found,import-untyped]
 
             if self._has_secret_key:
                 stripe.api_key = self._secret_key

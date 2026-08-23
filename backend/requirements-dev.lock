@@ -45,6 +45,7 @@ ruff==0.16.4
 sqlmodel==0.0.39
 starlette==1.6.0
 stevedore==5.9.1
+types-passlib==1.7.7.20260211
 typing-inspection==0.4.4
 typing_extensions==4.16.0
 tzlocal==5.4.4

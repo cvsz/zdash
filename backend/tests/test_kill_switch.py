@@ -1,9 +1,13 @@
 from app.risk.halt_flag import HaltFlagStore
 from app.risk.kill_switch import KillSwitch
-from app.risk.models import DrawdownResult
+from app.risk.models import DrawdownResult, RiskLevel
 
 
-def _drawdown(total: float, daily: float, risk_level: str = "danger") -> DrawdownResult:
+def _drawdown(
+    total: float,
+    daily: float,
+    risk_level: RiskLevel = "danger",
+) -> DrawdownResult:
     return DrawdownResult(
         current_equity=10000.0 - total,
         peak_equity=10000.0,

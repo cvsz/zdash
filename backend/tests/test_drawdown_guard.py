@@ -1,9 +1,11 @@
+from typing import Any
+
 from app.risk.drawdown_guard import DrawdownGuard
 from app.risk.models import AccountSnapshot
 
 
-def _snapshot(**kwargs) -> AccountSnapshot:
-    base = {
+def _snapshot(**kwargs: Any) -> AccountSnapshot:
+    values: dict[str, Any] = {
         "balance": 10000.0,
         "equity": 10000.0,
         "peak_equity": 10000.0,
@@ -12,8 +14,8 @@ def _snapshot(**kwargs) -> AccountSnapshot:
         "floating_pnl": 0.0,
         "realized_pnl_today": 0.0,
     }
-    base.update(kwargs)
-    return AccountSnapshot(**base)
+    values.update(kwargs)
+    return AccountSnapshot(**values)
 
 
 def test_total_drawdown_calculation() -> None:

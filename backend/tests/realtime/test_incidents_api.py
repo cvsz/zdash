@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Iterator
 
 import pytest
 from fastapi import HTTPException
@@ -16,7 +17,7 @@ from app.services.incidents import (
 
 
 @pytest.fixture(autouse=True)
-def reset_incident_service_fixture() -> None:
+def reset_incident_service_fixture() -> Iterator[None]:
     reset_incident_service_state()
     yield
     reset_incident_service_state()

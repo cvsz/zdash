@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 from app.ai_trader.service import AITraderService
 from app.risk.models import AccountSnapshot
-from app.trading.models import Candle
+from app.trading.models import Candle, ExecutionResult, TradingSignal
 
 
 def _candles(direction: str = "up", count: int = 30) -> list[Candle]:
@@ -80,6 +80,7 @@ def test_paper_trade_result_is_always_dry_run() -> None:
     )
 
     execution = result["execution"]
+    assert isinstance(execution, ExecutionResult)
     assert result["dry_run"] is True
     assert execution.dry_run is True
     assert execution.status in {
@@ -88,4 +89,6 @@ def test_paper_trade_result_is_always_dry_run() -> None:
         "blocked_by_risk",
         "blocked_by_config",
     }
-    assert result["signal"].metadata["simulation_only"] is True
+    signal = result["signal"]
+    assert isinstance(signal, TradingSignal)
+    assert signal.metadata["simulation_only"] is True

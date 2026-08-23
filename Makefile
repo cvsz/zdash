@@ -224,15 +224,15 @@ frontend-check: frontend-test frontend-build ## Run frontend tests + build
 
 .PHONY: docker-build-backend
 docker-build-backend: ## Build backend Docker image
-	docker build -f infra/docker/backend.Dockerfile .
+	docker build -f infra/docker/backend.Dockerfile -t zdash-backend:local .
 
 .PHONY: docker-build-frontend
 docker-build-frontend: ## Build frontend Docker image
-	docker build -f infra/docker/frontend.Dockerfile .
+	docker build -f infra/docker/frontend.Dockerfile -t zdash-frontend:local .
 
 .PHONY: docker-build-nginx
 docker-build-nginx: ## Build nginx Docker image
-	docker build -f infra/docker/nginx.Dockerfile .
+	docker build -f infra/docker/nginx.Dockerfile -t zdash-nginx:local .
 
 .PHONY: docker-build
 docker-build: docker-build-backend docker-build-frontend docker-build-nginx ## Build all Docker images

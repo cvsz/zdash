@@ -1,3 +1,4 @@
+from app.agents.friday import FridayAgent
 from app.agents.registry import bootstrap_agents, registry
 from app.api import agents
 from app.core.events import event_bus
@@ -29,7 +30,7 @@ def test_friday_lists_jobs() -> None:
 def test_friday_can_run_manual_job() -> None:
     bootstrap_agents()
     friday = registry.get("friday")
-    assert friday is not None
+    assert isinstance(friday, FridayAgent)
 
     created = friday.create_job(
         CreateJobRequest(

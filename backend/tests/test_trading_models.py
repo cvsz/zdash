@@ -34,7 +34,7 @@ def test_trading_signal_direction_validation() -> None:
         TradingSignal(
             symbol="XAUUSD",
             timeframe="M5",
-            direction="neutral",
+            direction="neutral",  # type: ignore[arg-type]
             strategy="ob_aggressive",
             confidence=0.6,
             entry=2300.0,
