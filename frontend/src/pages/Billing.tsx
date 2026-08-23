@@ -13,7 +13,7 @@ export default function Billing() {
   const handleSelectPlan = async (planId: string) => {
     try {
       await checkout(planId);
-    } catch (err) {
+    } catch {
       // Handled inside hook
     }
   };
@@ -21,7 +21,7 @@ export default function Billing() {
   const handleApplyMockPlan = async (planTier: string) => {
     try {
       await applyMock(planTier);
-    } catch (err) {
+    } catch {
       // Handled inside hook
     }
   };
@@ -48,7 +48,6 @@ export default function Billing() {
         </div>
       ) : (
         <>
-          {/* Subscription Status details */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">{t('billing.active_plan_status')}</h3>
             <SubscriptionStatusCard
@@ -59,7 +58,6 @@ export default function Billing() {
             />
           </section>
 
-          {/* Plan Catalog list */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">{t('billing.select_plan')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -76,7 +74,6 @@ export default function Billing() {
             </div>
           </section>
 
-          {/* Feature Matrix */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">{t('billing.plan_comparison')}</h3>
             <PricingTable
@@ -86,7 +83,6 @@ export default function Billing() {
             />
           </section>
 
-          {/* Invoices table logs */}
           <section className="space-y-4">
             <h3 className="text-lg font-bold text-neutral-300">{t('billing.invoice_history')}</h3>
             <InvoiceTable invoices={invoices} />
