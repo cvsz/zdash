@@ -11,6 +11,8 @@ services:
     ports:
       - "80:80"
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
       interval: 30s
@@ -58,6 +60,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8005/health')"]
       interval: 30s
@@ -74,6 +78,8 @@ services:
     expose:
       - "80"
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"]
       interval: 30s
@@ -83,7 +89,7 @@ services:
       - zdash_net
 
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16.15-alpine
     env_file:
       - .env.production
     environment:
@@ -91,12 +97,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-zdash_dev_password}
       POSTGRES_DB: ${POSTGRES_DB:-zdash}
     ports:
-      - "5436:5432"
+      - "127.0.0.1:5436:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
       - ./backups:/var/backups/zdash
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zdash} -d ${POSTGRES_DB:-zdash}"]
       interval: 10s
@@ -106,12 +114,14 @@ services:
       - zdash_net
 
   redis:
-    image: redis:7-alpine
+    image: redis:8.2.8-alpine
     ports:
-      - "16379:6379"
+      - "127.0.0.1:16379:6379"
     volumes:
       - redisdata_prod:/data
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -121,7 +131,7 @@ services:
       - zdash_net
 
   prometheus:
-    image: prom/prometheus:v2.53.0
+    image: prom/prometheus:v3.14.0
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -129,11 +139,13 @@ services:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     networks:
       - zdash_net
 
