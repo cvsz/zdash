@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   listMarketplacePlugins,
   listPluginInstallations,
@@ -21,7 +21,7 @@ export function useMarketplace() {
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
 
-  const fetchMarketplace = async () => {
+  const fetchMarketplace = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -38,11 +38,11 @@ export function useMarketplace() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [category, search, status]);
 
   useEffect(() => {
-    fetchMarketplace();
-  }, [search, category, status]);
+    void fetchMarketplace();
+  }, [fetchMarketplace]);
 
   const install = async (pluginId: string, workspaceId: string, config: Record<string, any> = {}) => {
     setError(null);
