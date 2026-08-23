@@ -86,3 +86,25 @@ Rollback means stopping writes to PostgreSQL 18 and returning application traffi
 ## Execution boundary
 
 This document authorizes planning and rehearsal only. The production major will not be changed until restore and rollback evidence from an actual production-equivalent database is attached to a dedicated PostgreSQL migration PR.
+
+## Evaluation log — 2026-08-23 (local rehearsal, empty databases)
+
+Feasibility evidence gathered against PostgreSQL 18.6 (`postgres:18.6-alpine`) and
+PostgreSQL 16.15 (`postgres:16.15-alpine`) containers using the refreshed rc3 locks.
+
+| Check | Result |
+| --- | --- |
+| Alembic `upgrade -> head` (20260805_0001) on PostgreSQL 18.6 | PASS |
+| Full backend suite (732 tests) against PostgreSQL 18.6 via psycopg | PASS (exit 0) |
+| Migration-only schema parity, PG 16.15 vs PG 18.6 (19 tables each) | PASS (identical table sets) |
+| `pg_dump` from PG 18.6 + restore into clean database | PASS |
+| Alembic `current` on restored database | PASS (head) |
+| Row-count spot check on critical tables post-restore | PASS |
+
+No extensions are used by current migrations; driver is `psycopg` (3.x), which
+connects to both majors without changes.
+
+Outstanding before any production cutover (per Preconditions and Required
+backup/restore evidence above): production-equivalent data restore, timed
+rollback rehearsal back to PG 16, latency baseline comparison, and operator
+maintenance window. These require production access and remain blocking.
