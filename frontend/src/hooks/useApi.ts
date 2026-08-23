@@ -51,6 +51,9 @@ export function useApi<T>(
         setLoading(false);
       }
     }
+    // `deps` is intentionally forwarded by this generic data hook so callers
+    // control when the fetcher identity is invalidated.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
   useEffect(() => {
