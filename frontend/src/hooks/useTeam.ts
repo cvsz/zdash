@@ -26,7 +26,7 @@ export function useTeam(workspaceId?: string) {
       const [membersRes, invitationsRes, workspaceAccessRes, assignmentsRes, activityRes, summaryRes] = await Promise.all([
         listTeamMembers(workspaceId),
         listTeamInvitations(workspaceId),
-        listTeamWorkspaceAccess(workspaceId),
+        workspaceId ? listTeamWorkspaceAccess(workspaceId) : Promise.resolve([] as TeamWorkspaceAccess[]),
         listTeamAgentAssignments(),
         getTeamActivity(),
         getTeamSummary(),
