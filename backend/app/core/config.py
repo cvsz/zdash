@@ -63,12 +63,12 @@ class Settings(BaseSettings):
     openrouter_model: str = Field(default="openrouter/free", alias="OPENROUTER_MODEL")
 
     kilo_api_key: str = Field(default="", alias="KILO_API_KEY")
-    kilo_base_url: str = Field(default="https://api.kilo.ai/v1", alias="KILO_BASE_URL")
+    kilo_base_url: str = Field(default="https://api.z.ai/v1", alias="KILO_BASE_URL")
     kilo_model: str = Field(default="auto", alias="KILO_MODEL")
 
     opencode_api_key: str = Field(default="", alias="OPENCODE_API_KEY")
     opencode_base_url: str = Field(
-        default="https://opencode.ai/zen/v1", alias="OPENCODE_BASE_URL"
+        default="https://api.opencode.net/v1", alias="OPENCODE_BASE_URL"
     )
     opencode_model: str = Field(default="opencode/grok-code", alias="OPENCODE_MODEL")
 
