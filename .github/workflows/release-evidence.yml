@@ -41,9 +41,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install 'cyclonedx-bom==7.3.0'
           mkdir -p artifacts
-          cyclonedx-py requirements backend/requirements.lock \
+          cyclonedx-py requirements \
             --output-format JSON \
-            --outfile artifacts/backend-sbom.cdx.json
+            --output-file artifacts/backend-sbom.cdx.json \
+            backend/requirements.lock
 
       - name: Generate frontend CycloneDX SBOM
         run: |
