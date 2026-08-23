@@ -42,17 +42,12 @@ export function useRealtimeChannel(
     manager.getState(channel),
   );
 
-  const eventTypesKey = useMemo(
-    () => (options.eventTypes?.length ? options.eventTypes.join("|").toLowerCase() : ""),
-    [options.eventTypes],
-  );
-
   const normalizedTypes = useMemo(() => {
     if (!options.eventTypes?.length) {
       return null;
     }
     return options.eventTypes.map((value) => value.toLowerCase());
-  }, [eventTypesKey, options.eventTypes]);
+  }, [options.eventTypes]);
 
   useEffect(() => {
     setConnection(manager.getState(channel));
@@ -84,7 +79,7 @@ export function useRealtimeChannel(
       unsubscribeEvents();
       unsubscribeStatus();
     };
-  }, [channel, enabled, manager, maxEvents, eventTypesKey, normalizedTypes]);
+  }, [channel, enabled, manager, maxEvents, normalizedTypes]);
 
   return {
     events,
