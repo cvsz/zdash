@@ -13,8 +13,6 @@ from app.agents.joe import JoeAgent
 from app.agents.editor import EditorAgent
 from app.agents.graphic import GraphicAgent
 from app.agents.social import SocialAgent
-from app.ai.claude_adapter import ClaudeAdapter
-from app.ai.mock_adapter import MockAIAdapter
 from app.core.config import get_settings
 from app.core.events import Event, event_bus
 
@@ -157,10 +155,9 @@ def _find_related_events(msg_id: str, base_event: Event) -> list[Event]:
 
 
 def build_default_ai_adapter():
-    settings = get_settings()
-    if settings.ai_provider.lower() == "claude":
-        return ClaudeAdapter()
-    return MockAIAdapter()
+    from app.ai.factory import build_adapter
+
+    return build_adapter(get_settings().ai_provider)
 
 
 registry = AgentRegistry()

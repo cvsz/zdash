@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from app.ai.base import AIAdapter
-from app.ai.claude_adapter import ClaudeAdapter
-from app.ai.mock_adapter import MockAIAdapter
+from app.ai.factory import build_adapter
 from app.core.config import get_settings
 from app.trading.models import Candle, TradingSignal
 
@@ -13,9 +12,9 @@ class TradingAIAnalysis:
         self.adapter = adapter or self._build_adapter()
 
     def _build_adapter(self) -> AIAdapter:
-        if self.settings.ai_trading_provider.lower() == "claude":
-            return ClaudeAdapter()
-        return MockAIAdapter()
+        return build_adapter(
+            self.settings.ai_trading_provider or self.settings.ai_provider
+        )
 
     @staticmethod
     def _disclaimer() -> str:

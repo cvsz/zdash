@@ -56,6 +56,22 @@ class Settings(BaseSettings):
     claude_model: str = Field(default="claude-sonnet-4-5", alias="CLAUDE_MODEL")
     ai_provider: str = Field(default="mock", alias="AI_PROVIDER")
 
+    openrouter_api_key: str = Field(default="", alias="OPENROUTER_API_KEY")
+    openrouter_base_url: str = Field(
+        default="https://openrouter.ai/api/v1", alias="OPENROUTER_BASE_URL"
+    )
+    openrouter_model: str = Field(default="openrouter/free", alias="OPENROUTER_MODEL")
+
+    kilo_api_key: str = Field(default="", alias="KILO_API_KEY")
+    kilo_base_url: str = Field(default="https://api.kilo.ai/v1", alias="KILO_BASE_URL")
+    kilo_model: str = Field(default="auto", alias="KILO_MODEL")
+
+    opencode_api_key: str = Field(default="", alias="OPENCODE_API_KEY")
+    opencode_base_url: str = Field(
+        default="https://opencode.ai/zen/v1", alias="OPENCODE_BASE_URL"
+    )
+    opencode_model: str = Field(default="opencode/grok-code", alias="OPENCODE_MODEL")
+
     trading_enabled: bool = Field(default=True, alias="TRADING_ENABLED")
     dry_run: bool = Field(default=True, alias="DRY_RUN")
     live_trading_ack: bool = Field(default=False, alias="LIVE_TRADING_ACK")
