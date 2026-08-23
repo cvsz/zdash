@@ -1,49 +1,47 @@
 """Tests for tenant isolation ensuring data separation between organizations."""
 
-from unittest.mock import patch
-
 import pytest
 
+from app.auth.models import AuthSession
+from app.tenancy.models import OrganizationCreateRequest
 from app.tenancy.tenant_context import TenantContext
 from app.tenancy.tenant_service import TenantService
 
 
 @pytest.fixture
 def tenant_service() -> TenantService:
-    """Create a fresh tenant service instance."""
-    return TenantService()
+    """Create a tenant service with isolated repository state."""
+    service = TenantService()
+    service.repository.reset()
+    yield service
+    service.repository.reset()
 
 
-@pytest.fixture
-def org1_context() -> TenantContext:
-    """Tenant context for organization 1."""
-    return TenantContext(
-        organization_id="org_1",
-        workspace_id="ws_1",
-        user_id="user_1",
-        user_role="admin",
+def test_organization_data_isolation(tenant_service: TenantService) -> None:
+    """Test that each non-admin user sees only organizations they belong to."""
+    user_one = AuthSession(username="user_1", role="viewer")
+    user_two = AuthSession(username="user_2", role="viewer")
+
+    org_one = tenant_service.create_organization(
+        OrganizationCreateRequest(name="Organization One"), user_one
+    )
+    org_two = tenant_service.create_organization(
+        OrganizationCreateRequest(name="Organization Two"), user_two
     )
 
+    user_one_ids = {
+        organization.id
+        for organization in tenant_service.list_accessible_organizations(user_one)
+    }
+    user_two_ids = {
+        organization.id
+        for organization in tenant_service.list_accessible_organizations(user_two)
+    }
 
-@pytest.fixture
-def org2_context() -> TenantContext:
-    """Tenant context for organization 2."""
-    return TenantContext(
-        organization_id="org_2",
-        workspace_id="ws_2",
-        user_id="user_2",
-        user_role="admin",
-    )
-
-
-def test_organization_data_isolation(
-    tenant_service: TenantService,
-    org1_context: TenantContext,
-    org2_context: TenantContext,
-) -> None:
-    """Test that organizations cannot access each other's data."""
-    with patch.object(tenant_service, "_get_db_session"):
-        pass
+    assert org_one.id in user_one_ids
+    assert org_two.id not in user_one_ids
+    assert org_two.id in user_two_ids
+    assert org_one.id not in user_two_ids
 
 
 def test_workspace_belongs_to_correct_organization(
@@ -61,7 +59,7 @@ def test_workspace_belongs_to_correct_organization(
 
 
 def test_cross_tenant_access_prevented() -> None:
-    """Test that cross-tenant data access is prevented."""
+    """Test that cross-tenant contexts remain distinct."""
     context1 = TenantContext(
         organization_id="org_a",
         workspace_id="ws_a",
