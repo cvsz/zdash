@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import TeamRoster from "../pages/TeamRoster";
 import { waitForStableUi } from "./utils/settle";
@@ -49,6 +50,7 @@ describe("TeamRoster", () => {
   });
 
   it("renders members table with search", async () => {
+    const user = userEvent.setup();
     render(
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <TeamRoster />
@@ -56,7 +58,7 @@ describe("TeamRoster", () => {
     );
     await waitForStableUi();
     const membersTab = screen.getByText("Members");
-    membersTab.click();
+    await user.click(membersTab);
     await waitForStableUi();
     expect(await screen.findByText("Admin User")).toBeTruthy();
   });
@@ -73,7 +75,7 @@ describe("TeamRoster", () => {
     expect(endpoints.listTeamInvitations).toBeDefined();
   });
 
-  it("no act warnings", async () => {
+  it("settles async UI updates before assertions", async () => {
     render(
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <TeamRoster />
