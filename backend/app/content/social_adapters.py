@@ -28,7 +28,7 @@ class MockSocialMediaAdapter(SocialMediaAdapter):
         metadata: dict[str, Any] | None = None,
     ) -> SocialPostResult:
         key = f"{platform.value}:{text}:{asset_url}:{metadata or {}}"
-        external_id = hashlib.sha1(key.encode()).hexdigest()[:12]
+        external_id = hashlib.sha256(key.encode()).hexdigest()[:12]
         return SocialPostResult(
             platform=platform,
             ok=True,
