@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+from app.auth.dependencies import get_current_user
 from app.main import app
 
 
@@ -126,23 +127,22 @@ def test_get_organization_access_denied(
     """Test accessing organization without permission."""
     mock_org = MagicMock()
     mock_org.id = "org_789"
+    mock_auth_session.role = "viewer"
+    app.dependency_overrides[get_current_user] = lambda: mock_auth_session
 
-    with (
-        patch("app.api.tenancy.get_current_user", return_value=mock_auth_session),
-        patch("app.api.tenancy.tenant_service.get_organization", return_value=mock_org),
-        patch(
-            "app.api.tenancy.tenant_service.is_organization_admin", return_value=False
-        ),
-        patch(
-            "app.api.tenancy.tenant_service.list_accessible_organizations",
-            return_value=[],
-        ),
-    ):
-        mock_auth_session.role = "viewer"
+    try:
+        with (
+            patch("app.api.tenancy.tenant_service.get_organization", return_value=mock_org),
+            patch(
+                "app.api.tenancy.tenant_service.list_accessible_organizations",
+                return_value=[],
+            ),
+        ):
+            response = client.get("/api/tenancy/organizations/org_789")
 
-        response = client.get("/api/tenancy/organizations/org_789")
-
-        assert response.status_code == 403
+            assert response.status_code == 403
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
 
 
 def test_create_workspace(
