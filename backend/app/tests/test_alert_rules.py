@@ -1,4 +1,5 @@
 """Tests for alert rules functionality."""
+
 from unittest.mock import patch
 
 import pytest
@@ -104,8 +105,6 @@ def test_delete_alert_rule(
 
     result = notification_service.delete_rule(rule.id)
     assert result is True
-
-    # Verify rule is deleted
     assert rule.id not in notification_service.rules
 
 
@@ -118,7 +117,6 @@ def test_rules_for_tenant(
         event_type=sample_rule_data["event_type"],
     )
 
-    # Create rules for different tenants
     isolated_notification_service.create_rule(
         organization_id=sample_rule_data["organization_id"],
         workspace_id=sample_rule_data["workspace_id"],
@@ -139,9 +137,7 @@ def test_rules_for_tenant(
         sample_rule_data["organization_id"], sample_rule_data["workspace_id"]
     )
 
-    # ensure_defaults adds 8 default rules + 1 custom rule = 9 total
     assert len(rules) == 9
-    # Verify our custom rule is in the list
     custom_rules = [r for r in rules if r.name == sample_rule_data["name"]]
     assert len(custom_rules) == 1
 
@@ -162,7 +158,9 @@ def test_emit_alert_with_matching_rule(
         payload=payload,
     )
 
-    with patch("app.notifications.notification_service.dispatch_dry_run") as mock_dispatch:
+    with patch(
+        "app.notifications.notification_service.dispatch_dry_run"
+    ) as mock_dispatch:
         mock_dispatch.return_value = {"status": "dispatched"}
 
         result = notification_service.emit_alert(

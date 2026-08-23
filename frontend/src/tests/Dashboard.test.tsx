@@ -10,18 +10,33 @@ describe("Dashboard", () => {
     resetMockFallbackState();
   });
 
-  it("renders metric cards and key sections", async () => {
+  it("renders the mission-control information hierarchy", async () => {
     render(<Dashboard />);
 
     await waitForStableUi();
     await waitForElementToBeRemoved(() => screen.queryByText(/Loading/i), { timeout: 2000 }).catch(() => {});
 
+    expect(await screen.findByText("Operational pulse")).toBeTruthy();
+    expect(await screen.findByText("Service health")).toBeTruthy();
+    expect(await screen.findByText("Live activity")).toBeTruthy();
+    expect(await screen.findByText("Diagnostics & release")).toBeTruthy();
+
     expect(await screen.findByText((t) => t.includes("System Health"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Agents Online"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Trading Mode"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Risk Level"))).toBeTruthy();
+    expect((await screen.findAllByText("Scheduler")).length).toBeGreaterThan(0);
+    expect(await screen.findByText("Backend")).toBeTruthy();
+  });
+
+  it("keeps release diagnostics secondary but available", async () => {
+    render(<Dashboard />);
+
+    await waitForStableUi();
+
     expect(await screen.findByText("Phase Progress")).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Session Logs"))).toBeTruthy();
+    expect(await screen.findByText("Release Gate")).toBeTruthy();
   });
 
   it("renders mock fallback banner when fallback is active", async () => {

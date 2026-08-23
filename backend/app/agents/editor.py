@@ -76,7 +76,9 @@ class EditorAgent(BaseAgent):
             raise
 
     def generate_variants(self, content_id: str, count: int = 3) -> list[str]:
-        self._emit_received("generate_variants", {"content_id": content_id, "count": count})
+        self._emit_received(
+            "generate_variants", {"content_id": content_id, "count": count}
+        )
         self.status = "running"
         try:
             variants = self.pipeline.editor.generate_variants(content_id, count)

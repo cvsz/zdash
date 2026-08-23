@@ -1,4 +1,5 @@
 """Tests for worker task execution."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -100,8 +101,8 @@ def test_run_notification_dispatch_task() -> None:
 
 
 def test_run_unsupported_task_type() -> None:
-    """Test running an unsupported task type."""
-    task = WorkerTask(
+    """Test the defensive fallback for a task that bypasses schema validation."""
+    task = WorkerTask.model_construct(
         organization_id="test_org",
         workspace_id="test_workspace",
         task_type="unknown_task",

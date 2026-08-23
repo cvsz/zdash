@@ -1,3 +1,31 @@
+import {
+  Activity,
+  Bell,
+  Bot,
+  BriefcaseBusiness,
+  CalendarClock,
+  ChartNoAxesCombined,
+  ChevronRight,
+  CircleDollarSign,
+  FileClock,
+  Gauge,
+  HeartPulse,
+  Home,
+  Landmark,
+  LayoutGrid,
+  Megaphone,
+  Network,
+  RadioTower,
+  Settings,
+  ShieldAlert,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+  Users,
+  WalletCards,
+  Workflow,
+  Wrench,
+} from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import { useAuth } from "../../hooks/useAuth";
@@ -12,41 +40,80 @@ type SidebarProps = {
 type NavItem = {
   to: string;
   labelKey: string;
-  fallbackLabel?: string;
+  fallbackLabel: string;
   roles: string[];
+  icon: typeof Home;
 };
 
-const navItems: NavItem[] = [
-  { to: "/", labelKey: "nav.dashboard", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/team", labelKey: "nav.team", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/voice", labelKey: "nav.voice", fallbackLabel: "Voice Agent", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/xau", labelKey: "nav.xau", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/risk", labelKey: "nav.risk", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/alerts", labelKey: "nav.alerts", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/incidents", labelKey: "nav.incidents", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/scheduler", labelKey: "nav.scheduler", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/backtests", labelKey: "nav.backtests", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/content", labelKey: "nav.content", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/marketing", labelKey: "nav.marketing", fallbackLabel: "Marketing Intelligence", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/iot", labelKey: "nav.iot", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/organizations", labelKey: "nav.organizations", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/workspace", labelKey: "nav.workspace", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/workers", labelKey: "nav.workers", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/org", labelKey: "sidebar.org_map", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/logs", labelKey: "nav.logs", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/settings", labelKey: "nav.settings", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/billing", labelKey: "nav.billing", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/usage", labelKey: "nav.usage", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/marketplace", labelKey: "nav.marketplace", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/enterprise", labelKey: "nav.enterprise", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/onboarding", labelKey: "nav.onboarding", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/system/health", labelKey: "nav.system", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/zfinance", labelKey: "nav.zfinance", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/notifications", labelKey: "nav.notifications", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/workspace/live", labelKey: "sidebar.workspace_live", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/workspace/timeline", labelKey: "sidebar.workspace_timeline", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/workspace/notes", labelKey: "sidebar.workspace_notes", roles: ["admin", "operator", "analyst", "viewer"] },
-  { to: "/admin", labelKey: "nav.admin", roles: ["admin"] },
+type NavGroup = {
+  labelKey: string;
+  fallbackLabel: string;
+  items: NavItem[];
+};
+
+const allRoles = ["admin", "operator", "analyst", "viewer"];
+
+const navGroups: NavGroup[] = [
+  {
+    labelKey: "sidebar.group_command",
+    fallbackLabel: "Command",
+    items: [
+      { to: "/", labelKey: "nav.dashboard", fallbackLabel: "Overview", roles: allRoles, icon: Home },
+      { to: "/team", labelKey: "nav.team", fallbackLabel: "Agent Team", roles: allRoles, icon: Users },
+      { to: "/voice", labelKey: "nav.voice", fallbackLabel: "Voice Agent", roles: allRoles, icon: Bot },
+      { to: "/workspace", labelKey: "nav.workspace", fallbackLabel: "Workspace", roles: allRoles, icon: LayoutGrid },
+    ],
+  },
+  {
+    labelKey: "sidebar.group_operations",
+    fallbackLabel: "Operations",
+    items: [
+      { to: "/xau", labelKey: "nav.xau", fallbackLabel: "XAU Trading", roles: allRoles, icon: ChartNoAxesCombined },
+      { to: "/risk", labelKey: "nav.risk", fallbackLabel: "Risk Control", roles: allRoles, icon: ShieldAlert },
+      { to: "/alerts", labelKey: "nav.alerts", fallbackLabel: "Alerts", roles: allRoles, icon: Bell },
+      { to: "/incidents", labelKey: "nav.incidents", fallbackLabel: "Incidents", roles: allRoles, icon: ShieldCheck },
+      { to: "/scheduler", labelKey: "nav.scheduler", fallbackLabel: "Scheduler", roles: allRoles, icon: CalendarClock },
+      { to: "/backtests", labelKey: "nav.backtests", fallbackLabel: "Backtests", roles: allRoles, icon: Gauge },
+      { to: "/iot", labelKey: "nav.iot", fallbackLabel: "IoT Control", roles: allRoles, icon: RadioTower },
+    ],
+  },
+  {
+    labelKey: "sidebar.group_growth",
+    fallbackLabel: "Growth",
+    items: [
+      { to: "/content", labelKey: "nav.content", fallbackLabel: "Content Pipeline", roles: allRoles, icon: Workflow },
+      { to: "/marketing", labelKey: "nav.marketing", fallbackLabel: "Marketing Intelligence", roles: allRoles, icon: Megaphone },
+      { to: "/marketplace", labelKey: "nav.marketplace", fallbackLabel: "Marketplace", roles: allRoles, icon: ShoppingBag },
+      { to: "/zfinance", labelKey: "nav.zfinance", fallbackLabel: "zFinance", roles: allRoles, icon: Landmark },
+    ],
+  },
+  {
+    labelKey: "sidebar.group_organization",
+    fallbackLabel: "Organization",
+    items: [
+      { to: "/organizations", labelKey: "nav.organizations", fallbackLabel: "Organizations", roles: allRoles, icon: BriefcaseBusiness },
+      { to: "/workers", labelKey: "nav.workers", fallbackLabel: "Workers", roles: allRoles, icon: Wrench },
+      { to: "/org", labelKey: "sidebar.org_map", fallbackLabel: "Org Map", roles: allRoles, icon: Network },
+      { to: "/workspace/live", labelKey: "sidebar.workspace_live", fallbackLabel: "Workspace Live", roles: allRoles, icon: Activity },
+      { to: "/workspace/timeline", labelKey: "sidebar.workspace_timeline", fallbackLabel: "Timeline", roles: allRoles, icon: FileClock },
+      { to: "/workspace/notes", labelKey: "sidebar.workspace_notes", fallbackLabel: "Notes", roles: allRoles, icon: Sparkles },
+    ],
+  },
+  {
+    labelKey: "sidebar.group_platform",
+    fallbackLabel: "Platform",
+    items: [
+      { to: "/system/health", labelKey: "nav.system", fallbackLabel: "System Health", roles: allRoles, icon: HeartPulse },
+      { to: "/logs", labelKey: "nav.logs", fallbackLabel: "Session Logs", roles: allRoles, icon: FileClock },
+      { to: "/notifications", labelKey: "nav.notifications", fallbackLabel: "Notifications", roles: allRoles, icon: Bell },
+      { to: "/usage", labelKey: "nav.usage", fallbackLabel: "Usage", roles: allRoles, icon: Gauge },
+      { to: "/billing", labelKey: "nav.billing", fallbackLabel: "Billing", roles: allRoles, icon: WalletCards },
+      { to: "/enterprise", labelKey: "nav.enterprise", fallbackLabel: "Enterprise", roles: allRoles, icon: CircleDollarSign },
+      { to: "/settings", labelKey: "nav.settings", fallbackLabel: "Settings", roles: allRoles, icon: Settings },
+      { to: "/onboarding", labelKey: "nav.onboarding", fallbackLabel: "Onboarding", roles: allRoles, icon: Sparkles },
+      { to: "/admin", labelKey: "nav.admin", fallbackLabel: "Admin", roles: ["admin"], icon: ShieldCheck },
+    ],
+  },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
@@ -55,38 +122,98 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const activeRole = user?.role ?? "viewer";
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="border-b border-border px-4 py-5">
-        <h1 className="text-lg font-bold tracking-tight text-text-primary">{t('sidebar.title')}</h1>
-        <p className="mt-0.5 text-[11px] text-text-dim">{t('sidebar.subtitle')}</p>
+    <div className="flex h-full flex-col bg-canvas/95">
+      <div className="border-b border-border px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-state-success/30 bg-state-success/10 shadow-glow">
+            <ShieldCheck className="h-5 w-5 text-state-success" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-state-success ring-2 ring-canvas" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-bold tracking-tight text-text-primary">{t("sidebar.title")}</h1>
+            <p className="truncate text-[10px] uppercase tracking-[0.16em] text-text-dim">
+              {t("sidebar.safety_first_operations", { defaultValue: "Safety-first operations" })}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-0.5 overflow-auto px-2 py-3" aria-label={t('sidebar.navigation')}>
-        {navItems
-          .filter((item) => item.roles.includes(activeRole))
-          .map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              `block rounded-lg px-3 py-2 text-sm transition ${
-                isActive
-                  ? "bg-accent-cyan/10 text-accent-cyan font-semibold"
-                  : "text-text-secondary hover:bg-panel-hover hover:text-text-primary"
-              }`
-            }
-          >
-            {t(item.labelKey, { defaultValue: item.fallbackLabel ?? item.labelKey })}
-          </NavLink>
-          ))}
+      <nav className="scrollbar-thin flex-1 overflow-y-auto px-3 py-4" aria-label={t("sidebar.navigation")}>
+        <div className="space-y-5">
+          {navGroups.map((group) => {
+            const items = group.items.filter((item) => item.roles.includes(activeRole));
+            if (items.length === 0) return null;
+
+            const groupLabel = t(group.labelKey, { defaultValue: group.fallbackLabel });
+            return (
+              <section key={group.labelKey} aria-label={groupLabel}>
+                <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-dim">
+                  {groupLabel}
+                </p>
+                <div className="space-y-1">
+                  {items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.to === "/"}
+                        onClick={onNavigate}
+                        className={({ isActive }) =>
+                          `group relative flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 ${
+                            isActive
+                              ? "bg-panel-solid text-text-primary shadow-glass ring-1 ring-border"
+                              : "text-text-secondary hover:bg-panel-hover hover:text-text-primary"
+                          }`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            {isActive ? (
+                              <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-r-full bg-state-success" />
+                            ) : null}
+                            <Icon
+                              className={`h-[17px] w-[17px] shrink-0 transition-colors ${
+                                isActive ? "text-state-success" : "text-text-dim group-hover:text-text-secondary"
+                              }`}
+                              aria-hidden="true"
+                            />
+                            <span className="min-w-0 flex-1 truncate font-medium">
+                              {t(item.labelKey, { defaultValue: item.fallbackLabel })}
+                            </span>
+                            {isActive ? <ChevronRight className="h-3.5 w-3.5 text-text-dim" aria-hidden="true" /> : null}
+                          </>
+                        )}
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </nav>
 
-      <div className="border-t border-border px-4 py-3">
-        <LanguageSwitcher />
-        <p className="mt-2 text-[10px] text-text-dim">
-          {t('sidebar.dry_run_active')}
-        </p>
+      <div className="border-t border-border px-3 py-3">
+        <div className="rounded-xl border border-border bg-panel/70 px-3 py-2.5 shadow-glass">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-state-success opacity-50" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-state-success" />
+              </span>
+              <span className="truncate text-xs font-semibold text-text-primary">
+                {t("sidebar.runtime_guarded", { defaultValue: "Runtime guarded" })}
+              </span>
+            </div>
+            <span className="rounded-pill border border-state-warning/30 bg-state-warning/10 px-2 py-0.5 text-[9px] font-bold tracking-wide text-state-warning">
+              {t("sidebar.dry_run", { defaultValue: "DRY RUN" })}
+            </span>
+          </div>
+          <div className="mt-2">
+            <LanguageSwitcher />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -96,7 +223,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { t } = useT();
   return (
     <>
-      <aside className="hidden w-64 shrink-0 border-r border-border bg-canvas/80 backdrop-blur md:block">
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-border bg-canvas/90 backdrop-blur-xl md:block">
         <SidebarContent />
       </aside>
 
@@ -105,10 +232,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute inset-0 bg-canvas/80"
-            aria-label={t('sidebar.collapse')}
+            className="absolute inset-0 bg-canvas/85 backdrop-blur-sm"
+            aria-label={t("sidebar.collapse")}
           />
-          <aside className="relative z-50 h-full w-72 border-r border-border bg-canvas">
+          <aside className="relative z-50 h-full w-[min(20rem,88vw)] border-r border-border bg-canvas shadow-glass-lg">
             <SidebarContent onNavigate={onClose} />
           </aside>
         </div>

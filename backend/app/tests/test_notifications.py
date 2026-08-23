@@ -1,5 +1,6 @@
 """Tests for notification service and dispatch functionality."""
-from unittest.mock import MagicMock, patch
+
+from unittest.mock import patch
 
 import pytest
 
@@ -55,7 +56,6 @@ def test_notification_ensures_defaults(
         tenant_data["organization_id"], tenant_data["workspace_id"]
     )
 
-    # Should have at least one default channel
     channels = notification_service.channels_for_tenant(
         tenant_data["organization_id"], tenant_data["workspace_id"]
     )
@@ -130,7 +130,6 @@ def test_delete_notification_channel(
     result = notification_service.delete_channel(channel.id)
     assert result is True
 
-    # Verify channel is deleted
     channels = notification_service.channels_for_tenant(
         tenant_data["organization_id"], tenant_data["workspace_id"]
     )
@@ -141,7 +140,6 @@ def test_emit_alert_triggers_notifications(
     notification_service: NotificationService, tenant_data: dict
 ) -> None:
     """Test that emitting an alert triggers notifications."""
-    # Create a rule first
     rule_payload = AlertRuleCreateRequest(
         name="Test Rule",
         event_type="test_event",

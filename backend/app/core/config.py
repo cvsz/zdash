@@ -214,6 +214,7 @@ class Settings(BaseSettings):
     worker_max_retries: int = Field(default=3, alias="WORKER_MAX_RETRIES")
 
     cloudflare_dry_run: bool = Field(default=True, alias="CLOUDFLARE_DRY_RUN")
+    notifications_enabled: bool = Field(default=True, alias="NOTIFICATIONS_ENABLED")
     notification_dry_run: bool = Field(default=True, alias="NOTIFICATION_DRY_RUN")
     support_bundle_include_secrets: bool = Field(
         default=False, alias="SUPPORT_BUNDLE_INCLUDE_SECRETS"

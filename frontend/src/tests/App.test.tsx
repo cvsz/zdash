@@ -13,7 +13,9 @@ describe("App routing", () => {
   it("app renders", async () => {
     renderAt("/");
     await waitForStableUi();
-    const heading = await screen.findByRole("heading", { name: (name) => name.replace(/\s/g, "").toLowerCase() === "zdash" });
+    const heading = await screen.findByRole("heading", {
+      name: (name) => name.replace(/\s/g, "").toLowerCase() === "zdash",
+    });
     expect(heading).toBeTruthy();
   });
 
@@ -29,7 +31,8 @@ describe("App routing", () => {
     renderAt("/");
     await waitForStableUi();
     expect(await screen.findByRole("heading", { name: "Dashboard", level: 2 })).toBeTruthy();
-    expect(await screen.findByRole("heading", { name: "Team Workspace", level: 1 })).toBeTruthy();
+    expect(await screen.findByText("Operational pulse")).toBeTruthy();
+    expect(await screen.findByText("Service health")).toBeTruthy();
   });
 
   it("renders risk route", async () => {
