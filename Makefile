@@ -193,8 +193,8 @@ backend-lint-fix: ## Run backend ruff auto-fix
 	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -m ruff check app tests --fix
 
 .PHONY: backend-test
-backend-test: ## Run backend pytest
-	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); python -B -m pytest -q
+backend-test: ## Run backend pytest (ambient machine exports stripped for CI-equivalent env)
+	@$(BACKEND_ACTIVATE); cd $(BACKEND_DIR); env -u DATABASE_URL -u SHADOW_DATABASE_URL -u CLAUDE_API_KEY -u ANTHROPIC_API_KEY -u ANTHROPIC_BASE_URL -u OPENAI_API_KEY python -B -m pytest -q
 
 .PHONY: backend-check
 backend-check: backend-lint backend-test ## Run backend lint + tests
