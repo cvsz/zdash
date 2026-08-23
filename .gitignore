@@ -59,3 +59,7 @@ Thumbs.db
 # Legacy VCS metadata
 .svn/
 CVS/
+
+# SQLite runtime artifacts
+backend/*.db
+backend/*.db-journal
