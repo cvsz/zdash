@@ -49,8 +49,10 @@ jobs:
       - name: Generate frontend CycloneDX SBOM
         run: |
           cd frontend
-          npm ci --no-audit --fund=false
-          npm sbom --sbom-format cyclonedx --sbom-type application \
+          npm sbom \
+            --package-lock-only \
+            --sbom-format cyclonedx \
+            --sbom-type application \
             > ../artifacts/frontend-sbom.cdx.json
 
       - name: Capture release evidence
