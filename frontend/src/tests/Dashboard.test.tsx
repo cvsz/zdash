@@ -26,7 +26,7 @@ describe("Dashboard", () => {
     expect(await screen.findByText((t) => t.includes("Trading Mode"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Risk Level"))).toBeTruthy();
     expect((await screen.findAllByText("Scheduler")).length).toBeGreaterThan(0);
-    expect(await screen.findByText((t) => t.includes("Backend"))).toBeTruthy();
+    expect(await screen.findByText("Backend")).toBeTruthy();
   });
 
   it("keeps release diagnostics secondary but available", async () => {
