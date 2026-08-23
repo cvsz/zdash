@@ -1,5 +1,4 @@
 import GlassCard from './GlassCard'
-import StatusBadge from './StatusBadge'
 import { useT } from '../../hooks/useT'
 
 type TimelineEvent = {

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { useT } from "../../hooks/useT";
 
 type PageHeaderProps = {
   title: string;
@@ -8,7 +7,6 @@ type PageHeaderProps = {
 };
 
 export default function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
-  const { t } = useT();
   return (
     <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
       <div>

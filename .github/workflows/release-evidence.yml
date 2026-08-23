@@ -1,0 +1,95 @@
+name: release-evidence
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'backend/requirements*.txt'
+      - 'backend/requirements*.lock'
+      - 'backend/pyproject.toml'
+      - 'infra/docker/**'
+      - 'docker-compose*.yml'
+      - '.github/workflows/release-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sbom-and-evidence:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Generate backend CycloneDX SBOM
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'cyclonedx-bom==7.3.0'
+          mkdir -p artifacts
+          cyclonedx-py requirements \
+            --output-format JSON \
+            --output-file artifacts/backend-sbom.cdx.json \
+            backend/requirements.lock
+
+      - name: Generate frontend CycloneDX SBOM
+        run: |
+          cd frontend
+          npm sbom \
+            --package-lock-only \
+            --sbom-format cyclonedx \
+            --sbom-type application \
+            > ../artifacts/frontend-sbom.cdx.json
+
+      - name: Capture release evidence
+        run: |
+          {
+            echo "commit=${GITHUB_SHA}"
+            echo "ref=${GITHUB_REF}"
+            echo "python=$(python --version 2>&1)"
+            echo "node=$(node --version)"
+            echo "npm=$(npm --version)"
+            echo "version=$(cat VERSION)"
+          } > artifacts/build-metadata.txt
+          sha256sum \
+            artifacts/backend-sbom.cdx.json \
+            artifacts/frontend-sbom.cdx.json \
+            backend/requirements.lock \
+            frontend/package-lock.json \
+            > artifacts/SHA256SUMS
+
+      - name: Validate SBOM JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for name in ('backend-sbom.cdx.json', 'frontend-sbom.cdx.json'):
+              payload = json.loads((Path('artifacts') / name).read_text())
+              if payload.get('bomFormat') != 'CycloneDX':
+                  raise SystemExit(f'{name}: missing CycloneDX bomFormat')
+              if not payload.get('components'):
+                  raise SystemExit(f'{name}: no components found')
+              print(f'{name}: {len(payload["components"])} components')
+          PY
+
+      - name: Upload release evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-evidence-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30

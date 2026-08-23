@@ -79,7 +79,9 @@ def upgrade() -> None:
         sa.Column("workspace_id", sa.String(), nullable=False, index=True),
         sa.Column("member_id", sa.String(), nullable=True, index=True),
         sa.Column("agent_id", sa.String(), nullable=False, index=True),
-        sa.Column("assignment_role", sa.String(), nullable=False, server_default="observer"),
+        sa.Column(
+            "assignment_role", sa.String(), nullable=False, server_default="observer"
+        ),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),

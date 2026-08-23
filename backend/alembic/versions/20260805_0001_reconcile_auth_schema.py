@@ -32,8 +32,7 @@ def _column_exists(table_name: str, column_name: str) -> bool:
     if not _table_exists(table_name):
         return False
     return any(
-        column["name"] == column_name
-        for column in _inspector().get_columns(table_name)
+        column["name"] == column_name for column in _inspector().get_columns(table_name)
     )
 
 
@@ -69,8 +68,7 @@ def upgrade() -> None:
     if _table_exists("users"):
         op.execute(
             sa.text(
-                "UPDATE users "
-                "SET created_at = COALESCE(created_at, CURRENT_TIMESTAMP)"
+                "UPDATE users SET created_at = COALESCE(created_at, CURRENT_TIMESTAMP)"
             )
         )
         if _column_exists("users", "updated_at"):
@@ -150,10 +148,7 @@ def upgrade() -> None:
         )
     if _column_exists("audit_logs", "detail"):
         op.execute(
-            sa.text(
-                "UPDATE audit_logs SET metadata = detail "
-                "WHERE detail IS NOT NULL"
-            )
+            sa.text("UPDATE audit_logs SET metadata = detail WHERE detail IS NOT NULL")
         )
 
     op.execute(
@@ -181,13 +176,9 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     if _table_exists("users"):
-        _set_default(
-            "users", "created_at", sa.DateTime(timezone=True), None
-        )
+        _set_default("users", "created_at", sa.DateTime(timezone=True), None)
         if _column_exists("users", "updated_at"):
-            _set_default(
-                "users", "updated_at", sa.DateTime(timezone=True), None
-            )
+            _set_default("users", "updated_at", sa.DateTime(timezone=True), None)
 
     if not _table_exists("audit_logs"):
         return

@@ -4,7 +4,6 @@ import {
   getLicenseStatus,
   applyLicense as apiApplyLicense,
   revokeLicense as apiRevokeLicense,
-  getBrandingSettings,
   updateBrandingSettings as apiUpdateBrandingSettings,
   resetBrandingSettings as apiResetBrandingSettings,
   listExportBundles,

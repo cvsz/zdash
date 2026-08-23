@@ -9,9 +9,12 @@ on:
     paths:
       - 'frontend/**'
 
+permissions:
+  contents: read
+
 jobs:
   test-frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -27,17 +30,17 @@ jobs:
       - name: Install dependencies
         run: |
           cd frontend
-          npm install --legacy-peer-deps --no-audit --fund=false
+          npm ci --no-audit --fund=false
 
       - name: TypeScript check
         run: |
           cd frontend
           npx tsc -p tsconfig.build.json --pretty false
 
-      - name: Lint if configured
+      - name: Lint
         run: |
           cd frontend
-          if npm run | grep -q " lint"; then npm run lint; else echo "lint script not configured"; fi
+          npm run lint
 
       - name: Test
         run: |

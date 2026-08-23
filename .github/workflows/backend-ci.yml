@@ -8,25 +8,32 @@ on:
   pull_request:
     paths:
       - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+permissions:
+  contents: read
 
 jobs:
   test-backend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.14']
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.lock
 
-      - name: Install backend deps
+      - name: Install backend dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -e './backend[dev]'
-          pip install ruff mypy
-
-      - name: Normalize backend formatting
-        run: ruff format backend
+          python -m pip install --upgrade pip 'setuptools>=83' wheel
+          pip install -r backend/requirements-dev.lock
+          pip install --no-deps -e ./backend
 
       - name: Format check
         run: ruff format --check backend
@@ -36,6 +43,9 @@ jobs:
 
       - name: Type check
         run: mypy backend/app --ignore-missing-imports
+
+      - name: Security static analysis
+        run: bandit -r backend/app -q -lll
 
       - name: Pytest
         run: |

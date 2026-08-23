@@ -4,31 +4,53 @@ on:
   push:
     paths:
       - 'docker-compose.yml'
+      - 'docker-compose.prod.yml'
       - 'backend/Dockerfile'
       - 'frontend/Dockerfile'
+      - 'infra/docker/**'
       - 'deploy/**'
       - '.github/workflows/docker-ci.yml'
   pull_request:
     paths:
       - 'docker-compose.yml'
+      - 'docker-compose.prod.yml'
       - 'backend/Dockerfile'
       - 'frontend/Dockerfile'
+      - 'infra/docker/**'
       - 'deploy/**'
+      - '.github/workflows/docker-ci.yml'
 
 jobs:
   docker-validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
-      - name: Build backend image
+      - name: Build legacy backend image
         run: docker build -f backend/Dockerfile -t zdash-backend:ci .
 
-      - name: Build frontend image
+      - name: Build legacy frontend image
         run: docker build -f frontend/Dockerfile -t zdash-frontend:ci .
+
+      - name: Build production backend image
+        run: docker build -f infra/docker/backend.Dockerfile -t zdash-backend:prod-ci .
+
+      - name: Build production frontend image
+        run: docker build -f infra/docker/frontend.Dockerfile -t zdash-frontend:prod-ci .
+
+      - name: Build gateway image
+        run: docker build -f infra/docker/nginx.Dockerfile -t zdash-nginx:prod-ci .
 
       - name: Validate compose
         run: |
           docker compose config
           docker compose --profile observability config
           docker compose --profile production config
+          cp .env.example .env.production
+          docker compose -f docker-compose.prod.yml config
+
+      - name: Validate production service images
+        run: |
+          docker pull postgres:16.15-alpine
+          docker pull redis:8.2.8-alpine
+          docker pull prom/prometheus:v3.14.0

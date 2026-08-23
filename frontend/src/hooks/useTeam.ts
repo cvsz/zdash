@@ -23,15 +23,17 @@ export function useTeam(workspaceId?: string) {
     setLoading(true);
     setError(null);
     try {
-      const [membersRes, invitationsRes, assignmentsRes, activityRes, summaryRes] = await Promise.all([
+      const [membersRes, invitationsRes, workspaceAccessRes, assignmentsRes, activityRes, summaryRes] = await Promise.all([
         listTeamMembers(workspaceId),
         listTeamInvitations(workspaceId),
+        workspaceId ? listTeamWorkspaceAccess(workspaceId) : Promise.resolve([] as TeamWorkspaceAccess[]),
         listTeamAgentAssignments(),
         getTeamActivity(),
         getTeamSummary(),
       ]);
       setMembers(Array.isArray(membersRes) ? membersRes : []);
       setInvitations(Array.isArray(invitationsRes) ? invitationsRes : []);
+      setWorkspaceAccess(Array.isArray(workspaceAccessRes) ? workspaceAccessRes : []);
       setAgentAssignments(Array.isArray(assignmentsRes) ? assignmentsRes : []);
       setActivity(Array.isArray(activityRes) ? activityRes : []);
       if (summaryRes) setSummary(summaryRes);
@@ -42,7 +44,7 @@ export function useTeam(workspaceId?: string) {
     }
   }, [workspaceId]);
 
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => { void fetchAll(); }, [fetchAll]);
 
   const setErrorWrapper = (fn: (...args: any[]) => Promise<any>) => async (...args: any[]) => {
     setError(null);

@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11.16-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -8,8 +8,9 @@ RUN addgroup --system app && adduser --system --ingroup app app
 
 WORKDIR /app/backend
 
-COPY backend/requirements.txt ./requirements.txt
-RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY backend/requirements.lock ./requirements.lock
+RUN python -m pip install --upgrade pip 'setuptools>=83' wheel \
+    && pip install -r requirements.lock
 
 COPY backend/ /app/backend/
 RUN chown -R app:app /app

@@ -3,9 +3,10 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+from jwt import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlmodel import Session
@@ -62,7 +63,7 @@ def decode_access_token(token: str) -> TokenData:
         if username is None or role is None:
             raise credentials_exception
         return TokenData(username=username, role=role)
-    except JWTError as exc:
+    except InvalidTokenError as exc:
         raise credentials_exception from exc
 
 
