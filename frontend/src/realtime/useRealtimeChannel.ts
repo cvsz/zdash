@@ -52,7 +52,7 @@ export function useRealtimeChannel(
       return null;
     }
     return options.eventTypes.map((value) => value.toLowerCase());
-  }, [eventTypesKey]);
+  }, [eventTypesKey, options.eventTypes]);
 
   useEffect(() => {
     setConnection(manager.getState(channel));
