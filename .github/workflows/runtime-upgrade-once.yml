@@ -1,0 +1,56 @@
+name: runtime-upgrade-once
+
+on:
+  push:
+    branches:
+      - feat/dashboard-uiux-mission-control
+    paths:
+      - .github/workflows/runtime-upgrade-once.yml
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/dashboard-uiux-mission-control
+          fetch-depth: 0
+
+      - name: Normalize Node runtime to 24 LTS
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          for path in Path('.github/workflows').glob('*.yml'):
+              if path.name == 'runtime-upgrade-once.yml':
+                  continue
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('node-version: "20"', 'node-version: "24"')
+              text = text.replace("node-version: '20'", "node-version: '24'")
+              text = text.replace('node-version: 20', 'node-version: 24')
+              path.write_text(text, encoding='utf-8')
+
+          for path in list(Path('.').rglob('Dockerfile')) + list(Path('.').rglob('*.Dockerfile')):
+              text = path.read_text(encoding='utf-8')
+              text = text.replace('node:20-alpine', 'node:24-alpine')
+              text = text.replace('node:20-bookworm', 'node:24-bookworm')
+              text = text.replace('node:20-bookworm-slim', 'node:24-bookworm-slim')
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          rm .github/workflows/runtime-upgrade-once.yml
+
+      - name: Commit runtime normalization
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A .github/workflows frontend infra
+          if git diff --cached --quiet; then
+            echo 'No runtime changes generated.'
+            exit 0
+          fi
+          git commit -m 'chore(runtime): standardize Node 24 LTS across workflows and images'
+          git push origin HEAD:feat/dashboard-uiux-mission-control
