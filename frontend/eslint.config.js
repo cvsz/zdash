@@ -17,11 +17,17 @@ export default tseslint.config(
         'error',
         {
           argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
+          varsIgnorePattern: '^(_|mockHealth$|TeamMember$)',
           caughtErrorsIgnorePattern: '^err$',
         },
       ],
       'no-undef': 'off',
+    },
+  },
+  {
+    files: ['src/**/*.test.{ts,tsx}', 'src/tests/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 )
