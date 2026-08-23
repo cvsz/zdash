@@ -1,5 +1,7 @@
 """Tests for tenant isolation ensuring data separation between organizations."""
 
+from collections.abc import Iterator
+
 import pytest
 
 from app.auth.models import AuthSession
@@ -9,7 +11,7 @@ from app.tenancy.tenant_service import TenantService
 
 
 @pytest.fixture
-def tenant_service() -> TenantService:
+def tenant_service() -> Iterator[TenantService]:
     """Create a tenant service with isolated repository state."""
     service = TenantService()
     service.repository.reset()
