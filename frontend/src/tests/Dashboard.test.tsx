@@ -25,7 +25,7 @@ describe("Dashboard", () => {
     expect(await screen.findByText((t) => t.includes("Agents Online"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Trading Mode"))).toBeTruthy();
     expect(await screen.findByText((t) => t.includes("Risk Level"))).toBeTruthy();
-    expect(await screen.findByText((t) => t.includes("Scheduler"))).toBeTruthy();
+    expect((await screen.findAllByText("Scheduler")).length).toBeGreaterThan(0);
     expect(await screen.findByText((t) => t.includes("Backend"))).toBeTruthy();
   });
 
