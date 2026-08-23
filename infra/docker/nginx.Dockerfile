@@ -1,4 +1,4 @@
-FROM nginx:1.27-alpine
+FROM nginx:1.30.4-alpine
 
 COPY infra/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY infra/nginx/zdash.conf /etc/nginx/conf.d/default.conf
