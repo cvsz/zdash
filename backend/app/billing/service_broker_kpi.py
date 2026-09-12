@@ -24,7 +24,11 @@ class ServiceBrokerKPI:
 
     @property
     def qualified_rate(self) -> Decimal:
-        return ZERO if self.leads == 0 else Decimal(self.qualified_leads) / Decimal(self.leads)
+        return (
+            ZERO
+            if self.leads == 0
+            else Decimal(self.qualified_leads) / Decimal(self.leads)
+        )
 
     @property
     def cac(self) -> Decimal:
@@ -36,7 +40,9 @@ class ServiceBrokerKPI:
 
     @property
     def contribution_per_job(self) -> Decimal:
-        return ZERO if self.jobs == 0 else self.realized_contribution / Decimal(self.jobs)
+        return (
+            ZERO if self.jobs == 0 else self.realized_contribution / Decimal(self.jobs)
+        )
 
     @property
     def contribution_margin(self) -> Decimal:
@@ -44,11 +50,17 @@ class ServiceBrokerKPI:
 
     @property
     def supplier_sla_rate(self) -> Decimal:
-        return ZERO if self.supplier_sla_total == 0 else Decimal(self.supplier_sla_met) / Decimal(self.supplier_sla_total)
+        return (
+            ZERO
+            if self.supplier_sla_total == 0
+            else Decimal(self.supplier_sla_met) / Decimal(self.supplier_sla_total)
+        )
 
     @property
     def rework_rate(self) -> Decimal:
-        return ZERO if self.jobs == 0 else Decimal(self.rework_jobs) / Decimal(self.jobs)
+        return (
+            ZERO if self.jobs == 0 else Decimal(self.rework_jobs) / Decimal(self.jobs)
+        )
 
     @property
     def jobs_remaining_to_target(self) -> int:
@@ -81,7 +93,11 @@ class ServiceBrokerKPI:
         }
 
 
-def aggregate_service_broker_kpi(events: Iterable[Mapping[str, object]], *, target_contribution: Decimal = Decimal("30000")) -> ServiceBrokerKPI:
+def aggregate_service_broker_kpi(
+    events: Iterable[Mapping[str, object]],
+    *,
+    target_contribution: Decimal = Decimal("30000"),
+) -> ServiceBrokerKPI:
     revenue = ZERO
     leads = 0
     qualified_leads = 0
