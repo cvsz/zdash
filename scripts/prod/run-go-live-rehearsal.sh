@@ -98,5 +98,7 @@ if [[ "$FAIL" -gt 0 ]]; then
 fi
 
 echo ""
-echo "All checks passed. System is ready for go-live."
-echo "See: docs/runbooks/GO_LIVE_CHECKLIST.md"
+echo "Local rehearsal checks passed. This is NOT production approval."
+echo "Production remains gated on external HTTPS/edge, isolated target-host restore, rollback," 
+echo "credential rotation, protected main, immutable release evidence and operator sign-off."
+echo "See: docs/ops/PUBLIC_DEMO_RELEASE.md and docs/runbooks/GO_LIVE_CHECKLIST.md"
