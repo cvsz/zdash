@@ -18,7 +18,7 @@ ENV VITE_API_BASE_URL=$VITE_API_BASE_URL \
 
 COPY frontend/package.json frontend/package-lock.json ./
 COPY frontend/.npmrc ./.npmrc
-RUN npm install --legacy-peer-deps --no-audit --fund=false
+RUN npm ci --no-audit --fund=false
 
 COPY frontend/ ./
 RUN test "$VITE_AUTH_ENABLED" = "true" \
