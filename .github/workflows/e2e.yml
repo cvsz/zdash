@@ -152,6 +152,20 @@ jobs:
             -d '{"username":"admin","password":"admin123"}' \
             > /tmp/zdash-e2e/login.json
 
+          # Mask both ephemeral test tokens before using any CI step outputs.
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("/tmp/zdash-e2e/login.json").read_text())
+          tokens = payload.get("data") or {}
+          for field in ("access_token", "refresh_token"):
+              value = tokens.get(field)
+              if not value:
+                  raise SystemExit(f"missing {field} in test login response")
+              print(f"::add-mask::{value}")
+          PY
+
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json
           from pathlib import Path
