@@ -83,9 +83,7 @@ def test_deactivated_user_loses_access_immediately(
     assert exc.value.status_code == 401
 
 
-def test_deleted_and_unknown_users_are_denied(
-    enabled_auth: None, db: Session
-) -> None:
+def test_deleted_and_unknown_users_are_denied(enabled_auth: None, db: Session) -> None:
     token = create_access_token("missing@example.invalid", role="admin")
     with pytest.raises(HTTPException) as exc:
         get_current_user(bearer(token), session=db)
