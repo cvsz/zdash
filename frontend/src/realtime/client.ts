@@ -1,4 +1,5 @@
 import { apiClientConfig } from "../api/client";
+import { isPublicDemo } from "../config/runtime";
 import { computeReconnectDelay } from "./reconnect";
 import type {
   RealtimeChannel,
@@ -102,7 +103,7 @@ export class RealtimeClientManager {
     const testDefaultEnabled = isTestRuntime() ? "false" : "true";
     const enabledFromEnv = String(import.meta.env.VITE_REALTIME_ENABLED ?? testDefaultEnabled).toLowerCase() === "true";
 
-    this.enabled = options.enabled ?? enabledFromEnv;
+    this.enabled = !isPublicDemo && (options.enabled ?? enabledFromEnv);
     this.staleThresholdMs = options.staleThresholdMs ?? 20000;
     this.pingIntervalMs = options.pingIntervalMs ?? 10000;
     this.reconnectBaseDelayMs = options.reconnectBaseDelayMs ?? 750;
