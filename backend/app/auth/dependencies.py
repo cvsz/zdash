@@ -2,17 +2,21 @@ from __future__ import annotations
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.orm import Session
 
 from app.auth.jwt import decode_token
 from app.auth.models import AuthSession
 from app.auth.rbac import Permission, has_permission
 from app.core.config import get_settings
+from app.db.repositories import UserRepository
+from app.db.session import get_db_session
 
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    session: Session = Depends(get_db_session),
 ) -> AuthSession:
     settings = get_settings()
     if not settings.auth_enabled:
@@ -36,13 +40,21 @@ def get_current_user(
             detail="Invalid token type",
         )
     username = str(payload.get("sub", "")).strip()
-    role = str(payload.get("role", "viewer")).strip() or "viewer"
     if not username:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token subject",
         )
-    return AuthSession(username=username, role=role)
+
+    # Never authorize using a potentially stale role claim. The current
+    # database record is authoritative and deactivation takes effect now.
+    user = UserRepository(session).get_by_email(username)
+    if user is None or not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User account is inactive or unavailable",
+        )
+    return AuthSession(username=user.email, role=user.role)
 
 
 def require_authenticated(user: AuthSession = Depends(get_current_user)) -> AuthSession:
