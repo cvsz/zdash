@@ -50,6 +50,7 @@ jobs:
           test -d frontend/dist/assets
           grep -q '/zdash/assets/' frontend/dist/index.html
           test -f frontend/.env.public-demo
+          test -f frontend/public-demo.env.example
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
