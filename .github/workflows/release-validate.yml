@@ -65,11 +65,13 @@ jobs:
           python -m pip install pip-audit
           pip-audit -r backend/requirements.lock
 
-      - name: Docker compose validation
+      - name: Docker compose schema validation (not production evidence)
         run: |
           cp .env.example .env.production
           docker compose -f docker-compose.yml config
-          docker compose -f docker-compose.prod.yml config
+          DATABASE_URL='postgresql+psycopg://zdash:CI-only-nonproduction-password@postgres:5432/zdash' \
+            POSTGRES_PASSWORD='CI-only-nonproduction-password' \
+            docker compose -f docker-compose.prod.yml config --quiet
 
       - name: Version check
         run: |
