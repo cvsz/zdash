@@ -6,7 +6,7 @@ Never deploy the public-demo artifact as an authenticated control plane.
 
 ## Public demo (GitHub Pages)
 
-Run from repository root:
+Run from a clean repository worktree with no private frontend `.env*` overrides:
 
 ```bash
 cd frontend
@@ -16,7 +16,8 @@ npm test
 npm run build:demo
 ```
 
-The build uses `frontend/.env.public-demo`, a separate Vite mode,
+The build generates an ignored `frontend/.env.public-demo` from the tracked
+non-secret `frontend/public-demo.env.example` template, and uses a separate Vite mode,
 and emits assets rooted at `/zdash/`. The public artifact uses hash routing (`#/team`, `#/risk`) so deep links
 refresh without requiring server-side SPA rewrites. The Vite asset base stays
 `/zdash/` for GitHub Pages. The read-only API adapter returns only explicit fixtures; a view
