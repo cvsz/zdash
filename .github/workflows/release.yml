@@ -13,7 +13,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     defaults:
       run:
         shell: bash
@@ -42,19 +42,20 @@ jobs:
           cd backend
           pip install -e '.[dev]'
 
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm install --legacy-peer-deps --no-audit --fund=false
+      - name: Install reproducible frontend dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --fund=false
 
       - name: Backend tests
-        run: |
-          cd backend
-          python -B -m pytest -q
+        working-directory: backend
+        run: python -B -m pytest -q
 
-      - name: Frontend build
+      - name: Frontend validation
+        working-directory: frontend
         run: |
-          cd frontend
+          npx tsc -p tsconfig.build.json --pretty false
+          npm run lint
+          npm test
           npm run build
 
       - name: Docker build
@@ -74,11 +75,11 @@ jobs:
           # zDash $VERSION
 
           Release artifacts:
-          - \`zdash-backend:$VERSION\`
-          - \`zdash-frontend:$VERSION\`
-          - \`zdash-nginx:$VERSION\`
+          - `zdash-backend:$VERSION`
+          - `zdash-frontend:$VERSION`
+          - `zdash-nginx:$VERSION`
 
-          See \`docs/releases/\` for full release documentation.
+          See `docs/releases/` for full release documentation.
           EOF
           fi
 
