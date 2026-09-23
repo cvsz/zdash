@@ -92,7 +92,7 @@ function ProtectedDashboardRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <ErrorBoundary>
         <RealtimeProvider>
           <AuthProvider>
