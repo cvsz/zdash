@@ -11,7 +11,7 @@ vi.mock("../hooks/useAuth", () => ({
 const mockedUseAuth = vi.mocked(useAuth);
 
 describe("LoginForm", () => {
-  it("shows warning for default admin credentials", () => {
+  it("does not disclose development credentials in token-auth mode", () => {
     mockedUseAuth.mockReturnValue({
       user: null,
       loading: false,
@@ -26,14 +26,8 @@ describe("LoginForm", () => {
 
     render(<LoginForm />);
 
-    fireEvent.change(screen.getByLabelText("Username / Email"), {
-      target: { value: "admin" },
-    });
-    fireEvent.change(screen.getByLabelText("Password"), {
-      target: { value: "dev-only-change-before-production" },
-    });
-
-    expect(screen.getByText(/Default admin credentials detected/i)).toBeTruthy();
+    expect(screen.queryByText(/Default admin credentials detected/i)).toBeNull();
+    expect(screen.queryByText(/change-before-production/i)).toBeNull();
   });
 
   it("submits credentials through auth hook", async () => {
