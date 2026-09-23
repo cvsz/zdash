@@ -18,11 +18,11 @@ import {
   refreshSession,
 } from "../api/auth";
 import { setUnauthorizedHandler } from "../api/client";
+import { frontendAuthRequired } from "../config/runtime";
 import { ApiError, type AuthUser, type StoredAuthSession } from "../api/types";
 
 type AuthMode = "anonymous" | "token" | "dev";
-const frontendAuthEnabled =
-  String(import.meta.env.VITE_AUTH_ENABLED ?? "false").toLowerCase() === "true";
+const frontendAuthEnabled = frontendAuthRequired;
 const devUser: AuthUser = { username: "dev-user", role: "admin" };
 
 type AuthContextValue = {
