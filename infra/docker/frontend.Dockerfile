@@ -5,19 +5,26 @@ WORKDIR /app
 ARG VITE_API_BASE_URL=/
 ARG VITE_WS_BASE_URL=
 ARG VITE_ENABLE_MOCK_FALLBACK=false
-ARG VITE_AUTH_ENABLED=false
+ARG VITE_AUTH_ENABLED=true
+ARG VITE_PUBLIC_DEMO=false
+ARG VITE_APP_ENV=production
 
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL \
     VITE_WS_BASE_URL=$VITE_WS_BASE_URL \
     VITE_ENABLE_MOCK_FALLBACK=$VITE_ENABLE_MOCK_FALLBACK \
-    VITE_AUTH_ENABLED=$VITE_AUTH_ENABLED
+    VITE_AUTH_ENABLED=$VITE_AUTH_ENABLED \
+    VITE_PUBLIC_DEMO=$VITE_PUBLIC_DEMO \
+    VITE_APP_ENV=$VITE_APP_ENV
 
 COPY frontend/package.json frontend/package-lock.json ./
 COPY frontend/.npmrc ./.npmrc
 RUN npm install --legacy-peer-deps --no-audit --fund=false
 
 COPY frontend/ ./
-RUN npm run build
+RUN test "$VITE_AUTH_ENABLED" = "true" \
+ && test "$VITE_ENABLE_MOCK_FALLBACK" = "false" \
+ && test "$VITE_PUBLIC_DEMO" = "false" \
+ && npm run build
 
 FROM nginx:1.30.4-alpine AS runtime
 

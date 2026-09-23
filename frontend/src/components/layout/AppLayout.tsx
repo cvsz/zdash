@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 
 import { useT } from "../../hooks/useT";
+import { isPublicDemo } from "../../config/runtime";
 import SafetyBanner from "../ui/SafetyBanner";
 import { getSafetyBannerText } from "../../utils/safety";
 import Sidebar from "./Sidebar";
@@ -27,6 +28,16 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
       <main className="relative flex min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setSidebarOpen((previous) => !previous)} />
+
+        {isPublicDemo && (
+          <div
+            role="status"
+            className="mx-4 mt-3 rounded-lg border border-amber-400 bg-amber-950/80 px-4 py-3 text-sm font-semibold text-amber-100 md:mx-6"
+          >
+            PUBLIC DEMO / SIMULATED DATA — offline and read-only. No live trades,
+            publishing, infrastructure changes, or device actions are available.
+          </div>
+        )}
 
         {showSafetyBanners && (
           <div className="px-4 pt-3 md:px-6">

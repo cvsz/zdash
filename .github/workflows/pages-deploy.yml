@@ -4,22 +4,22 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/pages-deploy.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
-# Avoid cancel-in-progress race conditions that can surface as
-# "Unable to cancel deployment ... as it's finished" from deploy-pages.
 concurrency:
-  group: pages-deploy
+  group: pages-deploy-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -29,28 +29,47 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm install --legacy-peer-deps --no-audit --fund=false
+      - name: Install reproducible frontend dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --fund=false
 
-      - name: Build frontend
+      - name: Typecheck, lint and unit tests
+        working-directory: frontend
         run: |
-          cd frontend
-          npm run build
+          npx tsc -p tsconfig.build.json --pretty false
+          npm run lint
+          npm test
+
+      - name: Build isolated read-only demo
+        working-directory: frontend
+        run: npm run build:demo
+
+      - name: Verify Pages base path and static artifact
+        run: |
+          test -s frontend/dist/index.html
+          test -d frontend/dist/assets
+          grep -q '/zdash/assets/' frontend/dist/index.html
+          test -f frontend/.env.public-demo
+          test -f frontend/public-demo.env.example
 
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
           path: frontend/dist
 
   deploy:
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy validated demo
         id: deployment
         uses: actions/deploy-pages@v5

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { readStoredSession } from "../api/auth";
+import { isPublicDemo } from "../config/runtime";
 
 const DEFAULT_API_BASE_URL = "http://localhost:8005";
 
@@ -33,6 +34,7 @@ export function useCollaboration(workspaceId: string) {
   const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
+    if (isPublicDemo) return;
     let ws: WebSocket | null = null;
     let timer: number | undefined;
     try {

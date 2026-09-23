@@ -1,4 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
+import { isPublicDemo } from "./config/runtime";
 import ErrorBoundary from "./components/system/ErrorBoundary";
 import "./i18n";
 
@@ -91,8 +92,9 @@ function ProtectedDashboardRoutes() {
 }
 
 export default function App() {
+  const Router = isPublicDemo ? HashRouter : BrowserRouter;
   return (
-    <BrowserRouter>
+    <Router basename={isPublicDemo ? undefined : import.meta.env.BASE_URL}>
       <ErrorBoundary>
         <RealtimeProvider>
           <AuthProvider>
@@ -103,6 +105,6 @@ export default function App() {
           </AuthProvider>
         </RealtimeProvider>
       </ErrorBoundary>
-    </BrowserRouter>
+    </Router>
   );
 }

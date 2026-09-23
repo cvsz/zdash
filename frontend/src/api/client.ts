@@ -1,4 +1,5 @@
 import i18n from "../i18n";
+import { demoRequestPolicy, isPublicDemo, mockFallbackAllowed } from "../config/runtime";
 import { mockHealth, mockLogs } from "./mockData";
 import { ApiError, type ApiErrorPayload, type ApiResponse } from "./types";
 
@@ -7,10 +8,8 @@ const DEFAULT_TIMEOUT_MS = 6000;
 const RETRYABLE_STATUSES = new Set([502, 503, 504]);
 
 const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
-const baseUrl = (configuredBaseUrl || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
-const mockFallbackEnabled =
-  String(import.meta.env.VITE_ENABLE_MOCK_FALLBACK ?? "true").toLowerCase() ===
-  "true";
+const baseUrl = (isPublicDemo ? "" : (configuredBaseUrl ?? (import.meta.env.DEV ? DEFAULT_API_BASE_URL : ""))).replace(/\/+$/, "");
+const mockFallbackEnabled = mockFallbackAllowed;
 
 export let mockFallbackActive = false;
 let sessionToken: string | null = null;
@@ -160,6 +159,20 @@ async function request<T>(
   init: RequestInit = {},
   options: RequestOptions<T> = {},
 ): Promise<T> {
+  const demoPolicy = demoRequestPolicy(init.method ?? "GET", options.fallback !== undefined);
+  if (demoPolicy === "fixture") {
+    mockFallbackActive = true;
+    return options.fallback as T;
+  }
+  if (demoPolicy === "blocked" || demoPolicy === "unavailable") {
+    throw new ApiError(
+      demoPolicy === "blocked"
+        ? "Public demo is read-only; no action was sent."
+        : "No offline demo data exists for this view.",
+      { code: demoPolicy === "blocked" ? "DEMO_READ_ONLY" : "DEMO_FIXTURE_UNAVAILABLE", path },
+    );
+  }
+
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);

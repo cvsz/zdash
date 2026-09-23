@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { getLogs } from "../api/endpoints";
+import { isPublicDemo } from "../config/runtime";
 import type { EventLog } from "../api/types";
 
 type RealtimeStatus =
@@ -34,6 +35,10 @@ export function useRealtimeEvents() {
   }, [status]);
 
   useEffect(() => {
+    if (isPublicDemo) {
+      setStatus("disconnected");
+      return;
+    }
     let mounted = true;
     const wsUrl = `${resolveRealtimeBaseUrl()}/api/realtime/ws`;
     let ws: WebSocket | null = null;

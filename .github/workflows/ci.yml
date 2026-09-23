@@ -100,8 +100,13 @@ jobs:
       - name: Build nginx image
         run: docker build -f infra/docker/nginx.Dockerfile .
 
-      - name: Validate compose files
+      - name: Validate production environment gate
+        run: python3 -m unittest discover -s scripts -p 'test_prod_env.py'
+
+      - name: Validate Compose without shipping example secrets
         run: |
           cp .env.example .env.production
-          docker compose -f docker-compose.yml config
-          docker compose -f docker-compose.prod.yml config
+          docker compose -f docker-compose.yml config --quiet
+          DATABASE_URL='postgresql+psycopg://zdash:CI-only-nonproduction-password@postgres:5432/zdash' \
+            POSTGRES_PASSWORD='CI-only-nonproduction-password' \
+            docker compose -f docker-compose.prod.yml config --quiet

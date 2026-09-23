@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build",
+    "build:demo": "node scripts/prepare-public-demo.mjs && tsc -p tsconfig.build.json && vite build --mode public-demo",
     "preview": "vite preview",
     "test": "vitest --run --passWithNoTests",
-    "lint": "eslint src --max-warnings=0"
+    "lint": "eslint src --max-warnings=0",
+    "build:demo-root": "node scripts/prepare-public-demo.mjs && tsc -p tsconfig.build.json && vite build --mode public-demo --base /"
   },
   "dependencies": {
     "i18next": "^26.4.2",

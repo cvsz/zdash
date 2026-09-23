@@ -214,6 +214,7 @@ jobs:
           check_envelope GET "/api/marketplace/plugins/${PLUGIN_ID}"
           check_envelope POST /api/marketplace/install "{\"plugin_id\":\"${PLUGIN_ID}\",\"workspace_id\":\"ws-1\",\"config\":{}}"
 
+      # Do not upload login.json, bootstrap.json or API response payloads containing tokens.
       - name: Upload backend diagnostics
         if: always()
         uses: actions/upload-artifact@v7
@@ -221,7 +222,7 @@ jobs:
           name: e2e-diagnostics
           path: |
             /tmp/zdash-e2e/*.log
-            /tmp/zdash-e2e/*.json
+            /tmp/zdash-e2e/health.json
             /tmp/zdash-e2e/*.err
           if-no-files-found: ignore
 

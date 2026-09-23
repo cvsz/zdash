@@ -47,6 +47,16 @@ https://github.com/CVSz/zeaz-platform
 
 Use this repository for application code, local configuration defaults, backend/frontend implementation, tests, and documentation. Use `CVSz/zeaz-platform` for Cloudflare DNS, Pages/Tunnel routing, Access, WAF, API Shield, edge health checks, and production support-domain rollout.
 
+## Public demo versus authenticated production
+
+The [public GitHub Pages demo](https://cvsz.github.io/zdash/) is a **simulation-only,
+read-only artifact**, not an authenticated production control plane. The
+production frontend requires authentication, has no mock fallback, and needs a
+real server-side API. Do not advertise mock data as production evidence.
+
+For release commands, environment validation, credential rotation, and the
+operator acceptance checklist see [Public Demo and Production Release](docs/ops/PUBLIC_DEMO_RELEASE.md).
+
 ---
 
 ## Quick Start
