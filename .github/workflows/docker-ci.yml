@@ -47,7 +47,9 @@ jobs:
           docker compose --profile observability config
           docker compose --profile production config
           cp .env.example .env.production
-          docker compose -f docker-compose.prod.yml config
+          DATABASE_URL='postgresql+psycopg://zdash:CI-only-nonproduction-password@postgres:5432/zdash' \
+            POSTGRES_PASSWORD='CI-only-nonproduction-password' \
+            docker compose -f docker-compose.prod.yml config --quiet
 
       - name: Validate production service images
         run: |
