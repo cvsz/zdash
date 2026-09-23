@@ -1,10 +1,5 @@
 import { FormEvent, useState } from "react";
 
-import {
-  DEFAULT_ADMIN_PASSWORD,
-  DEFAULT_ADMIN_USERNAME,
-  isDefaultAdminCredentials,
-} from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
 import { useT } from "../../hooks/useT";
 
@@ -18,8 +13,6 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-
-  const defaultCredentialWarning = isDefaultAdminCredentials(username, password);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -45,13 +38,6 @@ export default function LoginForm({ onAuthenticated }: LoginFormProps) {
         <div className="mt-4 rounded-md border border-emerald-400/30 bg-emerald-500/10 p-3 text-xs text-emerald-100">
           Authentication is disabled in backend dev mode. Dashboard access is available
           without credentials.
-        </div>
-      )}
-
-      {defaultCredentialWarning && (
-        <div className="mt-4 rounded-md border border-amber-400/30 bg-amber-500/10 p-3 text-xs text-amber-100">
-          Default admin credentials detected ({DEFAULT_ADMIN_USERNAME} / {DEFAULT_ADMIN_PASSWORD}).
-          Rotate credentials before production use.
         </div>
       )}
 
