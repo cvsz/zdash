@@ -17,8 +17,9 @@ npm run build:demo
 ```
 
 The build uses `frontend/.env.public-demo`, a separate Vite mode,
-and emits assets rooted at `/zdash/`. The SPA router receives the same
-basename. The read-only API adapter returns only explicit fixtures; a view
+and emits assets rooted at `/zdash/`. The public artifact uses hash routing (`#/team`, `#/risk`) so deep links
+refresh without requiring server-side SPA rewrites. The Vite asset base stays
+`/zdash/` for GitHub Pages. The read-only API adapter returns only explicit fixtures; a view
 without one receives `DEMO_FIXTURE_UNAVAILABLE` rather than making a network
 request. Every API mutation fails with `DEMO_READ_ONLY`.
 Realtime and collaboration WebSocket paths are disabled; no live backend,
@@ -30,6 +31,13 @@ persistent PUBLIC DEMO / SIMULATED DATA banner.
 Settings > Pages > Source to **GitHub Actions**. Expected URL:
 `https://cvsz.github.io/zdash/`. Configure HTTP caching and monitor build
 failures before sending clients the link.
+
+For an InfinityFree domain at its document root, build the same offline-only
+artifact with `npm run build:demo-root` and upload only the files inside
+`frontend/dist/` to that domain's `htdocs/`. Do not upload `.env*`, source,
+node_modules, or backend scripts. This mode uses root-relative assets and
+hash routing and does not need an `.htaccess` rewrite. Do not reuse leaked
+FTP credentials; rotate and store them outside source control first.
 
 **Limits:** Demo screens with no offline fixture will show their error/empty
 state. All displayed results are illustrative. This is not evidence of live
