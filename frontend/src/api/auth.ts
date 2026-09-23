@@ -4,7 +4,6 @@ import { safeLocalStorage } from "../utils/storage";
 
 const STORAGE_KEY = "zdash.session";
 export const DEFAULT_ADMIN_USERNAME = "admin";
-export const DEFAULT_ADMIN_PASSWORD = "dev-only-change-before-production";
 
 export function readStoredSession(): StoredAuthSession | null {
   const raw = safeLocalStorage().getItem(STORAGE_KEY);
@@ -42,10 +41,6 @@ export function clearStoredSession(): void {
 
 export function applyStoredSession(session: StoredAuthSession | null): void {
   setSession(session?.accessToken);
-}
-
-export function isDefaultAdminCredentials(username: string, password: string): boolean {
-  return username.trim() === DEFAULT_ADMIN_USERNAME && password === DEFAULT_ADMIN_PASSWORD;
 }
 
 export async function loginWithPassword(username: string, password: string): Promise<AuthTokenPair> {
