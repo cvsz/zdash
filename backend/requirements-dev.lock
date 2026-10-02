@@ -1,7 +1,7 @@
 APScheduler==3.11.3
 Mako==1.4.1
 MarkupSafe==3.0.3
-PyJWT==2.13.0
+PyJWT==2.14.0
 PyYAML==6.0.3
 Pygments==2.21.0
 SQLAlchemy==2.0.52
