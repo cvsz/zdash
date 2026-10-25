@@ -1,0 +1,46 @@
+name: Temporary frontend npm lock resolver (run v486)
+
+on:
+  push:
+    branches:
+      - fix/zdash-npm-audit-lock-v486-20261026
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Resolve compatible patched lockfile and export audit evidence
+        run: |
+          set +e
+          npm audit fix --package-lock-only --ignore-scripts --no-fund --no-progress
+          fix_rc=$?
+          npm audit --audit-level=high > /tmp/npm-audit.log 2>&1
+          audit_rc=$?
+          cat /tmp/npm-audit.log
+          echo "npm_audit_fix_exit_code=$fix_rc"
+          echo "npm_audit_exit_code=$audit_rc"
+          echo "LOCK_BEGIN"
+          base64 -w 76 package-lock.json
+          echo "LOCK_END"
+          echo "This workflow only generates a candidate lockfile; it is not a security admission or deployment workflow." >> "$GITHUB_STEP_SUMMARY"
+          exit 0
