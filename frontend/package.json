@@ -13,13 +13,13 @@
     "build:demo-root": "node scripts/prepare-public-demo.mjs && tsc -p tsconfig.build.json && vite build --mode public-demo --base /"
   },
   "dependencies": {
-    "i18next": "^26.4.2",
-    "lucide-react": "^1.44.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-i18next": "^17.0.13",
-    "react-router-dom": "^7.18.3",
-    "recharts": "^3.10.1"
+    "i18next": "^27.2.2",
+    "lucide-react": "^1.76.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-i18next": "^18.0.3",
+    "react-router-dom": "^7.18.6",
+    "recharts": "^3.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
