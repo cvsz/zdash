@@ -54,5 +54,8 @@ def dry_run_execute(
 
 # Backward-compatible alias used by older clients.
 @router.post("/dry-run")
-def dry_run_execute_legacy(req: ExecutionRequest) -> dict:
+def dry_run_execute_legacy(
+    req: ExecutionRequest,
+    _: object = Depends(require_permission(Permission.RUN_DRY_RUN_TRADING)),
+) -> dict:
     return dry_run_execute(req)
